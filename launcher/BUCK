@@ -1,0 +1,5 @@
+cxx_binary(
+    name = "launcher",
+    srcs = ["entry.cpp"],
+    link_style = "static",
+)
