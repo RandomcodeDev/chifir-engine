@@ -1,1 +1,8 @@
-/buck-out
+*.sln
+*.*proj
+/bin
+/obj
+/projects*
+
+*.exe
+*.dll

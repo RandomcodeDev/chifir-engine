@@ -1,0 +1,11 @@
+BasedOnStyle: Microsoft
+ColumnLimit: 150
+IndentWidth: 4
+UseTab: ForContinuationAndIndentation
+PointerAlignment: Left
+ReferenceAlignment: Left
+ReflowComments: true
+AlignAfterOpenBracket: AlwaysBreak
+AlignArrayOfStructures: Right
+AlignConsecutiveMacros: true
+
