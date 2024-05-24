@@ -12,7 +12,7 @@ namespace Krasnyy
 			AddTargets(Globals.GetTargets());
 		}
 
-		new public void ConfigureAll(Project.Configuration conf, Target target)
+		public override void ConfigureAll(Configuration conf, Target target)
 		{
 			base.ConfigureAll(conf, target);
 

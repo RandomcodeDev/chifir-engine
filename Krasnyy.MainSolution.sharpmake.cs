@@ -15,9 +15,10 @@ namespace Krasnyy
 		[Configure]
 		public void ConfigureAll(Solution.Configuration conf, Target target)
 		{
-			conf.SolutionPath = Globals.RootDirectory + @"/projects/[target.DevEnv]";
+			conf.SolutionPath = Globals.RootDir + @"/projects/[target.DevEnv]";
 			conf.SolutionFileName = @"[solution.Name]";
 
+			conf.AddProject<MimallocProject>(target);
 			conf.AddProject<FrameworkProject>(target);
 			conf.AddProject<LauncherProject>(target);
 			conf.SetStartupProject<LauncherProject>();

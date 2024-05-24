@@ -1,6 +1,6 @@
 *.sln
 *.*proj
-/bin
+/out
 /obj
 /projects*
 

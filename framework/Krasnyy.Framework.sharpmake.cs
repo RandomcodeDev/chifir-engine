@@ -12,11 +12,15 @@ namespace Krasnyy
 			AddTargets(Globals.GetTargets());
 		}
 
-		new public void ConfigureAll(Project.Configuration conf, Target target)
+		public override void ConfigureAll(Configuration conf, Target target)
 		{
 			base.ConfigureAll(conf, target);
 
+			conf.Defines.Add("KR_FRAMEWORK=1");
+
 			conf.Output = Configuration.OutputType.Dll;
+
+			conf.AddPublicDependency<MimallocProject>(target);
 		}
 	}
 }
