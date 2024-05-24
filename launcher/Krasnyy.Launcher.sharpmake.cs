@@ -17,6 +17,11 @@ namespace Krasnyy
 			base.ConfigureAll(conf, target);
 
 			conf.AddPublicDependency<FrameworkProject>(target);
+
+			if (target.Optimization != Optimization.Debug && (target.Platform == Platform.win32 || target.Platform == Platform.win64))
+			{
+				conf.Options.Add(Options.Vc.Linker.SubSystem.Windows);
+			}
 		}
 	}
 }

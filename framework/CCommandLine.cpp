@@ -1,16 +1,22 @@
 #include "CCommandLine.h"
 
-CCommandLine::CCommandLine(int argc, char* argv[]) : m_name(argv[0]), m_args(argc)
+CCommandLine::CCommandLine(int argc, char* argv[]) : m_name(argv[0])
 {
+	std::vector<std::string> args(argc);
+
 	uint32_t count = argc;
 	for (uint32_t i = 1; i < count; i++)
 	{
-		m_args[i] = argv[i];
+		args[i] = argv[i];
 	}
+
+	Parse(args);
 }
 
 CCommandLine::CCommandLine(const std::string& cmdLine)
 {
+	std::vector<std::string> args;
+
 	// This logic is based on ReactOS's CommandLineToArgvW
 
 	// executable path ends at next space, or next quote if it starts with one
@@ -59,7 +65,7 @@ CCommandLine::CCommandLine(const std::string& cmdLine)
 	{
 		if (std::isblank(*source) && quoteCount == 0)
 		{
-			m_args.push_back(arg);
+			args.push_back(arg);
 			arg.clear();
 			escapeCount = 0;
 			do
@@ -110,11 +116,26 @@ CCommandLine::CCommandLine(const std::string& cmdLine)
 		}
 	}
 
-	m_args.push_back(arg);
+	args.push_back(arg);
+
+	Parse(args);
 }
 
 CCommandLine::CCommandLine(const std::vector<std::string>& args)
 {
-	m_args.resize(args.size());
-	std::copy(args.begin(), args.end(), m_args.begin());
+	Parse(args);
+}
+
+void CCommandLine::Parse(const std::vector<std::string>& args)
+{
+	for (size_t i = 0; i < args.size() - 1; i++)
+	{
+		if (std::strchr(OPTION_PREFIXES, args[i][0]) && !std::strchr(OPTION_PREFIXES, args[i + 1][0]))
+		{
+			std::string option = args[i];
+			option.erase(option.begin());
+			m_args[option] = args[i + 1];
+			i++;
+		}
+	}
 }
