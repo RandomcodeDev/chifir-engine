@@ -3,6 +3,7 @@
 /out
 /obj
 /projects*
+/build
 
 *.exe
 *.dll

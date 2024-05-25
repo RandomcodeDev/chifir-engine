@@ -1,5 +1,4 @@
 #include "framework/Framework.h"
-#include "framework/CGameApplication.h"
 #include "framework/CCommandLine.h"
 
 #if defined KR_PLATFORM_WINDOWS && !defined KR_DEBUG

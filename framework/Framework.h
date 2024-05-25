@@ -6,6 +6,7 @@
 
 #include <cctype>
 #include <cinttypes>
+#include <functional>
 #include <limits>
 #include <map>
 #include <unordered_map>
