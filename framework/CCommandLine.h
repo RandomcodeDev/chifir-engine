@@ -28,7 +28,7 @@ class FRAMEWORK_API CCommandLine
 		}
 		else
 		{
-			return "";
+			return std::string();
 		}
 	}
 

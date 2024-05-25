@@ -1,4 +1,4 @@
-#include "CCommandLine.h"
+#include "framework/CCommandLine.h"
 
 CCommandLine::CCommandLine(int argc, char* argv[]) : m_name(argv[0])
 {

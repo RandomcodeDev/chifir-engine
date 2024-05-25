@@ -16,6 +16,7 @@ set(FRAMEWORK_Windows_HEADERS
 set(FRAMEWORK_SOURCES
 	impl/CCommandLine.cpp
 	impl/Memory.cpp
+	MemoryOverride.cpp
 )
 set(FRAMEWORK_Windows_SOURCES
 	impl/windows/CWindowsPlatform.cpp
@@ -29,7 +30,6 @@ target_sources(Framework PRIVATE ${FRAMEWORK_SOURCES} ${FRAMEWORK_${CMAKE_SYSTEM
 add_library(FrameworkMemoryOverride OBJECT)
 target_sources(FrameworkMemoryOverride PRIVATE MemoryOverride.cpp)
 
-target_link_libraries(Framework PRIVATE FrameworkMemoryOverride)
 if (${USE_MIMALLOC})
 	target_link_libraries(Framework PRIVATE mimalloc)
 endif()
