@@ -5,8 +5,9 @@
 #pragma once
 
 #include "Framework.h"
-#include "CCommandLine.h"
-#include "ISystem.h"
+
+class CCommandLine;
+struct SystemDependency;
 
 class IApplication
 {

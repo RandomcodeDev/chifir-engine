@@ -7,7 +7,7 @@
 #include "Framework.h"
 
 /// @brief Allocate memory
-extern FRAMEWORK_API void* AllocateMemory(size_t size);
+extern FRAMEWORK_API void* AllocateMemory(usize size);
 
 /// @brief Free memory
 extern FRAMEWORK_API void FreeMemory(void* memory);

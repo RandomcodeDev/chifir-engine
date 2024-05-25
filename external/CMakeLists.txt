@@ -8,6 +8,6 @@ if (${USE_MIMALLOC})
 	set(MI_BUILD_STATIC TRUE CACHE BOOL "" FORCE)
 	set(MI_BUILD_OBJECT FALSE CACHE BOOL "" FORCE)
 	set(MI_BUILD_TESTS FALSE CACHE BOOL "" FORCE)
-	add_subdirectory(mimalloc)
+	add_subdirectory(mimalloc EXCLUDE_FROM_ALL)
 endif()
 

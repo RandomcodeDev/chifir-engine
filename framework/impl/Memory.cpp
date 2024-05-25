@@ -1,6 +1,10 @@
 #include "framework/Memory.h"
 
-FRAMEWORK_API void* AllocateMemory(size_t size)
+#ifdef KR_USE_MIMALLOC
+#include "mimalloc.h"
+#endif
+
+FRAMEWORK_API void* AllocateMemory(usize size)
 {
 #ifdef KR_USE_MIMALLOC
 	return mi_calloc(1, size);

@@ -4,8 +4,8 @@ CCommandLine::CCommandLine(int argc, char* argv[]) : m_name(argv[0])
 {
 	std::vector<std::string> args(argc);
 
-	uint32_t count = argc;
-	for (uint32_t i = 1; i < count; i++)
+	u32 count = argc;
+	for (u32 i = 1; i < count; i++)
 	{
 		args[i] = argv[i];
 	}
@@ -57,9 +57,9 @@ CCommandLine::CCommandLine(const std::string& cmdLine)
 		return;
 	}
 
-	size_t escapeCount = 0;
-	size_t quoteCount = 0;
-	size_t argCount = 0;
+	usize escapeCount = 0;
+	usize quoteCount = 0;
+	usize argCount = 0;
 	std::string arg;
 	while (source <= cmdLine.end())
 	{
@@ -128,7 +128,7 @@ CCommandLine::CCommandLine(const std::vector<std::string>& args)
 
 void CCommandLine::Parse(const std::vector<std::string>& args)
 {
-	for (size_t i = 0; i < args.size() - 1; i++)
+	for (usize i = 0; i < args.size() - 1; i++)
 	{
 		if (std::strchr(OPTION_PREFIXES, args[i][0]) && !std::strchr(OPTION_PREFIXES, args[i + 1][0]))
 		{

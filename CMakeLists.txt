@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.29)
 
-project(Krasnyy VERSION 0.0.0 LANGUAGES C CXX)
+project(Красний VERSION 0.0.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
@@ -15,6 +15,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	$<$<BOOL:${USE_MIMALLOC}>:${CMAKE_SOURCE_DIR}/external/mimalloc/include>
+	${CMAKE_SOURCE_DIR}/external/spdlog/include
+	${CMAKE_SOURCE_DIR}/external/spdlog/include/spdlog
 )
 
 add_compile_definitions(
@@ -25,6 +27,15 @@ add_compile_definitions(
 	$<$<BOOL:${USE_MIMALLOC}>:KR_USE_MIMALLOC>
 )
 
+if ("${CMAKE_VS_PLATFORM_NAME}" MATCHES "Gaming")
+	set(GDK TRUE)
+	add_compile_definitions(KR_PLATFORM_GDK)
+	if ("${CMAKE_VS_PLATFORM_NAME}" MATCHES "Xbox")
+		set(XBOX TRUE)
+		add_compile_definitions(KR_PLATFORM_XBOX)
+	endif()
+endif()
+
 set(OUTPUT_DIR ${CMAKE_SOURCE_DIR}/out/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}/$<CONFIG>)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR})
@@ -34,5 +45,5 @@ add_subdirectory(external)
 add_subdirectory(framework)
 add_subdirectory(launcher)
 
-set_property(GLOBAL PROPERTY VS_STARTUP_PROJECT Launcher)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Launcher)
 

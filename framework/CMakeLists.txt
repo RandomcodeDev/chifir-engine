@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.29)
 
-set(FRAMEWORK_PUBLIC_HEADERS
+set(FRAMEWORK_HEADERS
 	CCommandLine.h
 	Framework.h
 	IApplication.h
 	IPlatform.h
 	ISharedLibrary.h
 	ISystem.h
+	Log.h
 	Memory.h
 )
 set(FRAMEWORK_Windows_HEADERS
@@ -15,6 +16,7 @@ set(FRAMEWORK_Windows_HEADERS
 )
 set(FRAMEWORK_SOURCES
 	impl/CCommandLine.cpp
+	impl/Log.cpp
 	impl/Memory.cpp
 	MemoryOverride.cpp
 )
@@ -24,14 +26,21 @@ set(FRAMEWORK_Windows_SOURCES
 )
 
 add_library(Framework SHARED)
-target_sources(Framework PUBLIC ${FRAMEWORK_PUBLIC_HEADERS})
-target_sources(Framework PRIVATE ${FRAMEWORK_SOURCES} ${FRAMEWORK_${CMAKE_SYSTEM_NAME}_HEADERS} ${FRAMEWORK_${CMAKE_SYSTEM_NAME}_SOURCES})
+target_sources(Framework PRIVATE ${FRAMEWORK_HEADERS} ${FRAMEWORK_SOURCES} ${FRAMEWORK_${CMAKE_SYSTEM_NAME}_HEADERS} ${FRAMEWORK_${CMAKE_SYSTEM_NAME}_SOURCES})
 
 add_library(FrameworkMemoryOverride OBJECT)
 target_sources(FrameworkMemoryOverride PRIVATE MemoryOverride.cpp)
 
 if (${USE_MIMALLOC})
 	target_link_libraries(Framework PRIVATE mimalloc-static)
+endif()
+
+if (WIN32 AND NOT XBOX)
+	target_link_libraries(Framework PRIVATE dbghelp.lib)
+endif()
+
+if (GDK)
+	target_link_libraries(Framework PRIVATE XGameRuntime.lib)
 endif()
 
 target_compile_definitions(Framework PRIVATE KR_FRAMEWORK)

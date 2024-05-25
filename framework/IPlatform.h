@@ -5,13 +5,33 @@
 #pragma once
 
 #include "Framework.h"
-#include "ISharedLibrary.h"
+
+class ISharedLibrary;
 
 class IPlatform
 {
   public:
+	/// @brief Set up desirable state for the platform
 	virtual void Initialize() = 0;
+
+	/// @brief Clean up anything
 	virtual void Shutdown() = 0;
 
-	virtual 
+	/// @brief Get a description of the OS
+	virtual const std::string& DescribeOs() = 0;
+
+	/// @brief Get a description of the hardware (CPU, RAM, GPU, etc)
+	virtual const std::string& DescribeHardware() = 0;
+
+	/// @brief Kill the program
+	[[noreturn]] virtual void Quit(
+		const std::string& message, bool useLastError = true, const std::string& file = "", const std::string& function = "", int line = 0) = 0;
+
+	/// @brief Load a shared library
+	virtual ISharedLibrary* LoadLibrary(const std::string& name, const std::vector<std::string>& paths = std::vector<std::string>()) = 0;
+
+	/// @brief Create a directory
+	virtual bool CreateDirectory(const std::string& path) = 0;
 };
+
+extern FRAMEWORK_API IPlatform* GetPlatform();

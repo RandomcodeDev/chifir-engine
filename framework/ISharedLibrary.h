@@ -9,10 +9,9 @@
 class ISharedLibrary
 {
   public:
-	virtual ~ISharedLibrary() = 0;
-	virtual std::function<void()> GetFunction(const std::string& name) = 0;
-	virtual void* GetSymbol(const std::string& name) = 0;
+	virtual std::function<void()> GetFunction(const std::string& name) const = 0;
+	virtual void* GetSymbol(const std::string& name) const = 0;
 
-	virtual const std::string& GetName();
-	virtual uint64_t GetHandle();
+	virtual const std::string& GetName() const = 0;
+	virtual u64 GetHandle() const = 0;
 };
