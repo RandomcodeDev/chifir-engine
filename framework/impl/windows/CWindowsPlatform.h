@@ -17,8 +17,9 @@ class CWindowsPlatform : public IPlatform
 
 	const std::string& DescribeHardware();
 
-	[[noreturn]] void Quit(
-		const std::string& message, bool useLastError, const std::string& file, const std::string& function, int line);
+	const std::string& GetUserDataPath();
+
+	[[noreturn]] void Quit(const std::string& message, bool useLastError, const std::string& file, const std::string& function, int line);
 
 	ISharedLibrary* LoadLibrary(const std::string& name, const std::vector<std::string>& paths);
 

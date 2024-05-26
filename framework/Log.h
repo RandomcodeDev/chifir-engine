@@ -13,7 +13,7 @@
 #else
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
 #endif
-#include "spdlog/spdlog-inl.h"
+#include "spdlog/spdlog.h"
 
 #define KR_LOG_TRACE(...) SPDLOG_TRACE(__VA_ARGS__)
 #define KR_LOG_DEBUG(...) SPDLOG_DEBUG(__VA_ARGS__)
@@ -24,3 +24,6 @@
 
 /// @brief Set up logging
 extern FRAMEWORK_API void SetupLogging();
+
+/// @brief Add a file
+extern FRAMEWORK_API void AddFile(const std::string& path, size_t maxSize = 1024 * 1024, size_t maxFiles = 5, bool rotateOnOpen = true);

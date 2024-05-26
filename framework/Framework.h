@@ -6,6 +6,7 @@
 
 #include <cctype>
 #include <cinttypes>
+#include <cstdio>
 #include <functional>
 #include <limits>
 #include <map>
@@ -13,9 +14,9 @@
 #include <string>
 #include <vector>
 
-#ifdef KR_PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#include <shlobj.h>
 #include <windows.h>
 #undef LoadLibrary
 #undef CreateDirectory
@@ -26,7 +27,6 @@
 
 #ifdef KR_PLATFORM_GDK
 #include <XGameRuntimeInit.h>
-#endif
 #endif
 
 #include "fmt/fmt.h"
@@ -60,12 +60,3 @@ using ssize = sptr;
 #else
 #define FRAMEWORK_API KR_IMPORT
 #endif
-
-/// @brief Get the size of an array
-template <class T, usize N> constexpr usize KR_ARRAYSIZE(T (&)[N])
-{
-	return N;
-}
-
-/// @brief Quit the program
-#define KR_QUIT(...) GetPlatform()->Quit(fmt::format(__VA_ARGS__), true, __FILE__, __FUNCTION__, __LINE__)

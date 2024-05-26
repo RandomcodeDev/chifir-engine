@@ -1,4 +1,5 @@
 #include "framework/Log.h"
+#include "framework/Util.h"
 
 #include "CWindowsPlatform.h"
 #include "CWindowsSharedLibrary.h"
@@ -15,6 +16,24 @@ void CWindowsPlatform::Initialize()
 #endif
 
 #ifndef KR_PLATFORM_XBOX
+	bool haveConsole = AttachConsole(ATTACH_PARENT_PROCESS);
+#if defined KR_DEBUG || defined KR_RELWITHDEBINFO
+	if (haveConsole || (!haveConsole && AllocConsole()))
+#else
+	if (haveConsole)
+#endif
+	{
+		KR_LOG_INFO("Attaching to console");
+
+		FILE* file;
+		freopen_s(&file, "CONIN$", "r", stdin);
+		freopen_s(&file, "CONOUT$", "w", stdout);
+		freopen_s(&file, "CONOUT$", "w", stderr);
+
+		// bump first message away from prompt in case running in cmd
+		printf("\n");
+	}
+
 	KR_LOG_INFO("Attempting to load symbols");
 	SymSetOptions(SYMOPT_DEBUG | SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS);
 	if (!SymInitialize(GetCurrentProcess(), nullptr, FALSE))
@@ -128,6 +147,30 @@ const std::string& CWindowsPlatform::DescribeOs()
 const std::string& CWindowsPlatform::DescribeHardware()
 {
 	return std::string();
+}
+
+const std::string& CWindowsPlatform::GetUserDataPath()
+{
+	static std::string appData;
+
+	if (!appData.length())
+	{
+		char path[MAX_PATH + 1] = {0};
+
+		HRESULT result = SHGetFolderPathA(nullptr, CSIDL_APPDATA | CSIDL_FLAG_CREATE, nullptr, SHGFP_TYPE_CURRENT, path);
+		if (!SUCCEEDED(result))
+		{
+			KR_LOG_WARN("Failed to get AppData path, using C:/Temp instead");
+			appData = "C:/Temp/";
+			return appData;
+		}
+
+		appData = path;
+		Replace(appData, "\\", "/");
+		appData += '/';
+	}
+
+	return appData;
 }
 
 [[noreturn]] void CWindowsPlatform::Quit(

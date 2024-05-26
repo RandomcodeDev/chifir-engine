@@ -2,6 +2,7 @@
 #include "framework/CCommandLine.h"
 #include "framework/IPlatform.h"
 #include "framework/Log.h"
+#include "framework/Util.h"
 
 #if defined KR_PLATFORM_WINDOWS && !defined KR_DEBUG
 extern "C" int WinMain(HINSTANCE instance, HINSTANCE prevInstance, char* cmdline, int show)
@@ -16,6 +17,7 @@ extern "C" int main(int argc, char* argv[])
 	GetPlatform()->Initialize();
 
 	KR_LOG_INFO("Running on {}", GetPlatform()->DescribeOs());
+	KR_LOG_INFO("{}", GetPlatform()->GetUserDataPath());
 
 	GetPlatform()->Shutdown();
 

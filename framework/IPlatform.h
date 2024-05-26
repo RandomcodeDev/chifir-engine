@@ -23,6 +23,9 @@ class IPlatform
 	/// @brief Get a description of the hardware (CPU, RAM, GPU, etc)
 	virtual const std::string& DescribeHardware() = 0;
 
+	/// @brief Get the path to the directory where data can be saved (AppData, ~/.local/share, etc)
+	virtual const std::string& GetUserDataPath() = 0;
+
 	/// @brief Kill the program
 	[[noreturn]] virtual void Quit(
 		const std::string& message, bool useLastError = true, const std::string& file = "", const std::string& function = "", int line = 0) = 0;

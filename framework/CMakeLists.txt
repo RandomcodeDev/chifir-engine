@@ -9,6 +9,7 @@ set(FRAMEWORK_HEADERS
 	ISystem.h
 	Log.h
 	Memory.h
+	Util.h
 )
 set(FRAMEWORK_Windows_HEADERS
 	impl/windows/CWindowsPlatform.h
@@ -35,11 +36,11 @@ if (${USE_MIMALLOC})
 	target_link_libraries(Framework PRIVATE mimalloc-static)
 endif()
 
-if (WIN32 AND NOT XBOX)
+if (WIN32 AND NOT DEFINED XBOX)
 	target_link_libraries(Framework PRIVATE dbghelp.lib)
 endif()
 
-if (GDK)
+if (DEFINED GDK)
 	target_link_libraries(Framework PRIVATE XGameRuntime.lib)
 endif()
 

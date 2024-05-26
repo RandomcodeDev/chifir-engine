@@ -12,6 +12,7 @@ endif()
 
 set(CMAKE_SYSTEM_NAME Windows)
 set(CMAKE_SYSTEM_VERSION 10.0)
+set(CMAKE_SYSTEM_PROCESSOR AMD64)
 
 set(XdkEditionTarget "220300" CACHE STRING "Microsoft GDK Edition")
 
@@ -45,9 +46,5 @@ if(NOT GDK_DXCTool)
   set(GDK_DXCTool "dxc.exe")
   mark_as_advanced(GDK_DXCTool)
 endif()
-
-# The MicrosoftGame.Config file needs to be in the directory with the project to enable deploy for Gaming.Desktop.x64
-file(GENERATE OUTPUT MicrosoftGame.Config INPUT ${CMAKE_CURRENT_LIST_DIR}/MicrosoftGameConfig.mgc)
-file(GENERATE OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIR}/MicrosoftGame.Config INPUT ${CMAKE_CURRENT_LIST_DIR}/MicrosoftGameConfig.mgc)
 
 set(_GRDK_TOOLCHAIN_ ON)
