@@ -5,7 +5,7 @@
 #pragma once
 
 #include <cctype>
-#include <cinttypes>
+#include <cstdint>
 #include <cstdio>
 #include <functional>
 #include <limits>
@@ -16,8 +16,9 @@
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
-#include <shlobj.h>
 #include <windows.h>
+#include <shlobj.h>
+
 #undef LoadLibrary
 #undef CreateDirectory
 

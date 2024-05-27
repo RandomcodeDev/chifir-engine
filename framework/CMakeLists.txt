@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.29)
+cmake_minimum_required(VERSION 3.25)
 
 set(FRAMEWORK_HEADERS
 	CCommandLine.h
@@ -29,6 +29,8 @@ set(FRAMEWORK_Windows_SOURCES
 add_library(Framework SHARED)
 target_sources(Framework PRIVATE ${FRAMEWORK_HEADERS} ${FRAMEWORK_SOURCES} ${FRAMEWORK_${CMAKE_SYSTEM_NAME}_HEADERS} ${FRAMEWORK_${CMAKE_SYSTEM_NAME}_SOURCES})
 
+target_compile_definitions(Framework PRIVATE KR_FRAMEWORK)
+
 add_library(FrameworkMemoryOverride OBJECT)
 target_sources(FrameworkMemoryOverride PRIVATE MemoryOverride.cpp)
 
@@ -43,6 +45,4 @@ endif()
 if (DEFINED GDK)
 	target_link_libraries(Framework PRIVATE XGameRuntime.lib)
 endif()
-
-target_compile_definitions(Framework PRIVATE KR_FRAMEWORK)
 

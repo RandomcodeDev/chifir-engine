@@ -6,15 +6,6 @@
 
 void CWindowsPlatform::Initialize()
 {
-#ifdef KR_PLATFORM_GDK
-	KR_LOG_INFO("Initializing game runtime");
-	HRESULT result = XGameRuntimeInitialize();
-	if (!SUCCEEDED(result))
-	{
-		KR_QUIT("Failed to initialize game runtime: HRESULT 0x{:08x}", result);
-	}
-#endif
-
 #ifndef KR_PLATFORM_XBOX
 	bool haveConsole = AttachConsole(ATTACH_PARENT_PROCESS);
 #if defined KR_DEBUG || defined KR_RELWITHDEBINFO
@@ -33,29 +24,31 @@ void CWindowsPlatform::Initialize()
 		// bump first message away from prompt in case running in cmd
 		printf("\n");
 	}
+#endif
 
-	KR_LOG_INFO("Attempting to load symbols");
-	SymSetOptions(SYMOPT_DEBUG | SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS);
-	if (!SymInitialize(GetCurrentProcess(), nullptr, FALSE))
+#ifdef KR_PLATFORM_GDK
+	KR_LOG_INFO("Initializing game runtime");
+	HRESULT result = XGameRuntimeInitialize();
+	if (!SUCCEEDED(result))
 	{
-		DWORD error = GetLastError();
-		KR_LOG_ERROR("Failed to initialize DbgHelp: HRESULT 0x{:08x}", HRESULT_FROM_WIN32(error));
+		KR_QUIT("Failed to initialize game runtime: HRESULT 0x{:08x}", result);
 	}
 #endif
 }
 
 void CWindowsPlatform::Shutdown()
 {
+	XGameRuntimeUninitialize();
 }
 
 const std::string& CWindowsPlatform::DescribeOs()
 {
-	static std::string description;
+	static std::string desc;
 
 	// This shouldn't ever change between runs
-	if (description.length() > 0)
+	if (desc.length() > 0)
 	{
-		return description;
+		return desc;
 	}
 
 	// All versions
@@ -116,7 +109,7 @@ const std::string& CWindowsPlatform::DescribeOs()
 		RegQueryValueExA(currentVersionKey, "DisplayVersion", nullptr, nullptr, (LPBYTE)displayVersion, &size);
 
 		std::string edition(edition, std::min(strlen(edition), KR_ARRAYSIZE(edition)));
-		description = fmt::format(
+		desc = fmt::format(
 #ifdef KR_DEBUG
 			"{} {} {}.{}.{} {}{}",
 #else
@@ -139,14 +132,15 @@ const std::string& CWindowsPlatform::DescribeOs()
 		size = sizeof(buildLab);
 		RegQueryValueExA(currentVersionKey, "BuildLab", nullptr, nullptr, (LPBYTE)buildLab, &size);
 
-		description = fmt::format("Windows {} {} {} (build lab {}{})", product, edition, csdVersion, buildLab, isWow64 ? ", WoW64" : "");
+		desc = fmt::format("Windows {} {} {} (build lab {}{})", product, edition, csdVersion, buildLab, isWow64 ? ", WoW64" : "");
 	}
-	return description;
+	return desc;
 }
 
 const std::string& CWindowsPlatform::DescribeHardware()
 {
-	return std::string();
+	static std::string desc;
+	return desc;
 }
 
 const std::string& CWindowsPlatform::GetUserDataPath()
@@ -186,12 +180,23 @@ ISharedLibrary* CWindowsPlatform::LoadLibrary(const std::string& name, const std
 {
 	std::string fullName = name + ".dll";
 
-	for (const auto& searchPath : paths)
+	if (paths.empty())
 	{
-		HMODULE handle = LoadLibraryA((fullName + searchPath).c_str());
+		HMODULE handle = LoadLibraryA((fullName).c_str());
 		if (handle)
 		{
 			return new CWindowsSharedLibrary(name, handle);
+		}
+	}
+	else
+	{
+		for (const auto& searchPath : paths)
+		{
+			HMODULE handle = LoadLibraryExA((searchPath, fullName).c_str(), nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
+			if (handle)
+			{
+				return new CWindowsSharedLibrary(name, handle);
+			}
 		}
 	}
 

@@ -23,3 +23,4 @@ struct SystemDependency
 	bool optional;
 	ISystem** system;
 };
+

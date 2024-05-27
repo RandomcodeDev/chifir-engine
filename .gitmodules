@@ -4,3 +4,6 @@
 [submodule "external/spdlog"]
 	path = external/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "external/nanolog"]
+	path = external/nanolog
+	url = https://github.com/iyengar111/nanolog

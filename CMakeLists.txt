@@ -1,12 +1,12 @@
-cmake_minimum_required(VERSION 3.29)
+cmake_minimum_required(VERSION 3.25)
 
 project(Красний VERSION 0.0.0 LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 option(USE_MIMALLOC "Use mimalloc instead of the system allocator" TRUE)
-if ("${CMAKE_SYSTEM_NAME}" MATCHES "NX")
+if (DEFINED NX OR DEFINED XENON)
 	set(USE_MIMALLOC FALSE CACHE BOOL "mimalloc isn't supported on this platform" FORCE)
 endif()
 
@@ -27,12 +27,21 @@ add_compile_definitions(
 	$<$<BOOL:${USE_MIMALLOC}>:KR_USE_MIMALLOC>
 )
 
+if (DEFINED XENON)
+	add_compile_definitions(KR_PLATFORM_XBOX KR_PLATFORM_XBOX360)
+endif()
+
 if ("${CMAKE_VS_PLATFORM_NAME}" MATCHES "Gaming")
 	set(GDK TRUE)
 	add_compile_definitions(KR_PLATFORM_GDK)
 	if ("${CMAKE_VS_PLATFORM_NAME}" MATCHES "Xbox")
 		set(XBOX TRUE)
 		add_compile_definitions(KR_PLATFORM_XBOX)
+		if ("${CMAKE_VS_PLATFORM_NAME}" MATCHES "Scarlett")
+			add_compile_definitions(KR_PLATFORM_SCARLETT)
+		else()
+			add_compile_definitions(KR_PLATFORM_DURANGO)
+		endif()
 	endif()
 endif()
 
@@ -43,6 +52,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR} CACHE STRING "" FORCE)
 
 add_subdirectory(external)
 add_subdirectory(framework)
+add_subdirectory(engine)
 add_subdirectory(launcher)
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Launcher)

@@ -12,7 +12,6 @@ class CWindowsSharedLibrary : public ISharedLibrary
   public:
 	CWindowsSharedLibrary(const std::string& name, HMODULE module);
 	~CWindowsSharedLibrary();
-	std::function<void()> GetFunction(const std::string& name) const;
 	void* GetSymbol(const std::string& name) const;
 
 	const std::string& GetName() const
