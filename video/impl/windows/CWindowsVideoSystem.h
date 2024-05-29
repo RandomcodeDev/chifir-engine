@@ -65,6 +65,7 @@ class CWindowsVideoSystem : public IVideoSystem
 	static constexpr const char* WINDOW_CLASS = "КраснийWindow";
 	static constexpr u32 WINDOW_STYLE = WS_OVERLAPPEDWINDOW;
 
+	HINSTANCE m_hinstance;
 	HWND m_window;
 	std::string m_title;
 	u32 m_width;

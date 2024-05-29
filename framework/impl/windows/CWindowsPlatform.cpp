@@ -38,7 +38,9 @@ void CWindowsPlatform::Initialize()
 
 void CWindowsPlatform::Shutdown()
 {
+#ifdef KR_PLATFORM_GDK
 	XGameRuntimeUninitialize();
+#endif
 }
 
 const std::string& CWindowsPlatform::DescribeOs()
@@ -87,8 +89,7 @@ const std::string& CWindowsPlatform::DescribeOs()
 	RegQueryValueExA(currentVersionKey, "ProductName", nullptr, nullptr, (LPBYTE)product, &size);
 
 	size = sizeof(INT);
-	if (RegQueryValueExA(currentVersionKey, "CurrentMajorVersionNumber", nullptr, nullptr, (LPBYTE)&majorVersion, &size) ==
-		ERROR_SUCCESS)
+	if (RegQueryValueExA(currentVersionKey, "CurrentMajorVersionNumber", nullptr, nullptr, (LPBYTE)&majorVersion, &size) == ERROR_SUCCESS)
 	{
 		size = sizeof(INT);
 		RegQueryValueExA(currentVersionKey, "CurrentMinorVersionNumber", nullptr, nullptr, (LPBYTE)&minorVersion, &size);
@@ -116,8 +117,7 @@ const std::string& CWindowsPlatform::DescribeOs()
 			"{} {} {}.{}.{}.{} {}{}",
 #endif
 			edition == "SystemOS" ? "Xbox System Software" : "Windows",
-			(strncmp(installationType, "Client", KR_ARRAYSIZE(installationType)) == 0) ? "Desktop" : installationType, majorVersion,
-			minorVersion,
+			(strncmp(installationType, "Client", KR_ARRAYSIZE(installationType)) == 0) ? "Desktop" : installationType, majorVersion, minorVersion,
 #ifdef KR_DEBUG
 			buildLabExtended, edition, isWow64 ? " (WoW64)" : ""
 #else
@@ -147,22 +147,24 @@ const std::string& CWindowsPlatform::GetUserDataPath()
 {
 	static std::string appData;
 
-	if (!appData.length())
+	if (appData.length() > 0)
 	{
-		char path[MAX_PATH + 1] = {0};
-
-		HRESULT result = SHGetFolderPathA(nullptr, CSIDL_APPDATA | CSIDL_FLAG_CREATE, nullptr, SHGFP_TYPE_CURRENT, path);
-		if (!SUCCEEDED(result))
-		{
-			KR_LOG_WARN("Failed to get AppData path, using C:/Temp instead");
-			appData = "C:/Temp/";
-			return appData;
-		}
-
-		appData = path;
-		Replace(appData, "\\", "/");
-		appData += '/';
+		return appData;
 	}
+
+	char path[MAX_PATH + 1] = {0};
+
+	HRESULT result = SHGetFolderPathA(nullptr, CSIDL_APPDATA | CSIDL_FLAG_CREATE, nullptr, SHGFP_TYPE_CURRENT, path);
+	if (!SUCCEEDED(result))
+	{
+		KR_LOG_WARN("Failed to get AppData path, using C:/Temp instead");
+		appData = "C:/Temp/";
+		return appData;
+	}
+
+	appData = path;
+	Replace(appData, "\\", "/");
+	appData += '/';
 
 	return appData;
 }

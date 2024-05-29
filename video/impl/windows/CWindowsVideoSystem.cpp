@@ -12,6 +12,8 @@ bool CWindowsVideoSystem::Initialize()
 {
 	KR_LOG_INFO("Initializing Windows video system");
 
+	m_hinstance = GetModuleHandleA(nullptr);
+
 	if (!RegisterWindowClass() || !InitializeMainWindow())
 	{
 		return false;
@@ -40,6 +42,9 @@ void CWindowsVideoSystem::Shutdown()
 {
 	KR_LOG_INFO("Shutting down Windows video system");
 
+	DestroyWindow(m_window);
+	UnregisterClassA(WINDOW_CLASS, m_hinstance);
+
 	KR_LOG_INFO("Windows video system shut down");
 }
 
@@ -56,7 +61,7 @@ bool CWindowsVideoSystem::RegisterWindowClass()
 	WNDCLASSEXA wndClass = {};
 	wndClass.cbSize = sizeof(wndClass);
 	wndClass.lpszClassName = WINDOW_CLASS;
-	wndClass.hInstance = GetModuleHandleA(nullptr);
+	wndClass.hInstance = m_hinstance;
 	wndClass.lpfnWndProc = WindowProc;
 	wndClass.hCursor = LoadCursorA(nullptr, IDC_ARROW);
 	if (!RegisterClassExA(&wndClass))
@@ -99,14 +104,15 @@ bool CWindowsVideoSystem::InitializeMainWindow()
 	u32 x = GetSystemMetrics(SM_CXSCREEN) / 2 - m_width / 2;
 	u32 y = GetSystemMetrics(SM_CYSCREEN) / 2 - m_height / 2;
 	m_window =
-		CreateWindowExA(0, WINDOW_CLASS, m_title.c_str(), WINDOW_STYLE, x, y, m_width, m_height, nullptr, nullptr, GetModuleHandleA(nullptr), this);
+		CreateWindowExA(0, WINDOW_CLASS, m_title.c_str(), WINDOW_STYLE, x, y, m_width, m_height, nullptr, nullptr, m_hinstance, this);
 	if (!m_window)
 	{
 		KR_LOG_ERROR("Failed to create window: HRESULT 0x{:08x}", HRESULT_FROM_WIN32(GetLastError()));
 		return false;
 	}
 
-	UpdateSize();
+	// Update DPI, because size and position get messages
+	UpdateDpi();
 
 	return true;
 }
@@ -162,6 +168,7 @@ LRESULT CWindowsVideoSystem::WindowProc(HWND window, UINT msg, WPARAM wparam, LP
 	}
 	case WM_CLOSE: {
 		s_videoSystem->m_closed = true;
+		KR_LOG_INFO("Window closed");
 		return 0;
 	}
 	}
