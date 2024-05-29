@@ -20,17 +20,12 @@ class FRAMEWORK_API CCommandLine
 		return m_name;
 	}
 
-	const std::string& GetArgValue(const std::string& name) const
+	bool HasArg(const std::string& name) const
 	{
-		if (m_args.find(name) != m_args.end())
-		{
-			return m_args.at(name);
-		}
-		else
-		{
-			return "";
-		}
+		return m_args.find(name) != m_args.end();
 	}
+
+	const std::string& GetArg(const std::string& name) const;
 
 	const std::map<std::string, std::string>& GetArgs() const
 	{

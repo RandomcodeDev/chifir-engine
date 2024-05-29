@@ -7,6 +7,7 @@
 #include "Framework.h"
 
 class CCommandLine;
+class ISystem;
 struct SystemDependency;
 
 class IApplication
@@ -25,8 +26,6 @@ class IApplication
 	virtual std::vector<SystemDependency> GetSystems() const = 0;
 
 	/// @brief Run the application
-	virtual void Run(CCommandLine* cmdLine) = 0;
+	virtual void Run(const CCommandLine& cmdLine, const std::unordered_map<std::string, ISystem*>& systems) = 0;
 
-  protected:
-	CCommandLine* m_cmdLine;
 };

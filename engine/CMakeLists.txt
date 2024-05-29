@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.25)
 
 set(ENGINE_HEADERS
-	CEngineApplication.h
+	impl/CEngineApplication.h
 	Engine.h
 )
 set(ENGINE_SOURCES
-	CEngineApplication.cpp
-	Interface.cpp
+	impl/CEngineApplication.cpp
+	impl/Globals.cpp
+	impl/Interface.cpp
 )
 
 add_library(Engine SHARED)

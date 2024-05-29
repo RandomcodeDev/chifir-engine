@@ -7,12 +7,14 @@
 #include "framework/Framework.h"
 #include "framework/IApplication.h"
 
+#include "engine/Engine.h"
+
 class CEngineApplication : public IApplication
 {
   public:
 	std::vector<SystemDependency> GetSystems() const;
 
-	void Run(CCommandLine* cmdLine);
+	void Run(const CCommandLine& cmdLine, const std::unordered_map<std::string, ISystem*>& systems);
 
 	const char* GetOrganization() const
 	{

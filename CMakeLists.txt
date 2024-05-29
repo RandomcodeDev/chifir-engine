@@ -52,6 +52,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR} CACHE STRING "" FORCE)
 
 add_subdirectory(external)
 add_subdirectory(framework)
+add_subdirectory(video)
 add_subdirectory(engine)
 add_subdirectory(launcher)
 

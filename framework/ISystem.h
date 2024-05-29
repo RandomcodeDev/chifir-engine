@@ -9,10 +9,13 @@
 class ISystem
 {
   public:
-	virtual bool Initialize() = 0;
-	virtual void Shutdown() = 0;
+	// Constructor: register any variables
 
-	virtual u32 GetVersion() = 0;
+	/// @brief Initialize the system
+	virtual bool Initialize() = 0;
+
+	/// @brief Shut down the system
+	virtual void Shutdown() = 0;
 };
 
 struct SystemDependency
@@ -21,6 +24,4 @@ struct SystemDependency
 	u32 minimumVersion;
 	bool requireExactVersion;
 	bool optional;
-	ISystem** system;
 };
-

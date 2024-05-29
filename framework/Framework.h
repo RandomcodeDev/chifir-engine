@@ -9,10 +9,14 @@
 #include <cstdio>
 #include <functional>
 #include <limits>
+#include <memory>
+
+// TODO: implement these myself some day (it can't be that hard, I just don't want to yet)
 #include <map>
-#include <unordered_map>
+#include <queue>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX

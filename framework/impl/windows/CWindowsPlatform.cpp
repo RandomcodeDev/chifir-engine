@@ -176,7 +176,7 @@ const std::string& CWindowsPlatform::GetUserDataPath()
 	TerminateProcess(GetCurrentProcess(), HRESULT_FROM_WIN32(useLastError ? GetLastError() : ERROR_FATAL_APP_EXIT));
 }
 
-ISharedLibrary* CWindowsPlatform::LoadLibrary(const std::string& name, const std::vector<std::string>& paths)
+std::shared_ptr<ISharedLibrary> CWindowsPlatform::LoadLibrary(const std::string& name, const std::vector<std::string>& paths)
 {
 	std::string fullName = name + ".dll";
 
@@ -185,7 +185,7 @@ ISharedLibrary* CWindowsPlatform::LoadLibrary(const std::string& name, const std
 		HMODULE handle = LoadLibraryA((fullName).c_str());
 		if (handle)
 		{
-			return new CWindowsSharedLibrary(name, handle);
+			return std::make_unique<CWindowsSharedLibrary>(name, handle);
 		}
 	}
 	else
@@ -195,7 +195,7 @@ ISharedLibrary* CWindowsPlatform::LoadLibrary(const std::string& name, const std
 			HMODULE handle = LoadLibraryExA((searchPath, fullName).c_str(), nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
 			if (handle)
 			{
-				return new CWindowsSharedLibrary(name, handle);
+				return std::make_unique<CWindowsSharedLibrary>(name, handle);
 			}
 		}
 	}
@@ -221,6 +221,7 @@ bool CWindowsPlatform::CreateDirectory(const std::string& name)
 	return true;
 }
 
+// static so that most functions can be used whenever (mainly Quit)
 static CWindowsPlatform s_platform;
 FRAMEWORK_API IPlatform* GetPlatform()
 {

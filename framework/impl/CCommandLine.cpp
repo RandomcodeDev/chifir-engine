@@ -1,4 +1,6 @@
 #include "framework/CCommandLine.h"
+#include "framework/IPlatform.h"
+#include "framework/Util.h"
 
 CCommandLine::CCommandLine(int argc, char* argv[]) : m_name(argv[0])
 {
@@ -137,5 +139,17 @@ void CCommandLine::Parse(const std::vector<std::string>& args)
 			m_args[option] = args[i + 1];
 			i++;
 		}
+	}
+}
+
+const std::string& CCommandLine::GetArg(const std::string& name) const
+{
+	if (HasArg(name))
+	{
+		return m_args.at(name);
+	}
+	else
+	{
+		KR_QUIT("Call HasArg to check for arguments!");
 	}
 }

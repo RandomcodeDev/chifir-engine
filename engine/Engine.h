@@ -5,3 +5,7 @@
 #pragma once
 
 #include "framework/Framework.h"
+
+class IVideoSystem;
+
+extern IVideoSystem* g_videoSystem;

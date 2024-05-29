@@ -30,8 +30,9 @@ class IPlatform
 	[[noreturn]] virtual void Quit(
 		const std::string& message, bool useLastError = true, const std::string& file = "", const std::string& function = "", int line = 0) = 0;
 
-	/// @brief Load a shared library
-	virtual ISharedLibrary* LoadLibrary(const std::string& name, const std::vector<std::string>& paths = std::vector<std::string>()) = 0;
+	/// @brief Load a shared library. This should be reset before you call Shutdown.
+	virtual std::shared_ptr<ISharedLibrary> LoadLibrary(
+		const std::string& name, const std::vector<std::string>& paths = std::vector<std::string>()) = 0;
 
 	/// @brief Create a directory
 	virtual bool CreateDirectory(const std::string& path) = 0;
