@@ -45,6 +45,7 @@ if (WIN32 AND NOT DEFINED XBOX)
 endif()
 
 if (DEFINED GDK)
+	set_gdk_properties(Framework)
 	target_link_libraries(Framework PRIVATE XGameRuntime.lib)
 endif()
 

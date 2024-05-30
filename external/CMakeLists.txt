@@ -11,3 +11,5 @@ if (${USE_MIMALLOC})
 	add_subdirectory(mimalloc EXCLUDE_FROM_ALL)
 endif()
 
+add_subdirectory(DirectX-Headers)
+

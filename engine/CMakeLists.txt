@@ -17,3 +17,6 @@ target_compile_definitions(Engine PRIVATE KR_ENGINE)
 
 target_link_libraries(Engine PRIVATE Framework FrameworkMemoryOverride)
 
+if (DEFINED GDK)
+	set_gdk_properties(Engine)
+endif()

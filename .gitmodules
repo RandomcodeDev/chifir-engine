@@ -4,3 +4,9 @@
 [submodule "external/spdlog"]
 	path = external/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "external/rtm"]
+	path = external/rtm
+	url = https://github.com/nfrechette/rtm
+[submodule "external/DirectX-Headers"]
+	path = external/DirectX-Headers
+	url = https://github.com/Microsoft/DirectX-Headers

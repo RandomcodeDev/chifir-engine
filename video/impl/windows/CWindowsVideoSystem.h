@@ -1,4 +1,4 @@
-﻿/// @file IVideoSystem.h
+﻿/// @file CWindowsVideoSystem.h
 /// @brief This file defines the Windows implementation of the video system
 /// @copyright (c) 2024 Randomcode Developers. See LICENSE.
 

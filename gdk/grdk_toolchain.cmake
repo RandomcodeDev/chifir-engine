@@ -28,17 +28,8 @@ set(CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION "" CACHE STRING "" FORCE)
 # Sets platform defines
 set(CMAKE_CXX_FLAGS_INIT "$ENV{CFLAGS} ${CMAKE_CXX_FLAGS_INIT} -D_GAMING_DESKTOP -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP" CACHE STRING "" FORCE)
 
-# Add GDK props file
-file(GENERATE OUTPUT gdk_build.props INPUT ${CMAKE_CURRENT_LIST_DIR}/gdk_build.props)
-
-function(add_executable target_name)
-  _add_executable(${target_name} ${ARGN})
-  set_target_properties(${target_name} PROPERTIES VS_USER_PROPS gdk_build.props)
-endfunction()
-
-function(add_library target_name)
-  _add_library(${target_name} ${ARGN})
-  set_target_properties(${target_name} PROPERTIES VS_USER_PROPS gdk_build.props)
+function(set_gdk_properties target_name)
+  set_target_properties(${target_name} PROPERTIES VS_USER_PROPS ${CMAKE_CURRENT_LIST_DIR}/gdk_build.props)
 endfunction()
 
 # Find DXC compiler

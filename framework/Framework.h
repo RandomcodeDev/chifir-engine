@@ -4,7 +4,11 @@
 
 #pragma once
 
+// clang format fucks up the order of Windows headers, among others
+// clang-format: off
+
 #include <cctype>
+#include <chrono>
 #include <cstdint>
 #include <cstdio>
 #include <functional>
@@ -18,6 +22,7 @@
 #include <vector>
 #include <unordered_map>
 
+#ifdef KR_PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
@@ -33,8 +38,14 @@
 #ifdef KR_PLATFORM_GDK
 #include <XGameRuntimeInit.h>
 #endif
+#endif
 
 #include "fmt/fmt.h"
+#include "fmt/chrono.h"
+
+#include "rtm/fwd.h"
+
+// clang-format: on
 
 using u8 = uint8_t;
 using u16 = uint16_t;

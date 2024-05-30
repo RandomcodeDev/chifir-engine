@@ -1,5 +1,5 @@
-#include "framework/Framework.h"
 #include "framework/CCommandLine.h"
+#include "framework/Framework.h"
 #include "framework/IApplication.h"
 #include "framework/IPlatform.h"
 #include "framework/ISharedLibrary.h"
@@ -17,9 +17,9 @@ extern "C" int main(int argc, char* argv[])
 	CCommandLine cmdLine(argc, argv);
 #endif
 
-	GetPlatform()->Initialize();
+	SetupLogging();
 
-	KR_LOG_INFO("Running on {}", GetPlatform()->DescribeOs());
+	GetPlatform()->Initialize();
 
 	std::string appName = "Engine";
 	if (cmdLine.HasArg("app"))
@@ -47,7 +47,12 @@ extern "C" int main(int argc, char* argv[])
 		KR_QUIT("Failed to create application interface!");
 	}
 
-	KR_LOG_INFO("Loaded app {} ({}) by {}", app->GetName(), app->GetIdName(), app->GetOrganization());
+	std::string logDir = fmt::format("{}/{}/{}", GetPlatform()->GetUserDataPath(), app->GetOrganization(), app->GetName());
+	GetPlatform()->CreateDirectory(logDir);
+	std::string logPath = fmt::format("{}/{}_{:%Y-%m-%d_%H-%M-%S}.log", logDir, app->GetIdName(), std::chrono::system_clock::now());
+	AddLogFile(logPath);
+
+	KR_LOG_INFO("Loaded app {} ({}) by {} on {}", app->GetName(), app->GetIdName(), app->GetOrganization(), GetPlatform()->DescribeOs());
 
 	KR_LOG_INFO("Loading systems");
 	std::vector<SystemDependency> systemDeps = app->GetSystems();

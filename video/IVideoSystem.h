@@ -13,12 +13,12 @@ class IVideoSystem : public ISystem
 	/// @brief Create a place for rendering to go
 	virtual bool Initialize() = 0;
 
-#ifdef KR_ENABLE_OPENGL
+#ifdef KR_RENDER_OPENGL
 	/// @brief Create an OpenGL context
 	virtual bool InitializeGl() = 0;
 #endif
 
-#ifdef KR_ENABLE_VULKAN
+#ifdef KR_RENDER_VULKAN
 	/// @brief Create a Vulkan surface
 	virtual u64 CreateVulkanSurface(u64 instance, void* allocationCallbacks) = 0;
 #endif

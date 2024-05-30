@@ -18,3 +18,7 @@ target_sources(VideoSystem PRIVATE ${VIDEO_HEADERS} ${VIDEO_${CMAKE_SYSTEM_NAME}
 
 target_link_libraries(VideoSystem PRIVATE Framework FrameworkMemoryOverride)
 
+if (DEFINED GDK)
+	set_gdk_properties(VideoSystem)
+endif()
+

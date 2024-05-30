@@ -6,6 +6,8 @@
 
 #include "framework/Framework.h"
 
+class IRenderSystem;
 class IVideoSystem;
 
+extern IRenderSystem* g_renderSystem;
 extern IVideoSystem* g_videoSystem;

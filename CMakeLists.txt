@@ -15,6 +15,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	$<$<BOOL:${USE_MIMALLOC}>:${CMAKE_SOURCE_DIR}/external/mimalloc/include>
+	${CMAKE_SOURCE_DIR}/external/rtm/includes
 	${CMAKE_SOURCE_DIR}/external/spdlog/include
 	${CMAKE_SOURCE_DIR}/external/spdlog/include/spdlog
 )
@@ -63,6 +64,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR} CACHE STRING "" FORCE)
 add_subdirectory(external)
 add_subdirectory(framework)
 add_subdirectory(video)
+add_subdirectory(render)
 add_subdirectory(engine)
 add_subdirectory(launcher)
 

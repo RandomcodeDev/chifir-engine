@@ -26,4 +26,4 @@
 extern FRAMEWORK_API void SetupLogging();
 
 /// @brief Add a file
-extern FRAMEWORK_API void AddFile(const std::string& path, size_t maxSize = 1024 * 1024, size_t maxFiles = 5, bool rotateOnOpen = true);
+extern FRAMEWORK_API void AddLogFile(const std::string& path, size_t maxSize = 1024 * 1024, size_t maxFiles = 5, bool rotateOnOpen = true);
