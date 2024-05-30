@@ -35,4 +35,9 @@ class CEngineApplication : public IApplication
 	static constexpr const char* ORGANIZATION = "Randomcode Developers";
 	static constexpr const char* NAME = "False King";
 	static constexpr const char* ID_NAME = "false_king";
+
+	bool m_running;
+
+	/// @brief The engine's main loop
+	void Loop();
 };

@@ -25,10 +25,18 @@ void CEngineApplication::Run(const CCommandLine& cmdLine, const std::unordered_m
 		KR_QUIT("Failed to initialize video system!");
 	}
 
-	while (g_videoSystem->Update())
-	{
+	g_videoSystem->SetTitle(fmt::format("{} | " KR_PROCESSOR " " KR_CONFIGURATION " | {}", GetName(), GetPlatform()->DescribeOs()));
 
-	}
+	m_running = true;
+	Loop();
 
 	g_videoSystem->Shutdown();
+}
+
+void CEngineApplication::Loop()
+{
+	while (m_running)
+	{
+		m_running = g_videoSystem->Update();
+	}
 }

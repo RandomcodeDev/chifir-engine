@@ -1,4 +1,5 @@
-﻿#include "framework/Log.h"
+﻿#include "framework/IPlatform.h"
+#include "framework/Log.h"
 
 #include "CWindowsVideoSystem.h"
 
@@ -51,7 +52,10 @@ void CWindowsVideoSystem::Shutdown()
 void CWindowsVideoSystem::SetTitle(const std::string& title)
 {
 	m_title = title;
-	SetWindowTextA(m_window, m_title.c_str());
+	if (m_window)
+	{
+		SetWindowTextA(m_window, m_title.c_str());
+	}
 }
 
 bool CWindowsVideoSystem::RegisterWindowClass()
@@ -94,7 +98,7 @@ bool CWindowsVideoSystem::InitializeMainWindow()
 	m_extraWidth = m_width - clientArea.right;
 	m_extraHeight = m_height - clientArea.bottom;
 
-	m_title = "Красний Engine";
+	m_title = fmt::format("Красний Engine");
 
 	KR_LOG_DEBUG(
 		"Creating {}x{} (for internal size {}x{}) window titled {}", m_width, m_height, clientArea.right - clientArea.left,
@@ -103,8 +107,7 @@ bool CWindowsVideoSystem::InitializeMainWindow()
 	// center the window
 	u32 x = GetSystemMetrics(SM_CXSCREEN) / 2 - m_width / 2;
 	u32 y = GetSystemMetrics(SM_CYSCREEN) / 2 - m_height / 2;
-	m_window =
-		CreateWindowExA(0, WINDOW_CLASS, m_title.c_str(), WINDOW_STYLE, x, y, m_width, m_height, nullptr, nullptr, m_hinstance, this);
+	m_window = CreateWindowExA(0, WINDOW_CLASS, "", WINDOW_STYLE, x, y, m_width, m_height, nullptr, nullptr, m_hinstance, this);
 	if (!m_window)
 	{
 		KR_LOG_ERROR("Failed to create window: HRESULT 0x{:08x}", HRESULT_FROM_WIN32(GetLastError()));
