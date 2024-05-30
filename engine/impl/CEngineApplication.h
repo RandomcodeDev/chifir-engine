@@ -12,6 +12,9 @@
 class CEngineApplication : public IApplication
 {
   public:
+	CEngineApplication() = default;
+	~CEngineApplication() = default;
+
 	std::vector<SystemDependency> GetSystems() const;
 
 	void Run(const CCommandLine& cmdLine, const std::unordered_map<std::string, ISystem*>& systems);

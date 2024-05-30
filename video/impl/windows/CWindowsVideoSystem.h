@@ -10,6 +10,8 @@
 class CWindowsVideoSystem : public IVideoSystem
 {
   public:
+	CWindowsVideoSystem() = default;
+	~CWindowsVideoSystem() = default;
 	bool Initialize();
 	bool Update();
 	void Shutdown();

@@ -17,6 +17,8 @@
 class CDirectX12RenderSystem : public IRenderSystem
 {
   public:
+	CDirectX12RenderSystem() = default;
+	~CDirectX12RenderSystem() = default;
 	bool Initialize();
 	void WaitForGpu();
 	void Shutdown();

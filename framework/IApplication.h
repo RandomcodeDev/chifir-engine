@@ -13,6 +13,9 @@ struct SystemDependency;
 class IApplication
 {
   public:
+	/// @brief The destructor probably doesn't have to do much
+	virtual ~IApplication() = default;
+
 	/// @brief Organization of the game (e.g. "Randomcode Developers")
 	virtual const char* GetOrganization() const = 0;
 

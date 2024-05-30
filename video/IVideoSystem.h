@@ -10,6 +10,8 @@
 class IVideoSystem : public ISystem
 {
   public:
+	virtual ~IVideoSystem() = default;
+
 	/// @brief Create a place for rendering to go
 	virtual bool Initialize() = 0;
 

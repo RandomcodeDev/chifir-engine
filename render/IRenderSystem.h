@@ -10,6 +10,8 @@
 class IRenderSystem : public ISystem
 {
   public:
+	virtual ~IRenderSystem() = default;
+
 	/// @brief Initialize the render system
 	virtual bool Initialize() = 0;
 

@@ -9,12 +9,13 @@
 class ISharedLibrary
 {
   public:
+	virtual ~ISharedLibrary() = default;
 	virtual void* GetSymbol(const std::string& name) const = 0;
 
 	template <class Ret, class... Args>
 	std::function<Ret(Args...)> GetFunction(const std::string& name) const
 	{
-		return static_cast<Ret (*)(Args...)>(GetSymbol(name));
+		return reinterpret_cast<Ret (*)(Args...)>(GetSymbol(name));
 	}
 
 	virtual const std::string& GetName() const = 0;

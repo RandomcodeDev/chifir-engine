@@ -11,6 +11,8 @@ class ISharedLibrary;
 class IPlatform
 {
   public:
+	virtual ~IPlatform() = default;
+
 	/// @brief Set up desirable state for the platform
 	virtual void Initialize() = 0;
 

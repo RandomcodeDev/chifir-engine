@@ -55,7 +55,7 @@ const std::string& CWindowsPlatform::DescribeOs()
 
 	// All versions
 	HKEY currentVersionKey;
-	CHAR edition[32] = {};
+	CHAR rawEdition[32] = {};
 	CHAR product[32] = {};
 	DWORD size = 0;
 
@@ -69,11 +69,8 @@ const std::string& CWindowsPlatform::DescribeOs()
 	CHAR buildLabExtended[64] = {};
 
 	// Windows 8 and below
-	CHAR version[4] = {};
 	CHAR csdVersion[8] = {};
 	CHAR buildLab[64] = {};
-
-	PCSTR name = nullptr;
 
 	BOOL isWow64 = FALSE;
 #ifdef _M_IX86
@@ -82,8 +79,8 @@ const std::string& CWindowsPlatform::DescribeOs()
 
 	RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", 0, KEY_QUERY_VALUE, &currentVersionKey);
 
-	size = sizeof(edition);
-	RegQueryValueExA(currentVersionKey, "EditionID", nullptr, nullptr, (LPBYTE)edition, &size);
+	size = sizeof(rawEdition);
+	RegQueryValueExA(currentVersionKey, "EditionID", nullptr, nullptr, (LPBYTE)rawEdition, &size);
 
 	size = sizeof(product);
 	RegQueryValueExA(currentVersionKey, "ProductName", nullptr, nullptr, (LPBYTE)product, &size);
@@ -109,7 +106,7 @@ const std::string& CWindowsPlatform::DescribeOs()
 		size = sizeof(displayVersion);
 		RegQueryValueExA(currentVersionKey, "DisplayVersion", nullptr, nullptr, (LPBYTE)displayVersion, &size);
 
-		std::string edition(edition, std::min(strlen(edition), KR_ARRAYSIZE(edition)));
+		std::string edition(rawEdition, std::min(strlen(rawEdition), KR_ARRAYSIZE(rawEdition)));
 		desc = fmt::format(
 #ifdef KR_DEBUG
 			"{} {} {}.{}.{} {}{}",
@@ -132,7 +129,7 @@ const std::string& CWindowsPlatform::DescribeOs()
 		size = sizeof(buildLab);
 		RegQueryValueExA(currentVersionKey, "BuildLab", nullptr, nullptr, (LPBYTE)buildLab, &size);
 
-		desc = fmt::format("Windows {} {} {} (build lab {}{})", product, edition, csdVersion, buildLab, isWow64 ? ", WoW64" : "");
+		desc = fmt::format("Windows {} {} {} (build lab {}{})", product, rawEdition, csdVersion, buildLab, isWow64 ? ", WoW64" : "");
 	}
 	return desc;
 }
@@ -175,7 +172,7 @@ const std::string& CWindowsPlatform::GetUserDataPath()
 	std::string fullMessage = fmt::format("Fatal error in {} at {}:{}: {}", function, file, line, message);
 	KR_LOG_FATAL(fullMessage);
 	MessageBoxA(nullptr, fullMessage.c_str(), "FATAL ERROR", MB_ICONERROR | MB_ABORTRETRYIGNORE);
-	TerminateProcess(GetCurrentProcess(), HRESULT_FROM_WIN32(useLastError ? GetLastError() : ERROR_FATAL_APP_EXIT));
+	std::exit(HRESULT_FROM_WIN32(useLastError ? GetLastError() : ERROR_FATAL_APP_EXIT));
 }
 
 std::shared_ptr<ISharedLibrary> CWindowsPlatform::LoadLibrary(const std::string& name, const std::vector<std::string>& paths)
@@ -194,7 +191,7 @@ std::shared_ptr<ISharedLibrary> CWindowsPlatform::LoadLibrary(const std::string&
 	{
 		for (const auto& searchPath : paths)
 		{
-			HMODULE handle = LoadLibraryExA((searchPath, fullName).c_str(), nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
+			HMODULE handle = LoadLibraryExA(fmt::format("{}/{}", searchPath, fullName).c_str(), nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
 			if (handle)
 			{
 				return std::make_unique<CWindowsSharedLibrary>(name, handle);

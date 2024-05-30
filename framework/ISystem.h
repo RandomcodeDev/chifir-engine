@@ -11,6 +11,8 @@ class ISystem
   public:
 	// Constructor: register any variables
 
+	virtual ~ISystem() = default;
+
 	/// @brief Initialize the system
 	virtual bool Initialize() = 0;
 

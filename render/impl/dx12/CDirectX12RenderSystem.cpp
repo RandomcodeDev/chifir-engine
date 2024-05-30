@@ -6,7 +6,10 @@ bool CDirectX12RenderSystem::Initialize()
 {
 	KR_LOG_INFO("Initializing DirectX 12 render system");
 
-	if (!CreateFactory() || !FindAdapter() || !)
+	if (!CreateFactory() || !FindAdapter() || !CreateDevice())
+	{
+		return false;
+	}
 
 	KR_LOG_INFO("DirectX 12 render system initialized");
 	return true;
@@ -41,7 +44,6 @@ void CDirectX12RenderSystem::EnableDebug()
 {
 #ifdef KR_DEBUG
 #endif
-	return true;
 }
 
 bool CDirectX12RenderSystem::CreateFactory()
