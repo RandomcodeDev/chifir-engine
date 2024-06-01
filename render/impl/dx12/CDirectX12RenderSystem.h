@@ -46,6 +46,7 @@ class CDirectX12RenderSystem : public IRenderSystem
 #endif
 	IDXGIFactory6* m_factory;
 	IDXGIAdapter1* m_adapter;
+	DXGI_ADAPTER_DESC1 m_adapterDesc;
 	std::string m_adapterName;
 	ID3D12Device4* m_device;
 

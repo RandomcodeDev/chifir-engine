@@ -1,4 +1,5 @@
 #include "framework/Log.h"
+#include "framework/Util.h"
 
 #include "CDirectX12RenderSystem.h"
 
@@ -48,15 +49,41 @@ void CDirectX12RenderSystem::EnableDebug()
 
 bool CDirectX12RenderSystem::CreateFactory()
 {
+	HRESULT result = CreateDXGIFactory2(0, IID_PPV_ARGS(&m_factory));
+	if (!SUCCEEDED(result))
+	{
+		KR_LOG_ERROR("Failed to create DXGI factory: HRESULT 0x{:08x}!", result);
+		return false;
+	}
+
 	return true;
 }
 
 bool CDirectX12RenderSystem::FindAdapter()
 {
+	HRESULT result = m_factory->EnumAdapterByGpuPreference(0, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&m_adapter));
+	if (!SUCCEEDED(result))
+	{
+		KR_LOG_ERROR("Failed to get high performance adapter: HRESULT 0x{:08x}!", result);
+		return false;
+	}
+
+	m_adapter->GetDesc1(&m_adapterDesc);
+	char adapterName[128] = {};
+	wcstombs(adapterName, m_adapterDesc.Description, KR_ARRAYSIZE(adapterName));
+	m_adapterName = adapterName;
+
 	return true;
 }
 
 bool CDirectX12RenderSystem::CreateDevice()
 {
+	HRESULT result = D3D12CreateDevice(m_adapter, D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&m_device));
+	if (!SUCCEEDED(result))
+	{
+		KR_LOG_ERROR("Failed to create device: HRESULT 0x{:08x}!", result);
+		return false;
+	}
+
 	return true;
 }
