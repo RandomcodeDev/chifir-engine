@@ -26,7 +26,11 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
+#include <comdef.h>
 #include <shlobj.h>
+
+#include <wrl.h>
+using Microsoft::WRL::ComPtr;
 
 #undef LoadLibrary
 #undef CreateDirectory
@@ -44,6 +48,8 @@
 #include "fmt/chrono.h"
 
 #include "rtm/fwd.h"
+
+#include "spdlog/spdlog.h"
 
 // clang-format: on
 

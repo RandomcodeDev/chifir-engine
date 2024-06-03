@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 
 project(Красний VERSION 0.0.0 LANGUAGES C CXX)
 
+set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
@@ -14,6 +15,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 include_directories(
 	${CMAKE_SOURCE_DIR}
+	${CMAKE_SOURCE_DIR}/external/DirectX-Headers/include
 	$<$<BOOL:${USE_MIMALLOC}>:${CMAKE_SOURCE_DIR}/external/mimalloc/include>
 	${CMAKE_SOURCE_DIR}/external/rtm/includes
 	${CMAKE_SOURCE_DIR}/external/spdlog/include
@@ -60,6 +62,10 @@ set(OUTPUT_DIR ${CMAKE_SOURCE_DIR}/out/${CMAKE_SYSTEM_NAME}/${PROCESSOR}/$<CONFI
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR} CACHE STRING "" FORCE)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR} CACHE STRING "" FORCE)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR} CACHE STRING "" FORCE)
+
+if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+	add_compile_options(-Wno-reserved-identifier -Wno-unsafe-buffer-usage)
+endif()
 
 add_subdirectory(external)
 add_subdirectory(framework)

@@ -61,7 +61,6 @@ CCommandLine::CCommandLine(const std::string& cmdLine)
 
 	usize escapeCount = 0;
 	usize quoteCount = 0;
-	usize argCount = 0;
 	std::string arg;
 	while (source <= cmdLine.end())
 	{

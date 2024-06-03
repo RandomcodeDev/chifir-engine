@@ -31,7 +31,7 @@ void CWindowsPlatform::Initialize()
 	HRESULT result = XGameRuntimeInitialize();
 	if (!SUCCEEDED(result))
 	{
-		KR_QUIT("Failed to initialize game runtime: HRESULT 0x{:08x}", result);
+		KR_QUIT("Failed to initialize game runtime: {}", GetHresultString(result));
 	}
 #endif
 }
@@ -154,7 +154,7 @@ const std::string& CWindowsPlatform::GetUserDataPath()
 	HRESULT result = SHGetFolderPathA(nullptr, CSIDL_APPDATA | CSIDL_FLAG_CREATE, nullptr, SHGFP_TYPE_CURRENT, path);
 	if (!SUCCEEDED(result))
 	{
-		KR_LOG_WARN("Failed to get AppData path, using C:/Temp instead");
+		KR_LOG_WARN("Failed to get AppData path: {}", GetHresultString(result));
 		appData = "C:/Temp/";
 		return appData;
 	}

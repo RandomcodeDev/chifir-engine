@@ -7,8 +7,7 @@
 #include "Framework.h"
 
 /// @brief Get the size of an array
-template <class T, usize N>
-constexpr usize KR_ARRAYSIZE(T (&)[N])
+template <class T, usize N> constexpr usize KR_ARRAYSIZE(T (&)[N])
 {
 	return N;
 }
@@ -24,3 +23,11 @@ static inline void Replace(std::string& string, const std::string& oldStr, const
 		string.replace(offset, oldStr.length(), newStr);
 	}
 }
+
+#ifdef KR_PLATFORM_WINDOWS
+static inline std::string GetHresultString(HRESULT result)
+{
+	_com_error error(result);
+	return fmt::format("{} (HRESULT 0x{:08X})", error.ErrorMessage(), result);
+}
+#endif
