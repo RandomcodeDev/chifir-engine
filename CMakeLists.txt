@@ -17,6 +17,7 @@ include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}/external/DirectX-Headers/include
 	$<$<BOOL:${USE_MIMALLOC}>:${CMAKE_SOURCE_DIR}/external/mimalloc/include>
+	${CMAKE_SOURCE_DIR}/external/nvrhi/include
 	${CMAKE_SOURCE_DIR}/external/rtm/includes
 	${CMAKE_SOURCE_DIR}/external/spdlog/include
 	${CMAKE_SOURCE_DIR}/external/spdlog/include/spdlog

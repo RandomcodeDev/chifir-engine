@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.25)
 set(RENDER_HEADERS
 	IRenderSystem.h
 	impl/CNVRHIRenderSystem.h
+	impl/INVRHIDeviceManager.h
 )
 set(RENDER_SOURCES
 	impl/Interface.cpp
