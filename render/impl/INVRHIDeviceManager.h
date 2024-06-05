@@ -13,8 +13,6 @@ class INVRHIDeviceManager
   public:
 	virtual ~INVRHIDeviceManager() = default;
 
-	/// @brief Create a nvrhi::DeviceHandle
+	/// @brief Create a device
 	virtual nvrhi::DeviceHandle CreateDevice() = 0;
-
-	/// @brief
 };

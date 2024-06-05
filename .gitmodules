@@ -7,9 +7,6 @@
 [submodule "external/rtm"]
 	path = external/rtm
 	url = https://github.com/nfrechette/rtm
-[submodule "external/DirectX-Headers"]
-	path = external/DirectX-Headers
-	url = https://github.com/Microsoft/DirectX-Headers
 [submodule "external/nvrhi"]
 	path = external/nvrhi
 	url = https://github.com/NVIDIAGameWorks/nvrhi
