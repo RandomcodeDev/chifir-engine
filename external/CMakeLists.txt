@@ -9,8 +9,11 @@ if (${USE_MIMALLOC})
 	set(MI_BUILD_OBJECT FALSE CACHE BOOL "" FORCE)
 	set(MI_BUILD_TESTS FALSE CACHE BOOL "" FORCE)
 	add_subdirectory(mimalloc EXCLUDE_FROM_ALL)
+	set_target_properties(mimalloc-static PROPERTIES FOLDER External)
 endif()
 
 set(NVRHI_INSTALL OFF CACHE BOOL "" FORCE)
+set(NVRHI_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(NVRHI_BUILD_STATIC ON CACHE BOOL "" FORCE)
 add_subdirectory(nvrhi EXCLUDE_FROM_ALL)
-
+set_target_properties(nvrhi PROPERTIES FOLDER External)

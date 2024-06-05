@@ -7,7 +7,7 @@
 #include "Framework.h"
 
 /// @brief Get the size of an array
-template <class T, usize N> constexpr usize KR_ARRAYSIZE(T (&)[N])
+template <class T, usize N> constexpr usize KR_ARRAY_SIZE(T (&)[N])
 {
 	return N;
 }

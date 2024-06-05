@@ -25,7 +25,9 @@ if (DEFINED WIN32 AND ${CMAKE_SYSTEM_VERSION} VERSION_GREATER_EQUAL 7.0)
 	target_link_libraries(RenderSystem PRIVATE d3d12.lib dxgi.lib dxguid.lib)
 endif()
 
-target_link_libraries(RenderSystem PRIVATE Framework FrameworkMemoryOverride)
+target_link_libraries(RenderSystem PRIVATE Framework FrameworkMemoryOverride nvrhi)
+
+set_target_properties(RenderSystem PROPERTIES FOLDER Systems)
 
 if (DEFINED GDK)
 	set_gdk_properties(RenderSystem)

@@ -17,7 +17,7 @@
 extern FRAMEWORK_API void SetupLogging();
 
 /// @brief Get the logger
-FRAMEWORK_API std::shared_ptr<spdlog::logger> GetLogger();
+extern FRAMEWORK_API std::shared_ptr<spdlog::logger> GetLogger();
 
 /// @brief Add a file
 extern FRAMEWORK_API void AddLogFile(const std::string& path, size_t maxSize = 1024 * 1024, size_t maxFiles = 5, bool rotateOnOpen = true);

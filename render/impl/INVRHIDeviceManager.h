@@ -11,8 +11,21 @@
 class INVRHIDeviceManager
 {
   public:
+	/// @brief Destroy any objects
 	virtual ~INVRHIDeviceManager() = default;
 
 	/// @brief Create a device
 	virtual nvrhi::DeviceHandle CreateDevice() = 0;
+
+	/// @brief Set the GPU index
+	virtual bool SetGpu(size_t index = 0) = 0;
+
+	/// @brief Get the name of the GPU
+	virtual const std::string& GetGpuName() = 0;
+
+	/// @brief Get the index of the GPU
+	virtual size_t GetGpuIndex() = 0;
+
+	/// @brief Get the graphics API
+	virtual nvrhi::GraphicsAPI GetApi() = 0;
 };

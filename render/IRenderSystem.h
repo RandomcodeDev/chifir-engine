@@ -12,7 +12,7 @@ class IRenderSystem : public ISystem
   public:
 	virtual ~IRenderSystem() = default;
 
-	/// @brief Initialize the render system
+	/// @brief Initialize the render system (create objects like VkInstance, ID3D12Device, etc)
 	virtual bool Initialize() = 0;
 
 	/// @brief Wait for the GPU to finish things (must be called before Shutdown depending on the API)

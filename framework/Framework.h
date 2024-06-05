@@ -46,9 +46,11 @@ using Microsoft::WRL::ComPtr;
 
 #include "fmt/fmt.h"
 #include "fmt/chrono.h"
+#include "fmt/xchar.h"
 
 #include "rtm/fwd.h"
 
+#define SPDLOG_WCHAR_TO_UTF8_SUPPORT
 #include "spdlog/spdlog.h"
 
 // clang-format: on

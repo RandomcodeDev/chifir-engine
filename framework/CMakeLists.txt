@@ -36,6 +36,8 @@ target_compile_definitions(Framework PRIVATE KR_FRAMEWORK)
 add_library(FrameworkMemoryOverride OBJECT)
 target_sources(FrameworkMemoryOverride PRIVATE MemoryOverride.cpp)
 
+set_target_properties(Framework FrameworkMemoryOverride PROPERTIES FOLDER Framework)
+
 if (${USE_MIMALLOC})
 	target_link_libraries(Framework PRIVATE mimalloc-static)
 endif()

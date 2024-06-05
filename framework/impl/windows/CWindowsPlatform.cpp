@@ -106,7 +106,7 @@ const std::string& CWindowsPlatform::DescribeOs()
 		size = sizeof(displayVersion);
 		RegQueryValueExA(currentVersionKey, "DisplayVersion", nullptr, nullptr, (LPBYTE)displayVersion, &size);
 
-		std::string edition(rawEdition, std::min(strlen(rawEdition), KR_ARRAYSIZE(rawEdition)));
+		std::string edition(rawEdition, std::min(strlen(rawEdition), KR_ARRAY_SIZE(rawEdition)));
 		desc = fmt::format(
 #ifdef KR_DEBUG
 			"{} {} {}.{}.{} {}{}",
@@ -114,7 +114,7 @@ const std::string& CWindowsPlatform::DescribeOs()
 			"{} {} {}.{}.{}.{} {}{}",
 #endif
 			edition == "SystemOS" ? "Xbox System Software" : "Windows",
-			(strncmp(installationType, "Client", KR_ARRAYSIZE(installationType)) == 0) ? "Desktop" : installationType, majorVersion, minorVersion,
+			(strncmp(installationType, "Client", KR_ARRAY_SIZE(installationType)) == 0) ? "Desktop" : installationType, majorVersion, minorVersion,
 #ifdef KR_DEBUG
 			buildLabExtended, edition, isWow64 ? " (WoW64)" : ""
 #else
