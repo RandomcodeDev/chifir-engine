@@ -18,10 +18,8 @@ set(RENDER_DX12_SOURCES
 
 add_library(RenderSystem SHARED)
 target_sources(RenderSystem PRIVATE ${RENDER_HEADERS} ${RENDER_SOURCES})
-if (DEFINED WIN32 AND ${CMAKE_SYSTEM_VERSION} VERSION_GREATER_EQUAL 7.0)
-	set(DX12 TRUE)
+if (DEFINED DX12)
 	target_sources(RenderSystem PRIVATE ${RENDER_DX12_HEADERS} ${RENDER_DX12_SOURCES})
-	target_compile_definitions(RenderSystem PRIVATE KR_DX12=1)
 	target_link_libraries(RenderSystem PRIVATE d3d12.lib dxgi.lib dxguid.lib)
 endif()
 

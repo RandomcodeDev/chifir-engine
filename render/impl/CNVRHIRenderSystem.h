@@ -14,5 +14,31 @@
 
 class CNVRHIRenderSystem : public IRenderSystem
 {
+  public:
+	CNVRHIRenderSystem();
+	~CNVRHIRenderSystem();
 
+	bool Initialize();
+	void WaitForGpu();
+	void Shutdown();
+
+	void BeginFrame();
+	void EndFrame();
+
+	void ClearColour(rtm::vector4d colour);
+
+	const std::string& GetName() const
+	{
+		return m_apiName;
+	}
+
+	const std::string& GetGpuName() const
+	{
+		return m_deviceMgr->GetGpuName();
+	}
+
+  private:
+	std::unique_ptr<INVRHIDeviceManager> m_deviceMgr;
+	nvrhi::DeviceHandle m_device;
+	std::string m_apiName;
 };

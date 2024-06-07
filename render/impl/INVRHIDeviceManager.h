@@ -25,7 +25,4 @@ class INVRHIDeviceManager
 
 	/// @brief Get the index of the GPU
 	virtual size_t GetGpuIndex() = 0;
-
-	/// @brief Get the graphics API
-	virtual nvrhi::GraphicsAPI GetApi() = 0;
 };

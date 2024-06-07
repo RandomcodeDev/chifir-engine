@@ -1,6 +1,6 @@
 #include "CDX12NVRHIDeviceManager.h"
 
-CDX12NVRHIDeviceManager::CDX12NVRHIDeviceManager()
+CDX12NVRHIDeviceManager::CDX12NVRHIDeviceManager() : m_adapterDesc{}, m_adapterIndex(0)
 {
 
 }
@@ -12,6 +12,11 @@ CDX12NVRHIDeviceManager::~CDX12NVRHIDeviceManager()
 
 nvrhi::DeviceHandle CDX12NVRHIDeviceManager::CreateDevice()
 {
+	if (!CreateFactory() || !GetAdapters() || !CreateD3dDevice() || !CreateCommandQueues())
+	{
+		return nullptr;
+	}
+
 	nvrhi::d3d12::DeviceDesc desc = {};
 	desc.pDevice = m_device.Get();
 	desc.pGraphicsCommandQueue = m_graphicsCmdQueue.Get();
@@ -119,4 +124,10 @@ bool CDX12NVRHIDeviceManager::CreateCommandQueues()
 		KR_LOG_ERROR("Failed to create graphics command queue: {}", GetHresultString(result));
 		return false;
 	}
+
+	return true;
+}
+
+void CDX12NVRHIDeviceManager::Cleanup()
+{
 }

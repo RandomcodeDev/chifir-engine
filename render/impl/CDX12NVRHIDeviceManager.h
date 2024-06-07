@@ -35,11 +35,6 @@ class CDX12NVRHIDeviceManager : public INVRHIDeviceManager
 		return m_adapterIndex;
 	}
 
-	nvrhi::GraphicsAPI GetApi()
-	{
-		return nvrhi::GraphicsAPI::D3D12;
-	}
-
   private:
 	ComPtr<IDXGIFactory7> m_factory;
 	std::vector<ComPtr<IDXGIAdapter4>> m_adapters;

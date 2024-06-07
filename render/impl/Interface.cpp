@@ -6,8 +6,7 @@
 
 extern "C" KR_EXPORT ISystem* CreateInterface()
 {
-	KR_QUIT("No render system implementation!");
-	return nullptr;
+	return new CNVRHIRenderSystem();
 }
 
 extern "C" KR_EXPORT u32 GetSystemVersion()

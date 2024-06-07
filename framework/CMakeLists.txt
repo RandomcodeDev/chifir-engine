@@ -39,7 +39,7 @@ target_sources(FrameworkMemoryOverride PRIVATE MemoryOverride.cpp)
 set_target_properties(Framework FrameworkMemoryOverride PROPERTIES FOLDER Framework)
 
 if (${USE_MIMALLOC})
-	target_link_libraries(Framework PRIVATE mimalloc-static)
+	target_link_libraries(Framework PRIVATE mimalloc)
 endif()
 
 if (WIN32 AND NOT DEFINED XBOX)
