@@ -27,7 +27,7 @@ void CEngineApplication::Run(const CCommandLine& cmdLine, const std::unordered_m
 		KR_QUIT("Failed to initialize video system!");
 	}
 
-	if (!g_renderSystem->Initialize())
+	if (!g_renderSystem->Initialize(g_videoSystem))
 	{
 		KR_QUIT("Failed to initialize render system!");
 	}

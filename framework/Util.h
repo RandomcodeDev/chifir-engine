@@ -31,3 +31,31 @@ static inline std::string GetHresultString(HRESULT result)
 	return fmt::format("{} (HRESULT 0x{:08X})", error.ErrorMessage(), result);
 }
 #endif
+
+static inline std::string ToLower(const std::string& str)
+{
+	std::string lower;
+	std::transform(str.begin(), str.end(), lower.begin(), [](u8 c) { return std::tolower(c); });
+	return lower;
+}
+
+static inline std::string ToUpper(const std::string& str)
+{
+	std::string upper;
+	std::transform(str.begin(), str.end(), upper.begin(), [](u8 c) -> u8 { return (u8)std::toupper(c); });
+	return upper;
+}
+
+// TODO: make less bad if not only used for ConfigVars
+static inline bool ParseBool(const std::string& str)
+{
+	std::string lower = ToLower(str);
+	if (lower == "true" || lower == "yes" || lower == "on" || std::stoi(lower) != 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}

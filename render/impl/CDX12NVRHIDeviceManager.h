@@ -18,10 +18,8 @@
 class CDX12NVRHIDeviceManager : public INVRHIDeviceManager
 {
   public:
-	CDX12NVRHIDeviceManager();
-	~CDX12NVRHIDeviceManager();
-
 	nvrhi::DeviceHandle CreateDevice();
+	bool CreateSwapChain(IVideoSystem* videoSystem);
 
 	bool SetGpu(size_t index = 0);
 
@@ -36,6 +34,8 @@ class CDX12NVRHIDeviceManager : public INVRHIDeviceManager
 	}
 
   private:
+	nvrhi::d3d12::DeviceHandle m_rhiDevice;
+
 	ComPtr<IDXGIFactory7> m_factory;
 	std::vector<ComPtr<IDXGIAdapter4>> m_adapters;
 	size_t m_adapterIndex;
@@ -45,10 +45,13 @@ class CDX12NVRHIDeviceManager : public INVRHIDeviceManager
 	ComPtr<ID3D12Device7> m_device;
 	ComPtr<ID3D12CommandQueue> m_graphicsCmdQueue;
 	ComPtr<ID3D12CommandQueue> m_transferCmdQueue;
+	ComPtr<IDXGISwapChain4> m_swapChain;
+	DXGI_SWAP_CHAIN_DESC1 m_swapChainDesc;
+	ComPtr<ID3D12Fence> m_fence;
+	std::vector<HANDLE> m_fenceEvents;
 
 	bool CreateFactory();
 	bool GetAdapters();
 	bool CreateD3dDevice();
 	bool CreateCommandQueues();
-	void Cleanup();
 };

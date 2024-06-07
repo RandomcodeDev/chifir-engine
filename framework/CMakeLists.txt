@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 
 set(FRAMEWORK_HEADERS
 	CCommandLine.h
+	CConfigVar.h
 	CThreadPool.h
 	Framework.h
 	IApplication.h
@@ -18,6 +19,7 @@ set(FRAMEWORK_Windows_HEADERS
 )
 set(FRAMEWORK_SOURCES
 	impl/CCommandLine.cpp
+	impl/CConfigVar.cpp
 	impl/CThreadPool.cpp
 	impl/Log.cpp
 	impl/Memory.cpp

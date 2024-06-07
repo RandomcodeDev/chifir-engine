@@ -10,15 +10,14 @@
 
 #include "render/IRenderSystem.h"
 
+#include "video/IVideoSystem.h"
+
 #include "INVRHIDeviceManager.h"
 
 class CNVRHIRenderSystem : public IRenderSystem
 {
   public:
-	CNVRHIRenderSystem();
-	~CNVRHIRenderSystem();
-
-	bool Initialize();
+	bool Initialize(IVideoSystem* videoSystem);
 	void WaitForGpu();
 	void Shutdown();
 
@@ -38,7 +37,10 @@ class CNVRHIRenderSystem : public IRenderSystem
 	}
 
   private:
+	IVideoSystem* m_videoSystem;
 	std::unique_ptr<INVRHIDeviceManager> m_deviceMgr;
 	nvrhi::DeviceHandle m_device;
 	std::string m_apiName;
+
+	bool CreateCommandLists();
 };

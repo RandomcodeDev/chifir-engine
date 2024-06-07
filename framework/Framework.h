@@ -16,6 +16,7 @@
 #include <memory>
 
 // TODO: implement these myself some day (it can't be that hard, I just don't want to yet)
+#include <algorithm>
 #include <map>
 #include <queue>
 #include <string>

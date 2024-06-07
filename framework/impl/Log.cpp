@@ -16,6 +16,8 @@ FRAMEWORK_API void SetupLogging()
 #else
 	GetLogger()->set_level(spdlog::level::info);
 #endif
+
+	GetLogger()->flush_on(spdlog::level::debug);
 }
 
 FRAMEWORK_API std::shared_ptr<spdlog::logger> GetLogger()

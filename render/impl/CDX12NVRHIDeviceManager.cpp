@@ -1,6 +1,6 @@
 #include "CDX12NVRHIDeviceManager.h"
 
-CDX12NVRHIDeviceManager::CDX12NVRHIDeviceManager() : m_adapterDesc{}, m_adapterIndex(0)
+CDX12NVRHIDeviceManager::CDX12NVRHIDeviceManager()
 {
 
 }
@@ -126,8 +126,4 @@ bool CDX12NVRHIDeviceManager::CreateCommandQueues()
 	}
 
 	return true;
-}
-
-void CDX12NVRHIDeviceManager::Cleanup()
-{
 }

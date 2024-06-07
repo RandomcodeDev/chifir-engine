@@ -1,4 +1,4 @@
-﻿/// @file CWindowsVideoSystem.h
+/// @file CWindowsVideoSystem.h
 /// @brief This file defines the Windows implementation of the video system
 /// @copyright (c) 2024 Randomcode Developers. See LICENSE.
 
@@ -10,8 +10,6 @@
 class CWindowsVideoSystem : public IVideoSystem
 {
   public:
-	CWindowsVideoSystem() = default;
-	~CWindowsVideoSystem() = default;
 	bool Initialize();
 	bool Update();
 	void Shutdown();

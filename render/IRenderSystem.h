@@ -7,13 +7,15 @@
 #include "framework/Framework.h"
 #include "framework/ISystem.h"
 
+class IVideoSystem;
+
 class IRenderSystem : public ISystem
 {
   public:
 	virtual ~IRenderSystem() = default;
 
-	/// @brief Initialize the render system (create objects like VkInstance, ID3D12Device, etc)
-	virtual bool Initialize() = 0;
+	/// @brief Initialize the render system
+	virtual bool Initialize(IVideoSystem* videoSystem) = 0;
 
 	/// @brief Wait for the GPU to finish things (must be called before Shutdown depending on the API)
 	virtual void WaitForGpu() = 0;
@@ -37,4 +39,5 @@ class IRenderSystem : public ISystem
 	virtual const std::string& GetGpuName() const = 0;
 
 	static constexpr u32 VERSION = 1;
+	static constexpr u32 FRAMES_IN_FLIGHT = 3; // TODO: make this a ConfigVar?
 };
