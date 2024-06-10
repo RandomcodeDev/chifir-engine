@@ -27,11 +27,11 @@ void CWindowsPlatform::Initialize()
 #endif
 
 #ifdef KR_PLATFORM_GDK
-	KR_LOG_INFO("Initializing game runtime");
+	KR_LOG_INFO("Initializing Xbox gaming runtime");
 	HRESULT result = XGameRuntimeInitialize();
 	if (!SUCCEEDED(result))
 	{
-		KR_QUIT("Failed to initialize game runtime: {}", GetHresultString(result));
+		KR_QUIT("Failed to initialize gaming runtime: {}", GetHresultString(result));
 	}
 #endif
 }

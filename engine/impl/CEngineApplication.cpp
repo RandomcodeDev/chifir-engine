@@ -30,8 +30,13 @@ void CEngineApplication::Run(const CCommandLine& cmdLine, const std::unordered_m
 		KR_QUIT("Failed to initialize render system!");
 	}
 
+#ifdef KR_VS_PLATFORM
+	std::string platform = KR_VS_PLATFORM;
+#else
+	std::string platform = KR_PROCESSOR;
+#endif
 	g_videoSystem->SetTitle(fmt::format(
-		"{} | " KR_PROCESSOR " " KR_CONFIGURATION " | {} | {} renderer using {}", GetName(), GetPlatform()->DescribeOs(), g_renderSystem->GetName(),
+		"{} | {} " KR_CONFIGURATION " | {} | {} renderer using {}", GetName(), platform, GetPlatform()->DescribeOs(), g_renderSystem->GetName(),
 		g_renderSystem->GetGpuName()));
 
 	m_running = true;

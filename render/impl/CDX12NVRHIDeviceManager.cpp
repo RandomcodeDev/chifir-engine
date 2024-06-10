@@ -16,7 +16,8 @@ nvrhi::DeviceHandle CDX12NVRHIDeviceManager::CreateDevice()
 	desc.pDevice = m_device.Get();
 	desc.pGraphicsCommandQueue = m_graphicsCmdQueue.Get();
 
-	return nvrhi::d3d12::createDevice(desc);
+	m_rhiDevice = nvrhi::d3d12::createDevice(desc);
+	return m_rhiDevice;
 }
 
 bool CDX12NVRHIDeviceManager::CreateSwapChain(IVideoSystem* videoSystem)

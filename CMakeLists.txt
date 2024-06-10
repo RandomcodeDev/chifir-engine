@@ -12,6 +12,7 @@ if (DEFINED NX OR DEFINED XENON)
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY MSVC_RUNTIME_LIBRARY MultiThreaded$<$<CONFIG:Debug>:Debug>DLL)
 
 include_directories(
 	${CMAKE_SOURCE_DIR}
@@ -36,6 +37,10 @@ endif()
 
 if (NOT DEFINED APPLE)
 	set(VULKAN TRUE)
+endif()
+
+if (DEFINED CMAKE_VS_PLATFORM_NAME)
+	add_compile_definitions(KR_VS_PLATFORM="${CMAKE_VS_PLATFORM_NAME}")
 endif()
 
 add_compile_definitions(
