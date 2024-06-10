@@ -4,10 +4,9 @@
 
 #pragma once
 
+#include "engine/Engine.h"
 #include "framework/Framework.h"
 #include "framework/IApplication.h"
-
-#include "engine/Engine.h"
 
 class CEngineApplication : public IApplication
 {

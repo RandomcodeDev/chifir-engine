@@ -1,7 +1,6 @@
-﻿#include "framework/IPlatform.h"
-#include "framework/Log.h"
-
 #include "CWindowsVideoSystem.h"
+#include "framework/IPlatform.h"
+#include "framework/Log.h"
 
 #ifdef _MSC_VER
 #pragma comment(                                                                                                                                     \
@@ -29,6 +28,8 @@ bool CWindowsVideoSystem::Initialize()
 
 bool CWindowsVideoSystem::Update()
 {
+	m_resized = false;
+
 	MSG msg = {};
 	while (PeekMessageA(&msg, m_window, 0, 0, PM_REMOVE))
 	{

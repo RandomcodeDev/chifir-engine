@@ -28,7 +28,8 @@ static inline void Replace(std::string& string, const std::string& oldStr, const
 static inline std::string GetHresultString(HRESULT result)
 {
 	_com_error error(result);
-	return fmt::format("{} (HRESULT 0x{:08X})", error.ErrorMessage(), result);
+	// Make the HRESULT unsigned so fmt doesn't get confused and put a negative
+	return fmt::format("{} (HRESULT 0x{:08X})", error.ErrorMessage(), (u32)result);
 }
 #endif
 

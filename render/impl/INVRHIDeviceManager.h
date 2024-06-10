@@ -19,8 +19,17 @@ class INVRHIDeviceManager
 	/// @brief Create a device
 	virtual nvrhi::DeviceHandle CreateDevice() = 0;
 
-	/// @brief Create a swap chain
+	/// @brief Create the swap chain
 	virtual bool CreateSwapChain(IVideoSystem* videoSystem) = 0;
+
+	/// @brief Destroy the swap chain
+	virtual void DestroySwapChain() = 0;
+
+	/// @brief Begin a frame
+	virtual void BeginFrame(IVideoSystem* videoSystem) = 0;
+
+	/// @brief End the frame and present it
+	virtual void Present() = 0;
 
 	/// @brief Set the GPU index
 	virtual bool SetGpu(size_t index = 0) = 0;

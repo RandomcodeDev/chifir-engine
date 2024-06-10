@@ -14,7 +14,6 @@ bool CNVRHIRenderSystem::Initialize(IVideoSystem* videoSystem)
 	return false;
 #endif
 
-	KR_LOG_DEBUG("Creating device");
 	m_device = m_deviceMgr->CreateDevice();
 	if (!m_device)
 	{
@@ -38,7 +37,6 @@ bool CNVRHIRenderSystem::Initialize(IVideoSystem* videoSystem)
 		break;
 	}
 
-	KR_LOG_DEBUG("Creating swap chain");
 	if (!m_deviceMgr->CreateSwapChain(m_videoSystem))
 	{
 		return false;
@@ -68,12 +66,15 @@ void CNVRHIRenderSystem::Shutdown()
 
 void CNVRHIRenderSystem::BeginFrame()
 {
+	m_deviceMgr->BeginFrame(m_videoSystem);
 }
 
 void CNVRHIRenderSystem::EndFrame()
 {
 	WaitForGpu();
 	m_device->runGarbageCollection();
+
+	m_deviceMgr->Present();
 }
 
 void CNVRHIRenderSystem::ClearColour(rtm::vector4d colour)

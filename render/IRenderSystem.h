@@ -40,4 +40,10 @@ class IRenderSystem : public ISystem
 
 	static constexpr u32 VERSION = 1;
 	static constexpr u32 FRAMES_IN_FLIGHT = 3; // TODO: make this a ConfigVar?
+
+  private:
+	bool Initialize()
+	{
+		return false;
+	}
 };

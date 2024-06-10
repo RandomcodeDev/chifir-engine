@@ -4,15 +4,12 @@
 
 #pragma once
 
+#include "INVRHIDeviceManager.h"
 #include "framework/Framework.h"
 #include "framework/Log.h"
 #include "framework/Util.h"
-
 #include "render/IRenderSystem.h"
-
 #include "video/IVideoSystem.h"
-
-#include "INVRHIDeviceManager.h"
 
 class CNVRHIRenderSystem : public IRenderSystem
 {

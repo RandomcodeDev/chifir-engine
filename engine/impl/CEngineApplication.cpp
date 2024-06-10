@@ -1,11 +1,9 @@
+#include "CEngineApplication.h"
 #include "framework/IPlatform.h"
 #include "framework/ISystem.h"
 #include "framework/Util.h"
-
 #include "render/IRenderSystem.h"
 #include "video/IVideoSystem.h"
-
-#include "CEngineApplication.h"
 
 std::vector<SystemDependency> CEngineApplication::GetSystems() const
 {

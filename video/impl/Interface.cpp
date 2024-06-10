@@ -1,5 +1,4 @@
 #include "framework/Util.h"
-
 #include "video/IVideoSystem.h"
 #ifdef KR_PLATFORM_WINDOWS
 #include "video/impl/windows/CWindowsVideoSystem.h"
