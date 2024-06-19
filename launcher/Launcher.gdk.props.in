@@ -1,8 +1,0 @@
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<ImportGroup Label="PropertySheets">
-		<Import Project="@CMAKE_SOURCE_DIR@\gdk\gdk_build.props" Label="LocalAppDataPlatform" />
-	</ImportGroup>
-	<PropertyGroup>
-		<CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
-	</PropertyGroup>
-</Project>

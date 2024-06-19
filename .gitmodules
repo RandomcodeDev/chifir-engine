@@ -1,12 +1,6 @@
 [submodule "external/mimalloc"]
 	path = external/mimalloc
 	url = https://github.com/microsoft/mimalloc
-[submodule "external/spdlog"]
-	path = external/spdlog
-	url = https://github.com/gabime/spdlog
 [submodule "external/rtm"]
 	path = external/rtm
 	url = https://github.com/nfrechette/rtm
-[submodule "external/nvrhi"]
-	path = external/nvrhi
-	url = https://github.com/NVIDIAGameWorks/nvrhi
