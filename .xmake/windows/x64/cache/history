@@ -1,0 +1,27 @@
+{
+    cmdlines = {
+        [[xmake lua C:\Users\MobSlicer152\xmake\modules\private\utils\statistics.lua]],
+        "xmake build",
+        "xmake build",
+        "xmake build",
+        "xmake build",
+        "xmake build",
+        "xmake build",
+        "xmake build",
+        "xmake build",
+        "xmake build",
+        "xmake build",
+        "xmake -vv",
+        "xmake -vv",
+        "xmake -vv",
+        "xmake -vv",
+        "xmake -vv",
+        "xmake -v",
+        "xmake f -vv",
+        "xmake f -vv",
+        "xmake f -vv",
+        "xmake f -p gdk -a x64 --toolchain=msvc",
+        "xmake build",
+        [[xmake lua C:\Users\MobSlicer152\xmake\actions\build\cleaner.lua]]
+    }
+}

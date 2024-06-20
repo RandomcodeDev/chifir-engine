@@ -1,4 +1,8 @@
-add_rules("mode.debug", "mode.release", "plugin.vsxmake.autoupdate")
+add_rules(
+	"mode.debug",
+	"mode.release",
+	"plugin.vsxmake.autoupdate"
+)
 
 set_warnings("everything")
 
@@ -37,9 +41,26 @@ elseif is_mode("release") then
 	add_defines("KR_RELEASE")
 end
 
-target("Platform")
-	
+includes("base")
+includes("math")
+includes("platform")
+includes("utility")
+includes("texture")
+includes("mesh")
+includes("pack")
+includes("launcher")
 
-	set_group("Support")
-target_end()
+local tools = false
+option("tools")
+	set_default(false)
+	after_check(function (option)
+		tools = option:get()
+	end)
+option_end()
+
+if tools then
+	includes("tools")
+else
+	includes("engine")
+end
 

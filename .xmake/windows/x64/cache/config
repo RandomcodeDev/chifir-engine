@@ -1,0 +1,29 @@
+{
+    mtimes = {
+        ["math\\xmake.lua"] = 1718893787,
+        ["animationsystem\\xmake.lua"] = 1718893787,
+        ["utility\\xmake.lua"] = 1718893787,
+        ["uisystem\\xmake.lua"] = 1718893787,
+        ["launcher\\xmake.lua"] = 1718893787,
+        ["game\\shared\\xmake.lua"] = 1718893787,
+        ["game\\server\\xmake.lua"] = 1718893787,
+        ["physicssystem\\xmake.lua"] = 1718893787,
+        ["texture\\xmake.lua"] = 1718893836,
+        ["audiosystem\\xmake.lua"] = 1718893787,
+        ["xmake.lua"] = 1718894789,
+        ["base\\xmake.lua"] = 1718893787,
+        ["platform\\xmake.lua"] = 1718893787,
+        ["engine\\xmake.lua"] = 1718894796,
+        ["game\\client\\xmake.lua"] = 1718893787,
+        ["rendersystem\\xmake.lua"] = 1718893787,
+        ["mesh\\xmake.lua"] = 1718893787,
+        ["pack\\xmake.lua"] = 1718893787,
+        ["inputsystem\\xmake.lua"] = 1718893787
+    },
+    options = {
+        plat = "gdk",
+        toolchain = "msvc",
+        arch = "x64"
+    },
+    recheck = false
+}
