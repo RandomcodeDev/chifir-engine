@@ -4,6 +4,5 @@
 /obj
 /projects*
 /build
-
-*.exe
-*.dll
+/.xmake
+/.vs
