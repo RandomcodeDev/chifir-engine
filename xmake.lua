@@ -41,6 +41,19 @@ elseif is_mode("release") then
 	add_defines("KR_RELEASE")
 end
 
+function is_toolchain(v)
+	return get_config("toolchain") == v
+end
+
+add_repositories("local-repo external")
+add_requires("mimalloc_local")
+add_requires("phnt_local")
+add_requires("rtm_local")
+
+add_includedirs(
+	"public"
+)
+
 includes("base")
 includes("math")
 includes("platform")

@@ -1,8 +1,9 @@
 *.sln
 *.*proj
-/out
-/obj
-/projects*
-/build
-/.xmake
-/.vs
+out/
+obj/
+projects*/
+build/
+.xmake/
+.vs/
+vsxmake*/
