@@ -11,7 +11,7 @@ set_policy("check.auto_ignore_flags", false)
 
 set_warnings("everything")
 
-set_languages("gnu11", "cxx03")
+set_languages("gnu89", "cxx03")
 
 add_defines("_CRT_SECURE_NO_WARNINGS")
 add_defines("_POSIX_C_SOURCE=200809")

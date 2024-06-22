@@ -1,1 +1,2 @@
-__declspec(dllexport) int dummy; // until I can actually be bothered to implement anything in this library
+#include "loader.h"
+#include "platform/platform.h"

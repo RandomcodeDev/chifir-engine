@@ -2,7 +2,7 @@ target("Platform")
 	set_kind("shared")
 
 	add_headerfiles("../public/platform/*.h", "*.h")
-	add_files("*_common.cpp")
+	--add_files("*_common.cpp")
 	if is_plat("gdk", "gdkx", "xbox360", "windows") then
 		add_files("../public/dllmain.cpp", "*_win32.cpp")
 	end

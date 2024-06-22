@@ -8,3 +8,17 @@
 #include "phnt_windows.h"
 #include "phnt.h"
 #endif
+
+#include "base/dll.h"
+
+#ifdef IN_PLATFORM
+#define DLLAPI DLLEXPORT
+#else
+#define PLATAPI DLLIMPORT
+#endif
+
+// Initialize anything necessary to use platform functions. Terminates the process on failure.
+extern PLATAPI void Plat_Init();
+
+// Shut down platform
+extern PLATAPI void Plat_Shutdown();
