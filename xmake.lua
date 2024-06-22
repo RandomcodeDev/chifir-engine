@@ -1,8 +1,13 @@
+includes("scripts/util.lua")
+includes("scripts/xbox360.lua")
+
 add_rules(
 	"mode.debug",
 	"mode.release",
 	"plugin.vsxmake.autoupdate"
 )
+
+set_policy("check.auto_ignore_flags", false)
 
 set_warnings("everything")
 
@@ -10,6 +15,14 @@ set_languages("gnu11", "cxx03")
 
 add_defines("_CRT_SECURE_NO_WARNINGS")
 add_defines("_POSIX_C_SOURCE=200809")
+
+if is_toolchain("msvc", "clang-cl") then
+	add_cxflags("-Zl") -- omit default library name in object file
+	add_ldflags("-nodefaultlib") -- disable default libraries
+else
+	add_cxflags("-ffreestanding") -- disable using C runtime
+	add_ldflags("-nostdlib") -- disable linking to C runtime
+end
 
 if is_plat("windows") then
 	add_defines("KR_WIN32")
@@ -39,10 +52,6 @@ if is_mode("debug") then
 	add_defines("KR_DEBUG")
 elseif is_mode("release") then
 	add_defines("KR_RELEASE")
-end
-
-function is_toolchain(v)
-	return get_config("toolchain") == v
 end
 
 add_repositories("local-repo external")
