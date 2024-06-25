@@ -1,4 +1,3 @@
 void _DllMainCRTStartup()
 {
-
 }

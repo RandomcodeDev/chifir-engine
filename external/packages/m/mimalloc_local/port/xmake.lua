@@ -1,13 +1,13 @@
-target("mimalloc")
-	set_kind("$(kind)")
+target("mimalloc_local")
+	set_kind("static")
 
 	add_headerfiles(
 		path.join("include", "mimalloc.h"),
-		path.join("include", "mimalloc/atomic.h"),
-		path.join("include", "mimalloc/internal.h"),
-		path.join("include", "mimalloc/prim.h"),
-		path.join("include", "mimalloc/track.h"),
-		path.join("include", "mimalloc/types.h")
+		path.join("include", "mimalloc", "atomic.h"),
+		path.join("include", "mimalloc", "internal.h"),
+		path.join("include", "mimalloc", "prim.h"),
+		path.join("include", "mimalloc", "track.h"),
+		path.join("include", "mimalloc", "types.h")
 	)
 	add_files(
 		path.join("src", "alloc.c"),
@@ -28,7 +28,7 @@ target("mimalloc")
 		path.join("src", "prim", "prim.c")
 	)
 
-	if is_plat("gdk", "gdkx", "xbox360") then
+	if is_plat("gdk", "gdkx") then
 		set_prefixname("")
 		set_extension(".lib")
 	end
@@ -40,6 +40,4 @@ target("mimalloc")
 	end
 
 	set_warnings("none")
-
-	add_forceincludes("stdio.h")
 target_end()

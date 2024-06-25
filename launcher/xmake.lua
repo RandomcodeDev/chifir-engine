@@ -15,7 +15,7 @@ target("Launcher")
 		add_files("../private/launcher/main_switch.cpp")
 	end
 
-	add_deps("Platform")
+	add_deps("Base")
 
-	on_load(fix_name)
+	on_load(fix_target)
 target_end()

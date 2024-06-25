@@ -11,4 +11,3 @@
 #define DLLEXPORT ATTRIBUTE(visibility("default"))
 #define DLLIMPORT
 #endif
-

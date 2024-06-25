@@ -3,6 +3,7 @@
 #pragma once
 
 #include <cstdint>
+#include <limits>
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -21,5 +22,11 @@ typedef sptr ssize;
 typedef float f32;
 typedef double f64;
 
+// Note: "wide" and "narrow" refer, generally, to UTF-16 and UTF-8, not just whatever the platform decides.
+// On platforms where wchar_t would be 32 bits, -fshort-wchar is used.
+
 typedef char* dstr;
 typedef const char* cstr;
+
+typedef wchar_t* dwstr;
+typedef const wchar_t* cwstr;

@@ -1,6 +1,6 @@
+#include "base/platform.h"
 #include "base/types.h"
 #include "launcher.h"
-#include "platform/platform.h"
 
 #ifndef KR_DEBUG
 // hinting the nvidia driver to use the dedicated graphics card in an optimus
@@ -14,7 +14,9 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 __declspec(noreturn) void __cdecl WinMainCRTStartup()
 {
-	s32 ret = LauncherMain();
+	__security_init_cookie();
 
-	NtTerminateProcess(NtCurrentProcess(), ret);
+	LauncherMain();
+
+	NtTerminateProcess(NtCurrentProcess(), STATUS_SUCCESS);
 }
