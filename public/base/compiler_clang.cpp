@@ -7,14 +7,12 @@ extern "C"
 {
 	void* memcpy(void* RESTRICT dest, const void* RESTRICT src, usize size)
 	{
-		Base_MemCpy(dest, src, size);
-		return dest;
+		return Base_MemCpy(dest, src, size);
 	}
 
 	void* memset(void* dest, s32 value, usize size)
 	{
-		Base_MemSet(dest, value, size);
-		return dest;
+		return Base_MemSet(dest, value, size);
 	}
 
 	// Presumably emitted for things like a pure virtual call

@@ -11,6 +11,8 @@ package("phnt_local")
     end)
 
     on_test(function (package)
-        assert(package:has_cincludes("phnt_windows.h"))
+		if not is_plat("xbox360") then
+	        assert(package:has_cincludes("phnt_windows.h"))
+		end
     end)
 package_end()

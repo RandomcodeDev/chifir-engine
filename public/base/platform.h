@@ -3,13 +3,29 @@
 #pragma once
 
 #ifdef KR_WIN32
-#define PHNT_MODE    PHNT_MODE_USER
+#define PHNT_MODE PHNT_MODE_USER
+#ifdef KR_XBOX360
+#define PHNT_VERSION PHNT_WIN2K
+#include "phnt_xbox.h"
+#else
 #define PHNT_VERSION PHNT_WIN11
-// phnt.h depends on phnt_windows.h
-// clang-format: off
 #include "phnt_windows.h"
+#endif
+#ifdef KR_XBOX360
+#define RtlLockHeap                              RtlLockHeap_phnt
+#define RtlInitializeCriticalSection             RtlInitializeCriticalSection_phnt
+#define RtlInitializeCriticalSectionAndSpinCount RtlInitializeCriticalSectionAndSpinCount_phnt
+#define RtlEnterCriticalSection                  RtlEnterCriticalSection_phnt
+#define RtlLeaveCriticalSection                  RtlLeaveCriticalSection_phnt
+#endif
 #include "phnt.h"
-// clang-format: on
+#ifdef KR_XBOX360
+#undef RtlLockHeap
+#undef RtlInitializeCriticalSection
+#undef RtlInitializeCriticalSectionAndSpinCount
+#undef RtlEnterCriticalSection
+#undef RtlLeaveCriticalSection
+#endif
 #endif
 
 #include "base.h"

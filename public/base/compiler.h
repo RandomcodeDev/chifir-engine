@@ -13,17 +13,21 @@
 
 #define ATTRIBUTE(x) __declspec(x)
 // TODO: this assumes link.exe or lld-link, but that should be fine
-#define ALIAS(a, b)        __pragma(comment(linker, "/export:" #b "=" #a))
+#define ALIAS(a, b)  __pragma(comment(linker, "/export:" #b "=" #a))
 #define BREAKPOINT() __debugbreak()
-#define ASSUME(x)          __assume(x)
+#define ASSUME(x)    __assume(x)
 #else
-#define ATTRIBUTE(x)       __attribute__((x))
-#define ALIAS(a, b)        extern "C" TYPEOF(a) ATTRIBUTE(alias(#a)) b;
+#define ATTRIBUTE(x) __attribute__((x))
+#define ALIAS(a, b)  extern "C" TYPEOF(a) ATTRIBUTE(alias(#a)) b;
 #define BREAKPOINT() __builtin_trap()
-#define ASSUME(x)          __builtin_assume(x)
+#define ASSUME(x)    __builtin_assume(x)
 #endif
 
 // MSVC and Clang/GCC understand all of these equally
 #define TYPEOF(x) __typeof__(x)
 #define NORETURN  ATTRIBUTE(noreturn)
-#define RESTRICT  __restrict
+#if _MSC_VER <= 1600
+#define RESTRICT
+#else
+#define RESTRICT __restrict
+#endif

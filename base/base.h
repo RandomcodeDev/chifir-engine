@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "base/compiler.h"
 #include "base/types.h"
 
 // CPU data, comments are in x86 terms until I actually understand other archs
@@ -22,3 +23,16 @@ extern bool g_baseInitialized;
 
 // Initialized in Base_Init
 extern BaseCpuData_t g_cpuData;
+
+// Memory info
+struct MemoryInfo_t
+{
+	void* memory;
+	usize used;
+	usize totalSize;
+};
+
+extern MemoryInfo_t g_memInfo;
+
+// So individual implementations don't have to handle formatting the message
+extern NORETURN void Base_QuitImpl(u32 code, cstr msg);

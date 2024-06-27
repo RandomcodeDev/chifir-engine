@@ -19,6 +19,7 @@ toolchain("xbox360")
         toolchain:add("cxflags", "-X")
         toolchain:add("cxflags", "-Dalignof=__alignof")
         toolchain:add("cxflags", "-D_XBOX")
+--		toolchain:add("cxflags", "-D_WIN64")
         toolchain:add("ldflags", "-nodefaultlib")
         toolchain:add("ldflags", "-xex:no")
 

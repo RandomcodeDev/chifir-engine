@@ -1,9 +1,8 @@
-#include "loader_win32.h"
+#include "platform_win32.h"
 #include "base/base.h"
 #include "base/basicstr.h"
 #include "base/compiler.h"
 #include "base/loader.h"
-#include "xxhash.h"
 
 static PIMAGE_DOS_HEADER ntDllBase;
 
@@ -20,18 +19,18 @@ static PIMAGE_DOS_HEADER ntDllBase;
 	}                                                                                                                            \
 	ALIAS(x##_Forwarder, x);
 
+MAKE_STUB(DbgPrint);
+MAKE_STUB(LdrAddRefDll);
 MAKE_STUB(LdrGetProcedureAddress);
 MAKE_STUB(LdrLoadDll);
-MAKE_STUB(LdrAddRefDll);
 MAKE_STUB(LdrUnloadDll);
+MAKE_STUB(NtAllocateVirtualMemory);
+MAKE_STUB(NtFreeVirtualMemory);
+MAKE_STUB(NtRaiseHardError);
 MAKE_STUB(NtTerminateProcess);
-MAKE_STUB(DbgPrint);
-// MAKE_STUB(RtlGenRandom);
 MAKE_STUB(RtlAnsiStringToUnicodeString); // Needed for loading DLLs
 MAKE_STUB(RtlFreeHeap);
 MAKE_STUB(RtlFreeUnicodeString);
-
-MAKE_STUB(VirtualAlloc);
 
 static bool FindNtDll()
 {
@@ -47,7 +46,7 @@ static bool FindNtDll()
 	PLDR_DATA_TABLE_ENTRY entry = CONTAINING_RECORD(ntDllLink, LDR_DATA_TABLE_ENTRY, InInitializationOrderLinks);
 	ntDllBase = (PIMAGE_DOS_HEADER)entry->DllBase;
 
-	return ntDllBase != NULL;
+	return ntDllBase != nullptr;
 }
 
 // Somehow the Rtl function for this isn't inline in phnt, I guess it does that thing with the last section or whatever
@@ -91,13 +90,13 @@ static bool FindLdrGetProcedureAddress()
 		}
 	}
 
-	return __imp_LdrGetProcedureAddress != NULL;
+	return __imp_LdrGetProcedureAddress != nullptr;
 }
 
 #define GET_FUNCTION(lib, name)                                                                                                  \
 	{                                                                                                                            \
 		__imp_##name = ((ILibrary*)&(lib))->GetSymbol<uptr (*)(...)>(#name);                                                     \
-		ASSERT_CODE(__imp_##name != NULL, NtCurrentTeb()->LastStatusValue);                                                      \
+		ASSERT_CODE(__imp_##name != nullptr, NtCurrentTeb()->LastStatusValue);                                                      \
 	}
 
 bool Base_InitLoader()
@@ -114,23 +113,20 @@ bool Base_InitLoader()
 
 	CWin32Library ntDll(ntDllBase);
 	GET_FUNCTION(ntDll, NtTerminateProcess); // Make sure if the others fail, they can properly exit
-	GET_FUNCTION(ntDll, LdrLoadDll);
-	GET_FUNCTION(ntDll, LdrAddRefDll);
-	GET_FUNCTION(ntDll, LdrUnloadDll);
+
 	GET_FUNCTION(ntDll, DbgPrint);
-	// GET_FUNCTION(ntDll, RtlGenRandom);
+	GET_FUNCTION(ntDll, LdrAddRefDll);
+	GET_FUNCTION(ntDll, LdrLoadDll);
+	GET_FUNCTION(ntDll, LdrUnloadDll);
+	GET_FUNCTION(ntDll, NtAllocateVirtualMemory);
+	GET_FUNCTION(ntDll, NtFreeVirtualMemory);
+	GET_FUNCTION(ntDll, NtRaiseHardError);
 	GET_FUNCTION(ntDll, RtlAnsiStringToUnicodeString);
 	GET_FUNCTION(ntDll, RtlFreeHeap);
 	GET_FUNCTION(ntDll, RtlFreeUnicodeString);
 
-	// So unloading it doesn't fuck anything up, cause it wasn't loaded with LdrLoadDll
+	// So unloading it when ntDll goes out of scope doesn't mess anything up, cause the loader wasn't used to "load" it
 	LdrAddRefDll(0, ntDllBase);
-
-	void* kernel32Base = NULL;
-	UNICODE_STRING kernel32Name = RTL_CONSTANT_STRING(L"kernel32.dll");
-	ASSERT(NT_SUCCESS(LdrLoadDll(NULL, NULL, &kernel32Name, &kernel32Base)));
-	CWin32Library kernel32(kernel32Base);
-	GET_FUNCTION(kernel32, VirtualAlloc);
 
 	return true;
 }
@@ -144,21 +140,29 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 		nameStr.Buffer = (dstr)name;
 		nameStr.Length = (u16)Base_StrLen(name);
 		nameStr.MaximumLength = nameStr.Length + 1u;
-		NTSTATUS status = RtlAnsiStringToUnicodeString(&nameUStr, &nameStr, TRUE);
-		void* handle = NULL;
-		if (NT_SUCCESS(LdrLoadDll(NULL, NULL, &nameUStr, &handle)))
+		bool freeString = RtlAnsiStringToUnicodeString(&nameUStr, &nameStr, TRUE);
+
+		void* handle = nullptr;
+		NTSTATUS status = LdrLoadDll(nullptr, nullptr, &nameUStr, &handle);
+		NtCurrentTeb()->LastStatusValue = status;
+		if (NT_SUCCESS(status))
 		{
 			// Don't leave the string dangling
-			if (NT_SUCCESS(status))
+			if (freeString)
 			{
 				RtlFreeUnicodeString(&nameUStr);
 			}
 
 			return new CWin32Library(handle);
 		}
+
+		if (freeString)
+		{
+			RtlFreeUnicodeString(&nameUStr);
+		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 CWin32Library::CWin32Library(void* base) : m_base(base)
@@ -181,12 +185,12 @@ void* CWin32Library::GetSymbol(cstr name)
 	nameStr.Buffer = (dstr)name;
 	nameStr.Length = (u16)Base_StrLen(name);
 	nameStr.MaximumLength = nameStr.Length + 1u;
-	void* sym = NULL;
+	void* sym = nullptr;
 	NTSTATUS status = LdrGetProcedureAddress(m_base, &nameStr, 0, &sym);
 	if (!NT_SUCCESS(status))
 	{
-		// TODO: add logging
-		return NULL;
+		NtCurrentTeb()->LastStatusValue = status;
+		return nullptr;
 	}
 
 	return sym;

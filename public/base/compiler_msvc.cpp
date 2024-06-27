@@ -3,8 +3,6 @@
 // so this file implements the bare minimum, at times using functions from the engine to replace
 // functionality normally provided by the CRT.
 
-#include <vcruntime_typeinfo.h>
-
 #include "base/compiler.h"
 #include "base/platform.h"
 #include "base/types.h"
@@ -55,9 +53,11 @@ extern "C"
 	{
 	}
 
+	// TODO: make sure this works on 32-bit and non-x86
 	void __GSHandlerCheckCommon(void* EstablisherFrame, void* DispatcherContext, u32* GSHandlerData)
 
 	{
+#ifdef KR_AMD64
 		uptr uVar1;
 		void* pvVar2;
 
@@ -76,27 +76,29 @@ extern "C"
 									   (uptr)(*(unsigned char*)(uVar1 + 3 + *(sptr*)((sptr)DispatcherContext + 8)) & 0xfffffff0));
 		}
 		__security_check_cookie((uptr)EstablisherFrame ^ *(uptr*)((sptr)(int)(*GSHandlerData & 0xfffffff8) + (sptr)pvVar2));
-		return;
+#endif
 	}
 
 	u8 __GSHandlerCheck(
 		unsigned char ExceptionRecord, void* EstablisherFrame, unsigned char ContextRecord, void* DispatcherContext)
 
 	{
+#ifdef KR_AMD64
 		__GSHandlerCheckCommon(EstablisherFrame, DispatcherContext, *(u32**)((sptr)DispatcherContext + 0x38));
+#endif
 		return true;
 	}
 
 	ATTRIBUTE(guard(suppress)) void* __CxxFrameHandler3()
 	{
 		Base_Quit(STATUS_UNHANDLED_EXCEPTION, "C++ exception 3");
-		return NULL;
+		return nullptr;
 	}
 
 	ATTRIBUTE(guard(suppress)) void* __CxxFrameHandler4()
 	{
 		Base_Quit(STATUS_UNHANDLED_EXCEPTION, "C++ exception 4");
-		return NULL;
+		return nullptr;
 	}
 
 	int __cdecl _purecall()

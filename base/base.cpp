@@ -110,20 +110,7 @@ static inline void Copy(void* RESTRICT dest, const void* RESTRICT src, usize off
 	}
 }
 
-template <typename T> static inline void Set(void* RESTRICT dest, u8 value, usize offset, usize& remaining, usize alignment)
-{
-	// This is to get around how Clang deals with SIMD intrinsics on x86
-	u8 fullValue[32] = {value, value, value, value, value, value, value, value, value, value, value,
-						value, value, value, value, value, value, value, value, value, value, value,
-						value, value, value, value, value, value, value, value, value, value};
-	for (usize i = offset; i < (remaining / alignment) * alignment; i += alignment)
-	{
-		((T*)dest)[i / alignment] = *(T*)fullValue;
-		remaining -= alignment;
-	}
-}
-
-BASEAPI void Base_MemCpy(void* RESTRICT dest, const void* RESTRICT src, usize size)
+BASEAPI void* Base_MemCpy(void* RESTRICT dest, const void* RESTRICT src, usize size)
 {
 	usize remaining = size;
 
@@ -143,7 +130,8 @@ BASEAPI void Base_MemCpy(void* RESTRICT dest, const void* RESTRICT src, usize si
 			alignment = 8;
 		}
 
-		// Can only realign if they're misaligned the same amount (should be)
+		// Can only realign if they're misaligned the same amount (they should be, usually pointers are aligned on a reasonable
+		// amount unless it's some arbitrary offset into an array of bytes)
 		usize srcAlignment = ((uptr)src & alignment);
 		usize destAlignment = ((uptr)dest & alignment);
 		if (srcAlignment == destAlignment)
@@ -154,15 +142,11 @@ BASEAPI void Base_MemCpy(void* RESTRICT dest, const void* RESTRICT src, usize si
 
 			if (g_cpuData.haveSimd256)
 			{
-#ifdef KR_X86
-				Copy<__m256>(dest, src, size - remaining, remaining, alignment);
-#endif
+				Copy<v256>(dest, src, size - remaining, remaining, alignment);
 			}
 			else if (g_cpuData.haveSimd128)
 			{
-#ifdef KR_X86
-				Copy<__m128>(dest, src, size - remaining, remaining, alignment);
-#endif
+				Copy<v128>(dest, src, size - remaining, remaining, alignment);
 			}
 			else
 			{
@@ -172,9 +156,24 @@ BASEAPI void Base_MemCpy(void* RESTRICT dest, const void* RESTRICT src, usize si
 	}
 
 	Copy<u8>(dest, src, size - remaining, remaining, 1);
+
+	return dest;
 }
 
-BASEAPI void Base_MemSet(void* dest, u32 value, usize size)
+template <typename T> static inline void Set(void* RESTRICT dest, u8 value, usize offset, usize& remaining, usize alignment)
+{
+	// This is to get around how Clang deals with SIMD intrinsics on x86
+	u8 fullValue[32] = {value, value, value, value, value, value, value, value, value, value, value,
+						value, value, value, value, value, value, value, value, value, value, value,
+						value, value, value, value, value, value, value, value, value, value};
+	for (usize i = offset; i < (remaining / alignment) * alignment; i += alignment)
+	{
+		((T*)dest)[i / alignment] = *(T*)fullValue;
+		remaining -= alignment;
+	}
+}
+
+BASEAPI void* Base_MemSet(void* dest, u32 value, usize size)
 {
 	usize remaining = size;
 
@@ -201,15 +200,11 @@ BASEAPI void Base_MemSet(void* dest, u32 value, usize size)
 
 		if (g_cpuData.haveSimd256)
 		{
-#ifdef KR_X86
-			Set<__m256i>(dest, value, size - remaining, remaining, alignment);
-#endif
+			Set<v256>(dest, value, size - remaining, remaining, alignment);
 		}
 		else if (g_cpuData.haveSimd128)
 		{
-#ifdef KR_X86
-			Set<__m128>(dest, value, size - remaining, remaining, alignment);
-#endif
+			Set<v128>(dest, value, size - remaining, remaining, alignment);
 		}
 		else
 		{
@@ -218,22 +213,6 @@ BASEAPI void Base_MemSet(void* dest, u32 value, usize size)
 	}
 
 	Set<u8>(dest, (u8)value, size - remaining, remaining, 1);
-}
 
-BASEAPI void* Base_Alloc(usize count, usize size)
-{
-	return NULL; // mi_calloc(count, size);
-}
-
-BASEAPI void* Base_Alloc(usize size)
-{
-	return Base_Alloc(size, 1);
-}
-
-BASEAPI void Base_Free(void* mem)
-{
-	if (mem)
-	{
-		//	mi_free(mem);
-	}
+	return dest;
 }

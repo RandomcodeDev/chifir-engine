@@ -22,7 +22,7 @@ end
 
 add_defines("_CRT_SECURE_NO_WARNINGS", "_POSIX_C_SOURCE=200809")
 
-if is_toolchain("msvc", "clang-cl") then
+if is_toolchain("msvc", "clang-cl", "xbox360") then
 	add_cxflags("-Zl") -- omit default library name in object file
 	add_cxxflags("-GR-") -- Disable RTTI
 	add_ldflags("-nodefaultlib") -- disable default libraries
@@ -45,11 +45,6 @@ elseif is_plat("freebsd") then
 	add_defines("KR_FREEBSD", "KR_UNIX")
 elseif is_plat("switch", "switchhb") then
 	add_defines("KR_SWITCH", "KR_UNIX")
-	if is_plat("switch") then
-		set_toolchain("switch")
-	else
-		set_toolchain("devkitA64")
-	end
 elseif is_plat("psp", "ps3") then
     add_defines("KR_PLAYSTATION", "KR_UNIX")
     if is_plat("psp") then
@@ -59,7 +54,6 @@ elseif is_plat("psp", "ps3") then
     end
 elseif is_plat("xbox360") then
     add_defines("KR_WIN32", "KR_XBOX360")
-	set_toolchain("xbox360")
 end
 
 if is_arch("x86") then
@@ -79,14 +73,18 @@ elseif is_mode("release") then
 end
 
 add_repositories("local-repo external")
-add_requires("mimalloc_local", {configs = {pic = not is_plat("gdk", "gdkx")}})
-add_requires("phnt_local", {configs = {pic = not is_plat("gdk", "gdkx")}})
-add_requires("rtm_local", {configs = {pic = not is_plat("gdk", "gdkx")}})
+add_requires("phnt_local")
 
 add_includedirs(
 	"external",
 	"public"
 )
+
+if is_plat("xbox360") then
+	add_includedirs(
+		"external/xbox"
+	)
+end
 
 includes("base")
 includes("math")

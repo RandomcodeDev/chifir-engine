@@ -1,6 +1,7 @@
+#include "base.h"
+#include "base/base.h"
 #include "base/compiler.h"
 #include "base/types.h"
-#include "misc.h"
 
 BASEAPI NORETURN void Base_Quit(u32 error, cstr msg, ...)
 {

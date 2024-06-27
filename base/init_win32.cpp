@@ -1,5 +1,5 @@
 #include "base/platform.h"
-#include "loader_win32.h"
+#include "platform_win32.h"
 
 BASEAPI void Plat_Init()
 {
@@ -7,8 +7,14 @@ BASEAPI void Plat_Init()
 	{
 		Base_Quit((u32)NtCurrentTeb()->LastStatusValue, "Failed to initialize dynamic loader");
 	}
+
+	if (!Base_InitMemory())
+	{
+		Base_Quit((u32)NtCurrentTeb()->LastStatusValue, "Failed to initialize memory allocation");
+	}
 }
 
 BASEAPI void Plat_Shutdown()
 {
+	Base_ReleaseMemory();
 }

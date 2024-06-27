@@ -2,8 +2,11 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <limits>
+
+#include "compiler.h"
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -21,6 +24,10 @@ typedef sptr ssize;
 
 typedef float f32;
 typedef double f64;
+#ifdef KR_X86
+typedef __m128 v128;
+typedef __m256 v256;
+#endif
 
 // Note: "wide" and "narrow" refer, generally, to UTF-16 and UTF-8, not just whatever the platform decides.
 // On platforms where wchar_t would be 32 bits, -fshort-wchar is used.

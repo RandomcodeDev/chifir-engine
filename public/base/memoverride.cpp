@@ -1,4 +1,5 @@
 #include "base/base.h"
+#include "base/types.h"
 
 void* __cdecl operator new(usize size)
 {

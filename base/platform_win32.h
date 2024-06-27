@@ -3,6 +3,7 @@
 #pragma once
 
 #include "base/loader.h"
+#include "base/types.h"
 
 // Get the address of NTDLL, find LdrGetProcedureAddress manually, find LdrLoadDll properly, load any other system DLLs/functions
 // using those
@@ -19,3 +20,9 @@ class CWin32Library : public ILibrary
   private:
 	void* m_base;
 };
+
+// Allocate a big chunk of memory for the allocator
+extern bool Base_InitMemory();
+
+// Release the memory from Base_InitMemory
+extern void Base_ReleaseMemory();

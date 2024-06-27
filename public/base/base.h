@@ -26,7 +26,7 @@ extern BASEAPI NORETURN void Base_Quit(u32 error, cstr msg, ...);
 #define ASSERT_MSG_CODE(x, msg, code)                                                                                            \
 	if (!(x))                                                                                                                    \
 	{                                                                                                                            \
-		Base_Quit(code, "Assertion failed: " #msg);                                                                              \
+		Base_Quit(code, "Assertion " #x " failed: " #msg);                                                                       \
 	}
 
 // Quit if a condition isn't true, add a message
@@ -38,15 +38,23 @@ extern BASEAPI NORETURN void Base_Quit(u32 error, cstr msg, ...);
 // Quit if a condition isn't true
 #define ASSERT(x) ASSERT_MSG(x, x)
 
+// Swap
+template <typename T> static inline void Swap(T& left, T& right)
+{
+	T swap = left;
+	left = right;
+	right = swap;
+}
+
 // FNV-1a hash
 extern BASEAPI u32 Base_Fnv1a32(const void* data, usize size);
 extern BASEAPI u64 Base_Fnv1a64(const void* data, usize size);
 
 // Copy memory
-extern BASEAPI void Base_MemCpy(void* RESTRICT dest, const void* RESTRICT src, usize size);
+extern BASEAPI void* Base_MemCpy(void* RESTRICT dest, const void* RESTRICT src, usize size);
 
 // Clear memory
-extern BASEAPI void Base_MemSet(void* dest, u32 value, usize size);
+extern BASEAPI void* Base_MemSet(void* dest, u32 value, usize size);
 
 // Allocate memory
 extern BASEAPI void* Base_Alloc(usize count, usize size);
