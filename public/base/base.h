@@ -57,11 +57,14 @@ extern BASEAPI void* Base_MemCpy(void* RESTRICT dest, const void* RESTRICT src, 
 extern BASEAPI void* Base_MemSet(void* dest, u32 value, usize size);
 
 // Allocate memory
-extern BASEAPI void* Base_Alloc(usize count, usize size);
-
 extern BASEAPI void* Base_Alloc(usize size);
 
-template <typename T> T* Base_Alloc(usize count)
+static inline void* Base_Alloc(usize count, usize size)
+{
+	return Base_Alloc(count * size);
+}
+
+template <typename T> static inline T* Base_Alloc(usize count)
 {
 	return (T*)Base_Alloc(count, sizeof(T));
 }

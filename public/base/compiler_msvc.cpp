@@ -109,3 +109,11 @@ extern "C"
 		Base_Quit(STATUS_NOT_FOUND, "Pure virtual call");
 	}
 }
+
+#ifndef __clang__
+// Ensures the vtable for type_info is generated
+type_info::~type_info()
+{
+
+}
+#endif

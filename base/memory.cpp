@@ -5,9 +5,9 @@
 
 MemoryInfo_t g_memInfo;
 
-BASEAPI void* Base_Alloc(usize count, usize size)
+BASEAPI void* Base_Alloc(usize size)
 {
-
+	return nullptr;
 }
 
 BASEAPI void Base_Free(void* block)

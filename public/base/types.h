@@ -5,6 +5,11 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#if _MSC_VER >= 1400
+#include <typeinfo>
+#else
+#include <typeinfo.h>
+#endif
 
 #include "compiler.h"
 

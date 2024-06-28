@@ -24,11 +24,9 @@ add_defines("_CRT_SECURE_NO_WARNINGS", "_POSIX_C_SOURCE=200809")
 
 if is_toolchain("msvc", "clang-cl", "xbox360") then
 	add_cxflags("-Zl") -- omit default library name in object file
-	add_cxxflags("-GR-") -- Disable RTTI
 	add_ldflags("-nodefaultlib") -- disable default libraries
 else
 	add_cxflags("-fshort-wchar", "-ffreestanding")
-	add_cxxflags("-fno-rtti") -- Disable RTTI
 	add_ldflags("-nostdlib") -- disable linking to C runtime
 	add_shflags("-nostdlib")
 end
