@@ -1,9 +1,11 @@
+#include "base.h"
 #include "base/compiler.h"
 #include "base/platform.h"
 #include "base/types.h"
-#include "base.h"
 
 extern "C" void* __imp_NtTerminateProcess;
+
+SYSTEM_BASIC_INFORMATION g_systemInfo;
 
 NORETURN void Base_QuitImpl(u32 code, cstr msg)
 {
@@ -15,7 +17,7 @@ NORETURN void Base_QuitImpl(u32 code, cstr msg)
 
 	// TODO: use NtRaiseHardError
 
-	__debugbreak();
+	BREAKPOINT();
 	if (__imp_NtTerminateProcess)
 	{
 		NtTerminateProcess(NtCurrentProcess(), (NTSTATUS)code);
@@ -24,28 +26,44 @@ NORETURN void Base_QuitImpl(u32 code, cstr msg)
 	{
 		BREAKPOINT();
 	}
-	
+
 	ASSUME(0);
 }
 
-bool Base_InitMemory()
+bool Base_GetSystemMemory(usize size)
 {
-	// Memory the program gets for its entire lifetime
-	static const usize SIZE = 1 * 1024 * 1024 * 1024;
+	// Linked list nodes, can contain any size of allocation, but there's a limit to the number of OS allocations
+	static LinkedNode_t<SystemAllocation_t> memoryNodes[64];
 
-	g_memInfo.totalSize = SIZE;
-	NTSTATUS status = NtAllocateVirtualMemory(NtCurrentProcess(), &g_memInfo.memory, 0, &g_memInfo.totalSize, MEM_RESERVE, PAGE_READWRITE);
+	size = ALIGN(size, g_systemInfo.PageSize);
+
+	g_memInfo.size += size;
+	LinkedNode_t<SystemAllocation_t>* node = &memoryNodes[g_memInfo.allocations.Size()];
+	node->data.size = size;
+	NTSTATUS status =
+		NtAllocateVirtualMemory(NtCurrentProcess(), &node->data.memory, 0, &node->data.size, MEM_COMMIT, PAGE_READWRITE);
 	if (!NT_SUCCESS(status))
 	{
 		NtCurrentTeb()->LastStatusValue = status;
 		return false;
 	}
 
+	g_memInfo.allocations.Append(node);
+
 	return true;
 }
 
-void Base_ReleaseMemory()
+void Base_ReleaseSystemMemory(LinkedNode_t<SystemAllocation_t>* allocation)
 {
 	usize size = 0;
-	NtFreeVirtualMemory(NtCurrentProcess(), &g_memInfo.memory, &size, MEM_RELEASE);
+	NtFreeVirtualMemory(NtCurrentProcess(), &allocation->data.memory, &size, MEM_RELEASE);
+	g_memInfo.allocations.Remove(allocation);
+}
+
+void Base_ReleaseAllMemory()
+{
+	for (LinkedNode_t<SystemAllocation_t>* cur = g_memInfo.allocations.GetHead(); cur; cur = cur->GetNext())
+	{
+		Base_ReleaseSystemMemory(cur);
+	}
 }

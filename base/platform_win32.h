@@ -21,8 +21,4 @@ class CWin32Library : public ILibrary
 	void* m_base;
 };
 
-// Allocate a big chunk of memory for the allocator
-extern bool Base_InitMemory();
-
-// Release the memory from Base_InitMemory
-extern void Base_ReleaseMemory();
+extern SYSTEM_BASIC_INFORMATION g_systemInfo;

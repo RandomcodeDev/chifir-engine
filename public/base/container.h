@@ -2,30 +2,35 @@
 
 #pragma once
 
+#include "types.h"
+
 // Shared interface in all containers
 template <typename T, typename I>
 class IContainer
 {
   public:
-	typedef T ItemType_t;
-	typedef I IndexType_t;
-
-	static const IndexType_t BAD_INDEX = (IndexType_t)-1;
+	static const I BAD_INDEX = (I)-1;
 
 	~IContainer() = default;
 
+	// Get the size
+	virtual usize Size() = 0;
+
 	// Insert an item at index, or append if index == BAD_INDEX
-	virtual void Insert(const ItemType_t& object, IndexType_t index = BAD_INDEX) = 0;
+	virtual I Insert(const T& object, I index = BAD_INDEX) = 0;
 
 	// Remove the specified index if it exists
-	virtual void Delete(IndexType_t index) = 0;
+	virtual void Delete(I index) = 0;
 
 	// Get an item
-	virtual ItemType_t& operator[](const IndexType_t& index) = 0;
+	virtual T& operator[](const I& index) = 0;
 
 	// Append an item
-	virtual void operator+(const ItemType_t& object) = 0;
+	virtual void operator+(const T& object) = 0;
 
 	// Find a matching item
-	virtual IndexType_t Find(s32 (*Match)(const ItemType_t& item)) = 0;
+	virtual I Find(s32 (*Compare)(const T& a, const T& b)) = 0;
+
+	// Sort
+	virtual void Sort(s32 (*Compare)(const T& a, const T& b)) = 0;
 };

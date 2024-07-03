@@ -8,13 +8,13 @@ BASEAPI void Plat_Init()
 		Base_Quit((u32)NtCurrentTeb()->LastStatusValue, "Failed to initialize dynamic loader");
 	}
 
-	if (!Base_InitMemory())
+	NTSTATUS status = NtQuerySystemInformation(SystemBasicInformation, &g_systemInfo, sizeof(SYSTEM_BASIC_INFORMATION), nullptr);
+	if (!NT_SUCCESS(status))
 	{
-		Base_Quit((u32)NtCurrentTeb()->LastStatusValue, "Failed to initialize memory allocation");
+		Base_Quit((u32)status, "Failed to get basic system information");
 	}
 }
 
 BASEAPI void Plat_Shutdown()
 {
-	Base_ReleaseMemory();
 }

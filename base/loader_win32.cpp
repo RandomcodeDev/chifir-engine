@@ -26,6 +26,7 @@ MAKE_STUB(LdrLoadDll);
 MAKE_STUB(LdrUnloadDll);
 MAKE_STUB(NtAllocateVirtualMemory);
 MAKE_STUB(NtFreeVirtualMemory);
+MAKE_STUB(NtQuerySystemInformation);
 MAKE_STUB(NtRaiseHardError);
 MAKE_STUB(NtTerminateProcess);
 MAKE_STUB(RtlAnsiStringToUnicodeString); // Needed for loading DLLs
@@ -120,6 +121,7 @@ bool Base_InitLoader()
 	GET_FUNCTION(ntDll, LdrUnloadDll);
 	GET_FUNCTION(ntDll, NtAllocateVirtualMemory);
 	GET_FUNCTION(ntDll, NtFreeVirtualMemory);
+	GET_FUNCTION(ntDll, NtQuerySystemInformation);
 	GET_FUNCTION(ntDll, NtRaiseHardError);
 	GET_FUNCTION(ntDll, RtlAnsiStringToUnicodeString);
 	GET_FUNCTION(ntDll, RtlFreeHeap);

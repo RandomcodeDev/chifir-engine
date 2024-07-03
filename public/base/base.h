@@ -38,6 +38,8 @@ extern BASEAPI NORETURN void Base_Quit(u32 error, cstr msg, ...);
 // Quit if a condition isn't true
 #define ASSERT(x) ASSERT_MSG(x, x)
 
+#define ALIGN(val, align) (((val) / (align) + 1) * align)
+
 // Swap
 template <typename T> static inline void Swap(T& left, T& right)
 {

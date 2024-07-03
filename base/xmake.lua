@@ -15,3 +15,8 @@ target("Base")
 
 	on_load(fix_target)
 target_end()
+
+if tools then
+	includes("test")
+end
+
