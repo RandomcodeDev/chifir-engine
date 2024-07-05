@@ -1,0 +1,18 @@
+function CreateVcxProject(.Name, .Path, .Configs, .Options)
+{
+	VCXProject('$Name$-proj')
+	{
+		.ProjectConfigs = .Configs
+		.ProjectOutput = 'projects/VisualStudio/$Name$.vcxproj'
+		.ProjectInputPaths = '$Path$/'
+		.ProjectBasePath = '$Path$/'
+
+		Using(.Options)
+	}
+}
+
+function CreateVcxProjectExe(.Name, .Path, .Configs, .Options)
+{
+	CreateVcxProject(.Name, .Path, .Configs, .Options)
+}
+

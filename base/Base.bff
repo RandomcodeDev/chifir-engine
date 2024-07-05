@@ -1,0 +1,77 @@
+#once
+
+{
+	.ProjectName = 'Base'
+	.ProjectPath = 'base'
+
+	.ProjectConfigs = {}
+	ForEach(.BuildConfig in .BuildConfigs)
+	{
+		Using(.BuildConfig)
+
+		.ObjectDir = 'obj/$CompilerName$/$PlatformName$/$ArchName$/$ConfigName$'
+		.OutputDir = 'out/$CompilerName$/$PlatformName$/$ArchName$/$ConfigName$'
+
+		Unity('$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		{
+			.UnityInputFiles =
+			{
+				'$ProjectPath$/base.cpp',
+				'$ProjectPath$/basicstr.cpp',
+				'$ProjectPath$/basicwstr.cpp',
+				'$ProjectPath$/memory.cpp',
+				'$ProjectPath$/platform.cpp'
+			}
+
+			.WindowsLike = {'Windows', 'GDK', 'XboxScarlett', 'Xbox360'}
+			If (.PlatformName in .WindowsLike)
+			{
+				.UnityInputFiles +
+				{
+					'$ProjectPath$/init_win32.cpp',
+					'$ProjectPath$/loader_win32.cpp',
+					'$ProjectPath$/platform_win32.cpp'
+				}
+			}
+			
+			.UnityOutputPath = '$ObjectDir$/$ProjectPath$/'
+			.UnityOutputPattern = '$ProjectName$_Unity*.cpp'
+		}
+
+		ObjectList('$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		{
+			.CompilerInputUnity = '$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+			.CompilerOutputPath = '$ObjectDir$/$ProjectPath$/'
+		}
+
+		DLL('$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		{
+			.Libraries = { '$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$' }
+			.LinkerOutput = '$OutputDir$/$ProjectName$$DLLExtension$'
+#if __LINUX__
+			.LinkerStampExe	 = '/bin/sh'
+			.ExtractDebugInfo = 'objcopy --only-keep-debug $LinkerOutput$ $LinkerOutput$.debug'
+			.StripDebugInfo = 'objcopy --strip-debug $LinkerOutput$'
+			.AddDebugLink = 'objcopy --add-gnu-debuglink $LinkerOutput$.debug $LinkerOutput$'
+			.LinkerStampExeArgs = '-c "$ExtractDebugInfo$ && $StripDebugInfo$ && $AddDebugLink$"'
+#endif
+		}
+
+		// This is the main target
+		Alias('$ProjectName$-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		{
+			.Targets = '$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+		}
+		^'Targets_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$' + {'$ProjectName$-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'}
+
+		.ProjectConfig = 
+		[
+			Using(.'Project_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$')
+			.Target = '$ProjectName$-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+		]
+		^ProjectConfigs + .ProjectConfig
+	}
+
+	.Options = []
+	CreateVcxProject(.ProjectName, .ProjectPath, .ProjectConfigs, .Options)
+}

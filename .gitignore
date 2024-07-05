@@ -7,3 +7,4 @@ build/
 .xmake/
 .vs/
 vsxmake*/
+fastbuild/Config.bff

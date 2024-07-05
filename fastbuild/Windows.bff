@@ -1,0 +1,63 @@
+#once
+
+.Windows_Common =
+[
+	.PlatformName = 'Windows'
+	.CompilerOptions = ' -DCH_WIN32'
+	.ExeExtension = '.exe'
+	.LibExtension = '.lib'
+	.DLLExtension = '.dll'
+]
+
+.GDK = 
+[
+	.PlatformName = 'GDK'
+	.CompilerOptions = ' -DCH_GDK'
+]
+
+.GDKX =
+[
+	.PlatformName = 'XboxScarlett'
+	.CompilerOptions = ' -DCH_GDKX'	
+]
+
+.Xbox360 =
+[
+	.PlatformName = 'Xbox360'
+	.CompilerOptions = ' -DCH_XBOX360'
+]
+
+#if HAVE_MSVC_X64
+.GDK_MSVC_AMD64Debug = .Windows_Common + .GDK + .MSVC_AMD64Debug
+.GDK_MSVC_AMD64Release = .Windows_Common + .GDK + .MSVC_AMD64Release
+.GDK_MSVC_AMD64Retail = .Windows_Common + .GDK + .MSVC_AMD64Retail
+.GDKX_MSVC_AMD64Debug = .Windows_Common + .GDK + .GDKX + .MSVC_AMD64Debug
+.GDKX_MSVC_AMD64Release = .Windows_Common + .GDK + .GDKX + .MSVC_AMD64Release
+.GDKX_MSVC_AMD64Retail = .Windows_Common + .GDK + .GDKX + .MSVC_AMD64Retail
+#endif
+#if HAVE_MSVC_ARM64
+.Windows_MSVC_ARM64Debug = .Windows_Common + .MSVC_ARM64Debug
+.Windows_MSVC_ARM64Release = .Windows_Common + .MSVC_ARM64Release
+.Windows_MSVC_ARM64Retail = .Windows_Common + .MSVC_ARM64Retail
+#endif
+#if HAVE_MSVC_x86
+.Windows_MSVC_x86Debug = .Windows_Common + .MSVC_x86Debug
+.Windows_MSVC_x86Release = .Windows_Common + .MSVC_x86Release
+.Windows_MSVC_x86Retail = .Windows_Common + .MSVC_x86Retail
+#endif
+
+#if HAVE_CLANG
+.GDK_Clang_Windows_AMD64Debug = .Windows_Common + .GDK + .Clang_Windows_AMD64Debug
+.GDK_Clang_Windows_AMD64Release = .Windows_Common + .GDK + .Clang_Windows_AMD64Release
+.GDK_Clang_Windows_AMD64Retail = .Windows_Common + .GDK + .Clang_Windows_AMD64Retail
+.GDKX_Clang_Windows_AMD64Debug = .Windows_Common + .GDK + .GDKX + .Clang_Windows_AMD64Debug
+.GDKX_Clang_Windows_AMD64Release = .Windows_Common + .GDK + .GDKX + .Clang_Windows_AMD64Release
+.GDKX_Clang_Windows_AMD64Retail = .Windows_Common + .GDK + .GDKX + .Clang_Windows_AMD64Retail
+.Windows_Clang_Windows_ARM64Debug = .Windows_Common + .Clang_Windows_ARM64Debug
+.Windows_Clang_Windows_ARM64Release = .Windows_Common + .Clang_Windows_ARM64Release
+.Windows_Clang_Windows_ARM64Retail = .Windows_Common + .Clang_Windows_ARM64Retail
+.Windows_Clang_Windows_x86Debug = .Windows_Common + .Clang_Windows_x86Debug
+.Windows_Clang_Windows_x86Release = .Windows_Common + .Clang_Windows_x86Release
+.Windows_Clang_Windows_x86Retail = .Windows_Common + .Clang_Windows_x86Retail
+#endif
+

@@ -29,7 +29,7 @@ typedef sptr ssize;
 
 typedef float f32;
 typedef double f64;
-#ifdef KR_X86
+#ifdef CH_X86
 typedef __m128 v128;
 typedef __m256 v256;
 #endif

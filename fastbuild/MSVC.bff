@@ -1,0 +1,131 @@
+#once
+
+#include "Config.bff"
+
+#if __WINDOWS__
+Settings
+{
+	.Environment = {
+		'PATH=$VSBasePath$\Common7\IDE\'
+	}
+}
+
+.MSVC_Common =
+[
+	.CompilerName = 'MSVC'
+
+	.CompilerOptions = '"%1"' // Input
+					 + ' /Fo"%2"' // Output
+					 + ' /nologo' // Don't clog output
+					 + ' /c' // Compile only
+					 + ' /Zl' // Omit references to CRT in objects
+					 + ' /W4' // Max warnings
+					 + ' /WX' // Warnings as errors
+	.CompilerOptionsC = .CompilerOptions
+
+	.LinkerOptions = ' /OUT:"%2"' // Output
+				   + ' "%1"' // Input
+				   + ' /NOLOGO' // Don't clog output
+				   + ' /WX' // *Definitely* treat linker warnings as errors
+				   + ' /NODEFAULTLIB' // Disable automatically linking to CRT and others
+]
+
+.MSVC_Debug = 
+[
+	.ConfigName = 'Debug'
+
+	.CompilerOptions = ' /Zi' // PDB debug info
+					 + ' /Od' // Disable optimization
+					 + ' /RTC1' // Runtime checks
+					 + ' /GS' // Stack checks
+					 + ' /Zf' // Faster PDB generation
+
+	.LinkerOptions = ' /DEBUG'
+]
+
+.MSVC_Release =
+[
+	.ConfigName = 'Release'
+
+	.CompilerOptions = ' /O2' // Optimize
+					 + ' /Oy' // Omit frame pointers
+					 + ' /GL' // LTO
+					 + ' /Zi' // Debug info
+					 + ' /Zo' // Debug info for optimized code
+
+	.LinkerOptions = ' /LTCG' // LTO
+				   + ' /OPT:REF,ICF' // Remove unreferenced code, fold COMDATs
+]
+
+.MSVC_Retail =
+[
+	Using(.MSVC_Release)
+
+	.ConfigName = 'Retail'
+
+	// Disable debug info
+	.CompilerOptions - ' /Zi'
+					 - ' /Zo'
+]
+
+.MSVC_AMD64 =
+[
+	.ArchName = 'AMD64'
+
+	.ToolsDir = '$VSBasePath$\VC\Tools\Msvc\$MSVCVersion$\bin\Hostx64\AMD64'
+	.Compiler = '$ToolsDir$\cl.exe'
+	.Linker = '$ToolsDir$\link.exe'
+
+	.CompilerOptions = ' /I:$WindowsUmIncludePath$'
+					 + ' /I:$WindowsSharedIncludePath$'
+]
+
+.MSVC_AMD64Debug = .MSVC_Common + .MSVC_AMD64 + .MSVC_Debug
+.MSVC_AMD64Release = .MSVC_Common + .MSVC_AMD64 + .MSVC_Release
+.MSVC_AMD64Retail = .MSVC_Common + .MSVC_AMD64 + .MSVC_Retail
+
+.MSVC_ARM64 =
+[
+	.ArchName = 'ARM64'
+
+	.ToolsDir = '$VSBasePath$\VC\Tools\Msvc\$MSVCVersion$\bin\Hostx64\ARM64'
+	.Compiler = '$ToolsDir$\cl.exe'
+	.Linker = '$ToolsDir$\link.exe'
+
+	.CompilerOptions = ' /I:$WindowsUmIncludePath$'
+					 + ' /I:$WindowsSharedIncludePath$'
+]
+
+.MSVC_ARM64Debug = .MSVC_Common + .MSVC_ARM64 + .MSVC_Debug
+.MSVC_ARM64Release = .MSVC_Common + .MSVC_ARM64 + .MSVC_Release
+.MSVC_ARM64Retail = .MSVC_Common + .MSVC_ARM64 + .MSVC_Retail
+
+.MSVC_x86 =
+[
+	.ArchName = 'x86'
+
+	.ToolsDir = '$VSBasePath$\VC\Tools\Msvc\$MSVCVersion$\bin\Hostx64\x86'
+	.Compiler = '$ToolsDir$\cl.exe'
+	.Linker = '$ToolsDir$\link.exe'
+
+	.CompilerOptions = ' /I:$WindowsUmIncludePath$'
+					 + ' /I:$WindowsSharedIncludePath$'
+]
+
+.MSVC_x86Debug = .MSVC_Common + .MSVC_x86 + .MSVC_Debug
+.MSVC_x86Release = .MSVC_Common + .MSVC_x86 + .MSVC_Release
+.MSVC_x86Retail = .MSVC_Common + .MSVC_x86 + .MSVC_Retail
+
+.MSVC_Xbox360 =
+[
+	.ToolsDir = '$Xbox360SDK$\bin\win32'
+	.Compiler = '$ToolsDir$\cl.exe'
+	.Linker = '$ToolsDir$\link.exe'
+
+	.CompilerOptions = ' /I:$Xbox360SDK$\include\xbox'
+]
+
+.MSVC_Xbox360Debug = .MSVC_Common + .MSVC_Xbox360 + .MSVC_Debug
+.MSVC_Xbox360Release = .MSVC_Common + .MSVC_Xbox360 + .MSVC_Release
+.MSVC_Xbox360Retail = .MSVC_Common + .MSVC_Xbox360 + .MSVC_Retail
+#endif

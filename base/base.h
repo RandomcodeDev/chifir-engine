@@ -9,7 +9,7 @@
 // CPU data, comments are in x86 terms until I actually understand other arches
 struct BaseCpuData_t
 {
-#ifdef KR_X86
+#ifdef CF_X86
 	char brand[13];   // GenuineIntel/AuthenticAMD
 	char name[65];    // CPU model name
 	u32 haveName : 1; // CPUID with EAX = 0x80000000 returned 0x80000004 or higher

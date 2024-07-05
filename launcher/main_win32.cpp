@@ -2,7 +2,7 @@
 #include "base/types.h"
 #include "launcher.h"
 
-#ifndef KR_DEBUG
+#ifndef CH_DEBUG
 // hinting the nvidia driver to use the dedicated graphics card in an optimus
 // configuration for more info, see:
 // http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf

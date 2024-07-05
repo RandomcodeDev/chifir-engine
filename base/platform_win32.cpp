@@ -35,7 +35,10 @@ bool Base_GetSystemMemory(usize size)
 	// Linked list nodes, can contain any size of allocation, but there's a limit to the number of OS allocations
 	static LinkedNode_t<SystemAllocation_t> memoryNodes[64];
 
-	size = ALIGN(size, g_systemInfo.PageSize);
+	if (g_systemInfo.PageSize > 0)
+	{
+		size = ALIGN(size, g_systemInfo.PageSize);
+	}
 
 	g_memInfo.size += size;
 	LinkedNode_t<SystemAllocation_t>* node = &memoryNodes[g_memInfo.allocations.Size()];

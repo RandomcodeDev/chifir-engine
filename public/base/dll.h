@@ -4,7 +4,7 @@
 
 #include "compiler.h"
 
-#ifdef KR_WIN32
+#ifdef CH_WIN32
 #define DLLEXPORT ATTRIBUTE(dllexport)
 #define DLLIMPORT ATTRIBUTE(dllimport)
 #else

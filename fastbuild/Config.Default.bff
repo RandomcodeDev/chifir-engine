@@ -1,0 +1,24 @@
+// Configuration template
+
+#once
+
+#if __WINDOWS__
+.VSBasePath = 'C:\Program Files\Microsoft Visual Studio\2022\Community'
+.VSToolset = 'v143'
+.VSSolutionVersion = '16'
+.MSVCVersion = '14.40.33807'
+.WindowsSDKBasePath = 'C:\Program Files (x86)\Windows Kits\10'
+.WindowsSDKVersion = '10.0.22621.0'
+.WindowsLibPath = '$WindowsSDKBasePath$\Lib\$WindowsSDKVersion$\um'
+.WindowsUmIncludePath = '$WindowsSDKBasePath$\Include\$WindowsSDKVersion$\um'
+.WindowsSharedIncludePath = '$WindowsSDKBasePath$\Include\$WindowsSDKVersion$\shared'
+.Xbox360SDK = 'C:\Program Files (x86)\Microsoft Xbox 360 SDK'
+
+// Comment out ones you don't have installed
+#define HAVE_MSVC
+#define HAVE_MSVC_AMD64
+#define HAVE_MSVC_X86
+//#define HAVE_MSVC_ARM64
+//#define HAVE_MSVC_XBOX360
+#endif
+

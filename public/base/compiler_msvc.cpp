@@ -17,7 +17,7 @@ extern "C"
 	void __cdecl __security_init_cookie()
 	{
 		// TODO: randomize this.
-#if defined KR_AMD64 || defined KR_ARM64
+#if defined CH_AMD64 || defined CH_ARM64
 		__security_cookie = 0x6942069420694206;
 #else
 		__security_cookie = 0x69420694;
@@ -25,7 +25,7 @@ extern "C"
 		__security_cookie_complement = ~__security_cookie;
 	}
 
-#if defined KR_X86 && !defined KR_AMD64
+#if defined CH_X86 && !defined CH_AMD64
 	void __fastcall ATTRIBUTE(naked) __security_check_cookie(uptr cookie)
 	{
 		ASSERT(cookie == __security_cookie);
@@ -57,7 +57,7 @@ extern "C"
 	void __GSHandlerCheckCommon(void* EstablisherFrame, void* DispatcherContext, u32* GSHandlerData)
 
 	{
-#ifdef KR_AMD64
+#ifdef CH_AMD64
 		uptr uVar1;
 		void* pvVar2;
 
@@ -83,7 +83,7 @@ extern "C"
 		unsigned char ExceptionRecord, void* EstablisherFrame, unsigned char ContextRecord, void* DispatcherContext)
 
 	{
-#ifdef KR_AMD64
+#ifdef CH_AMD64
 		__GSHandlerCheckCommon(EstablisherFrame, DispatcherContext, *(u32**)((sptr)DispatcherContext + 0x38));
 #endif
 		return true;

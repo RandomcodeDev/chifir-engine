@@ -2,16 +2,16 @@
 
 #pragma once
 
-#ifdef KR_WIN32
+#ifdef CH_WIN32
 #define PHNT_MODE PHNT_MODE_USER
-#ifdef KR_XBOX360
+#ifdef CH_XBOX360
 #define PHNT_VERSION PHNT_WIN2K
 #include "phnt_xbox.h"
 #else
 #define PHNT_VERSION PHNT_WIN11
 #include "phnt_windows.h"
 #endif
-#ifdef KR_XBOX360
+#ifdef CH_XBOX360
 #define RtlLockHeap                              RtlLockHeap_phnt
 #define RtlInitializeCriticalSection             RtlInitializeCriticalSection_phnt
 #define RtlInitializeCriticalSectionAndSpinCount RtlInitializeCriticalSectionAndSpinCount_phnt
@@ -19,7 +19,7 @@
 #define RtlLeaveCriticalSection                  RtlLeaveCriticalSection_phnt
 #endif
 #include "phnt.h"
-#ifdef KR_XBOX360
+#ifdef CH_XBOX360
 #undef RtlLockHeap
 #undef RtlInitializeCriticalSection
 #undef RtlInitializeCriticalSectionAndSpinCount

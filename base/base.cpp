@@ -5,7 +5,7 @@
 bool g_baseInitialized;
 BaseCpuData_t g_cpuData;
 
-#ifdef KR_X86
+#ifdef CF_X86
 static void CpuId(u32& eax, u32& ebx, u32& ecx, u32& edx)
 {
 #ifdef _MSC_VER
@@ -60,7 +60,7 @@ static void X86InitCpuData()
 
 BASEAPI void Base_Init()
 {
-#ifdef KR_X86
+#ifdef CF_X86
 	X86InitCpuData();
 #endif
 
