@@ -11,11 +11,14 @@
 #include <avxintrin.h>
 #endif
 
-#define ATTRIBUTE(x) __declspec(x)
-// TODO: this assumes link.exe or lld-link, but that should be fine
-#define ALIAS(a, b)  __pragma(comment(linker, "/export:" #b "=" #a))
-#define BREAKPOINT() __debugbreak()
-#define ASSUME(x)    __assume(x)
+#define ATTRIBUTE(x)                  __declspec(x)
+#define EXPORT_AS_RAW(a, b)           __pragma(comment(linker, "/export:" b "=" a))
+#define EXPORT_CURRENT_FUNCTION_AS(x) EXPORT_AS_RAW(__FUNCTION__, x)
+#define EXPORT_AS(a, b)               EXPORT_AS_RAW(#a, #b)
+#define ALIAS_RAW(a, b)               __pragma(comment(linker, "/alternatename:" b "=" a))
+#define ALIAS(a, b)                   ALIAS_RAW(#a, #b)
+#define BREAKPOINT()                  __debugbreak()
+#define ASSUME(x)                     __assume(x)
 #else
 #define ATTRIBUTE(x) __attribute__((x))
 #define ALIAS(a, b)  extern "C" TYPEOF(a) ATTRIBUTE(alias(#a)) b;

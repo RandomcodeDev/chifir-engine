@@ -1,37 +1,24 @@
-#include "platform_win32.h"
 #include "base/base.h"
 #include "base/basicstr.h"
 #include "base/compiler.h"
 #include "base/loader.h"
+#include "platform_win32.h"
 
 static PIMAGE_DOS_HEADER ntDllBase;
 
-// Export a function but also define it so it can be used like it was imported from NTDLL within Base.dll
-#define MAKE_STUB(x)                                                                                                             \
-	extern "C"                                                                                                                   \
-	{                                                                                                                            \
-		uptr (*__imp_##x)(...);                                                                                                  \
-                                                                                                                                 \
-		uptr x##_Forwarder(...)                                                                                                  \
-		{                                                                                                                        \
-			return __imp_##x();                                                                                                  \
-		}                                                                                                                        \
-	}                                                                                                                            \
-	ALIAS(x##_Forwarder, x);
-
-MAKE_STUB(DbgPrint);
-MAKE_STUB(LdrAddRefDll);
-MAKE_STUB(LdrGetProcedureAddress);
-MAKE_STUB(LdrLoadDll);
-MAKE_STUB(LdrUnloadDll);
-MAKE_STUB(NtAllocateVirtualMemory);
-MAKE_STUB(NtFreeVirtualMemory);
-MAKE_STUB(NtQuerySystemInformation);
-MAKE_STUB(NtRaiseHardError);
-MAKE_STUB(NtTerminateProcess);
-MAKE_STUB(RtlAnsiStringToUnicodeString); // Needed for loading DLLs
-MAKE_STUB(RtlFreeHeap);
-MAKE_STUB(RtlFreeUnicodeString);
+MAKE_STUB(DbgPrint, __stdcall, 4)
+MAKE_STUB(LdrAddRefDll, __stdcall, 8)
+MAKE_STUB(LdrGetProcedureAddress, __stdcall, 16)
+MAKE_STUB(LdrLoadDll, __stdcall, 16)
+MAKE_STUB(LdrUnloadDll, __stdcall, 4)
+MAKE_STUB(NtAllocateVirtualMemory, __stdcall, 24)
+MAKE_STUB(NtFreeVirtualMemory, __stdcall, 16)
+MAKE_STUB(NtQuerySystemInformation, __stdcall, 16)
+MAKE_STUB(NtRaiseHardError, __stdcall, 0)
+MAKE_STUB(NtTerminateProcess, __stdcall, 8)
+MAKE_STUB(RtlAnsiStringToUnicodeString, __stdcall, 12)
+MAKE_STUB(RtlFreeHeap, __stdcall, 12)
+MAKE_STUB(RtlFreeUnicodeString, __stdcall, 4)
 
 static bool FindNtDll()
 {
@@ -51,11 +38,11 @@ static bool FindNtDll()
 }
 
 // Somehow the Rtl function for this isn't inline in phnt, I guess it does that thing with the last section or whatever
-#define RVA_TO_VA(base, rva) ((u8*)(base) + (rva))
+#define RVA_TO_VA(base, rva) (reinterpret_cast<u8*>(base) + (rva))
 
 static bool FindLdrGetProcedureAddress()
 {
-	if (__imp_LdrGetProcedureAddress)
+	if (STUB_NAME(LdrGetProcedureAddress))
 	{
 		return true;
 	}
@@ -86,18 +73,18 @@ static bool FindLdrGetProcedureAddress()
 		u64 hash = Base_Fnv1a64(name, Base_StrLen(name));
 		if (hash == TARGET_HASH) // To get around collisions
 		{
-			__imp_LdrGetProcedureAddress = (uptr(*)(...))RVA_TO_VA(ntDllBase, functions[ordinals[i]]);
+			STUB_NAME(LdrGetProcedureAddress) = (uptr(*)(...))RVA_TO_VA(ntDllBase, functions[ordinals[i]]);
 			break;
 		}
 	}
 
-	return __imp_LdrGetProcedureAddress != nullptr;
+	return STUB_NAME(LdrGetProcedureAddress) != nullptr;
 }
 
 #define GET_FUNCTION(lib, name)                                                                                                  \
 	{                                                                                                                            \
-		__imp_##name = ((ILibrary*)&(lib))->GetSymbol<uptr (*)(...)>(#name);                                                     \
-		ASSERT_CODE(__imp_##name != nullptr, NtCurrentTeb()->LastStatusValue);                                                      \
+		STUB_NAME(name) = (reinterpret_cast<ILibrary*>(&(lib)))->GetSymbol<uptr (*)(...)>(#name);                                \
+		ASSERT_CODE(STUB_NAME(name) != nullptr, NtCurrentTeb()->LastStatusValue);                                                \
 	}
 
 bool Base_InitLoader()
@@ -135,7 +122,7 @@ bool Base_InitLoader()
 
 BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 {
-	if (__imp_RtlAnsiStringToUnicodeString && __imp_LdrLoadDll)
+	if (STUB_NAME(RtlAnsiStringToUnicodeString) && STUB_NAME(LdrLoadDll))
 	{
 		UNICODE_STRING nameUStr = {};
 		ANSI_STRING nameStr = {0};
@@ -173,7 +160,7 @@ CWin32Library::CWin32Library(void* base) : m_base(base)
 
 CWin32Library::~CWin32Library()
 {
-	if (__imp_LdrUnloadDll && m_base)
+	if (STUB_NAME(LdrUnloadDll) && m_base)
 	{
 		LdrUnloadDll(m_base);
 	}
@@ -181,7 +168,7 @@ CWin32Library::~CWin32Library()
 
 void* CWin32Library::GetSymbol(cstr name)
 {
-	ASSERT(__imp_LdrGetProcedureAddress);
+	ASSERT(STUB_NAME(LdrGetProcedureAddress));
 
 	ANSI_STRING nameStr = {0};
 	nameStr.Buffer = (dstr)name;

@@ -5,8 +5,10 @@
 #if __WINDOWS__
 Settings
 {
+	#import TMP
 	.Environment = {
-		'PATH=$VSBasePath$\Common7\IDE\'
+		'TMP=$TMP$',
+		'SystemRoot=C:\Windows'
 	}
 }
 
@@ -14,13 +16,32 @@ Settings
 [
 	.CompilerName = 'MSVC'
 
-	.CompilerOptions = '"%1"' // Input
+	.CompilerOptions = ' "%1"' // Input
 					 + ' /Fo"%2"' // Output
 					 + ' /nologo' // Don't clog output
 					 + ' /c' // Compile only
 					 + ' /Zl' // Omit references to CRT in objects
 					 + ' /W4' // Max warnings
 					 + ' /WX' // Warnings as errors
+
+					 // Windows SDK include dirs
+					 + ' /I"$WindowsUmIncludePath$"'
+					 + ' /I"$WindowsSharedIncludePath$"'
+					 + ' /I"$WindowsUcrtIncludePath$"'
+
+					 // Compiler headers
+					 + ' /I"$VSBasePath$\VC\Tools\MSVC\$MSVCVersion$\include"'
+
+					 // Warnings
+					 + ' /wd4201' // nameless struct
+					 + ' /wd4324' // structure padded due to alignment specifier
+
+	// Global include dirs
+	ForEach(.IncludeDir in .IncludeDirs)
+	{
+		^CompilerOptions + ' /I"$_WORKING_DIR_$\$IncludeDir$"'
+	}
+
 	.CompilerOptionsC = .CompilerOptions
 
 	.LinkerOptions = ' /OUT:"%2"' // Output
@@ -28,15 +49,30 @@ Settings
 				   + ' /NOLOGO' // Don't clog output
 				   + ' /WX' // *Definitely* treat linker warnings as errors
 				   + ' /NODEFAULTLIB' // Disable automatically linking to CRT and others
+	
+    .LibrarianOptions = ' /OUT:"%2"'
+					  + ' "%1"'
+					  + ' /NODEFAULTLIB'
+					  + ' /WX'
+					  + ' /NOLOGO'
+
+	.MASMOptions = ' /c'
+				 + ' /Cp'
+				 + ' /Zd'
+				 + ' /Zi'
+				 + ' /Fl'
+				 + ' /nologo'
+				 + ' "%1"'
+				 + ' /Fo"%2"'
 ]
 
 .MSVC_Debug = 
 [
 	.ConfigName = 'Debug'
 
-	.CompilerOptions = ' /Zi' // PDB debug info
+	.CompilerOptions = ' /Z7' // PDB debug info
 					 + ' /Od' // Disable optimization
-					 + ' /RTC1' // Runtime checks
+					 //+ ' /RTC1' // Runtime checks
 					 + ' /GS' // Stack checks
 					 + ' /Zf' // Faster PDB generation
 
@@ -49,12 +85,10 @@ Settings
 
 	.CompilerOptions = ' /O2' // Optimize
 					 + ' /Oy' // Omit frame pointers
-					 + ' /GL' // LTO
-					 + ' /Zi' // Debug info
+					 + ' /Z7' // Debug info
 					 + ' /Zo' // Debug info for optimized code
 
-	.LinkerOptions = ' /LTCG' // LTO
-				   + ' /OPT:REF,ICF' // Remove unreferenced code, fold COMDATs
+	.LinkerOptions = ' /OPT:REF,ICF' // Remove unreferenced code, fold COMDATs
 ]
 
 .MSVC_Retail =
@@ -64,7 +98,7 @@ Settings
 	.ConfigName = 'Retail'
 
 	// Disable debug info
-	.CompilerOptions - ' /Zi'
+	.CompilerOptions - ' /Z7'
 					 - ' /Zo'
 ]
 
@@ -72,12 +106,14 @@ Settings
 [
 	.ArchName = 'AMD64'
 
-	.ToolsDir = '$VSBasePath$\VC\Tools\Msvc\$MSVCVersion$\bin\Hostx64\AMD64'
-	.Compiler = '$ToolsDir$\cl.exe'
-	.Linker = '$ToolsDir$\link.exe'
+	.VSToolsDir = '$VSBasePath$\VC\Tools\MSVC\$MSVCVersion$\bin\Hostx64\x64'
+	.Compiler = '$VSToolsDir$\cl.exe'
+	.Linker = '$VSToolsDir$\link.exe'
+	.Librarian = '$VSToolsDir$\lib.exe'
+	.MASM = '$VSToolsDir$\ml64.exe'
 
-	.CompilerOptions = ' /I:$WindowsUmIncludePath$'
-					 + ' /I:$WindowsSharedIncludePath$'
+	.CompilerOptions = ' /DCH_X86 /DCH_AMD64'
+
 ]
 
 .MSVC_AMD64Debug = .MSVC_Common + .MSVC_AMD64 + .MSVC_Debug
@@ -88,12 +124,13 @@ Settings
 [
 	.ArchName = 'ARM64'
 
-	.ToolsDir = '$VSBasePath$\VC\Tools\Msvc\$MSVCVersion$\bin\Hostx64\ARM64'
-	.Compiler = '$ToolsDir$\cl.exe'
-	.Linker = '$ToolsDir$\link.exe'
+	.VSToolsDir = '$VSBasePath$\VC\Tools\MSVC\$MSVCVersion$\bin\Hostx64\ARM64'
+	.Compiler = '$VSToolsDir$\cl.exe'
+	.Linker = '$VSToolsDir$\link.exe'
+	.Librarian = '$VSToolsDir$\lib.exe'
+	.MASM = '$VSToolsDir$\marmasm.exe'
 
-	.CompilerOptions = ' /I:$WindowsUmIncludePath$'
-					 + ' /I:$WindowsSharedIncludePath$'
+	.CompilerOptions = ' /DCH_ARM64'
 ]
 
 .MSVC_ARM64Debug = .MSVC_Common + .MSVC_ARM64 + .MSVC_Debug
@@ -104,12 +141,13 @@ Settings
 [
 	.ArchName = 'x86'
 
-	.ToolsDir = '$VSBasePath$\VC\Tools\Msvc\$MSVCVersion$\bin\Hostx64\x86'
-	.Compiler = '$ToolsDir$\cl.exe'
-	.Linker = '$ToolsDir$\link.exe'
+	.VSToolsDir = '$VSBasePath$\VC\Tools\MSVC\$MSVCVersion$\bin\Hostx64\x86'
+	.Compiler = '$VSToolsDir$\cl.exe'
+	.Linker = '$VSToolsDir$\link.exe'
+	.Librarian = '$VSToolsDir$\lib.exe'
+	.MASM = '$VSToolsDir$\ml.exe'
 
-	.CompilerOptions = ' /I:$WindowsUmIncludePath$'
-					 + ' /I:$WindowsSharedIncludePath$'
+	.CompilerOptions = ' /DCH_X86 /DCH_I386'
 ]
 
 .MSVC_x86Debug = .MSVC_Common + .MSVC_x86 + .MSVC_Debug
@@ -118,11 +156,14 @@ Settings
 
 .MSVC_Xbox360 =
 [
-	.ToolsDir = '$Xbox360SDK$\bin\win32'
-	.Compiler = '$ToolsDir$\cl.exe'
-	.Linker = '$ToolsDir$\link.exe'
+	.ArchName = 'PPC64'
 
-	.CompilerOptions = ' /I:$Xbox360SDK$\include\xbox'
+	.VSToolsDir = '$Xbox360SDK$\bin\win32'
+	.Compiler = '$VSToolsDir$\cl.exe'
+	.Linker = '$VSToolsDir$\link.exe'
+	.Librarian = '$VSToolsDir$\lib.exe'
+
+	.CompilerOptions = ' /I"$Xbox360SDK$\include\xbox"'
 ]
 
 .MSVC_Xbox360Debug = .MSVC_Common + .MSVC_Xbox360 + .MSVC_Debug

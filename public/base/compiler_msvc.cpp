@@ -25,8 +25,8 @@ extern "C"
 		__security_cookie_complement = ~__security_cookie;
 	}
 
-#if defined CH_X86 && !defined CH_AMD64
-	void __fastcall ATTRIBUTE(naked) __security_check_cookie(uptr cookie)
+#ifdef CH_I386
+	ATTRIBUTE(naked) void __fastcall __security_check_cookie(uptr cookie)
 	{
 		ASSERT(cookie == __security_cookie);
 
@@ -37,11 +37,11 @@ extern "C"
 #endif
 
 	// TODO: figure these out
-	void _RTC_InitBase()
+	void __cdecl _RTC_InitBase()
 	{
 	}
 
-	void _RTC_ShutDown()
+	void __cdecl _RTC_ShutDown()
 	{
 	}
 
@@ -49,8 +49,17 @@ extern "C"
 	{
 	}
 
+	void __cdecl _RTC_CheckEsp()
+	{
+	}
+
+	void _RTC_Shutdown()
+	{
+	}
+
 	void __chkstk(uptr addr)
 	{
+		(void)addr;
 	}
 
 	// TODO: make sure this works on 32-bit and non-x86
@@ -76,6 +85,10 @@ extern "C"
 									   (uptr)(*(unsigned char*)(uVar1 + 3 + *(sptr*)((sptr)DispatcherContext + 8)) & 0xfffffff0));
 		}
 		__security_check_cookie((uptr)EstablisherFrame ^ *(uptr*)((sptr)(int)(*GSHandlerData & 0xfffffff8) + (sptr)pvVar2));
+#else
+		(void)EstablisherFrame;
+		(void)DispatcherContext;
+		(void)GSHandlerData;
 #endif
 	}
 
@@ -84,21 +97,28 @@ extern "C"
 
 	{
 #ifdef CH_AMD64
+		(void)ContextRecord;
+		(void)ExceptionRecord;
 		__GSHandlerCheckCommon(EstablisherFrame, DispatcherContext, *(u32**)((sptr)DispatcherContext + 0x38));
+#else
+		(void)ExceptionRecord;
+		(void)EstablisherFrame;
+		(void)ContextRecord;
+		(void)DispatcherContext;
 #endif
 		return true;
 	}
 
 	ATTRIBUTE(guard(suppress)) void* __CxxFrameHandler3()
 	{
-		Base_Quit(STATUS_UNHANDLED_EXCEPTION, "C++ exception 3");
-		return nullptr;
+		Base_Quit(static_cast<u32>(STATUS_UNHANDLED_EXCEPTION), "C++ exception 3");
+		//return nullptr;
 	}
 
 	ATTRIBUTE(guard(suppress)) void* __CxxFrameHandler4()
 	{
-		Base_Quit(STATUS_UNHANDLED_EXCEPTION, "C++ exception 4");
-		return nullptr;
+		Base_Quit(static_cast<u32>(STATUS_UNHANDLED_EXCEPTION), "C++ exception 4");
+		//return nullptr;
 	}
 
 	int __cdecl _purecall()
@@ -106,7 +126,7 @@ extern "C"
 		// As far as I can tell, this gets called when a virtual call has no implementation, and normally code to call a handler
 		// would be here. If I cared and this function wasn't implemented directly, the handler would have this same code, which
 		// means that functionality isn't needed here.
-		Base_Quit(STATUS_NOT_FOUND, "Pure virtual call");
+		Base_Quit(static_cast<u32>(STATUS_NOT_FOUND), "Pure virtual call");
 	}
 }
 

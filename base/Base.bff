@@ -9,28 +9,40 @@
 	{
 		Using(.BuildConfig)
 
+		.CompilerOptions + ' -DIN_BASE'
+
 		.ObjectDir = 'obj/$CompilerName$/$PlatformName$/$ArchName$/$ConfigName$'
 		.OutputDir = 'out/$CompilerName$/$PlatformName$/$ArchName$/$ConfigName$'
 
 		Unity('$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
 		{
-			.UnityInputFiles =
+			.UnityInputFiles = 
 			{
 				'$ProjectPath$/base.cpp',
 				'$ProjectPath$/basicstr.cpp',
 				'$ProjectPath$/basicwstr.cpp',
 				'$ProjectPath$/memory.cpp',
-				'$ProjectPath$/platform.cpp'
+				'$ProjectPath$/platform.cpp',
+				'$ProjectPath$/../public/base/memoverride.cpp'
 			}
 
-			.WindowsLike = {'Windows', 'GDK', 'XboxScarlett', 'Xbox360'}
 			If (.PlatformName in .WindowsLike)
 			{
-				.UnityInputFiles +
+				^UnityInputFiles +
 				{
 					'$ProjectPath$/init_win32.cpp',
 					'$ProjectPath$/loader_win32.cpp',
-					'$ProjectPath$/platform_win32.cpp'
+					'$ProjectPath$/platform_win32.cpp',
+					'$ProjectPath$/../public/base/dllmain.cpp',
+					'$ProjectPath$/../public/base/compiler_msvc.cpp'
+				}
+			}
+
+			If (.CompilerName == 'Clang')
+			{
+				^UnityInputFiles +
+				{
+					'$ProjectPath$/../public/base/compiler_clang.cpp'
 				}
 			}
 			
@@ -44,17 +56,55 @@
 			.CompilerOutputPath = '$ObjectDir$/$ProjectPath$/'
 		}
 
+#if __WINDOWS__
+		If (.PlatformName in .WindowsLike)
+		{
+			If (.ArchName == 'x86')
+			{
+				Exec('$ProjectName$-ASM-Win32Stubs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+				{
+					.ExecExecutable = .MASM
+					.ExecInput = '$ProjectPath$/stubs_win32_x86.asm'
+					.ExecOutput = '$ObjectDir$/$ProjectPath$/stubs_win32_x86.obj'
+					.ExecArguments = .MASMOptions
+					.ExecWorkingDir = '$ObjectDir$/$ProjectPath$'
+				}
+			}
+		}
+#endif
+
 		DLL('$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
 		{
-			.Libraries = { '$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$' }
+			.PreBuildDependencies = {'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'}
+			.Libraries =
+			{
+				'$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+			}
 			.LinkerOutput = '$OutputDir$/$ProjectName$$DLLExtension$'
-#if __LINUX__
-			.LinkerStampExe	 = '/bin/sh'
-			.ExtractDebugInfo = 'objcopy --only-keep-debug $LinkerOutput$ $LinkerOutput$.debug'
-			.StripDebugInfo = 'objcopy --strip-debug $LinkerOutput$'
-			.AddDebugLink = 'objcopy --add-gnu-debuglink $LinkerOutput$.debug $LinkerOutput$'
-			.LinkerStampExeArgs = '-c "$ExtractDebugInfo$ && $StripDebugInfo$ && $AddDebugLink$"'
-#endif
+			If (.PlatformName in .WindowsLike)
+			{
+				^LinkerOptions + ' /DLL'
+				If (.ArchName == 'AMD64')
+				{
+					^Libraries + {'$ObjectDir$/$ProjectPath$/compiler_msvc_amd64.obj'}
+				}
+				If (.ArchName == 'x86')
+				{
+					^Libraries +
+					{
+						'$ObjectDir$/$ProjectPath$/compiler_msvc_x86.obj',
+						'$ObjectDir$/$ProjectPath$/stubs_win32_x86.obj'
+					}
+				}
+			}
+			If (.PlatformName == 'Linux')
+			{
+				^LinkerStampExe	 = '/bin/sh'
+				^ExtractDebugInfo = 'objcopy --only-keep-debug $LinkerOutput$ $LinkerOutput$.debug'
+				^StripDebugInfo = 'objcopy --strip-debug $LinkerOutput$'
+				^AddDebugLink = 'objcopy --add-gnu-debuglink $LinkerOutput$.debug $LinkerOutput$'
+				^LinkerStampExeArgs = '-c "$ExtractDebugInfo$ && $StripDebugInfo$ && $AddDebugLink$"'
+			}
 		}
 
 		// This is the main target

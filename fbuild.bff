@@ -1,5 +1,8 @@
 #include "fastbuild/Config.bff"
 #include "fastbuild/Util.bff"
+
+.IncludeDirs = { 'public', 'external', 'external/phnt' }
+
 #include "fastbuild/MSVC.bff"
 //#include "fastbuild/Clang.bff"
 #include "fastbuild/Windows.bff"
@@ -11,7 +14,7 @@
 .BuildConfigs =
 {
 #if __WINDOWS__
-#if HAVE_MSVC_X64
+#if HAVE_MSVC_AMD64
 	.GDK_MSVC_AMD64Debug,
 	.GDK_MSVC_AMD64Release,
 	.GDK_MSVC_AMD64Retail,
@@ -26,10 +29,15 @@
 	.Windows_MSVC_ARM64Release,
 	.Windows_MSVC_ARM64Retail,
 #endif
-#if HAVE_MSVC_x86
+#if HAVE_MSVC_X86
 	.Windows_MSVC_x86Debug,
 	.Windows_MSVC_x86Release,
 	.Windows_MSVC_x86Retail,
+#endif
+#if HAVE_MSVC_XBOX360
+	.Xbox360_MSVC_Debug,
+	.Xbox360_MSVC_Release,
+	.Xbox360_MSVC_Retail,
 #endif
 
 #if HAVE_CLANG
@@ -54,49 +62,47 @@
 #endif
 }
 
-Print(.BuildConfigs)
-
 #if __WINDOWS__
 .ProjectCommon =
 [
-	.ProjectBuildCommand = 'cd ^$(SolutionDir)..\..\ &amp; fbuild -vs -dist -monitor -cache ^$(ProjectName)-^$(Platform)-^$(Configuration)'
-	.ProjectRebuildCommand = 'cd ^$(SolutionDir)..\..\ &amp; fbuild -vs -dist -monitor -cache -clean ^$(ProjectName)-^$(Platform)-^$(Configuration)'
+	.ProjectBuildCommand = 'cd ^$(SolutionDir)..\..\ & $_FASTBUILD_EXE_PATH_$ -vs -dist -monitor -cache ^$(ProjectName)-^$(Configuration)'
+	.ProjectRebuildCommand = 'cd ^$(SolutionDir)..\..\ & $_FASTBUILD_EXE_PATH_$ -vs -dist -monitor -cache -clean ^$(ProjectName)-^$(Configuration)'
 	.OutputDirectory = '^$(SolutionDir)\build'
 	.IntermediateDirectory = '^$(SolutionDir)\build'
 	.BuildLogFile = '^$(SolutionDir)\Temp\^$(ProjectName)-^$(Configuration).log'
 	.PlatformToolset = '$VSToolset$'
 ]
 
-.Project_MSVC_Windows_x86_Debug = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-Windows-$SolutionPlatform$-$SolutionConfig$']
-.Project_MSVC_Windows_x86_Release = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Release-MSVC' .Config = 'MSVC-Windows-$SolutionPlatform$-$SolutionConfig$']
-.Project_MSVC_Windows_x86_Retail = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Retail-MSVC' .Config = 'MSVC-Windows-$SolutionPlatform$-$SolutionConfig$']
-.Project_MSVC_GDK_AMD64_Debug = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDK' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-GDK-$SolutionPlatform$-$SolutionConfig$']
-.Project_MSVC_GDK_AMD64_Release = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDK' .SolutionConfig = 'Release-MSVC' .Config = 'MSVC-GDK-$SolutionPlatform$-$SolutionConfig$']
-.Project_MSVC_GDK_AMD64_Retail = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDK' .SolutionConfig = 'Retail-MSVC' .Config = 'MSVC-GDK-$SolutionPlatform$-$SolutionConfig$']
-.Project_MSVC_GDKX_AMD64_Debug = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-GDKX-$SolutionPlatform$-$SolutionConfig$']
-.Project_MSVC_GDKX_AMD64_Release = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Release-MSVC' .Config = 'MSVC-GDKX-$SolutionPlatform$-$SolutionConfig$']
-.Project_MSVC_GDKX_AMD64_Retail = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Retail-MSVC' .Config = 'MSVC-GDKX-$SolutionPlatform$-$SolutionConfig$']
-.Project_MSVC_Xbox360_Xbox360_Debug = [Using(.ProjectCommon) .Platform = 'Xbox360' .SolutionPlatform = 'Xbox360' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-Xbox360-$SolutionPlatform$-$SolutionConfig$']
-.Project_MSVC_Xbox360_Xbox360_Release = [Using(.ProjectCommon) .Platform = 'Xbox360' .SolutionPlatform = 'Xbox360' .SolutionConfig = 'Release-MSVC' .Config = 'MSVC-Xbox360-$SolutionPlatform$-$SolutionConfig$']
-.Project_MSVC_Xbox360_Xbox360_Retail = [Using(.ProjectCommon) .Platform = 'Xbox360' .SolutionPlatform = 'Xbox360' .SolutionConfig = 'Retail-MSVC' .Config = 'MSVC-Xbox360-$SolutionPlatform$-$SolutionConfig$']
-.Project_MSVC_Windows_ARM64_Debug = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-Windows-$SolutionPlatform$-$SolutionConfig$']
-.Project_MSVC_Windows_ARM64_Release = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Release-MSVC' .Config = 'MSVC-Windows-$SolutionPlatform$-$SolutionConfig$']
-.Project_MSVC_Windows_ARM64_Retail = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Retail-MSVC' .Config = 'MSVC-Windows-$SolutionPlatform$-$SolutionConfig$']
-.Project_Clang_Windows_x86_Debug = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-Windows-$SolutionPlatform$-$SolutionConfig$']
-.Project_Clang_Windows_x86_Release = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Release-Clang' .Config = 'Clang-Windows-$SolutionPlatform$-$SolutionConfig$']
-.Project_Clang_Windows_x86_Retail = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-Windows-$SolutionPlatform$-$SolutionConfig$']
-.Project_Clang_GDK_AMD64_Debug = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDK' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-GDK-$SolutionPlatform$-$SolutionConfig$']
-.Project_Clang_GDK_AMD64_Release = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDK' .SolutionConfig = 'Release-Clang' .Config = 'Clang-GDK-$SolutionPlatform$-$SolutionConfig$']
-.Project_Clang_GDK_AMD64_Retail = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDK' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-GDK-$SolutionPlatform$-$SolutionConfig$']
-.Project_Clang_GDKX_AMD64_Debug = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-GDKX-$SolutionPlatform$-$SolutionConfig$']
-.Project_Clang_GDKX_AMD64_Release = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Release-Clang' .Config = 'Clang-GDKX-$SolutionPlatform$-$SolutionConfig$']
-.Project_Clang_GDKX_AMD64_Retail = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-GDKX-$SolutionPlatform$-$SolutionConfig$']
-.Project_Clang_Windows_ARM64_Debug = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-Windows-$SolutionPlatform$-$SolutionConfig$']
-.Project_Clang_Windows_ARM64_Release = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Release-Clang' .Config = 'Clang-Windows-$SolutionPlatform$-$SolutionConfig$']
-.Project_Clang_Windows_ARM64_Retail = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-Windows-$SolutionPlatform$-$SolutionConfig$']
-.Project_Clang_Switch_NX64_Debug = [Using(.ProjectCommon) .Platform = 'NX64' .SolutionPlatform = 'NX64' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-Switch-$SolutionPlatform$-$SolutionConfig$']
-.Project_Clang_Switch_NX64_Release = [Using(.ProjectCommon) .Platform = 'NX64' .SolutionPlatform = 'NX64' .SolutionConfig = 'Release-Clang' .Config = 'Clang-Switch-$SolutionPlatform$-$SolutionConfig$']
-.Project_Clang_Switch_NX64_Retail = [Using(.ProjectCommon) .Platform = 'NX64' .SolutionPlatform = 'NX64' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-Switch-$SolutionPlatform$-$SolutionConfig$']
+.Project_MSVC_Windows_x86_Debug = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-Windows-x86-Debug']
+.Project_MSVC_Windows_x86_Release = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Release-MSVC' .Config = 'MSVC-Windows-x86-Release']
+.Project_MSVC_Windows_x86_Retail = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Retail-MSVC' .Config = 'MSVC-Windows-x86-Retail']
+.Project_MSVC_GDK_AMD64_Debug = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDK' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-GDK-AMD64-Debug']
+.Project_MSVC_GDK_AMD64_Release = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDK' .SolutionConfig = 'Release-MSVC' .Config = 'MSVC-GDK-AMD64-Release']
+.Project_MSVC_GDK_AMD64_Retail = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDK' .SolutionConfig = 'Retail-MSVC' .Config = 'MSVC-GDK-AMD64-Retail']
+.Project_MSVC_GDKX_AMD64_Debug = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-GDKX-AMD64-Debug']
+.Project_MSVC_GDKX_AMD64_Release = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Release-MSVC' .Config = 'MSVC-GDKX-AMD64-Release']
+.Project_MSVC_GDKX_AMD64_Retail = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Retail-MSVC' .Config = 'MSVC-GDKX-AMD64-Retail']
+.Project_MSVC_Xbox360_Xbox360_Debug = [Using(.ProjectCommon) .Platform = 'Xbox360' .SolutionPlatform = 'Xbox360' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-Xbox360-Xbox360-Debug']
+.Project_MSVC_Xbox360_Xbox360_Release = [Using(.ProjectCommon) .Platform = 'Xbox360' .SolutionPlatform = 'Xbox360' .SolutionConfig = 'Release-MSVC' .Config = 'MSVC-Xbox360-Xbox360-Release']
+.Project_MSVC_Xbox360_Xbox360_Retail = [Using(.ProjectCommon) .Platform = 'Xbox360' .SolutionPlatform = 'Xbox360' .SolutionConfig = 'Retail-MSVC' .Config = 'MSVC-Xbox360-Xbox360-Retail']
+.Project_MSVC_Windows_ARM64_Debug = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-Windows-ARM64-Debug']
+.Project_MSVC_Windows_ARM64_Release = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Release-MSVC' .Config = 'MSVC-Windows-ARM64-Release']
+.Project_MSVC_Windows_ARM64_Retail = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Retail-MSVC' .Config = 'MSVC-Windows-ARM64-Retail']
+.Project_Clang_Windows_x86_Debug = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-Windows-x86-Debug']
+.Project_Clang_Windows_x86_Release = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Release-Clang' .Config = 'Clang-Windows-x86-Release']
+.Project_Clang_Windows_x86_Retail = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-Windows-x86-Retail']
+.Project_Clang_GDK_AMD64_Debug = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDK' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-GDK-AMD64-Debug']
+.Project_Clang_GDK_AMD64_Release = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDK' .SolutionConfig = 'Release-Clang' .Config = 'Clang-GDK-AMD64-Release']
+.Project_Clang_GDK_AMD64_Retail = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDK' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-GDK-AMD64-Retail']
+.Project_Clang_GDKX_AMD64_Debug = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-GDKX-AMD64-Debug']
+.Project_Clang_GDKX_AMD64_Release = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Release-Clang' .Config = 'Clang-GDKX-AMD64-Release']
+.Project_Clang_GDKX_AMD64_Retail = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-GDKX-AMD64-Retail']
+.Project_Clang_Windows_ARM64_Debug = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-Windows-ARM64-Debug']
+.Project_Clang_Windows_ARM64_Release = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Release-Clang' .Config = 'Clang-Windows-ARM64-Release']
+.Project_Clang_Windows_ARM64_Retail = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-Windows-ARM64-Retail']
+.Project_Clang_Switch_NX64_Debug = [Using(.ProjectCommon) .Platform = 'NX64' .SolutionPlatform = 'NX64' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-Switch-NX64-Debug']
+.Project_Clang_Switch_NX64_Release = [Using(.ProjectCommon) .Platform = 'NX64' .SolutionPlatform = 'NX64' .SolutionConfig = 'Release-Clang' .Config = 'Clang-Switch-NX64-Release']
+.Project_Clang_Switch_NX64_Retail = [Using(.ProjectCommon) .Platform = 'NX64' .SolutionPlatform = 'NX64' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-Switch-NX64-Retail']
 #endif
 
 .Targets_MSVC_Windows_x86_Debug = {}
@@ -108,9 +114,9 @@ Print(.BuildConfigs)
 .Targets_MSVC_GDKX_AMD64_Debug = {}
 .Targets_MSVC_GDKX_AMD64_Release = {}
 .Targets_MSVC_GDKX_AMD64_Retail = {}
-.Targets_MSVC_Xbox360_Xbox360_Debug = {}
-.Targets_MSVC_Xbox360_Xbox360_Release = {}
-.Targets_MSVC_Xbox360_Xbox360_Retail = {}
+.Targets_MSVC_Xbox360_PPC64_Debug = {}
+.Targets_MSVC_Xbox360_PPC64_Release = {}
+.Targets_MSVC_Xbox360_PPC64_Retail = {}
 .Targets_MSVC_Windows_ARM64_Debug = {}
 .Targets_MSVC_Windows_ARM64_Release = {}
 .Targets_MSVC_Windows_ARM64_Retail = {}
@@ -130,6 +136,7 @@ Print(.BuildConfigs)
 .Targets_Clang_Switch_NX64_Release = {}
 .Targets_Clang_Switch_NX64_Retail = {}
 
+#include "base/CommonFiles.bff"
 #include "base/Base.bff"
 #include "launcher/Launcher.bff"
 
@@ -173,7 +180,7 @@ ForEach(.BuildConfig in .BuildConfigs)
 	'Windows-ARM64',
 #endif
 #if HAVE_MSVC_XBOX360
-	'Xbox360-Xbox360'
+	'Xbox360-PPC64'
 #endif
 }
 .CompilerPlatforms_Clang = {
@@ -206,8 +213,6 @@ ForEach(.Compiler in .Compilers)
 
 		^Targets + {'All-$Compiler$-$Platform$'}
 	}
-
-	Print('$Compiler$ $Targets$')
 
 	Alias('All-$Compiler$')
 	{
@@ -269,8 +274,8 @@ Alias('All')
 		.ProjectConfig =
 		[
 			Using(.'Project_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$')
-			.ProjectBuildCommand = 'cd ^$(SolutionDir)..\..\ &amp; fbuild solution -vs'
-			.ProjectRebuildCommand = 'cd ^$(SolutionDir)..\..\ &amp; fbuild solution -vs -clean'
+			.ProjectBuildCommand = 'cd ^$(SolutionDir)..\..\ & $_FASTBUILD_EXE_PATH_$ solution -vs'
+			.ProjectRebuildCommand = 'cd ^$(SolutionDir)..\..\ & $_FASTBUILD_EXE_PATH_$ solution -vs -clean'
 		]
 		^ProjectConfigs + .ProjectConfig
 	}
@@ -306,8 +311,14 @@ VSSolution('solution')
 		.Projects = {'All-proj', 'FASTBuild-proj', 'Scripts-proj', 'UpdateSolution-proj'}
 	]
 
-	.SolutionFolders = {.Folder_Meta}
-	.SolutionProjects = { 'Base-proj', 'Launcher-proj' }
+	.Folder_Support =
+	[
+		.Path = 'Support'
+		.Projects = {'Base-proj', 'CommonFiles-proj'}
+	]
+
+	.SolutionFolders = {.Folder_Meta, .Folder_Support}
+	.SolutionProjects = {'Launcher-proj'}
 }
 #endif
 

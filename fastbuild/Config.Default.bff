@@ -2,6 +2,8 @@
 
 #once
 
+.GameName = 'FalseKing'
+
 #if __WINDOWS__
 .VSBasePath = 'C:\Program Files\Microsoft Visual Studio\2022\Community'
 .VSToolset = 'v143'
@@ -12,6 +14,7 @@
 .WindowsLibPath = '$WindowsSDKBasePath$\Lib\$WindowsSDKVersion$\um'
 .WindowsUmIncludePath = '$WindowsSDKBasePath$\Include\$WindowsSDKVersion$\um'
 .WindowsSharedIncludePath = '$WindowsSDKBasePath$\Include\$WindowsSDKVersion$\shared'
+.WindowsUcrtIncludePath = '$WindowsSDKBasePath$\Include\$WindowsSDKVersion$\ucrt'
 .Xbox360SDK = 'C:\Program Files (x86)\Microsoft Xbox 360 SDK'
 
 // Comment out ones you don't have installed

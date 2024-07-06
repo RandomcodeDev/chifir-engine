@@ -6,17 +6,20 @@
 // hinting the nvidia driver to use the dedicated graphics card in an optimus
 // configuration for more info, see:
 // http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf
-__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+ATTRIBUTE(dllexport) DWORD NvOptimusEnablement = 0x00000001;
 
 // same thing for AMD GPUs using v13.35 or newer drivers
-__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #endif
 
-__declspec(noreturn) void __cdecl WinMainCRTStartup()
+extern "C"
 {
-	__security_init_cookie();
+	ATTRIBUTE(noreturn) void __stdcall WinMainCRTStartup()
+	{
+		__security_init_cookie();
 
-	LauncherMain();
+		LauncherMain();
 
-	NtTerminateProcess(NtCurrentProcess(), STATUS_SUCCESS);
+		NtTerminateProcess(NtCurrentProcess(), STATUS_SUCCESS);
+	}
 }

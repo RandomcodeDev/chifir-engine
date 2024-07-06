@@ -8,3 +8,6 @@ build/
 .vs/
 vsxmake*/
 fastbuild/Config.bff
+*.fdb
+*.idb
+*.pdb

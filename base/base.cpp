@@ -195,23 +195,23 @@ BASEAPI void* Base_MemSet(void* dest, u32 value, usize size)
 		// Realign
 		usize misalignment = alignment - ((uptr)dest & alignment);
 		remaining -= misalignment;
-		Set<u8>(dest, (u8)value, 0, misalignment, 1);
+		Set<u8>(dest, static_cast<u8>(value), 0, misalignment, 1);
 
 		if (g_cpuData.haveSimd256)
 		{
-			Set<v256>(dest, value, size - remaining, remaining, alignment);
+			Set<v256>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
 		}
 		else if (g_cpuData.haveSimd128)
 		{
-			Set<v128>(dest, value, size - remaining, remaining, alignment);
+			Set<v128>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
 		}
 		else
 		{
-			Set<u64>(dest, value, size - remaining, remaining, alignment);
+			Set<u64>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
 		}
 	}
 
-	Set<u8>(dest, (u8)value, size - remaining, remaining, 1);
+	Set<u8>(dest, static_cast<u8>(value), size - remaining, remaining, 1);
 
 	return dest;
 }

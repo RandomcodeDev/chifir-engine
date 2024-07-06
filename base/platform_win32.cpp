@@ -3,7 +3,7 @@
 #include "base/platform.h"
 #include "base/types.h"
 
-extern "C" void* __imp_NtTerminateProcess;
+extern "C" uptr (__stdcall *STUB_NAME(NtTerminateProcess))(...);
 
 SYSTEM_BASIC_INFORMATION g_systemInfo;
 
@@ -15,12 +15,14 @@ NORETURN void Base_QuitImpl(u32 code, cstr msg)
 		code = STATUS_FATAL_APP_EXIT;
 	}
 
+	(void)msg;
+
 	// TODO: use NtRaiseHardError
 
 	BREAKPOINT();
-	if (__imp_NtTerminateProcess)
+	if (STUB_NAME(NtTerminateProcess))
 	{
-		NtTerminateProcess(NtCurrentProcess(), (NTSTATUS)code);
+		NtTerminateProcess(NtCurrentProcess(), static_cast<NTSTATUS>(code));
 	}
 	else
 	{
@@ -44,7 +46,7 @@ bool Base_GetSystemMemory(usize size)
 	LinkedNode_t<SystemAllocation_t>* node = &memoryNodes[g_memInfo.allocations.Size()];
 	node->data.size = size;
 	NTSTATUS status =
-		NtAllocateVirtualMemory(NtCurrentProcess(), &node->data.memory, 0, &node->data.size, MEM_COMMIT, PAGE_READWRITE);
+		NtAllocateVirtualMemory(NtCurrentProcess(), &node->data.memory, 0, (PSIZE_T)&node->data.size, MEM_COMMIT, PAGE_READWRITE);
 	if (!NT_SUCCESS(status))
 	{
 		NtCurrentTeb()->LastStatusValue = status;
@@ -59,7 +61,7 @@ bool Base_GetSystemMemory(usize size)
 void Base_ReleaseSystemMemory(LinkedNode_t<SystemAllocation_t>* allocation)
 {
 	usize size = 0;
-	NtFreeVirtualMemory(NtCurrentProcess(), &allocation->data.memory, &size, MEM_RELEASE);
+	NtFreeVirtualMemory(NtCurrentProcess(), &allocation->data.memory, (PSIZE_T)&size, MEM_RELEASE);
 	g_memInfo.allocations.Remove(allocation);
 }
 

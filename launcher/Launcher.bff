@@ -22,7 +22,7 @@
 			.WindowsLike = {'Windows', 'GDK', 'XboxScarlett', 'Xbox360'}
 			If (.PlatformName in .WindowsLike)
 			{
-				.UnityInputFiles +
+				^UnityInputFiles +
 				{
 					'$ProjectPath$/main_win32.cpp'
 				}
@@ -40,15 +40,25 @@
 
 		Executable('$ProjectName$-EXE-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
 		{
-			.Libraries = { '$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$' }
-			.LinkerOutput = '$OutputDir$/$ProjectName$$ExeExtension$'
-#if __LINUX__
-			.LinkerStampExe	 = '/bin/sh'
-			.ExtractDebugInfo = 'objcopy --only-keep-debug $LinkerOutput$ $LinkerOutput$.debug'
-			.StripDebugInfo = 'objcopy --strip-debug $LinkerOutput$'
-			.AddDebugLink = 'objcopy --add-gnu-debuglink $LinkerOutput$.debug $LinkerOutput$'
-			.LinkerStampExeArgs = '-c "$ExtractDebugInfo$ && $StripDebugInfo$ && $AddDebugLink$"'
-#endif
+			.Libraries =
+			{
+				'$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+				'Base-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+				'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+			}
+			.LinkerOutput = '$OutputDir$/$GameName$$ExeExtension$'
+			If (.PlatformName in .WindowsLike)
+			{
+				^LinkerOptions + ' /SUBSYSTEM:WINDOWS'
+			}
+			If (.PlatformName == 'Linux')
+			{
+				^LinkerStampExe	 = '/bin/sh'
+				^ExtractDebugInfo = 'objcopy --only-keep-debug $LinkerOutput$ $LinkerOutput$.debug'
+				^StripDebugInfo = 'objcopy --strip-debug $LinkerOutput$'
+				^AddDebugLink = 'objcopy --add-gnu-debuglink $LinkerOutput$.debug $LinkerOutput$'
+				^LinkerStampExeArgs = '-c "$ExtractDebugInfo$ && $StripDebugInfo$ && $AddDebugLink$"'
+			}
 		}
 
 		// This is the main target
