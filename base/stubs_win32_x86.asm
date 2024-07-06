@@ -3,20 +3,17 @@
 
 ; I get that code had to be small back then, but fuck stdcall
 MAKE_STUB MACRO name, callingConv, paramSize
-	PUBLIC @CatStr(_STUB_, name)
-	@CatStr(_STUB_, name) DD 0
 	@CatStr(extrnlFwd_, name) TEXTEQU @CatStr(name, _Forwarder)
-	@CatStr(intrnlFwd_, name) TEXTEQU @CatStr(__imp__, name, @, paramSize)
-	PUBLIC @CatStr(intrnlFwd_, name)
-	@CatStr(intrnlFwd_, name) PROC
-		jmp @CatStr(_STUB_, name)
-	@CatStr(intrnlFwd_, name) ENDP
+	PUBLIC @CatStr(_STUB_, name)
+	.DATA
+	PUBLIC @CatStr(__imp__, name, @, paramSize)
+	@CatStr(__imp__, name, @, paramSize) LABEL DWORD
+	@CatStr(_STUB_, name) DD 0
+	.CODE
 	@CatStr(extrnlFwd_, name) PROC
-		jmp @CatStr(_STUB_, name)
+		jmp [DWORD PTR @CatStr(_STUB_, name)]
 	@CatStr(extrnlFwd_, name) ENDP
 ENDM
-
-.CODE
 
 MAKE_STUB DbgPrint, __stdcall, 4
 MAKE_STUB LdrAddRefDll, __stdcall, 8

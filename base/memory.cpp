@@ -29,7 +29,7 @@ static LinkedNode_t<AllocInfo_t>* MakeNewNode(usize size)
 	LinkedNode_t<SystemAllocation_t>* node = g_memInfo.allocations.Find(FindSystemNode, reinterpret_cast<void*>(size));
 	if (!node)
 	{
-		ASSERT(Base_GetSystemMemory(size * 2));
+		ASSERT(Base_GetSystemMemory(size));
 		node = g_memInfo.allocations.GetTail();
 	}
 
@@ -61,7 +61,8 @@ static LinkedNode_t<AllocInfo_t>* GetFreeNode(usize size)
 	LinkedNode_t<AllocInfo_t>* alloc = s_allocations.Find(FindFreeNode, reinterpret_cast<void*>(size));
 	if (!alloc)
 	{
-		alloc = MakeNewNode(size);
+		// Allocate another gigabyte if there's not a free enough node
+		alloc = MakeNewNode(1024 * 1024 * 1024);
 		return alloc; // Can skip next part because the node will be the exact size
 	}
 

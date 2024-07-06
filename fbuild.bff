@@ -266,6 +266,18 @@ Alias('All')
 	CreateVcxProject('Scripts', 'scripts/', .ProjectConfigs, .ExtraOptions)
 }
 {
+	.ExtraOptions = []
+	.ProjectConfigs = {}
+	ForEach(.BuildConfig in .BuildConfigs)
+	{
+		Using(.BuildConfig)
+		.ProjectConfig = [Using(.'Project_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$')]
+		^ProjectConfigs + .ProjectConfig
+	}
+
+	CreateVcxProject('Public', 'public/', .ProjectConfigs, .ExtraOptions)
+}
+{
 	.ExtraOptions = [.ProjectInputPaths = {}]
 	.ProjectConfigs = {}
 	ForEach(.BuildConfig in .BuildConfigs)
@@ -314,7 +326,7 @@ VSSolution('solution')
 	.Folder_Support =
 	[
 		.Path = 'Support'
-		.Projects = {'Base-proj', 'CommonFiles-proj'}
+		.Projects = {'Base-proj', 'CommonFiles-proj', 'Public-proj'}
 	]
 
 	.SolutionFolders = {.Folder_Meta, .Folder_Support}
