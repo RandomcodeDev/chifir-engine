@@ -1,0 +1,30 @@
+LIBRARY Base.xex
+EXPORTS
+	Base_Alloc @1
+	Base_Fnv1a32 @2
+	Base_Fnv1a64 @3
+	Base_Free @4
+	Base_Init @5
+	Base_LoadLibrary @6
+	Base_MemCpy @7
+	Base_MemSet @8
+	Base_Quit @9
+	Base_Shutdown @10
+	Base_StrLen @11
+	Base_StrPrint @12
+	Base_VStrPrint @13
+	DbgPrint @14
+	LdrAddRefDll @15
+	LdrGetProcedureAddress @16
+	LdrLoadDll @17
+	LdrUnloadDll @18
+	NtAllocateVirtualMemory @19
+	NtFreeVirtualMemory @20
+	NtQuerySystemInformation @21
+	NtRaiseHardError @22
+	NtTerminateProcess @23
+	Plat_Init @24
+	Plat_Shutdown @25
+	RtlAnsiStringToUnicodeString @26
+	RtlFreeHeap @27
+	RtlFreeUnicodeString @28

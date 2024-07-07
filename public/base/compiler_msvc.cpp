@@ -3,9 +3,9 @@
 // so this file implements the bare minimum, at times using functions from the engine to replace
 // functionality normally provided by the CRT.
 
-#include "base/compiler.h"
-#include "base/platform.h"
-#include "base/types.h"
+#include "compiler.h"
+#include "platform.h"
+#include "types.h"
 
 extern "C"
 {
@@ -25,16 +25,25 @@ extern "C"
 		__security_cookie_complement = ~__security_cookie;
 	}
 
-#ifdef CH_I386
+#ifndef CH_AMD64
 	ATTRIBUTE(naked) void __fastcall __security_check_cookie(uptr cookie)
 	{
-		ASSERT(cookie == __security_cookie);
+		ASSERT_MSG(cookie == __security_cookie, "security cookie has wrong value");
 
 		__asm {
+#ifdef CH_I386
 			ret
+#elif defined CH_PPC
+			blr
+#endif
 		}
 	}
 #endif
+
+	NORETURN void __cdecl __report_rangecheckfailure()
+	{
+		Base_Quit(STATUS_STACK_BUFFER_OVERRUN, "Range check failure");
+	}
 
 	// TODO: figure these out
 	void __cdecl _RTC_InitBase()
@@ -109,16 +118,22 @@ extern "C"
 		return true;
 	}
 
-	ATTRIBUTE(guard(suppress)) void* __CxxFrameHandler3()
+#if _MSC_VER >= 1700
+	ATTRIBUTE(guard(suppress))
+#endif
+	void* __CxxFrameHandler3()
 	{
-		Base_Quit(static_cast<u32>(STATUS_UNHANDLED_EXCEPTION), "C++ exception 3");
-		//return nullptr;
+		Base_Quit(STATUS_UNHANDLED_EXCEPTION, "C++ exception 3");
+		// return nullptr;
 	}
 
-	ATTRIBUTE(guard(suppress)) void* __CxxFrameHandler4()
+#if _MSC_VER >= 1700
+	ATTRIBUTE(guard(suppress))
+#endif
+	void* __CxxFrameHandler4()
 	{
-		Base_Quit(static_cast<u32>(STATUS_UNHANDLED_EXCEPTION), "C++ exception 4");
-		//return nullptr;
+		Base_Quit(STATUS_UNHANDLED_EXCEPTION, "C++ exception 4");
+		// return nullptr;
 	}
 
 	int __cdecl _purecall()
@@ -126,7 +141,14 @@ extern "C"
 		// As far as I can tell, this gets called when a virtual call has no implementation, and normally code to call a handler
 		// would be here. If I cared and this function wasn't implemented directly, the handler would have this same code, which
 		// means that functionality isn't needed here.
-		Base_Quit(static_cast<u32>(STATUS_NOT_FOUND), "Pure virtual call");
+		Base_Quit(STATUS_NOT_FOUND, "Pure virtual call");
+	}
+
+	// TODO: unstub this so global destructors work
+	int __cdecl atexit(void (*func)())
+	{
+		(void)func;
+		return 0;
 	}
 }
 
@@ -134,6 +156,5 @@ extern "C"
 // Ensures the vtable for type_info is generated
 type_info::~type_info()
 {
-
 }
 #endif

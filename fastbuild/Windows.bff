@@ -3,32 +3,41 @@
 .Windows_Common =
 [
 	.CompilerOptions = ' -DCH_WIN32'
-	.ExeExtension = '.exe'
-	.LibExtension = '.lib'
-	.DLLExtension = '.dll'
 ]
 
 .Windows =
 [
 	.PlatformName = 'Windows'
+	.ExeExtension = '.exe'
+	.LibExtension = '.lib'
+	.DLLExtension = '.dll'
 ]
 
 .GDK = 
 [
 	.PlatformName = 'GDK'
 	.CompilerOptions = ' -DCH_GDK'
+	.ExeExtension = '.exe'
+	.LibExtension = '.lib'
+	.DLLExtension = '.dll'
 ]
 
 .GDKX =
 [
 	.PlatformName = 'XboxScarlett'
 	.CompilerOptions = ' -DCH_GDK -DCH_GDKX'
+	.ExeExtension = '.exe'
+	.LibExtension = '.lib'
+	.DLLExtension = '.dll'
 ]
 
 .Xbox360 =
 [
 	.PlatformName = 'Xbox360'
 	.CompilerOptions = ' -DCH_XBOX360'
+	.ExeExtension = '.xex'
+	.LibExtension = '.lib'
+	.DLLExtension = '.xex'
 ]
 
 .WindowsLike = {'Windows', 'GDK', 'XboxScarlett', 'Xbox360'}

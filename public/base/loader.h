@@ -8,7 +8,9 @@
 class ILibrary
 {
   public:
-	~ILibrary() = default;
+	~ILibrary()
+	{
+	}
 
 	// Get a symbol as a particular type of pointer
 	template <typename T> T GetSymbol(cstr name)
@@ -21,4 +23,4 @@ class ILibrary
 };
 
 // Load a library
-extern BASEAPI ILibrary* Base_LoadLibrary(cstr name);
+BASEAPI ILibrary* Base_LoadLibrary(cstr name);

@@ -47,7 +47,12 @@
 				'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
 			}
 			.LinkerOutput = '$OutputDir$/$GameName$$ExeExtension$'
-			If (.PlatformName in .WindowsLike)
+			If (.PlatformName == 'Xbox360')
+			{
+				// Has to be linked with the name default
+				^LinkerOutput = '$OutputDir$/default$ExeExtension$'
+			}
+			If ((.PlatformName in .WindowsLike) && (.PlatformName != 'Xbox360'))
 			{
 				^LinkerOptions + ' /SUBSYSTEM:WINDOWS'
 			}

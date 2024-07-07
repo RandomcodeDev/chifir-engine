@@ -1562,6 +1562,10 @@
 #define _Inout_updates_bytes_to_opt_(x, y)
 #define _Pre_readable_size_(x)
 #define _Writable_bytes_(x)
+#define __drv_allocatesMem(x)
+#define __drv_freesMem(x)
+#define _Post_writable_byte_size_(x)
+#define _Frees_ptr_opt_
 
 #if defined(SALIERI_VERSION)
 #  undef SALIERI_VERSION

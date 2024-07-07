@@ -13,6 +13,13 @@
 	extern "C" uptr(callingConv* STUB_##x)(...);                                                                                 \
 	EXPORT_AS_RAW(#x "_Forwarder", "_" #x "@" #paramSize);
 #else
+#ifdef CH_PPC
+#define STUB_NAME(x) STUB_##x
+#define MAKE_STUB(x, callingConv, paramSize)                                                                                     \
+	extern "C" uptr(callingConv* STUB_NAME(x))(...);                                                                             \
+	extern "C" uptr callingConv x##_Forwarder(...);                                                                              \
+	EXPORT_AS(x##_Forwarder, x);
+#else
 #define STUB_NAME(x) __imp_##x
 #define MAKE_STUB(x, callingConv, paramSize)                                                                                     \
 	extern "C"                                                                                                                   \
@@ -23,8 +30,9 @@
 		{                                                                                                                        \
 			return STUB_NAME(x)();                                                                                               \
 		}                                                                                                                        \
-	}                                                                                 \
-	EXPORT_AS_RAW(#x "_Forwarder", #x);
+	}                                                                                                                            \
+	EXPORT_AS(x##_Forwarder, x);
+#endif
 #endif
 
 // Get the address of NTDLL, find LdrGetProcedureAddress manually, find LdrLoadDll properly, load any other system DLLs/functions

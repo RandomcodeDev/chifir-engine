@@ -129,7 +129,7 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 		nameStr.Buffer = (dstr)name;
 		nameStr.Length = (u16)Base_StrLen(name);
 		nameStr.MaximumLength = nameStr.Length + 1u;
-		bool freeString = RtlAnsiStringToUnicodeString(&nameUStr, &nameStr, TRUE);
+		bool freeString = NT_SUCCESS(RtlAnsiStringToUnicodeString(&nameUStr, &nameStr, TRUE));
 
 		void* handle = nullptr;
 		NTSTATUS status = LdrLoadDll(nullptr, nullptr, &nameUStr, &handle);

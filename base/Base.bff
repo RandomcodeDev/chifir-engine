@@ -23,6 +23,7 @@
 				'$ProjectPath$/basicwstr.cpp',
 				'$ProjectPath$/memory.cpp',
 				'$ProjectPath$/platform.cpp',
+				'$ProjectPath$/stb.cpp',
 				'$ProjectPath$/../public/base/memoverride.cpp'
 			}
 
@@ -70,6 +71,17 @@
 					.ExecWorkingDir = '$ObjectDir$/$ProjectPath$'
 				}
 			}
+			If (.PlatformName == 'Xbox360')
+			{
+				Exec('$ProjectName$-ASM-Win32Stubs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+				{
+					.ExecExecutable = .MASM
+					.ExecInput = '$ProjectPath$/stubs_win32_ppc.asm'
+					.ExecOutput = '$ObjectDir$/$ProjectPath$/stubs_win32_ppc.obj'
+					.ExecArguments = .MASMOptions
+					.ExecWorkingDir = '$ObjectDir$/$ProjectPath$'
+				}
+			}
 		}
 #endif
 
@@ -95,6 +107,11 @@
 						'$ObjectDir$/$ProjectPath$/compiler_msvc_x86.obj',
 						'$ObjectDir$/$ProjectPath$/stubs_win32_x86.obj'
 					}
+				}
+				If (.PlatformName == 'Xbox360')
+				{
+					^LinkerOptions + ' /DEF:$ProjectPath$/Base.def'
+					^Libraries + { '$ObjectDir$/$ProjectPath$/stubs_win32_ppc.obj' }
 				}
 			}
 			If (.PlatformName == 'Linux')

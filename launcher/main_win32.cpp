@@ -14,9 +14,15 @@ ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 extern "C"
 {
-	ATTRIBUTE(noreturn) void __stdcall WinMainCRTStartup()
+#ifdef CH_XBOX360
+	NORETURN void __stdcall mainCRTStartup()
+#else
+	NORETURN void __stdcall WinMainCRTStartup()
+#endif
 	{
+#if _MSC_VER >= 1700
 		__security_init_cookie();
+#endif
 
 		LauncherMain();
 

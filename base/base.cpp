@@ -29,8 +29,10 @@ static void X86InitCpuData()
 	CpuId(eax, ebx, ecx, edx);
 
 	// Because of bit field shenanigans, these have to be made booleans first
+#ifdef CH_I386 // Widespread adoption of SSE2 predates AMD64
 	g_cpuData.haveSimd128 = (bool)(edx & (1 << 25));
 	g_cpuData.haveIntSimd128 = (bool)(edx & (1 << 26));
+#endif
 	g_cpuData.haveSimd256 = (bool)(ecx & (1 << 28));
 
 	u32 regs[16] = {0}; // 0-3 brand, 4-15 model
@@ -116,15 +118,15 @@ BASEAPI void* Base_MemCpy(void* RESTRICT dest, const void* RESTRICT src, usize s
 	if (g_baseInitialized)
 	{
 		usize alignment = 1;
-		if (g_cpuData.haveSimd256)
+		if (g_cpuData.haveSimd256 && size >= 32)
 		{
 			alignment = 32;
 		}
-		else if (g_cpuData.haveSimd128)
+		else if (g_cpuData.haveSimd128 && size >= 16)
 		{
 			alignment = 16;
 		}
-		else
+		else if (size >= 8)
 		{
 			alignment = 8;
 		}
@@ -139,15 +141,21 @@ BASEAPI void* Base_MemCpy(void* RESTRICT dest, const void* RESTRICT src, usize s
 			remaining -= misalignment;
 			Copy<u8>(dest, src, 0, misalignment, 1);
 
-			if (g_cpuData.haveSimd256)
+#ifdef CH_SIMD256
+			if (g_cpuData.haveSimd256 && size - remaining >= 32)
 			{
 				Copy<v256>(dest, src, size - remaining, remaining, alignment);
 			}
-			else if (g_cpuData.haveSimd128)
+			else
+#endif
+#ifdef CH_SIMD128
+				if (g_cpuData.haveSimd128 && size - remaining >= 16)
 			{
 				Copy<v128>(dest, src, size - remaining, remaining, alignment);
 			}
 			else
+#endif
+				if (size - remaining >= 8)
 			{
 				Copy<u64>(dest, src, size - remaining, remaining, alignment);
 			}
@@ -161,7 +169,7 @@ BASEAPI void* Base_MemCpy(void* RESTRICT dest, const void* RESTRICT src, usize s
 
 template <typename T> static inline void Set(void* RESTRICT dest, u8 value, usize offset, usize& remaining, usize alignment)
 {
-	// This is to get around how Clang deals with SIMD intrinsics on x86
+	// This is to get around how Clang deals with SIMD intrinsics (shouldn't cause problems)
 	u8 fullValue[32] = {value, value, value, value, value, value, value, value, value, value, value,
 						value, value, value, value, value, value, value, value, value, value, value,
 						value, value, value, value, value, value, value, value, value, value};
@@ -179,15 +187,15 @@ BASEAPI void* Base_MemSet(void* dest, u32 value, usize size)
 	if (g_baseInitialized)
 	{
 		usize alignment = 1;
-		if (g_cpuData.haveSimd256)
+		if (g_cpuData.haveSimd256 && size >= 32)
 		{
 			alignment = 32;
 		}
-		else if (g_cpuData.haveSimd128)
+		else if (g_cpuData.haveSimd128 && size >= 16)
 		{
 			alignment = 16;
 		}
-		else
+		else if (size >= 8)
 		{
 			alignment = 8;
 		}
@@ -197,15 +205,21 @@ BASEAPI void* Base_MemSet(void* dest, u32 value, usize size)
 		remaining -= misalignment;
 		Set<u8>(dest, static_cast<u8>(value), 0, misalignment, 1);
 
-		if (g_cpuData.haveSimd256)
+#ifdef CH_SIMD256
+		if (g_cpuData.haveSimd256 && size - remaining >= 32)
 		{
 			Set<v256>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
 		}
-		else if (g_cpuData.haveSimd128)
+		else
+#endif
+#ifdef CH_SIMD128
+			if (g_cpuData.haveSimd128 && size - remaining >= 16)
 		{
 			Set<v128>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
 		}
 		else
+#endif
+			if (size - remaining >= 8)
 		{
 			Set<u64>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
 		}

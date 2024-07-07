@@ -7,7 +7,7 @@ extern "C" uptr (__stdcall *STUB_NAME(NtTerminateProcess))(...);
 
 SYSTEM_BASIC_INFORMATION g_systemInfo;
 
-NORETURN void Base_QuitImpl(u32 code, cstr msg)
+NORETURN void Base_QuitImpl(s32 code, cstr msg)
 {
 	if (code == 1)
 	{

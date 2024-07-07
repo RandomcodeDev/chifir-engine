@@ -9,7 +9,7 @@ EXTERN __security_cookie : QWORD
 
 .CODE
 
-EXTERN ?Base_Quit@@YAXIPEBDZZ : PROC
+EXTERN ?Base_Quit@@YAXHPEBDZZ : PROC
 
 ; Can't have prologue/epilogue, seems to corrupt something
 PUBLIC __security_check_cookie
@@ -23,9 +23,9 @@ __security_check_cookie PROC
 
 Fail:
 	mov r8, rcx
-	mov ecx, 0C0000420h
+	mov ecx, 0C0000409h
 	lea rdx, [errorMsg]
-	call ?Base_Quit@@YAXIPEBDZZ
+	call ?Base_Quit@@YAXHPEBDZZ
 __security_check_cookie ENDP
 
 END

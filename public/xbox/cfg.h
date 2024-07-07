@@ -17,6 +17,35 @@ Revision History:
 
 --*/
 
+
+//
+// The following definitions are also used by kernel mode code to
+// set up the registry.
+//
+//
+// VetoType used in
+//      CM_Disable_DevNode
+//      CM_Uninstall_DevNode
+//      CM_Query_And_Remove_SubTree
+//
+typedef enum _PNP_VETO_TYPE
+{
+	PNP_VetoTypeUnknown,          // Name is unspecified
+	PNP_VetoLegacyDevice,         // Name is an Instance Path
+	PNP_VetoPendingClose,         // Name is an Instance Path
+	PNP_VetoWindowsApp,           // Name is a Module
+	PNP_VetoWindowsService,       // Name is a Service
+	PNP_VetoOutstandingOpen,      // Name is an Instance Path
+	PNP_VetoDevice,               // Name is an Instance Path
+	PNP_VetoDriver,               // Name is a Driver Service Name
+	PNP_VetoIllegalDeviceRequest, // Name is an Instance Path
+	PNP_VetoInsufficientPower,    // Name is unspecified
+	PNP_VetoNonDisableable,       // Name is an Instance Path
+	PNP_VetoLegacyDriver,         // Name is a Service
+	PNP_VetoInsufficientRights,   // Name is unspecified
+	PNP_VetoAlreadyRemoved,       // Name is unspecified
+} PNP_VETO_TYPE, *PPNP_VETO_TYPE;
+
 #if 0 //ndef _CFG_INCLUDED_
 #define _CFG_INCLUDED_
 
@@ -34,34 +63,6 @@ Revision History:
 
 #pragma region Desktop Family or OneCore Family
 #if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP | WINAPI_PARTITION_SYSTEM)
-
-
-//
-// The following definitions are also used by kernel mode code to
-// set up the registry.
-//
-//
-// VetoType used in
-//      CM_Disable_DevNode
-//      CM_Uninstall_DevNode
-//      CM_Query_And_Remove_SubTree
-//
-typedef enum _PNP_VETO_TYPE {
-    PNP_VetoTypeUnknown,            // Name is unspecified
-    PNP_VetoLegacyDevice,           // Name is an Instance Path
-    PNP_VetoPendingClose,           // Name is an Instance Path
-    PNP_VetoWindowsApp,             // Name is a Module
-    PNP_VetoWindowsService,         // Name is a Service
-    PNP_VetoOutstandingOpen,        // Name is an Instance Path
-    PNP_VetoDevice,                 // Name is an Instance Path
-    PNP_VetoDriver,                 // Name is a Driver Service Name
-    PNP_VetoIllegalDeviceRequest,   // Name is an Instance Path
-    PNP_VetoInsufficientPower,      // Name is unspecified
-    PNP_VetoNonDisableable,         // Name is an Instance Path
-    PNP_VetoLegacyDriver,           // Name is a Service
-    PNP_VetoInsufficientRights,     // Name is unspecified
-    PNP_VetoAlreadyRemoved,         // Name is unspecified
-} PNP_VETO_TYPE, *PPNP_VETO_TYPE;
 
 
 //

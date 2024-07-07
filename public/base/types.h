@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <cstdarg>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -32,6 +33,8 @@ typedef double f64;
 #ifdef CH_X86
 typedef __m128 v128;
 typedef __m256 v256;
+#elif defined CH_XBOX360
+typedef __vector4 v128;
 #endif
 
 // Note: "wide" and "narrow" refer, generally, to UTF-16 and UTF-8, not just whatever the platform decides.

@@ -6,9 +6,13 @@
 #pragma once
 
 #if defined _MSC_VER
+#ifdef CH_X86
 #include <intrin.h>
 #ifdef __clang__
 #include <avxintrin.h>
+#endif
+#elif defined CH_XBOX360
+#include <VectorIntrinsics.h>
 #endif
 
 #define ATTRIBUTE(x)                  __declspec(x)
@@ -33,4 +37,8 @@
 #define RESTRICT
 #else
 #define RESTRICT __restrict
+#endif
+
+#ifndef va_copy
+#define va_copy(x, y) x = y
 #endif

@@ -1,7 +1,7 @@
 #include "fastbuild/Config.bff"
 #include "fastbuild/Util.bff"
 
-.IncludeDirs = { 'public', 'external', 'external/phnt' }
+.IncludeDirs = { 'public', 'external', 'external/phnt', 'public/xbox' }
 
 #include "fastbuild/MSVC.bff"
 //#include "fastbuild/Clang.bff"
@@ -82,9 +82,9 @@
 .Project_MSVC_GDKX_AMD64_Debug = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-GDKX-AMD64-Debug']
 .Project_MSVC_GDKX_AMD64_Release = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Release-MSVC' .Config = 'MSVC-GDKX-AMD64-Release']
 .Project_MSVC_GDKX_AMD64_Retail = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Retail-MSVC' .Config = 'MSVC-GDKX-AMD64-Retail']
-.Project_MSVC_Xbox360_Xbox360_Debug = [Using(.ProjectCommon) .Platform = 'Xbox360' .SolutionPlatform = 'Xbox360' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-Xbox360-Xbox360-Debug']
-.Project_MSVC_Xbox360_Xbox360_Release = [Using(.ProjectCommon) .Platform = 'Xbox360' .SolutionPlatform = 'Xbox360' .SolutionConfig = 'Release-MSVC' .Config = 'MSVC-Xbox360-Xbox360-Release']
-.Project_MSVC_Xbox360_Xbox360_Retail = [Using(.ProjectCommon) .Platform = 'Xbox360' .SolutionPlatform = 'Xbox360' .SolutionConfig = 'Retail-MSVC' .Config = 'MSVC-Xbox360-Xbox360-Retail']
+.Project_MSVC_Xbox360_PPC64_Debug = [Using(.ProjectCommon) .Platform = 'Xbox360' .SolutionPlatform = 'Xbox360' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-Xbox360-PPC64-Debug']
+.Project_MSVC_Xbox360_PPC64_Release = [Using(.ProjectCommon) .Platform = 'Xbox360' .SolutionPlatform = 'Xbox360' .SolutionConfig = 'Release-MSVC' .Config = 'MSVC-Xbox360-PPC64-Release']
+.Project_MSVC_Xbox360_PPC64_Retail = [Using(.ProjectCommon) .Platform = 'Xbox360' .SolutionPlatform = 'Xbox360' .SolutionConfig = 'Retail-MSVC' .Config = 'MSVC-Xbox360-PPC64-Retail']
 .Project_MSVC_Windows_ARM64_Debug = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-Windows-ARM64-Debug']
 .Project_MSVC_Windows_ARM64_Release = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Release-MSVC' .Config = 'MSVC-Windows-ARM64-Release']
 .Project_MSVC_Windows_ARM64_Retail = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Retail-MSVC' .Config = 'MSVC-Windows-ARM64-Retail']
@@ -278,6 +278,18 @@ Alias('All')
 	CreateVcxProject('Public', 'public/', .ProjectConfigs, .ExtraOptions)
 }
 {
+	.ExtraOptions = []
+	.ProjectConfigs = {}
+	ForEach(.BuildConfig in .BuildConfigs)
+	{
+		Using(.BuildConfig)
+		.ProjectConfig = [Using(.'Project_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$')]
+		^ProjectConfigs + .ProjectConfig
+	}
+
+	CreateVcxProject('External', 'external/', .ProjectConfigs, .ExtraOptions)
+}
+{
 	.ExtraOptions = [.ProjectInputPaths = {}]
 	.ProjectConfigs = {}
 	ForEach(.BuildConfig in .BuildConfigs)
@@ -326,7 +338,7 @@ VSSolution('solution')
 	.Folder_Support =
 	[
 		.Path = 'Support'
-		.Projects = {'Base-proj', 'CommonFiles-proj', 'Public-proj'}
+		.Projects = {'Base-proj', 'CommonFiles-proj', 'External-proj', 'Public-proj'}
 	]
 
 	.SolutionFolders = {.Folder_Meta, .Folder_Support}

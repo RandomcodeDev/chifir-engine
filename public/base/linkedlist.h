@@ -30,8 +30,7 @@ template <typename T> struct LinkedNode_t
 	}
 
   protected:
-	template <typename T>
-	friend class CLinkedList;
+	template <typename T> friend class CLinkedList;
 
 	LinkedNode_t<T>* prev;
 	LinkedNode_t<T>* next;
@@ -43,8 +42,12 @@ template <typename T> class CLinkedList
   public:
 	typedef LinkedNode_t<T> Node_t;
 
-	CLinkedList() = default;
-	~CLinkedList() = default;
+	CLinkedList()
+	{
+	}
+	~CLinkedList()
+	{
+	}
 
 	void InsertBefore(Node_t* where, Node_t* node)
 	{
