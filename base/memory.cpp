@@ -61,8 +61,8 @@ static LinkedNode_t<AllocInfo_t>* GetFreeNode(usize size)
 	LinkedNode_t<AllocInfo_t>* alloc = s_allocations.Find(FindFreeNode, reinterpret_cast<void*>(size));
 	if (!alloc)
 	{
-		// Allocate another gigabyte if there's not a free enough node
-		alloc = MakeNewNode(1024 * 1024 * 1024);
+		// Allocate 64 MB if not enough space for this
+		alloc = MakeNewNode(64 * 1024 * 1024);
 		return alloc; // Can skip next part because the node will be the exact size
 	}
 

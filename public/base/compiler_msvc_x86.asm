@@ -58,6 +58,11 @@ localexit:
         ret
 __ftol ENDP
 
+PUBLIC __ftol2
+__ftol2 PROC
+	jmp __ftol
+__ftol2 ENDP
+
 PUBLIC __ftol2_sse
 __ftol2_sse PROC
     jmp __ftol
@@ -366,8 +371,8 @@ RETZERO:
         ret
 __aullshr ENDP
 
-PUBLIC __aullshr
-__aullshr PROC
+PUBLIC __aullrem
+__aullrem PROC
         push        ebx
         mov         eax,dword ptr [esp+14h]
         or          eax,eax
@@ -417,6 +422,6 @@ L5:
 L2:
         pop         ebx
         ret         10h
-__aullshr ENDP
+__aullrem ENDP
 
 END

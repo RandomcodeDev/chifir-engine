@@ -158,6 +158,7 @@ Settings
 	.MASM = '$VSToolsDir$\ml.exe'
 
 	.CompilerOptions = ' /DCH_X86 /DCH_I386 /DCH_SIMD128 /DCH_SIMD256'
+					 + ' /arch:IA32'
 ]
 
 .MSVC_x86Debug = .MSVC_Common + .MSVC_Modern + .MSVC_x86 + .MSVC_Debug

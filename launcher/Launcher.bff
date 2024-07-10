@@ -54,7 +54,7 @@
 			}
 			If ((.PlatformName in .WindowsLike) && (.PlatformName != 'Xbox360'))
 			{
-				^LinkerOptions + ' /SUBSYSTEM:WINDOWS'
+				^LinkerOptions + ' /SUBSYSTEM:WINDOWS,5.1'
 			}
 			If (.PlatformName == 'Linux')
 			{
