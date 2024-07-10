@@ -75,6 +75,7 @@ Settings
 					 + ' /I"$VSBasePath$\VC\Tools\MSVC\$MSVCVersion$\include"'
 
 					 + ' /Zf' // Faster PDB generation
+					 + ' /utf-8' // Treat sources as UTF-8
 ]
 
 .MSVC_Debug = 

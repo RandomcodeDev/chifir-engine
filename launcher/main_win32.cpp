@@ -12,6 +12,12 @@ ATTRIBUTE(dllexport) DWORD NvOptimusEnablement = 0x00000001;
 ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #endif
 
+#ifdef CH_I386
+#pragma comment(linker, "/SUBSYSTEM:WINDOWS,5.01")
+#else
+#pragma comment(linker, "/SUBSYSTEM:WINDOWS,5.02")
+#endif
+
 extern "C"
 {
 #ifdef CH_XBOX360

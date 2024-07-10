@@ -40,6 +40,20 @@ extern "C"
 	}
 #endif
 
+#ifndef __clang__
+#pragma function(memcpy)
+	void* memcpy(void* RESTRICT dest, const void* RESTRICT src, usize size)
+	{
+		return Base_MemCpy(dest, src, size);
+	}
+
+#pragma function(memset)
+	void* memset(void* dest, s32 value, usize size)
+	{
+		return Base_MemSet(dest, value, size);
+	}
+#endif
+
 	NORETURN void __cdecl __report_rangecheckfailure()
 	{
 		Base_Quit(STATUS_STACK_BUFFER_OVERRUN, "Range check failure");
