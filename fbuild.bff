@@ -139,6 +139,8 @@
 #include "base/CommonFiles.bff"
 #include "base/Base.bff"
 #include "launcher/Launcher.bff"
+#include "engine/Engine.bff"
+#include "videosystem/VideoSystem.bff"
 
 // All for specific target and config
 ForEach(.BuildConfig in .BuildConfigs)
@@ -341,8 +343,14 @@ VSSolution('solution')
 		.Projects = {'Base-proj', 'CommonFiles-proj', 'External-proj', 'Public-proj'}
 	]
 
-	.SolutionFolders = {.Folder_Meta, .Folder_Support}
-	.SolutionProjects = {'Launcher-proj'}
+	.Folder_Systems =
+	[
+		.Path = 'Systems'
+		.Projects = {'VideoSystem-proj'}
+	]
+
+	.SolutionFolders = {.Folder_Meta, .Folder_Support, .Folder_Systems}
+	.SolutionProjects = {'Launcher-proj', 'Engine-proj'}
 }
 #endif
 

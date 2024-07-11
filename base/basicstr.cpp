@@ -12,3 +12,33 @@ BASEAPI usize Base_StrLen(cstr str, usize maxSize)
 
 	return size;
 }
+
+BASEAPI dstr Base_VFormat(cstr format, va_list args)
+{
+	va_list newArgs;
+
+	va_copy(newArgs, args);
+	// Size of string plus nul terminator
+	u32 size = Base_VStrPrint(nullptr, 0, format, args) + 1;
+	dstr buf = Base_Alloc<char>(size);
+	if (!buf)
+	{
+		va_end(args);
+		return nullptr;
+	}
+	Base_VStrPrint(buf, size, format, args);
+	va_end(args);
+
+	return buf;
+}
+
+BASEAPI dstr Base_Format(cstr format, ...)
+{
+	va_list args;
+
+	va_start(args, format);
+	dstr buf = Base_VFormat(format, args);
+	va_end(args);
+
+	return buf;
+}

@@ -1,0 +1,86 @@
+#once
+
+{
+	.ProjectName = 'VideoSystem'
+	.ProjectPath = 'videosystem'
+
+	.ProjectConfigs = {}
+	ForEach(.BuildConfig in .BuildConfigs)
+	{
+		Using(.BuildConfig)
+
+		.CompilerOptions + ' -DIN_VIDEO'
+
+		.ObjectDir = 'obj/$CompilerName$/$PlatformName$/$ArchName$/$ConfigName$'
+		.OutputDir = 'out/$CompilerName$/$PlatformName$/$ArchName$/$ConfigName$'
+
+		Unity('$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		{
+			.UnityInputFiles = 
+			{
+				'$ProjectPath$/interface.cpp',
+			}
+
+			If (.PlatformName in .WindowsLike)
+			{
+				^UnityInputFiles +
+				{
+					'$ProjectPath$/video_win32.cpp',
+					'$ProjectPath$/../public/base/dllmain.cpp',
+				}
+			}
+			
+			.UnityOutputPath = '$ObjectDir$/$ProjectPath$/'
+			.UnityOutputPattern = '$ProjectName$_Unity*.cpp'
+		}
+
+		ObjectList('$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		{
+			.CompilerInputUnity = '$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+			.CompilerOutputPath = '$ObjectDir$/$ProjectPath$/'
+		}
+
+		DLL('$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		{
+			.PreBuildDependencies = {'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'}
+			.Libraries =
+			{
+				'$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+				'Base-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+				'CommonFiles-Lib-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+			}
+			.LinkerOutput = '$OutputDir$/$ProjectName$$DLLExtension$'
+			If (.PlatformName in .WindowsLike)
+			{
+				^LinkerOptions + ' /DLL'
+			}
+#if __LINUX__
+			If (.PlatformName == 'Linux')
+			{
+				^LinkerStampExe	 = '/bin/sh'
+				^ExtractDebugInfo = 'objcopy --only-keep-debug $LinkerOutput$ $LinkerOutput$.debug'
+				^StripDebugInfo = 'objcopy --strip-debug $LinkerOutput$'
+				^AddDebugLink = 'objcopy --add-gnu-debuglink $LinkerOutput$.debug $LinkerOutput$'
+				^LinkerStampExeArgs = '-c "$ExtractDebugInfo$ && $StripDebugInfo$ && $AddDebugLink$"'
+			}
+#endif
+		}
+
+		// This is the main target
+		Alias('$ProjectName$-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		{
+			.Targets = '$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+		}
+		^'Targets_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$' + {'$ProjectName$-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'}
+
+		.ProjectConfig = 
+		[
+			Using(.'Project_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$')
+			.Target = '$ProjectName$-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+		]
+		^ProjectConfigs + .ProjectConfig
+	}
+
+	.Options = []
+	CreateVcxProject(.ProjectName, .ProjectPath, .ProjectConfigs, .Options)
+}

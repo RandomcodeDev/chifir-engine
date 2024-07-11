@@ -1,4 +1,6 @@
 #include "base/base.h"
+#include "base/basicstr.h"
+#include "base/types.h"
 
 #define STB_SPRINTF_STATIC
 #define STB_SPRINTF_IMPLEMENTATION
