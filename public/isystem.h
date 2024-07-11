@@ -2,7 +2,9 @@
 
 #pragma once
 
+#include "base/loader.h"
 #include "base/types.h"
+#include "utility/utility.h"
 
 // Describes a system an application wants loaded for it
 struct SystemDependency_t
@@ -16,20 +18,20 @@ struct SystemDependency_t
 class ISystem
 {
   public:
-	~ISystem()
-	{
-	}
+	~ISystem() DEFAULT;
 
 	// Initialize the system
-	bool Initialize();
+	virtual bool Initialize() = 0;
 
 	// Shut down the system
-	void Shutdown();
+	virtual void Shutdown() = 0;
 
 	// Get the version of this system
-	u32 GetVersion();
+	virtual u32 GetVersion() = 0;
 };
 
 // Exported by DLLs that implement a system
 typedef ISystem* (*CreateInterface)();
 
+// Get a system from a library
+UTILAPI ISystem* GetSystem(ILibrary* library);

@@ -16,7 +16,6 @@
 		{
 			.UnityInputFiles = {'$ProjectPath$/../public/base/memoverride.cpp'}
 
-			.WindowsLike = {'Windows', 'GDK', 'XboxScarlett', 'Xbox360'}
 			If (.PlatformName in .WindowsLike)
 			{
 				^UnityInputFiles +

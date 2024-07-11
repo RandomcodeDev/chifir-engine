@@ -138,6 +138,7 @@
 
 #include "base/CommonFiles.bff"
 #include "base/Base.bff"
+#include "utility/Utility.bff"
 #include "launcher/Launcher.bff"
 #include "engine/Engine.bff"
 #include "videosystem/VideoSystem.bff"
@@ -256,7 +257,7 @@ Alias('All')
 	CreateVcxProject('FASTBuild', 'fastbuild/', .ProjectConfigs, .ExtraOptions)
 }
 {
-	.ExtraOptions = [.ProjectAllowedFileExtensions = '*.py;*.bat;*.sh']
+	.ExtraOptions = [.ProjectAllowedFileExtensions = '*.py']
 	.ProjectConfigs = {}
 	ForEach(.BuildConfig in .BuildConfigs)
 	{
@@ -323,12 +324,17 @@ VSSolution('solution')
 
 	.SolutionVisualStudioVersion = '$VSSolutionVersion$'
 
-	.Deps =
+	.Deps_Launcher =
 	[
 		.Projects = {'Launcher-proj'}
 		.Dependencies = {'All-proj'}
 	]
-	.SolutionDependencies = {.Deps}
+	.Deps_All =
+	[
+		.Projects = {'All-proj'}
+		.Dependencies = {'UpdateSolution-proj'}
+	]
+	.SolutionDependencies = {.Deps_Launcher, .Deps_All}
 
 	.Folder_Meta =
 	[
@@ -340,7 +346,7 @@ VSSolution('solution')
 	.Folder_Support =
 	[
 		.Path = 'Support'
-		.Projects = {'Base-proj', 'CommonFiles-proj', 'External-proj', 'Public-proj'}
+		.Projects = {'Base-proj', 'CommonFiles-proj', 'External-proj', 'Public-proj', 'Utility-proj'}
 	]
 
 	.Folder_Systems =

@@ -2,6 +2,10 @@
 #include "base/basicstr.h"
 #include "base/types.h"
 
+#define STBDS_NO_SHORT_NAMES
+#define STBDS_REALLOC
+#include "stb/stb_ds.h"
+
 #define STB_SPRINTF_STATIC
 #define STB_SPRINTF_IMPLEMENTATION
 #include "stb/stb_sprintf.h"

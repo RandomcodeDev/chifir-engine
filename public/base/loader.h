@@ -8,9 +8,7 @@
 class ILibrary
 {
   public:
-	~ILibrary()
-	{
-	}
+	~ILibrary() DEFAULT;
 
 	// Get a symbol as a particular type of pointer
 	template <typename T> T GetSymbol(cstr name)

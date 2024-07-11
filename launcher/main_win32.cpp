@@ -12,7 +12,9 @@ ATTRIBUTE(dllexport) DWORD NvOptimusEnablement = 0x00000001;
 ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #endif
 
-#ifdef CH_I386
+#ifdef CH_XBOX360
+#pragma comment(linker, "/SUBSYSTEM:XBOX,2.00")
+#elif defined CH_I386
 #pragma comment(linker, "/SUBSYSTEM:WINDOWS,5.01")
 #else
 #pragma comment(linker, "/SUBSYSTEM:WINDOWS,5.02")
@@ -26,9 +28,7 @@ extern "C"
 	NORETURN void __stdcall WinMainCRTStartup()
 #endif
 	{
-#if _MSC_VER >= 1700
 		__security_init_cookie();
-#endif
 
 		LauncherMain();
 

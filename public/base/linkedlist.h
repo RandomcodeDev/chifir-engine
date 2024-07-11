@@ -42,12 +42,8 @@ template <typename T> class CLinkedList
   public:
 	typedef LinkedNode_t<T> Node_t;
 
-	CLinkedList()
-	{
-	}
-	~CLinkedList()
-	{
-	}
+	CLinkedList() DEFAULT;
+	~CLinkedList() DEFAULT;
 
 	void InsertBefore(Node_t* where, Node_t* node)
 	{

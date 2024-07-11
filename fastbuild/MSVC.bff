@@ -23,6 +23,7 @@ Settings
 					 + ' /Zl' // Omit references to CRT in objects
 					 + ' /W4' // Max warnings
 					 + ' /WX' // Warnings as errors
+					 + ' /Zc:__cplusplus' // Ensure old compilers that actually support C++03 are detected properly
 
 					 // Warnings
 					 + ' /wd4201' // nameless struct
