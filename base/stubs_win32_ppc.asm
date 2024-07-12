@@ -16,18 +16,12 @@ MAKE_STUB MACRO name
 	@CatStr(name, _Forwarder) ENDP
 ENDM
 
+; xboxkrnl
 MAKE_STUB DbgPrint
-MAKE_STUB LdrAddRefDll
-MAKE_STUB LdrGetProcedureAddress
-MAKE_STUB LdrLoadDll
-MAKE_STUB LdrUnloadDll
 MAKE_STUB NtAllocateVirtualMemory
 MAKE_STUB NtFreeVirtualMemory
-MAKE_STUB NtQuerySystemInformation
-MAKE_STUB NtRaiseHardError
-MAKE_STUB NtTerminateProcess
 MAKE_STUB RtlAnsiStringToUnicodeString
-MAKE_STUB RtlFreeHeap
 MAKE_STUB RtlFreeUnicodeString
+MAKE_STUB XexGetProcedureAddress
 
 END

@@ -44,7 +44,7 @@ extern "C"
 #pragma function(memcpy)
 	void* memcpy(void* RESTRICT dest, const void* RESTRICT src, usize size)
 	{
-		return Base_MemCpy(dest, src, size);
+		return Base_MemCopy(dest, src, size);
 	}
 
 #pragma function(memset)

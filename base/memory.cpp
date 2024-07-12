@@ -1,7 +1,7 @@
 // This is a basic general allocator that can serve as a basis for more specialized things like bump allocators. It's implemented
 // on top of Base_GetSystemMemory, and uses a linked list of allocations, with the nodes as headers to chunks of memory. It still
-// needs to be tested more thoroughly, and is missing logging for errors, thread safety, and proper handling of alignment. It also
-// can't handle individual allocations larger than 64MB.
+// needs to be tested more thoroughly, and is missing logging for errors and thread safety. It also can't handle individual
+// allocations larger than 64MB.
 
 #include "base.h"
 #include "base/base.h"
@@ -10,11 +10,16 @@
 
 MemoryInfo_t g_memInfo;
 
+// Signature so header can be found in aligned blocks (also is 'CHFALLOC' in ASCII on little endian)
+static const u64 ALLOC_SIGNATURE = 0x434F4C4C41464843;
+
 struct AllocInfo_t
 {
 	usize size; // Includes the size of the AllocNode_t header
 	bool isFree;
+	u8 alignment;
 	LinkedNode_t<SystemAllocation_t>* systemAllocation;
+	u64 signature; // Must equal ALLOC_SIGNATURE
 };
 
 typedef LinkedNode_t<AllocInfo_t> AllocNode_t;
@@ -37,13 +42,19 @@ static s32 FindSystemNode(SystemAllocation_t* alloc, void* data)
 // Size of system nodes which are directly allocated with NtAllocateVirtualMemory/mmap
 static const usize SYSTEM_ALLOC_SIZE = 64 * 1024 * 1024;
 
+// Minimum alignment of allocations
+static const usize MINIMUM_ALIGNMENT = alignof(AllocNode_t);
+
+// Maximum alignment of allocations, mainly to set an upper bound on how far back to search for a node in an allocation
+static const usize MAXIMUM_ALIGNMENT = 64;
+
 // This finds a system node with the requested size, or allocates a new one of a fixed size
 static AllocNode_t* MakeNewNode(usize size)
 {
 	LinkedNode_t<SystemAllocation_t>* node = g_memInfo.allocations.Find(FindSystemNode, reinterpret_cast<void*>(size));
 	if (!node)
 	{
-		ASSERT(Base_GetSystemMemory(SYSTEM_ALLOC_SIZE));
+		ASSERT_MSG(Base_GetSystemMemory(SYSTEM_ALLOC_SIZE), "system memory allocator exhausted");
 		node = g_memInfo.allocations.GetTail();
 	}
 
@@ -51,6 +62,7 @@ static AllocNode_t* MakeNewNode(usize size)
 	alloc->data.size = size;
 	alloc->data.isFree = false;
 	alloc->data.systemAllocation = node;
+	alloc->data.signature = ALLOC_SIGNATURE;
 
 	node->data.used += alloc->data.size;
 
@@ -96,6 +108,7 @@ static AllocNode_t* GetFreeNode(usize size)
 		next->data.size = alloc->data.size - size;
 		next->data.isFree = true;
 		alloc->data.size = size;
+		alloc->data.signature = ALLOC_SIGNATURE;
 		// Keep sorted
 		s_allocations.InsertAfter(alloc, next);
 	}
@@ -103,12 +116,26 @@ static AllocNode_t* GetFreeNode(usize size)
 	return alloc;
 }
 
-static AllocNode_t* GetNode(void* block)
+// Finds the header for a block by its signature
+static AllocNode_t* FindNode(void* block)
 {
-	return static_cast<AllocNode_t*>(block) - 1;
+	u8* sigAddr = static_cast<u8*>(block);
+	// Scan for the signature, then find the address of the AllocNode_t signature it belongs to
+	while (*reinterpret_cast<u64*>(sigAddr) != ALLOC_SIGNATURE)
+	{
+		// Ensure that this doesn't go so far back that a different allocation is found
+		ASSERT_MSG(
+			reinterpret_cast<sptr>(block) - reinterpret_cast<sptr>(sigAddr) < MAXIMUM_ALIGNMENT + sizeof(AllocNode_t),
+			"invalid allocation: couldn't find signature less than %zu bytes before the given address",
+			reinterpret_cast<sptr>(block) - reinterpret_cast<sptr>(sigAddr));
+		sigAddr--;
+	}
+
+	AllocNode_t* node = reinterpret_cast<AllocNode_t*>(sigAddr - offsetof(AllocInfo_t, signature) - offsetof(AllocNode_t, data));
+	return node;
 }
 
-static bool AreContiguous(AllocNode_t* a, AllocNode_t* b)
+static bool SameSystemNode(AllocNode_t* a, AllocNode_t* b)
 {
 	return a->data.systemAllocation == b->data.systemAllocation;
 }
@@ -122,7 +149,7 @@ static void CoalesceAllocations()
 		for (AllocNode_t* alloc = s_allocations.GetHead(); !alloc->GetNext()->IsTail(); alloc = alloc->GetNext())
 		{
 			AllocNode_t* next = alloc->GetNext();
-			if (next->data.isFree && AreContiguous(alloc, next))
+			if (next->data.isFree && SameSystemNode(alloc, next))
 			{
 				alloc->data.size += next->data.size;
 				s_allocations.Remove(next);
@@ -131,13 +158,24 @@ static void CoalesceAllocations()
 	}
 }
 
-BASEAPI void* Base_Alloc(usize size)
+static usize FixAlignment(usize alignment)
 {
-	AllocNode_t* alloc = GetFreeNode(sizeof(AllocNode_t) + size);
+	return Min(Max(alignment, MINIMUM_ALIGNMENT), MAXIMUM_ALIGNMENT);
+}
+
+BASEAPI void* Base_Alloc(usize size, usize alignment)
+{
+	usize realAlignment = FixAlignment(alignment);
+
+	ASSERT_MSG(realAlignment <= MAXIMUM_ALIGNMENT, "alignment must be less than or equal to %zu", MAXIMUM_ALIGNMENT);
+	ASSERT_MSG(realAlignment % 2 == 0, "alignment must be a power of 2");
+
+	AllocNode_t* alloc = GetFreeNode(ALIGN(sizeof(AllocNode_t) + size, realAlignment));
 	if (alloc)
 	{
 		alloc->data.isFree = false;
-		void* block = static_cast<void*>(alloc + 1);
+		// Round up the address of the first byte after the AllocNode_t to be aligned
+		void* block = reinterpret_cast<void*>(ALIGN(reinterpret_cast<uptr>(alloc + 1), realAlignment));
 		Base_MemSet(block, 0, size);
 		return block;
 	}
@@ -160,7 +198,7 @@ BASEAPI void* Base_Realloc(void* block, usize newSize)
 		return nullptr;
 	}
 
-	AllocNode_t* node = GetNode(block);
+	AllocNode_t* node = FindNode(block);
 
 	// Shrink this node
 	if (EffectiveSize(node) > newSize)
@@ -175,13 +213,15 @@ BASEAPI void* Base_Realloc(void* block, usize newSize)
 			newNode.isFree = true;
 			newNode.size = freeSize;
 			newNode.systemAllocation = node->data.systemAllocation;
+			newNode.signature = ALLOC_SIGNATURE;
 			s_allocations.InsertAfter(node, reinterpret_cast<AllocNode_t*>((static_cast<u8*>(block) + node->data.size)));
+			Base_MemCopy(&node->GetNext()->data, &newNode, sizeof(AllocInfo_t));
 		}
 		// Otherwise, move up the next node and increase its size
 		else if (!node->IsTail() && node->GetNext()->data.isFree)
 		{
 			u8* newNext = static_cast<u8*>(block) + node->data.size;
-			Base_MemCpy(newNext, node->GetNext(), sizeof(AllocNode_t));
+			Base_MemCopy(newNext, node->GetNext(), sizeof(AllocNode_t));
 			s_allocations.Remove(node->GetNext());
 			s_allocations.InsertAfter(node, reinterpret_cast<AllocNode_t*>(newNext));
 			node->GetNext()->data.size += freeSize;
@@ -197,11 +237,11 @@ BASEAPI void* Base_Realloc(void* block, usize newSize)
 		usize extraSize = newSize - node->data.size - sizeof(AllocNode_t);
 		node->data.size = newSize;
 
-		if (AreContiguous(node, node->GetNext()) && neighbor->isFree && EffectiveAllocSize(neighbor) > extraSize)
+		if (SameSystemNode(node, node->GetNext()) && neighbor->isFree && EffectiveAllocSize(neighbor) > extraSize)
 		{
 
 			u8* newNext = static_cast<u8*>(block) + node->data.size;
-			Base_MemCpy(newNext, node->GetNext(), sizeof(AllocNode_t));
+			Base_MemCopy(newNext, node->GetNext(), sizeof(AllocNode_t));
 			s_allocations.Remove(node->GetNext());
 			s_allocations.InsertAfter(node, reinterpret_cast<AllocNode_t*>(newNext));
 			node->GetNext()->data.size -= extraSize;
@@ -214,13 +254,13 @@ BASEAPI void* Base_Realloc(void* block, usize newSize)
 	}
 
 	// If execution reaches here, free this node and get a new one, copying over the contents
-	void* newBlock = Base_Alloc(newSize);
+	void* newBlock = Base_Alloc(newSize, node->data.alignment);
 	if (!newBlock)
 	{
 		return nullptr;
 	}
 
-	Base_MemCpy(newBlock, block, EffectiveSize(node));
+	Base_MemCopy(newBlock, block, EffectiveSize(node));
 	Base_Free(block);
 	return newBlock;
 }
@@ -229,7 +269,7 @@ BASEAPI void Base_Free(void* block)
 {
 	if (block)
 	{
-		GetNode(block)->data.isFree = true;
+		FindNode(block)->data.isFree = true;
 		CoalesceAllocations();
 	}
 }

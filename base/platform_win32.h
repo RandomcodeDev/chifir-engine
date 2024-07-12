@@ -15,7 +15,7 @@
 #else
 #ifdef CH_PPC
 #define STUB_NAME(x) STUB_##x
-#define MAKE_STUB(x, callingConv, paramSize)                                                                                     \
+#define MAKE_STUB(x, ...)                                                                                     \
 	extern "C" uptr(callingConv* STUB_NAME(x))(...);                                                                             \
 	extern "C" uptr callingConv x##_Forwarder(...);                                                                              \
 	EXPORT_AS(x##_Forwarder, x);

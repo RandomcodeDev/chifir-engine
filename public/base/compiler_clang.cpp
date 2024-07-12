@@ -7,7 +7,7 @@ extern "C"
 {
 	void* memcpy(void* RESTRICT dest, const void* RESTRICT src, usize size)
 	{
-		return Base_MemCpy(dest, src, size);
+		return Base_MemCopy(dest, src, size);
 	}
 
 	void* memset(void* dest, s32 value, usize size)

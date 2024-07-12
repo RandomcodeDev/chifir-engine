@@ -15,7 +15,7 @@ class CVector : public IContainer<T, usize>
 	CVector(const T* data, usize size)
 	{
 		Resize(size);
-		Base_MemCpy(m_buffer, data, m_size);
+		Base_MemCopy(m_buffer, data, m_size);
 	}
 	~CVector() DEFAULT;
 

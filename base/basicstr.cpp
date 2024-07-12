@@ -19,14 +19,14 @@ BASEAPI dstr Base_VFormat(cstr format, va_list args)
 
 	va_copy(newArgs, args);
 	// Size of string plus nul terminator
-	u32 size = Base_VStrPrint(nullptr, 0, format, args) + 1;
+	u32 size = Base_VStrPrint(nullptr, 0, format, newArgs) + 1;
 	dstr buf = Base_Alloc<char>(size);
 	if (!buf)
 	{
 		va_end(args);
 		return nullptr;
 	}
-	Base_VStrPrint(buf, size, format, args);
+	Base_VStrPrint(buf, size, format, newArgs);
 	va_end(args);
 
 	return buf;

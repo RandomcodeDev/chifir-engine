@@ -111,7 +111,7 @@ static inline void Copy(void* RESTRICT dest, const void* RESTRICT src, usize off
 	}
 }
 
-BASEAPI void* Base_MemCpy(void* RESTRICT dest, const void* RESTRICT src, usize size)
+BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, usize size)
 {
 	usize remaining = size;
 

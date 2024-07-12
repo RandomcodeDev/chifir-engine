@@ -1,9 +1,11 @@
+#include "platform_win32.h"
 #include "base.h"
 #include "base/compiler.h"
 #include "base/platform.h"
 #include "base/types.h"
 
-extern "C" uptr (__stdcall *STUB_NAME(NtTerminateProcess))(...);
+extern "C" uptr(__cdecl* STUB_NAME(DbgPrint))(...);
+extern "C" uptr(__stdcall* STUB_NAME(NtTerminateProcess))(...);
 
 SYSTEM_BASIC_INFORMATION g_systemInfo;
 
@@ -15,7 +17,10 @@ NORETURN void Base_QuitImpl(s32 code, cstr msg)
 		code = STATUS_FATAL_APP_EXIT;
 	}
 
-	(void)msg;
+	if (STUB_NAME(DbgPrint))
+	{
+		DbgPrint("%s\n", msg);
+	}
 
 	// TODO: use NtRaiseHardError
 

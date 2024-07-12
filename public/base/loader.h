@@ -20,5 +20,5 @@ class ILibrary
 	virtual void* GetSymbol(cstr name) = 0;
 };
 
-// Load a library
+// Load a library by its base name (no path, no extension, i.e. to load Base.dll you just pass "Base")
 BASEAPI ILibrary* Base_LoadLibrary(cstr name);

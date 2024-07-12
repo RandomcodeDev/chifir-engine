@@ -68,7 +68,10 @@ template <typename T> class CLinkedList
 		}
 		else
 		{
-			InsertAfter(m_tail, node);
+			m_tail->next = node;
+			node->prev = m_tail;
+			m_tail = node;
+			m_tail->next = nullptr;
 		}
 
 		m_nodeCount++;
@@ -83,7 +86,10 @@ template <typename T> class CLinkedList
 		}
 		else
 		{
-			InsertBefore(m_head, node);
+			m_head->prev = node;
+			node->next = m_head;
+			m_head = node;
+			m_head->prev = nullptr;
 		}
 
 		m_nodeCount++;
