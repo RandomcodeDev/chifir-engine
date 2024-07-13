@@ -22,6 +22,12 @@ struct BaseCpuData_t
 // Whether Base_Init has succeeded
 extern bool g_baseInitialized;
 
+// Whether Plat_Init has succeeded
+extern bool g_platInitialized;
+
+// Whether the allocator is usabble
+extern bool g_allocUsable;
+
 // Initialized in Base_Init
 extern BaseCpuData_t g_cpuData;
 

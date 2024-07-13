@@ -3,6 +3,8 @@
 #include "base/compiler.h"
 
 bool g_baseInitialized;
+bool g_platInitialized;
+bool g_allocUsable;
 BaseCpuData_t g_cpuData;
 
 #ifdef CF_X86

@@ -39,13 +39,15 @@ NORETURN void Base_QuitImpl(s32 code, cstr msg)
 
 bool Base_GetSystemMemory(usize size)
 {
-	// Linked list nodes, can contain any size of allocation, but there's a limit to the number of OS allocations
+	// Linked list nodes, can contain any size of allocation, but there's a limit to the number of OS allocations (this should be
+	// changed in the future, this is based on a vacuum currently)
 	static LinkedNode_t<SystemAllocation_t> memoryNodes[64];
 
-	if (g_systemInfo.PageSize > 0)
-	{
-		size = ALIGN(size, g_systemInfo.PageSize);
-	}
+	size = ALIGN(size, g_systemInfo.PageSize);
+
+	ASSERT_MSG(
+		g_memInfo.allocations.Size() < ARRAY_SIZE(memoryNodes),
+		"OS allocation nodes exhausted, increase the size of the memory nodes array");
 
 	g_memInfo.size += size;
 	LinkedNode_t<SystemAllocation_t>* node = &memoryNodes[g_memInfo.allocations.Size()];

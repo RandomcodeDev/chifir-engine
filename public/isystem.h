@@ -31,7 +31,7 @@ class ISystem
 };
 
 // Exported by DLLs that implement a system
-typedef ISystem* (*CreateInterface)();
+typedef ISystem* (*CreateInterface_t)();
 
 // Get a system from a library
 UTILAPI ISystem* GetSystem(ILibrary* library);

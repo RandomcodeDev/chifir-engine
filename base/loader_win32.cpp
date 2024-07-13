@@ -1,21 +1,22 @@
 // This file is the reason Base.dll doesn't have an import table. It first locates the base address of ntdll.dll using the
-// PEB_LDR_DATA structure, then it parses it and finds the address of LdrGetProcedureAddress, by searching the export table by
-// hash. Then, it uses LdrGetProcedureAddress to fill in other stubs of system functions, which are function pointers that use
-// names the linker expects from an import library, allowing phnt's correct declarations to be used without issue. These are
-// basically the same as the import table, but I get to do my own logic for filling them in, so that if some function is missing
-// from one version and not another, it can isn't a fatal error that can't be avoided, allowing for better portability. There are
-// also forwarder functions that are re-exported under the original names so the launcher and video system can import the
-// functions.
+// PEB_LDR_DATA structure, then it parses it and finds the address of LdrGetProcedureAddress by searching the export table for a
+// name that matches its hash. Then, it uses LdrGetProcedureAddress to fill in other stubs of system functions, which are
+// function pointers that use names the linker expects from an import library, allowing phnt's correct declarations to be used
+// without issue. These are basically the same as the import table, but I get to do my own logic for filling them in, so that if
+// some function is missing from one version and not another, it can isn't a fatal error that can't be avoided, allowing for
+// better portability. There are also forwarder functions that are re-exported under the original names so the launcher and video
+// system can import the functions.
 
 // On Xbox 360, things are different. xboxkrnl.exe and xam.xex export all the important functions exclusively by ordinal,
 // and are in the XEX format. The reason them only using ordinals isn't an issue is because they don't change between kernel
 // versions, and it's no longer updated, so that can't change. This means that the logic of this file mostly doesn't apply to the
-// 360, despite it being otherwise quite similar to desktop versions of NT. The one thing that's left is figuring out if ASLR is
-// used on the 360, and if so, how to get the kernel's base address without linking to it. I don't know if the PEB exists on the
-// 360, and if it does I don't think it's likely required for a reimplementation of this file. I also have to figure out how to
-// parse a XEX in memory, but that shouldn't be hard. XAM seems to be the closest analogue to kernel32, but some functions that
-// would normally just be thin wrappers or directly forwarder are fully implemented inside of it.
+// 360. The one thing that's left is figuring out if ASLR is used on the 360, and if so, how to get the kernel's base address
+// without linking to it. I don't know if the PEB exists on the 360, and if it does I don't think it's likely required for a
+// reimplementation of this file. I also have to figure out how to parse a XEX in memory, but that shouldn't be hard. XAM seems to
+// be the closest analogue to kernel32, but some functions that would normally just be thin wrappers or directly forwarder are
+// fully implemented inside of it.
 
+#include "base.h"
 #include "base/base.h"
 #include "base/basicstr.h"
 #include "base/compiler.h"
@@ -24,7 +25,7 @@
 
 static PIMAGE_DOS_HEADER ntDllBase;
 
-// These are in both Xbox 360 and desktop
+// These are in both Xbox 360 and desktop/OneCore
 
 // ntdll/xboxkrnl
 MAKE_STUB(DbgPrint, __stdcall, 4)
@@ -44,6 +45,8 @@ MAKE_STUB(XexUnloadImage)
 // XAM
 MAKE_STUB(QueryPerformanceCounter)
 #else
+// These are desktop/OneCore things
+
 // ntdll
 MAKE_STUB(LdrAddRefDll, __stdcall, 8)
 MAKE_STUB(LdrGetProcedureAddress, __stdcall, 16)
@@ -54,7 +57,7 @@ MAKE_STUB(NtRaiseHardError, __stdcall, 0)
 MAKE_STUB(NtTerminateProcess, __stdcall, 8)
 MAKE_STUB(RtlFreeHeap, __stdcall, 12)
 
-// user32, because it's more than just syscalls, unlike kernel32
+// user32, because it's more than just forwarded syscalls, unlike kernel32
 MAKE_STUB(CreateWindowExA, __stdcall, 48)
 MAKE_STUB(RegisterClassExA, __stdcall, 4)
 MAKE_STUB(PeekMessageA, __stdcall, 20)
@@ -63,6 +66,7 @@ MAKE_STUB(DispatchMessageA, __stdcall, 4)
 MAKE_STUB(GetClientRect, __stdcall, 8)
 MAKE_STUB(GetSystemMetrics, __stdcall, 4)
 MAKE_STUB(AdjustWindowRect, __stdcall, 4)
+MAKE_STUB(DefWindowProcA, __stdcall, 16)
 #endif
 
 static bool FindNtDll()
@@ -113,7 +117,7 @@ static bool FindLdrGetProcedureAddress()
 	for (u64 i = 0; i < nameCount; i++)
 	{
 		cstr name = (cstr)RVA_TO_VA(ntDllBase, nameAddrs[i]);
-		u64 hash = Base_Fnv1a64(name, Base_StrLen(name));
+		u64 hash = Base_Fnv1a64(name, Base_StrLength(name));
 		if (hash == TARGET_HASH) // To get around collisions
 		{
 			STUB_NAME(LdrGetProcedureAddress) = (uptr(*)(...))RVA_TO_VA(ntDllBase, functions[ordinals[i]]);
@@ -124,10 +128,10 @@ static bool FindLdrGetProcedureAddress()
 	return STUB_NAME(LdrGetProcedureAddress) != nullptr;
 }
 
-#define GET_FUNCTION(lib, name)                                                                                                  \
+#define GET_FUNCTION(lib, fileName)                                                                                              \
 	{                                                                                                                            \
-		STUB_NAME(name) = (reinterpret_cast<ILibrary*>(&(lib)))->GetSymbol<uptr (*)(...)>(#name);                                \
-		ASSERT_CODE(STUB_NAME(name) != nullptr, NtCurrentTeb()->LastStatusValue);                                                \
+		STUB_NAME(fileName) = (reinterpret_cast<ILibrary*>(&(lib)))->GetSymbol<uptr (*)(...)>(#fileName);                        \
+		ASSERT_CODE(STUB_NAME(fileName) != nullptr, NtCurrentTeb()->LastStatusValue);                                            \
 	}
 
 bool Base_InitLoader()
@@ -143,60 +147,99 @@ bool Base_InitLoader()
 	}
 
 	CWin32Library ntDll(ntDllBase);
-	GET_FUNCTION(ntDll, NtTerminateProcess); // Make sure if the others fail, they can properly exit
 
-	GET_FUNCTION(ntDll, DbgPrint);
-	GET_FUNCTION(ntDll, LdrAddRefDll);
-	GET_FUNCTION(ntDll, LdrLoadDll);
-	GET_FUNCTION(ntDll, LdrUnloadDll);
-	GET_FUNCTION(ntDll, NtAllocateVirtualMemory);
-	GET_FUNCTION(ntDll, NtFreeVirtualMemory);
-	GET_FUNCTION(ntDll, NtQuerySystemInformation);
-	GET_FUNCTION(ntDll, NtRaiseHardError);
-	GET_FUNCTION(ntDll, RtlAnsiStringToUnicodeString);
-	GET_FUNCTION(ntDll, RtlFreeHeap);
-	GET_FUNCTION(ntDll, RtlFreeUnicodeString);
+	GET_FUNCTION(ntDll, DbgPrint)
+	GET_FUNCTION(ntDll, NtAllocateVirtualMemory)
+	GET_FUNCTION(ntDll, NtFreeVirtualMemory)
+	GET_FUNCTION(ntDll, RtlAnsiStringToUnicodeString)
+	GET_FUNCTION(ntDll, RtlFreeUnicodeString)
+
+#ifdef CH_XBOX360
+	// These are only on Xbox 360
+
+	// xboxkrnl
+	GET_FUNCTION(ntDll, XexGetProcedureAddress)
+	GET_FUNCTION(ntDll, XexLoadImage)
+	GET_FUNCTION(ntDll, XexUnloadImage)
+
+	ILibrary* xam = Base_LoadLibrary("xam");
+
+	// XAM
+	MAKE_STUB(xam, QueryPerformanceCounter)
+#else
+	// These are desktop/OneCore things
+
+	// ntdll
+	GET_FUNCTION(ntDll, LdrAddRefDll)
+	GET_FUNCTION(ntDll, LdrGetProcedureAddress)
+	GET_FUNCTION(ntDll, LdrLoadDll)
+	GET_FUNCTION(ntDll, LdrUnloadDll)
+	GET_FUNCTION(ntDll, NtQuerySystemInformation)
+	GET_FUNCTION(ntDll, NtRaiseHardError)
+	GET_FUNCTION(ntDll, NtTerminateProcess)
+	GET_FUNCTION(ntDll, RtlFreeHeap)
 
 	// So unloading it when ntDll goes out of scope doesn't mess anything up, cause the loader wasn't used to "load" it
 	LdrAddRefDll(0, ntDllBase);
 
-	// This doesn't get deleted, which is fine cause it's alive the whole program either way
 	ILibrary* user32 = Base_LoadLibrary("user32");
+
+	// user32, because it's more than just forwarded syscalls, unlike kernel32
+	GET_FUNCTION(user32, CreateWindowExA)
+	GET_FUNCTION(user32, RegisterClassExA)
+	GET_FUNCTION(user32, PeekMessageA)
+	GET_FUNCTION(user32, TranslateMessage)
+	GET_FUNCTION(user32, DispatchMessageA)
+	GET_FUNCTION(user32, GetClientRect)
+	GET_FUNCTION(user32, GetSystemMetrics)
+	GET_FUNCTION(user32, AdjustWindowRect)
+	GET_FUNCTION(user32, DefWindowProcA)
+#endif
 
 	return true;
 }
 
 BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 {
-	static const cstr DLL_EXT = ".dll";
+	static const cstr DLL_EXT =
+#ifdef CH_XBOX360
+		".xex";
+#else
+		".dll";
+#endif
 
-	if (STUB_NAME(RtlAnsiStringToUnicodeString) && STUB_NAME(LdrLoadDll))
+	if (STUB_NAME(RtlAnsiStringToUnicodeString) && STUB_NAME(LdrLoadDll) && g_allocUsable)
 	{
-		UNICODE_STRING nameUStr = {};
+		dstr fileName = Base_Format("%s%s", name, DLL_EXT);
+		if (!fileName)
+		{
+			NtCurrentTeb()->LastStatusValue = STATUS_NO_MEMORY;
+			return nullptr;
+		}
+
 		ANSI_STRING nameStr = {0};
-		nameStr.Buffer = (dstr)name;
-		nameStr.Length = (u16)Base_StrLen(name);
-		nameStr.MaximumLength = nameStr.Length + 1u;
-		bool freeString = NT_SUCCESS(RtlAnsiStringToUnicodeString(&nameUStr, &nameStr, TRUE));
+		nameStr.Buffer = fileName;
+		nameStr.Length = (u16)Base_StrLength(fileName);
+		nameStr.MaximumLength = nameStr.Length + 1;
+		UNICODE_STRING nameUStr = {0};
+		NTSTATUS status = RtlAnsiStringToUnicodeString(&nameUStr, &nameStr, TRUE);
+		if (!NT_SUCCESS(status))
+		{
+			NtCurrentTeb()->LastStatusValue = status;
+			return nullptr;
+		}
 
 		void* handle = nullptr;
-		NTSTATUS status = LdrLoadDll(nullptr, nullptr, &nameUStr, &handle);
-		NtCurrentTeb()->LastStatusValue = status;
+		status = LdrLoadDll(nullptr, nullptr, &nameUStr, &handle);
 		if (NT_SUCCESS(status))
 		{
-			// Don't leave the string dangling
-			if (freeString)
-			{
-				RtlFreeUnicodeString(&nameUStr);
-			}
+			NtCurrentTeb()->LastStatusValue = status;
+			RtlFreeUnicodeString(&nameUStr);
 
 			return new CWin32Library(handle);
 		}
 
-		if (freeString)
-		{
-			RtlFreeUnicodeString(&nameUStr);
-		}
+		RtlFreeUnicodeString(&nameUStr);
 	}
 
 	return nullptr;
@@ -216,11 +259,11 @@ CWin32Library::~CWin32Library()
 
 void* CWin32Library::GetSymbol(cstr name)
 {
-	ASSERT(STUB_NAME(LdrGetProcedureAddress));
+	ASSERT_MSG(STUB_NAME(LdrGetProcedureAddress) != nullptr, "Base_InitLoader has not been called");
 
 	ANSI_STRING nameStr = {0};
 	nameStr.Buffer = (dstr)name;
-	nameStr.Length = (u16)Base_StrLen(name);
+	nameStr.Length = (u16)Base_StrLength(name);
 	nameStr.MaximumLength = nameStr.Length + 1u;
 	void* sym = nullptr;
 	NTSTATUS status = LdrGetProcedureAddress(m_base, &nameStr, 0, &sym);

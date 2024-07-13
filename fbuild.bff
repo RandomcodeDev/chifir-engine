@@ -223,13 +223,17 @@ ForEach(.Compiler in .Compilers)
 	}
 }
 
-// All for host platform
-#if __WINDOWS__
 Alias('All')
 {
-	.Targets = {'All-MSVC', 'All-Clang'}
-}
+	.Targets = {
+#if HAVE_MSVC
+		'All-MSVC',
 #endif
+#if HAVE_CLANG
+		'All-Clang'
+#endif
+	}
+}
 
 // VS solution
 #if __WINDOWS__
