@@ -3,14 +3,37 @@
 
 TITLE MSVC x86 support
 
-
 OPTION PROLOGUE:NONE
+
+.DATA
+cookieMsg db "Security cookie has wrong value"
+
+EXTERN ___security_cookie : DWORD
 
 .CODE
 
 PUBLIC @_RTC_CheckStackVars@8
 @_RTC_CheckStackVars@8 PROC
 @_RTC_CheckStackVars@8 ENDP
+
+Base_QuitImpl TEXTEQU <?Base_QuitImpl@@YAXHPBD@Z>
+EXTERN Base_QuitImpl : PROC
+
+PUBLIC @__security_check_cookie@4
+@__security_check_cookie@4 PROC
+	cmp ecx, [___security_cookie]
+	jnz Fail
+	 
+	; Instructions that would go here don't work with the security cookie value I choose to use
+
+	ret
+
+Fail:
+	lea ecx, [cookieMsg]
+	push ecx
+	push 0C0000409h
+	call Base_QuitImpl
+@__security_check_cookie@4 ENDP
 
 ; all functions below this point are copied from SDL
 PUBLIC __ftol

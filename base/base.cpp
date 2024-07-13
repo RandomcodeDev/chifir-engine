@@ -75,7 +75,7 @@ BASEAPI void Base_Shutdown()
 {
 }
 
-template <typename T> static inline T Fnv1a(const u8* data, usize size, T offsetBasis, T prime)
+template <typename T> FORCEINLINE T Fnv1a(const u8* data, usize size, T offsetBasis, T prime)
 {
 	T hash = offsetBasis;
 	for (usize i = 0; i < size; i++)
@@ -104,9 +104,10 @@ BASEAPI u64 Base_Fnv1a64(const void* data, usize size)
 }
 
 template <typename T>
-static inline void Copy(void* RESTRICT dest, const void* RESTRICT src, usize offset, usize& remaining, usize alignment)
+FORCEINLINE void Copy(void* RESTRICT dest, const void* RESTRICT src, usize offset, usize& remaining, usize alignment)
 {
-	for (usize i = offset; i < (remaining / alignment) * alignment; i += alignment)
+	u32 count = (remaining / alignment) * alignment;
+	for (usize i = offset; i < count; i += alignment)
 	{
 		((T*)dest)[i / alignment] = ((T*)src)[i / alignment];
 		remaining -= alignment;
@@ -169,15 +170,21 @@ BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, usize 
 	return dest;
 }
 
-template <typename T> static inline void Set(void* RESTRICT dest, u8 value, usize offset, usize& remaining, usize alignment)
+template <typename T> FORCEINLINE void Set(void* RESTRICT dest, u8 value, usize offset, usize& remaining, usize alignment)
 {
 	// This is to get around how Clang deals with SIMD intrinsics (shouldn't cause problems)
 	u8 fullValue[32] = {value, value, value, value, value, value, value, value, value, value, value,
 						value, value, value, value, value, value, value, value, value, value, value,
 						value, value, value, value, value, value, value, value, value, value};
-	for (usize i = offset; i < (remaining / alignment) * alignment; i += alignment)
+#if CH_SIMD256
+	static_assert(sizeof(fullValue) == sizeof(v256));
+#else
+	static_assert(sizeof(fullValue) == sizeof(v128[2]));
+#endif
+	u32 count = (remaining / alignment) * alignment;
+	for (usize i = offset; i < count; i += alignment)
 	{
-		((T*)dest)[i / alignment] = *(T*)fullValue;
+		(static_cast<T*>(dest))[i / alignment] = *reinterpret_cast<T*>(fullValue);
 		remaining -= alignment;
 	}
 }

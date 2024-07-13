@@ -22,6 +22,9 @@ BASEAPI void Base_Shutdown();
 // Otherwise, use 0 for normal exit, 1 for a possibly relevant platform-specific error code and an error message.
 BASEAPI NORETURN void Base_Quit(s32 error, cstr msg, ...);
 
+// This is for when Base_Quit might have side effects that could lead to recursion, such as calling Base_VFormat
+BASEAPI NORETURN void Base_QuitImpl(s32 error, cstr msg);
+
 // Quit if a condition isn't true, add a message and code
 #define ASSERT_MSG_CODE(cond, code, ...)                                                                                         \
 	if (!(cond))                                                                                                                 \
@@ -36,7 +39,7 @@ BASEAPI NORETURN void Base_Quit(s32 error, cstr msg, ...);
 #define ASSERT_CODE(cond, code) ASSERT_MSG_CODE(cond, code, "error " #code)
 
 // Quit if a condition isn't true
-#define ASSERT(cond) ASSERT_MSG(cond, ) // the msg parameter is intentionally left blank
+#define ASSERT(cond) ASSERT_MSG(cond, )
 
 // Round val up to a multiple of align (align must be a power of two)
 #define ALIGN(val, align) (((val) + (align)-1) & ~((align)-1))

@@ -49,6 +49,8 @@
 #define RESTRICT __restrict
 #endif
 
+#define FORCEINLINE __forceinline
+
 #ifndef va_copy
 #define va_copy(x, y) x = y
 #endif

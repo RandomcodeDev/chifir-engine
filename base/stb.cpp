@@ -9,6 +9,9 @@
 
 #define STB_SPRINTF_STATIC
 #define STB_SPRINTF_IMPLEMENTATION
+#if defined _MSC_VER && _MSC_VER >= 1900
+#define STBSP__ASAN ATTRIBUTE(safebuffers)
+#endif
 #include "stb/stb_sprintf.h"
 
 BASEAPI u32 Base_VStrPrint(dstr dest, u32 destSize, cstr format, va_list args)

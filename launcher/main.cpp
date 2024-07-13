@@ -9,7 +9,7 @@ s32 LauncherMain()
 	Base_Init();
 	Plat_Init();
 
-    const int NumIterations = 1000000; // Number of allocation/deallocation cycles
+    const int NumIterations = 10000; // Number of allocation/deallocation cycles
 	const int AllocationSize = 64;     // Size of each allocation in bytes
 
 	void** allocations = new void*[NumIterations];

@@ -48,6 +48,7 @@ MAKE_STUB(QueryPerformanceCounter)
 // These are desktop/OneCore things
 
 // ntdll
+MAKE_STUB(LdrAddDllDirectory, __stdcall, 8)
 MAKE_STUB(LdrAddRefDll, __stdcall, 8)
 MAKE_STUB(LdrGetProcedureAddress, __stdcall, 16)
 MAKE_STUB(LdrLoadDll, __stdcall, 16)
@@ -58,15 +59,15 @@ MAKE_STUB(NtTerminateProcess, __stdcall, 8)
 MAKE_STUB(RtlFreeHeap, __stdcall, 12)
 
 // user32, because it's more than just forwarded syscalls, unlike kernel32
+MAKE_STUB(AdjustWindowRect, __stdcall, 4)
 MAKE_STUB(CreateWindowExA, __stdcall, 48)
-MAKE_STUB(RegisterClassExA, __stdcall, 4)
-MAKE_STUB(PeekMessageA, __stdcall, 20)
-MAKE_STUB(TranslateMessage, __stdcall, 4)
+MAKE_STUB(DefWindowProcA, __stdcall, 16)
 MAKE_STUB(DispatchMessageA, __stdcall, 4)
 MAKE_STUB(GetClientRect, __stdcall, 8)
 MAKE_STUB(GetSystemMetrics, __stdcall, 4)
-MAKE_STUB(AdjustWindowRect, __stdcall, 4)
-MAKE_STUB(DefWindowProcA, __stdcall, 16)
+MAKE_STUB(PeekMessageA, __stdcall, 20)
+MAKE_STUB(RegisterClassExA, __stdcall, 4)
+MAKE_STUB(TranslateMessage, __stdcall, 4)
 #endif
 
 static bool FindNtDll()
@@ -130,7 +131,7 @@ static bool FindLdrGetProcedureAddress()
 
 #define GET_FUNCTION(lib, fileName)                                                                                              \
 	{                                                                                                                            \
-		STUB_NAME(fileName) = (reinterpret_cast<ILibrary*>(&(lib)))->GetSymbol<uptr (*)(...)>(#fileName);                        \
+		STUB_NAME(fileName) = reinterpret_cast<ILibrary*>(lib)->GetSymbol<uptr (*)(...)>(#fileName);                             \
 		ASSERT_CODE(STUB_NAME(fileName) != nullptr, NtCurrentTeb()->LastStatusValue);                                            \
 	}
 
@@ -148,19 +149,19 @@ bool Base_InitLoader()
 
 	CWin32Library ntDll(ntDllBase);
 
-	GET_FUNCTION(ntDll, DbgPrint)
-	GET_FUNCTION(ntDll, NtAllocateVirtualMemory)
-	GET_FUNCTION(ntDll, NtFreeVirtualMemory)
-	GET_FUNCTION(ntDll, RtlAnsiStringToUnicodeString)
-	GET_FUNCTION(ntDll, RtlFreeUnicodeString)
+	GET_FUNCTION(&ntDll, DbgPrint)
+	GET_FUNCTION(&ntDll, NtAllocateVirtualMemory)
+	GET_FUNCTION(&ntDll, NtFreeVirtualMemory)
+	GET_FUNCTION(&ntDll, RtlAnsiStringToUnicodeString)
+	GET_FUNCTION(&ntDll, RtlFreeUnicodeString)
 
 #ifdef CH_XBOX360
 	// These are only on Xbox 360
 
 	// xboxkrnl
-	GET_FUNCTION(ntDll, XexGetProcedureAddress)
-	GET_FUNCTION(ntDll, XexLoadImage)
-	GET_FUNCTION(ntDll, XexUnloadImage)
+	GET_FUNCTION(&ntDll, XexGetProcedureAddress)
+	GET_FUNCTION(&ntDll, XexLoadImage)
+	GET_FUNCTION(&ntDll, XexUnloadImage)
 
 	ILibrary* xam = Base_LoadLibrary("xam");
 
@@ -170,19 +171,20 @@ bool Base_InitLoader()
 	// These are desktop/OneCore things
 
 	// ntdll
-	GET_FUNCTION(ntDll, LdrAddRefDll)
-	GET_FUNCTION(ntDll, LdrGetProcedureAddress)
-	GET_FUNCTION(ntDll, LdrLoadDll)
-	GET_FUNCTION(ntDll, LdrUnloadDll)
-	GET_FUNCTION(ntDll, NtQuerySystemInformation)
-	GET_FUNCTION(ntDll, NtRaiseHardError)
-	GET_FUNCTION(ntDll, NtTerminateProcess)
-	GET_FUNCTION(ntDll, RtlFreeHeap)
+	GET_FUNCTION(&ntDll, LdrAddRefDll)
+	GET_FUNCTION(&ntDll, LdrGetProcedureAddress)
+	GET_FUNCTION(&ntDll, LdrLoadDll)
+	GET_FUNCTION(&ntDll, LdrUnloadDll)
+	GET_FUNCTION(&ntDll, NtQuerySystemInformation)
+	GET_FUNCTION(&ntDll, NtRaiseHardError)
+	GET_FUNCTION(&ntDll, NtTerminateProcess)
+	GET_FUNCTION(&ntDll, RtlFreeHeap)
 
 	// So unloading it when ntDll goes out of scope doesn't mess anything up, cause the loader wasn't used to "load" it
 	LdrAddRefDll(0, ntDllBase);
 
 	ILibrary* user32 = Base_LoadLibrary("user32");
+	ASSERT(user32 != nullptr);
 
 	// user32, because it's more than just forwarded syscalls, unlike kernel32
 	GET_FUNCTION(user32, CreateWindowExA)
@@ -231,15 +233,15 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 
 		void* handle = nullptr;
 		status = LdrLoadDll(nullptr, nullptr, &nameUStr, &handle);
-		if (NT_SUCCESS(status))
+		if (!NT_SUCCESS(status))
 		{
 			NtCurrentTeb()->LastStatusValue = status;
 			RtlFreeUnicodeString(&nameUStr);
-
-			return new CWin32Library(handle);
+			return nullptr;
 		}
 
 		RtlFreeUnicodeString(&nameUStr);
+		return new CWin32Library(handle);
 	}
 
 	return nullptr;

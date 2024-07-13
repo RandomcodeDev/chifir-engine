@@ -146,7 +146,7 @@ static void CoalesceAllocations()
 {
 	if (s_allocations.Size() > 1)
 	{
-		for (AllocNode_t* alloc = s_allocations.GetHead(); !alloc->GetNext()->IsTail(); alloc = alloc->GetNext())
+		for (AllocNode_t* alloc = s_allocations.GetHead(); !alloc->IsTail() && !alloc->GetNext()->IsTail(); alloc = alloc->GetNext())
 		{
 			AllocNode_t* next = alloc->GetNext();
 			if (next->data.isFree && SameSystemNode(alloc, next))
