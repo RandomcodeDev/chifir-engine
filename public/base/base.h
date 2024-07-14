@@ -71,26 +71,29 @@ template <typename T> static inline T Min(const T& left, const T& right)
 }
 
 // FNV-1a hash
-BASEAPI u32 Base_Fnv1a32(const void* data, usize size);
-BASEAPI u64 Base_Fnv1a64(const void* data, usize size);
+BASEAPI u32 Base_Fnv1a32(const void* data, ssize size);
+BASEAPI u64 Base_Fnv1a64(const void* data, ssize size);
 
 // Copy memory
-BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, usize size);
+BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize size);
+
+// Compare memory
+BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssize size);
 
 // Clear memory
-BASEAPI void* Base_MemSet(void* dest, u32 value, usize size);
+BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size);
 
 // Allocate aligned memory
-BASEAPI void* Base_Alloc(usize size, usize alignment = 8);
+BASEAPI void* Base_Alloc(ssize size, ssize alignment = 8);
 
 // Allocate an array of T with count elements
-template <typename T> static inline T* Base_Alloc(usize count)
+template <typename T> static inline T* Base_Alloc(ssize count)
 {
 	return reinterpret_cast<T*>(Base_Alloc(count * sizeof(T), alignof(T)));
 }
 
-// Resize an allocation
-BASEAPI void* Base_Realloc(void* block, usize newSize);
+// Resize an allocation. block == nullptr is equivalent to Base_Alloc, newSize == 0 is equivalent to Base_Free.
+BASEAPI void* Base_Realloc(void* block, ssize newSize);
 
 // Free memory from Base_Alloc
 BASEAPI void Base_Free(void* block);

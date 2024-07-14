@@ -7,7 +7,7 @@ bool g_platInitialized;
 bool g_allocUsable;
 BaseCpuData_t g_cpuData;
 
-#ifdef CF_X86
+#ifdef CH_X86
 static void CpuId(u32& eax, u32& ebx, u32& ecx, u32& edx)
 {
 #ifdef _MSC_VER
@@ -34,6 +34,9 @@ static void X86InitCpuData()
 #ifdef CH_I386 // Widespread adoption of SSE2 predates AMD64
 	g_cpuData.haveSimd128 = (bool)(edx & (1 << 25));
 	g_cpuData.haveIntSimd128 = (bool)(edx & (1 << 26));
+#else
+	g_cpuData.haveSimd128 = true;
+	g_cpuData.haveIntSimd128 = true;
 #endif
 	g_cpuData.haveSimd256 = (bool)(ecx & (1 << 28));
 
@@ -41,7 +44,7 @@ static void X86InitCpuData()
 
 	// brand, EAX = 0
 	CpuId(regs[0], regs[1], regs[2], regs[3]);
-	Base_MemCpy(g_cpuData.brand, regs, 16);
+	Base_MemCopy(g_cpuData.brand, regs, 16);
 
 	// model name available
 	regs[4] = 0x80000000;
@@ -57,15 +60,25 @@ static void X86InitCpuData()
 		CpuId(regs[8], regs[9], regs[10], regs[11]);
 		CpuId(regs[12], regs[13], regs[14], regs[15]);
 
-		Base_MemCpy(g_cpuData.name, regs + 4, 48);
+		Base_MemCopy(g_cpuData.name, regs + 4, 48);
 	}
+}
+#elif defined CH_XBOX360
+static void Xbox360InitCpuData()
+{
+	g_cpuData.haveSimd128 = true;
+	g_cpuData.haveIntSimd128 = true;
+	Base_StrCopy(g_cpuData.name, "Microsoft", ARRAY_SIZE(g_cpuData.brand));
+	Base_StrCopy(g_cpuData.name, "Xenon CPU", ARRAY_SIZE(g_cpuData.name));
 }
 #endif
 
 BASEAPI void Base_Init()
 {
-#ifdef CF_X86
+#ifdef CH_X86
 	X86InitCpuData();
+#elif defined CH_XBOX360
+	Xbox360InitCpuData();
 #endif
 
 	g_baseInitialized = true;
@@ -75,10 +88,10 @@ BASEAPI void Base_Shutdown()
 {
 }
 
-template <typename T> FORCEINLINE T Fnv1a(const u8* data, usize size, T offsetBasis, T prime)
+template <typename T> static FORCEINLINE T Fnv1a(const u8* data, ssize size, T offsetBasis, T prime)
 {
 	T hash = offsetBasis;
-	for (usize i = 0; i < size; i++)
+	for (ssize i = 0; i < size; i++)
 	{
 		hash ^= data[i];
 		hash *= prime;
@@ -87,7 +100,7 @@ template <typename T> FORCEINLINE T Fnv1a(const u8* data, usize size, T offsetBa
 	return hash;
 }
 
-BASEAPI u32 Base_Fnv1a32(const void* data, usize size)
+BASEAPI u32 Base_Fnv1a32(const void* data, ssize size)
 {
 	static const u32 OFFSET_BASIS = 0x811c9dc5;
 	static const u32 PRIME = 0x01000193;
@@ -95,7 +108,7 @@ BASEAPI u32 Base_Fnv1a32(const void* data, usize size)
 	return Fnv1a((u8*)data, size, OFFSET_BASIS, PRIME);
 }
 
-BASEAPI u64 Base_Fnv1a64(const void* data, usize size)
+BASEAPI u64 Base_Fnv1a64(const void* data, ssize size)
 {
 	static const u64 OFFSET_BASIS = 0xcbf29ce484222325;
 	static const u64 PRIME = 0x00000100000001B3;
@@ -104,73 +117,116 @@ BASEAPI u64 Base_Fnv1a64(const void* data, usize size)
 }
 
 template <typename T>
-FORCEINLINE void Copy(void* RESTRICT dest, const void* RESTRICT src, usize offset, usize& remaining, usize alignment)
+static FORCEINLINE void Copy(
+	void* RESTRICT dest, const void* RESTRICT src, ssize offset, ssize& remaining, ssize alignment, bool reverse = false)
 {
-	usize count = (remaining / alignment) * alignment;
-	for (usize i = offset; i < count; i += alignment)
+	ssize count = (remaining / alignment) * alignment;
+	if (reverse)
 	{
-		((T*)dest)[i / alignment] = ((T*)src)[i / alignment];
-		remaining -= alignment;
+		for (ssize i = offset + count - alignment; i >= offset + alignment; i -= alignment)
+		{
+			static_cast<T*>(dest)[i / alignment] = static_cast<const T*>(src)[i / alignment];
+			remaining -= alignment;
+		}
+	}
+	else
+	{
+		for (ssize i = offset; i < count; i += alignment)
+		{
+			static_cast<T*>(dest)[i / alignment] = static_cast<const T*>(src)[i / alignment];
+			remaining -= alignment;
+		}
 	}
 }
 
-BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, usize size)
+BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize size)
 {
-	usize remaining = size;
+	ssize remaining = size;
 
-	if (g_baseInitialized)
+	if (!dest || !src || size == 0)
 	{
-		usize alignment = 1;
-		if (g_cpuData.haveSimd256 && size >= 32)
-		{
-			alignment = 32;
-		}
-		else if (g_cpuData.haveSimd128 && size >= 16)
-		{
-			alignment = 16;
-		}
-		else if (size >= 8)
-		{
-			alignment = 8;
-		}
+		return dest;
+	}
 
-		// Can only realign if they're misaligned the same amount (they should be, usually pointers are aligned on a reasonable
-		// amount unless it's some arbitrary offset into an array of bytes)
-		usize srcAlignment = ((uptr)src & alignment);
-		usize destAlignment = ((uptr)dest & alignment);
-		if (srcAlignment == destAlignment)
+	// No point copying
+	if (src == dest)
+	{
+		return dest;
+	}
+
+	// Check if data should be copied in reverse in case of overlap
+	bool reverse = reinterpret_cast<uptr>(dest) > reinterpret_cast<uptr>(src);
+
+	ssize alignment = 1;
+	if (g_cpuData.haveSimd256 && size >= 32)
+	{
+		alignment = 32;
+	}
+	else if (g_cpuData.haveSimd128 && size >= 16)
+	{
+		alignment = 16;
+	}
+	else if (size >= 8)
+	{
+		alignment = 8;
+	}
+
+	// Can only realign if they're misaligned the same amount (they should be, usually pointers are aligned on a reasonable
+	// amount unless it's some arbitrary offset into an array of bytes)
+	ssize srcAlignment = ((uptr)src & alignment);
+	ssize destAlignment = ((uptr)dest & alignment);
+	if (srcAlignment == destAlignment)
+	{
+		ssize misalignment = alignment - srcAlignment;
+		if (misalignment > remaining)
 		{
-			usize misalignment = alignment - srcAlignment;
+			misalignment = remaining;
+		}
+		else
+		{
 			remaining -= misalignment;
-			Copy<u8>(dest, src, 0, misalignment, 1);
+		}
 
+		// Do this afterward
+		if (!reverse)
+		{
+			Copy<u8>(dest, src, 0, misalignment, 1, reverse);
+		}
+
+		// In the event of reverse, this copies from the end of the buffers to either the start or the first aligned point
 #ifdef CH_SIMD256
-			if (g_cpuData.haveSimd256 && size - remaining >= 32)
-			{
-				Copy<v256>(dest, src, size - remaining, remaining, alignment);
-			}
-			else
+		if (g_cpuData.haveSimd256 && size - remaining >= 32)
+		{
+			Copy<v256>(dest, src, size - remaining, remaining, alignment, reverse);
+		}
+		else
 #endif
 #ifdef CH_SIMD128
-				if (g_cpuData.haveSimd128 && size - remaining >= 16)
-			{
-				Copy<v128>(dest, src, size - remaining, remaining, alignment);
-			}
-			else
+			if (g_cpuData.haveSimd128 && size - remaining >= 16)
+		{
+			Copy<v128>(dest, src, size - remaining, remaining, alignment, reverse);
+		}
+		else
 #endif
-				if (size - remaining >= 8)
-			{
-				Copy<u64>(dest, src, size - remaining, remaining, alignment);
-			}
+			if (size - remaining >= 8)
+		{
+			Copy<u64>(dest, src, size - remaining, remaining, alignment, reverse);
+		}
+
+		// Copy unaligned part now if going backward
+		if (reverse)
+		{
+			Copy<u8>(dest, src, 0, misalignment, 1, reverse);
 		}
 	}
 
-	Copy<u8>(dest, src, size - remaining, remaining, 1);
+	// This won't do anything if the above ran
+	Copy<u8>(dest, src, size - remaining, remaining, 1, reverse);
 
 	return dest;
 }
 
-template <typename T> FORCEINLINE void Set(void* RESTRICT dest, u8 value, usize offset, usize& remaining, usize alignment)
+template <typename T> FORCEINLINE void Set(void* dest, u8 value, ssize offset, ssize& remaining, ssize alignment)
 {
 	// This is to get around how Clang deals with SIMD intrinsics (shouldn't cause problems)
 	u8 fullValue[32] = {value, value, value, value, value, value, value, value, value, value, value,
@@ -181,60 +237,196 @@ template <typename T> FORCEINLINE void Set(void* RESTRICT dest, u8 value, usize 
 #else
 	static_assert(sizeof(fullValue) == sizeof(v128[2]));
 #endif
-	usize count = (remaining / alignment) * alignment;
-	for (usize i = offset; i < count; i += alignment)
+	ssize count = (remaining / alignment) * alignment;
+	for (ssize i = offset; i < count; i += alignment)
 	{
-		(static_cast<T*>(dest))[i / alignment] = *reinterpret_cast<T*>(fullValue);
+		static_cast<T*>(dest)[i / alignment] = *reinterpret_cast<T*>(fullValue);
 		remaining -= alignment;
 	}
 }
 
-BASEAPI void* Base_MemSet(void* dest, u32 value, usize size)
+BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size)
 {
-	usize remaining = size;
+	ssize remaining = size;
 
-	if (g_baseInitialized)
+	if (!dest || size == 0)
 	{
-		usize alignment = 1;
-		if (g_cpuData.haveSimd256 && size >= 32)
-		{
-			alignment = 32;
-		}
-		else if (g_cpuData.haveSimd128 && size >= 16)
-		{
-			alignment = 16;
-		}
-		else if (size >= 8)
-		{
-			alignment = 8;
-		}
+		return dest;
+	}
 
-		// Realign
-		usize misalignment = alignment - ((uptr)dest & alignment);
+	ssize alignment = 1;
+	if (g_cpuData.haveSimd256 && size >= 32)
+	{
+		alignment = 32;
+	}
+	else if (g_cpuData.haveSimd128 && size >= 16)
+	{
+		alignment = 16;
+	}
+	else if (size >= 8)
+	{
+		alignment = 8;
+	}
+
+	// Realign
+	ssize misalignment = alignment - ((uptr)dest & alignment);
+	if (misalignment > remaining)
+	{
+		misalignment = remaining;
+	}
+	else
+	{
 		remaining -= misalignment;
-		Set<u8>(dest, static_cast<u8>(value), 0, misalignment, 1);
+	}
+	Set<u8>(dest, static_cast<u8>(value), 0, misalignment, 1);
 
 #ifdef CH_SIMD256
-		if (g_cpuData.haveSimd256 && size - remaining >= 32)
-		{
-			Set<v256>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
-		}
-		else
+	if (g_cpuData.haveSimd256 && size - remaining >= 32)
+	{
+		Set<v256>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
+	}
+	else
 #endif
 #ifdef CH_SIMD128
-			if (g_cpuData.haveSimd128 && size - remaining >= 16)
+		if (g_cpuData.haveSimd128 && size - remaining >= 16)
+	{
+		Set<v128>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
+	}
+	else
+#endif
+		if (size - remaining >= 8)
+	{
+		Set<u64>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
+	}
+
+	// This won't do anything if the above ran
+	Set<u8>(dest, static_cast<u8>(value), size - remaining, remaining, 1);
+
+	return dest;
+}
+
+template <typename T>
+static FORCEINLINE s32 Compare(const void* RESTRICT a, const void* RESTRICT b, ssize offset, ssize& remaining, ssize alignment)
+{
+	ssize count = (remaining / alignment) * alignment;
+	ssize i = offset;
+	for (; i < count && static_cast<const T * RESTRICT>(a)[i / alignment] == static_cast<const T * RESTRICT>(b)[i / alignment];
+		 i += alignment)
+	{
+		remaining -= alignment;
+	}
+
+	// Compare the bytes of the larger thing
+	for (ssize j = 0; j < sizeof(T); j++)
+	{
+		s8 ab = static_cast<const s8 * RESTRICT>(a)[i / alignment + j];
+		s8 bb = static_cast<const s8 * RESTRICT>(b)[i / alignment + j];
+		if (ab != bb)
 		{
-			Set<v128>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
+			return bb - ab;
+		}
+	}
+
+	return 0;
+}
+
+#ifdef CH_X86
+// https://github.com/WojciechMula/simd-string/blob/master/memcmp.cpp
+static FORCEINLINE bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
+{
+	static const u8 mode = _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_EACH | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
+	inequalIdx = _mm_cmpestri(*reinterpret_cast<const __m128i*>(&a), 16, *reinterpret_cast<const __m128i*>(&b), 16, mode);
+	return _mm_cmpestrc(*reinterpret_cast<const __m128i*>(&a), 16, *reinterpret_cast<const __m128i*>(&b), 16, mode);
+}
+#else
+#error "You need to implement SIMD byte comparison for this architecture"
+#endif
+
+#if CH_SIMD128
+template <>
+FORCEINLINE s32 Compare<v128>(const void* RESTRICT a, const void* RESTRICT b, ssize offset, ssize& remaining, ssize alignment)
+{
+	ssize count = (remaining / alignment) * alignment;
+	ssize i = offset;
+	const v128* va = static_cast<const v128*>(a);
+	const v128* vb = static_cast<const v128*>(b);
+	s32 inequalIdx = 0;
+	for (; i < count && V128ByteEqual(va[i / alignment], vb[i / alignment], inequalIdx); i += alignment)
+	{
+		remaining -= alignment;
+	}
+
+	return static_cast<const s8*>(a)[i + inequalIdx] - static_cast<const s8*>(a)[i + inequalIdx];
+}
+#endif
+
+BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssize size)
+{
+	ssize remaining = size;
+
+	if (!a || !b || size == 0)
+	{
+		return -1;
+	}
+
+	// No point comparing
+	if (a == b)
+	{
+		return 0;
+	}
+
+	ssize alignment = 1;
+	if (g_cpuData.haveSimd256 && size >= 32)
+	{
+		alignment = 32;
+	}
+	else if (g_cpuData.haveIntSimd128 && size >= 16)
+	{
+		alignment = 16;
+	}
+	else if (size >= 8)
+	{
+		alignment = 8;
+	}
+
+	// Can only realign if they're misaligned the same amount (they should be, usually pointers are aligned on a reasonable
+	// amount unless it's some arbitrary offset into an array of bytes)
+	ssize aAlignment = ((uptr)a & alignment);
+	ssize bAlignment = ((uptr)b & alignment);
+	s32 comparison;
+	if (aAlignment == bAlignment)
+	{
+		ssize misalignment = alignment - aAlignment;
+		if (misalignment > remaining)
+		{
+			misalignment = remaining;
+		}
+		else
+		{
+			remaining -= misalignment;
+		}
+
+		comparison = Compare<u8>(a, b, 0, misalignment, 1);
+		if (comparison != 0)
+		{
+			return comparison;
+		}
+
+#ifdef CH_SIMD128
+		if (g_cpuData.haveIntSimd128 && size - remaining >= 16)
+		{
+			comparison = Compare<v128>(a, b, size - remaining, remaining, alignment);
 		}
 		else
 #endif
 			if (size - remaining >= 8)
 		{
-			Set<u64>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
+			comparison = Compare<u64>(a, b, size - remaining, remaining, alignment);
 		}
+
+		return comparison;
 	}
 
-	Set<u8>(dest, static_cast<u8>(value), size - remaining, remaining, 1);
-
-	return dest;
+	comparison = Compare<u8>(a, b, size - remaining, remaining, 1);
+	return comparison;
 }

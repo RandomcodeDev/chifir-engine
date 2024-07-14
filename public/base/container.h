@@ -11,26 +11,25 @@ class IContainer
   public:
 	static const I BAD_INDEX = (I)-1;
 
-	virtual IContainer(const T* data, usize size) = 0;
 	virtual ~IContainer() DEFAULT;
 
 	// Get the size
-	virtual usize Size() = 0;
+	virtual ssize Size() const = 0;
 
 	// Insert an item at index, or append if index == BAD_INDEX
-	virtual I Insert(const T& object, I index = BAD_INDEX) = 0;
+	virtual I Add(const T& object, I index = BAD_INDEX) = 0;
 
 	// Remove the specified index if it exists
 	virtual void Delete(I index) = 0;
 
 	// Get an item
-	virtual T& operator[](const I& index) = 0;
+	virtual T& operator[](const I& index) const = 0;
 
 	// Append an item
-	virtual void operator+(const T& object) = 0;
+	virtual void operator+=(const T& object) = 0;
 
 	// Find a matching item
-	virtual I Find(s32 (*Compare)(const T& a, const T& b)) = 0;
+	virtual I Find(s32 (*Compare)(const T& a, const T& b)) const = 0;
 
 	// Sort
 	virtual void Sort(s32 (*Compare)(const T& a, const T& b)) = 0;

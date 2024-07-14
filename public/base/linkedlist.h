@@ -118,7 +118,7 @@ template <typename T> class CLinkedList
 		return m_tail;
 	}
 
-	usize Size()
+	ssize Size()
 	{
 		return m_nodeCount;
 	}
@@ -166,5 +166,5 @@ template <typename T> class CLinkedList
 	Node_t* m_head;
 	Node_t* m_tail;
 
-	usize m_nodeCount;
+	ssize m_nodeCount;
 };

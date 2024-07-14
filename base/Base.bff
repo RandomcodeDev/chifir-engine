@@ -20,11 +20,11 @@
 			{
 				'$ProjectPath$/base.cpp',
 				'$ProjectPath$/basicstr.cpp',
-				'$ProjectPath$/basicwstr.cpp',
 				'$ProjectPath$/memory.cpp',
 				'$ProjectPath$/platform.cpp',
-				'$ProjectPath$/stb.cpp',
-				'$ProjectPath$/../public/base/memoverride.cpp'
+				'$ProjectPath$/../public/base/libc.cpp',
+				'$ProjectPath$/../public/base/memoverride.cpp',
+				'$ProjectPath$/../public/base/stb.cpp'
 			}
 
 			If (.PlatformName in .WindowsLike)

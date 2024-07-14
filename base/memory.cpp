@@ -15,7 +15,7 @@ static const u64 ALLOC_SIGNATURE = 0x434F4C4C41464843;
 
 struct AllocInfo_t
 {
-	usize size; // Includes the size of the AllocNode_t header
+	ssize size; // Includes the size of the AllocNode_t header
 	bool isFree;
 	u8 alignment;
 	LinkedNode_t<SystemAllocation_t>* systemAllocation;
@@ -31,7 +31,7 @@ static CLinkedList<AllocInfo_t> s_allocations;
 
 static s32 FindSystemNode(SystemAllocation_t* alloc, void* data)
 {
-	if (alloc->size - alloc->used >= (usize)data)
+	if (alloc->size - alloc->used >= (ssize)data)
 	{
 		return 0;
 	}
@@ -40,16 +40,16 @@ static s32 FindSystemNode(SystemAllocation_t* alloc, void* data)
 }
 
 // Size of system nodes which are directly allocated with NtAllocateVirtualMemory/mmap
-static const usize SYSTEM_ALLOC_SIZE = 64 * 1024 * 1024;
+static const ssize SYSTEM_ALLOC_SIZE = 64 * 1024 * 1024;
 
 // Minimum alignment of allocations
-static const usize MINIMUM_ALIGNMENT = alignof(AllocNode_t);
+static const ssize MINIMUM_ALIGNMENT = alignof(AllocNode_t);
 
 // Maximum alignment of allocations, mainly to set an upper bound on how far back to search for a node in an allocation
-static const usize MAXIMUM_ALIGNMENT = 64;
+static const ssize MAXIMUM_ALIGNMENT = 64;
 
 // This finds a system node with the requested size, or allocates a new one of a fixed size
-static AllocNode_t* MakeNewNode(usize size)
+static AllocNode_t* MakeNewNode(ssize size)
 {
 	LinkedNode_t<SystemAllocation_t>* node = g_memInfo.allocations.Find(FindSystemNode, reinterpret_cast<void*>(size));
 	if (!node)
@@ -71,19 +71,19 @@ static AllocNode_t* MakeNewNode(usize size)
 	return alloc;
 }
 
-static usize EffectiveAllocSize(AllocInfo_t* info)
+static ssize EffectiveAllocSize(AllocInfo_t* info)
 {
 	return info->size - sizeof(AllocNode_t);
 }
 
-static usize EffectiveSize(AllocNode_t* node)
+static ssize EffectiveSize(AllocNode_t* node)
 {
 	return EffectiveAllocSize(&node->data);
 }
 
 static s32 FindFreeNode(AllocInfo_t* alloc, void* data)
 {
-	if (alloc->isFree && (EffectiveAllocSize(alloc) >= (usize)data))
+	if (alloc->isFree && (EffectiveAllocSize(alloc) >= (ssize)data))
 	{
 		return 0;
 	}
@@ -92,7 +92,7 @@ static s32 FindFreeNode(AllocInfo_t* alloc, void* data)
 }
 
 // Finds or creates a node of the required size
-static AllocNode_t* GetFreeNode(usize size)
+static AllocNode_t* GetFreeNode(ssize size)
 {
 	AllocNode_t* alloc = s_allocations.Find(FindFreeNode, reinterpret_cast<void*>(size));
 	if (!alloc)
@@ -158,14 +158,14 @@ static void CoalesceAllocations()
 	}
 }
 
-static usize FixAlignment(usize alignment)
+static ssize FixAlignment(ssize alignment)
 {
 	return Min(Max(alignment, MINIMUM_ALIGNMENT), MAXIMUM_ALIGNMENT);
 }
 
-BASEAPI void* Base_Alloc(usize size, usize alignment)
+BASEAPI void* Base_Alloc(ssize size, ssize alignment)
 {
-	usize realAlignment = FixAlignment(alignment);
+	ssize realAlignment = FixAlignment(alignment);
 
 	ASSERT_MSG(realAlignment <= MAXIMUM_ALIGNMENT, "alignment must be less than or equal to %zu", MAXIMUM_ALIGNMENT);
 	ASSERT_MSG(realAlignment % 2 == 0, "alignment must be a power of 2");
@@ -185,11 +185,11 @@ BASEAPI void* Base_Alloc(usize size, usize alignment)
 
 // Resize an allocation. If the new size is smaller, possibly make a new free node of the regained space. If it's larger, attempt
 // to take from the next contiguous node. Otherwise, make a new allocation and copy data over.
-BASEAPI void* Base_Realloc(void* block, usize newSize)
+BASEAPI void* Base_Realloc(void* block, ssize newSize)
 {
 	if (!block)
 	{
-		return nullptr;
+		return Base_Alloc(newSize);
 	}
 
 	if (newSize == 0)
@@ -203,7 +203,7 @@ BASEAPI void* Base_Realloc(void* block, usize newSize)
 	// Shrink this node
 	if (EffectiveSize(node) > newSize)
 	{
-		usize freeSize = EffectiveSize(node) - newSize;
+		ssize freeSize = EffectiveSize(node) - newSize;
 		node->data.size = newSize + sizeof(AllocNode_t);
 
 		// If it's the tail and there's enough space, make a new node after
@@ -234,7 +234,7 @@ BASEAPI void* Base_Realloc(void* block, usize newSize)
 	{
 		AllocInfo_t* neighbor = &node->GetNext()->data;
 		// the node isn't part of the size change
-		usize extraSize = newSize - node->data.size - sizeof(AllocNode_t);
+		ssize extraSize = newSize - node->data.size - sizeof(AllocNode_t);
 		node->data.size = newSize;
 
 		if (SameSystemNode(node, node->GetNext()) && neighbor->isFree && EffectiveAllocSize(neighbor) > extraSize)

@@ -3,7 +3,6 @@
 #pragma once
 
 #include <cstdarg>
-#include <cstddef>
 #include <cstdint>
 #include <limits>
 #if _MSC_VER >= 1400
@@ -19,7 +18,10 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 typedef uintptr_t uptr;
+
+// Avoid using in cases where underflow could happen
 typedef uptr usize;
+static_assert(sizeof(usize) == sizeof(size_t), "sizeof(usize) != sizeof(size_t)");
 
 typedef int8_t s8;
 typedef int16_t s16;
@@ -27,6 +29,14 @@ typedef int32_t s32;
 typedef int64_t s64;
 typedef intptr_t sptr;
 typedef sptr ssize;
+
+// These two are in POSIX, so no use redefining them
+#ifndef SSIZE_MIN
+#define SSIZE_MIN INTPTR_MIN
+#endif
+#ifndef SSIZE_MAX
+#define SSIZE_MAX INTPTR_MAX
+#endif
 
 typedef float f32;
 typedef double f64;

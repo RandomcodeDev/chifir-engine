@@ -26,20 +26,6 @@ extern "C"
 		__security_cookie_complement = ~__security_cookie;
 	}
 
-#ifndef __clang__
-#pragma function(memcpy)
-	void* memcpy(void* RESTRICT dest, const void* RESTRICT src, usize size)
-	{
-		return Base_MemCopy(dest, src, size);
-	}
-
-#pragma function(memset)
-	void* memset(void* dest, s32 value, usize size)
-	{
-		return Base_MemSet(dest, value, size);
-	}
-#endif
-
 	NORETURN void __cdecl __report_rangecheckfailure()
 	{
 		Base_QuitImpl(STATUS_STACK_BUFFER_OVERRUN, "Range check failure");

@@ -25,11 +25,15 @@
 #define ALIAS(a, b)                   ALIAS_RAW(#a, #b)
 #define BREAKPOINT()                  __debugbreak()
 #define ASSUME(x)                     __assume(x)
+// MSVC likes to be told when an intrinsic function is defined
+#define DEFINE_INTRINSIC(x)           __pragma(function(x))
 #else
 #define ATTRIBUTE(x) __attribute__((x))
 #define ALIAS(a, b)  extern "C" TYPEOF(a) ATTRIBUTE(alias(#a)) b;
 #define BREAKPOINT() __builtin_trap()
 #define ASSUME(x)    __builtin_assume(x)
+// MSVC likes to be told when an intrinsic function is defined
+#define DEFINE_INTRINSIC(x)
 #endif
 
 #if __cplusplus < 201100L
@@ -43,6 +47,7 @@
 #endif
 
 // MSVC and Clang/GCC understand all of these equally
+
 #define TYPEOF(x) __typeof__(x)
 #define NORETURN  ATTRIBUTE(noreturn)
 #if _MSC_VER <= 1600

@@ -14,7 +14,12 @@
 
 		Unity('$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
 		{
-			.UnityInputFiles = {'$ProjectPath$/../public/base/memoverride.cpp'}
+			.UnityInputFiles =
+			{
+				'$ProjectPath$/../public/base/memoverride.cpp',
+				'$ProjectPath$/../public/base/libc.cpp',
+				'$ProjectPath$/../public/base/stb.cpp'
+			}
 
 			If (.PlatformName in .WindowsLike)
 			{

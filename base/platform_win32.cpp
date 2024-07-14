@@ -40,7 +40,7 @@ BASEAPI NORETURN void Base_QuitImpl(s32 code, cstr msg)
 	ASSUME(0);
 }
 
-bool Base_GetSystemMemory(usize size)
+bool Base_GetSystemMemory(ssize size)
 {
 	// Linked list nodes, can contain any size of allocation, but there's a limit to the number of OS allocations (this should be
 	// changed in the future, this is based on a vacuum currently)
@@ -70,7 +70,7 @@ bool Base_GetSystemMemory(usize size)
 
 void Base_ReleaseSystemMemory(LinkedNode_t<SystemAllocation_t>* allocation)
 {
-	usize size = 0;
+	ssize size = 0;
 	NtFreeVirtualMemory(NtCurrentProcess(), &allocation->data.memory, (PSIZE_T)&size, MEM_RELEASE);
 	g_memInfo.allocations.Remove(allocation);
 }

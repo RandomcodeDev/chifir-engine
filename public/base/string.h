@@ -16,8 +16,8 @@ class CBaseString : public CVector<T>
 
   protected:
 	T* m_buffer;
-	usize m_size;
-	usize m_capacity;
+	ssize m_size;
+	ssize m_capacity;
 
-	virtual usize StrLen(const T* value) = 0;
+	virtual ssize StrLen(const T* value) = 0;
 };

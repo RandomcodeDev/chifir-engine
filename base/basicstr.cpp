@@ -4,13 +4,20 @@
 #include "base/dll.h"
 #include "base/types.h"
 
-BASEAPI usize Base_StrLength(cstr str, usize maxSize)
+BASEAPI ssize Base_StrLength(cstr str, ssize maxSize)
 {
-	usize size;
+	ssize size;
 	for (size = 0; size < maxSize && str[size] != '\0'; size++)
 		;
 
 	return size;
+}
+
+BASEAPI s32 Base_StrCompare(cstr RESTRICT a, cstr RESTRICT b, ssize maxCount, bool caseSensitive)
+{
+	ASSERT_MSG(caseSensitive != false, "Case-insensitive string compare not yet implemented");
+	ssize size = Min(Base_StrLength(a), maxCount);
+	return Base_MemCompare(a, b, size);
 }
 
 BASEAPI dstr Base_VFormat(cstr format, va_list args)
@@ -43,17 +50,17 @@ BASEAPI dstr Base_Format(cstr format, ...)
 	return buf;
 }
 
-BASEAPI dstr Base_StrCopy(dstr RESTRICT dest, cstr RESTRICT src, usize maxCount)
+BASEAPI dstr Base_StrCopy(dstr RESTRICT dest, cstr RESTRICT src, ssize maxCount)
 {
-	usize size = Min(Base_StrLength(src), maxCount);
+	ssize size = Min(Base_StrLength(src), maxCount);
 	Base_MemCopy(dest, src, size);
 	dest[size] = '\0';
 	return dest;
 }
 
-BASEAPI dstr Base_StrClone(cstr str, usize maxSize)
+BASEAPI dstr Base_StrClone(cstr str, ssize maxSize)
 {
-	usize size = Min(Base_StrLength(str), maxSize) + 1;
+	ssize size = Min(Base_StrLength(str), maxSize) + 1;
 	dstr buffer = Base_Alloc<char>(size);
 	if (!buffer)
 	{

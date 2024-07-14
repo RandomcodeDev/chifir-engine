@@ -8,36 +8,71 @@
 
 #include "stb/stb_ds.h"
 
-template <typename T>
-class CVector : public IContainer<T, usize>
+template <typename T> class CVector : public IContainer<T, ssize>
 {
+  public:
 	CVector() DEFAULT;
-	CVector(const T* data, usize size)
+
+	CVector(const T* data, ssize size)
 	{
 		Resize(size);
 		Base_MemCopy(m_buffer, data, m_size);
 	}
+
 	~CVector() DEFAULT;
 
-	usize Size()
+	ssize Size() const
 	{
 		return stbds_arrlenu(m_buffer);
 	}
 
-	I Insert(const T& object, usize index = BAD_INDEX)
+	ssize Add(const T& object, ssize index = BAD_INDEX)
 	{
-		stbds_arrins(m_buffer, object, index);
+		m_sorted = false;
+		if (index == BAD_INDEX || index > Size())
+		{
+			stbds_arrput(m_buffer, object);
+			return Size() - 1;
+		}
+		else
+		{
+			stbds_arrins(m_buffer, object, index);
+			return index;
+		}
 	}
 
-	void Delete(I index);
-	T& operator[](const I& index)
+	void Delete(ssize index)
 	{
+		stbds_arrdel(m_buffer, index);
+		m_sorted = false;
 	}
-	void operator+(const T& object);
-	I Find(s32 (*Compare)(const T& a, const T& b));
-	void Sort(s32 (*Compare)(const T& a, const T& b));
+
+	T& operator[](const ssize& index) const
+	{
+		ASSERT(index < Size() && index != BAD_INDEX);
+		return m_buffer[index];
+	}
+
+	void operator+=(const T& object)
+	{
+		Add(object);
+		m_sorted = false;
+	}
+
+	ssize Find(s32 (*Compare)(const T& a, const T& b)) const
+	{
+		(void)Compare;
+		return BAD_INDEX;
+	}
+
+	void Sort(s32 (*Compare)(const T& a, const T& b))
+	{
+		(void)Compare;
+		m_sorted = true;
+	}
 
 	// So other containers that are similar, like strings, can share functionality more easily
   protected:
 	T* m_buffer;
+	bool m_sorted;
 };
