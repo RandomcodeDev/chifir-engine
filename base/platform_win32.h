@@ -16,9 +16,10 @@
 // x86 is the only name mangled architecture
 #ifdef CH_I386
 #define MAKE_STUB(x, callingConv, paramSize)                                                                                     \
+	extern "C" uptr (*STUB_NAME(x))(...);                                                                                        \
 	extern "C" BASEAPI bool STUB_AVAILABLE(x)();                                                                                 \
 	EXPORT_RAW("_" STRINGIZE(x) "_Available");                                                                                   \
-	EXPORT_AS_RAW(STRINGIZE(x) "_Forwarder", "_" STRINGIZE(x) "@" #paramSize);
+	EXPORT_AS_RAW(STRINGIZE(x) "_Forwarder", "_" STRINGIZE(x) #paramSize);
 #else
 #define MAKE_STUB(x, ...)                                                                                                        \
 	extern "C" uptr (*STUB_NAME(x))(...);                                                                                        \
@@ -31,11 +32,11 @@
 // using those
 extern bool Base_InitLoader();
 
-class CWin32Library : public ILibrary
+class CWindowsLibrary : public ILibrary
 {
   public:
-	CWin32Library(void* base);
-	~CWin32Library();
+	CWindowsLibrary(void* base);
+	~CWindowsLibrary();
 
 	void* GetSymbol(cstr name);
 

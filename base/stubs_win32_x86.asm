@@ -18,7 +18,17 @@ MAKE_STUB MACRO name, paramSize
 	@CatStr(name, _Forwarder) ENDP
 	PUBLIC @CatStr(_, name, _Available)
 	@CatStr(_, name, _Available) PROC
+		push ebp
+		mov ebp, esp
 		mov eax, @CatStr(_STUB_, name)
+		cmp eax, 0
+		jne Avail
+		mov eax, 0
+		pop ebp
+		ret
+Avail:
+		mov eax, 1
+		pop ebp
 		ret
 	@CatStr(_, name, _Available) ENDP
 ENDM

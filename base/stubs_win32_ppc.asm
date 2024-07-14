@@ -21,6 +21,11 @@ MAKE_STUB MACRO name
 		lis r0, name
 		addi r0, r0, name
 		lwz r0, 0(r0)
+		cmplwi r0, 0
+		bne Avail
+		sti r0, 0
+	Avail:
+		sti r0, 1
 		blr
 	@CatStr(_, name, _Available) ENDP
 ENDM

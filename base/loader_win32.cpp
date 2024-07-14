@@ -28,11 +28,11 @@ static PIMAGE_DOS_HEADER ntDllBase;
 // These are in both Xbox 360 and desktop/OneCore
 
 // ntdll/xboxkrnl
-MAKE_STUB(DbgPrint, __stdcall, 4)
-MAKE_STUB(NtAllocateVirtualMemory, __stdcall, 24)
-MAKE_STUB(NtFreeVirtualMemory, __stdcall, 16)
-MAKE_STUB(RtlAnsiStringToUnicodeString, __stdcall, 12)
-MAKE_STUB(RtlFreeUnicodeString, __stdcall, 4)
+MAKE_STUB(DbgPrint, __cdecl, )
+MAKE_STUB(NtAllocateVirtualMemory, __stdcall, @24)
+MAKE_STUB(NtFreeVirtualMemory, __stdcall, @16)
+MAKE_STUB(RtlAnsiStringToUnicodeString, __stdcall, @12)
+MAKE_STUB(RtlFreeUnicodeString, __stdcall, @4)
 
 #ifdef CH_XBOX360
 // These are only on Xbox 360
@@ -48,35 +48,35 @@ MAKE_STUB(QueryPerformanceCounter)
 // These are desktop/OneCore things
 
 // ntdll
-MAKE_STUB(LdrAddDllDirectory, __stdcall, 8)
-MAKE_STUB(LdrAddRefDll, __stdcall, 8)
-MAKE_STUB(LdrGetProcedureAddress, __stdcall, 16)
-MAKE_STUB(LdrLoadDll, __stdcall, 16)
-MAKE_STUB(LdrUnloadDll, __stdcall, 4)
-MAKE_STUB(NtQuerySystemInformation, __stdcall, 16)
-MAKE_STUB(NtRaiseHardError, __stdcall, 0)
-MAKE_STUB(NtTerminateProcess, __stdcall, 8)
-MAKE_STUB(RtlFreeHeap, __stdcall, 12)
+MAKE_STUB(LdrAddDllDirectory, __stdcall, @8)
+MAKE_STUB(LdrAddRefDll, __stdcall, @8)
+MAKE_STUB(LdrGetProcedureAddress, __stdcall, @16)
+MAKE_STUB(LdrLoadDll, __stdcall, @16)
+MAKE_STUB(LdrUnloadDll, __stdcall, @4)
+MAKE_STUB(NtQuerySystemInformation, __stdcall, @16)
+MAKE_STUB(NtRaiseHardError, __stdcall, @0)
+MAKE_STUB(NtTerminateProcess, __stdcall, @8)
+MAKE_STUB(RtlFreeHeap, __stdcall, @12)
 
 // user32, because it's more than just forwarded syscalls, unlike kernel32
-MAKE_STUB(AdjustWindowRect, __stdcall, 12)
-MAKE_STUB(ClientToScreen, __stdcall, 8)
-MAKE_STUB(CreateWindowExA, __stdcall, 48)
-MAKE_STUB(DefWindowProcA, __stdcall, 16)
-MAKE_STUB(DestroyWindow, __stdcall, 4)
-MAKE_STUB(DispatchMessageA, __stdcall, 4)
-MAKE_STUB(GetClientRect, __stdcall, 8)
-MAKE_STUB(GetDpiForWindow, __stdcall, 4)
-MAKE_STUB(GetSystemMetrics, __stdcall, 4)
-MAKE_STUB(GetWindowLongPtrA, __stdcall, 8)
-MAKE_STUB(LoadCursorA, __stdcall, 8)
-MAKE_STUB(PeekMessageA, __stdcall, 20)
-MAKE_STUB(RegisterClassExA, __stdcall, 4)
-MAKE_STUB(SetWindowLongPtrA, __stdcall, 12)
-MAKE_STUB(SetWindowTextA, __stdcall, 8)
-MAKE_STUB(ShowWindow, __stdcall, 8)
-MAKE_STUB(TranslateMessage, __stdcall, 4)
-MAKE_STUB(UnregisterClassA, __stdcall, 8)
+MAKE_STUB(AdjustWindowRect, __stdcall, @12)
+MAKE_STUB(ClientToScreen, __stdcall, @8)
+MAKE_STUB(CreateWindowExA, __stdcall, @48)
+MAKE_STUB(DefWindowProcA, __stdcall, @16)
+MAKE_STUB(DestroyWindow, __stdcall, @4)
+MAKE_STUB(DispatchMessageA, __stdcall, @4)
+MAKE_STUB(GetClientRect, __stdcall, @8)
+MAKE_STUB(GetDpiForWindow, __stdcall, @4)
+MAKE_STUB(GetSystemMetrics, __stdcall, @4)
+MAKE_STUB(GetWindowLongPtrA, __stdcall, @8)
+MAKE_STUB(LoadCursorA, __stdcall, @8)
+MAKE_STUB(PeekMessageA, __stdcall, @20)
+MAKE_STUB(RegisterClassExA, __stdcall, @4)
+MAKE_STUB(SetWindowLongPtrA, __stdcall, @12)
+MAKE_STUB(SetWindowTextA, __stdcall, @8)
+MAKE_STUB(ShowWindow, __stdcall, @8)
+MAKE_STUB(TranslateMessage, __stdcall, @4)
+MAKE_STUB(UnregisterClassA, __stdcall, @8)
 #endif
 
 static bool FindNtDll()
@@ -138,7 +138,7 @@ static bool FindLdrGetProcedureAddress()
 	return LdrGetProcedureAddress_Available();
 }
 
-#define GET_FUNCTION_OPTIONAL(lib, name) STUB_NAME(name) = reinterpret_cast<ILibrary*>(lib)->GetSymbol<uptr (*)(...)>(#name);
+#define GET_FUNCTION_OPTIONAL(lib, name) STUB_NAME(name) = reinterpret_cast<ILibrary*>(lib)->GetSymbol<uptr (*)(...)>(STRINGIZE(name));
 #define GET_FUNCTION(lib, name)                                                                                                  \
 	{                                                                                                                            \
 		GET_FUNCTION_OPTIONAL(lib, name)                                                                                         \
@@ -160,7 +160,7 @@ bool Base_InitLoader()
 		return false;
 	}
 
-	CWin32Library ntDll(ntDllBase);
+	CWindowsLibrary ntDll(ntDllBase);
 
 	GET_FUNCTION(&ntDll, DbgPrint)
 
@@ -267,17 +267,17 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 		}
 
 		RtlFreeUnicodeString(&nameUStr);
-		return new CWin32Library(handle);
+		return new CWindowsLibrary(handle);
 	}
 
 	return nullptr;
 }
 
-CWin32Library::CWin32Library(void* base) : m_base(base)
+CWindowsLibrary::CWindowsLibrary(void* base) : m_base(base)
 {
 }
 
-CWin32Library::~CWin32Library()
+CWindowsLibrary::~CWindowsLibrary()
 {
 	if (STUB_NAME(LdrUnloadDll) && m_base)
 	{
@@ -285,7 +285,7 @@ CWin32Library::~CWin32Library()
 	}
 }
 
-void* CWin32Library::GetSymbol(cstr name)
+void* CWindowsLibrary::GetSymbol(cstr name)
 {
 	ASSERT_MSG(STUB_NAME(LdrGetProcedureAddress) != nullptr, "Base_InitLoader has not been called");
 

@@ -4,7 +4,7 @@
 
 bool CWindowsVideoSystem::Initialize()
 {
-	m_hinstance = reinterpret_cast<HINSTANCE>(NtCurrentImageBase());
+	m_hinstance = reinterpret_cast<HINSTANCE>(NtCurrentPeb()->ImageBaseAddress);
 
 	if (!RegisterWindowClass() || !InitializeMainWindow())
 	{

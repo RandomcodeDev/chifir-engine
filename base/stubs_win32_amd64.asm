@@ -15,7 +15,17 @@ MAKE_STUB MACRO name
 	@CatStr(name, _Forwarder) ENDP
 	PUBLIC @CatStr(name, _Available)
 	@CatStr(name, _Available) PROC
+		push rbp
+		mov rbp, rsp
 		mov rax, @CatStr(STUB_, name)
+		cmp rax, 0
+		jne Avail
+		mov eax, 0
+		pop rbp
+		ret
+Avail:
+		mov eax, 1
+		pop rbp
 		ret
 	@CatStr(name, _Available) ENDP
 ENDM
