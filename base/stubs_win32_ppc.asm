@@ -1,5 +1,7 @@
 TITLE PowerPC Windows function stubs
 
+OPTION PROLOGUE:NONE
+
 MAKE_STUB MACRO name
 	.DATA
 	PUBLIC name
@@ -14,6 +16,13 @@ MAKE_STUB MACRO name
 		mtctr r0
 		bctr
 	@CatStr(name, _Forwarder) ENDP
+	PUBLIC @CatStr(_, name, _Available)
+	@CatStr(_, name, _Available) PROC
+		lis r0, name
+		addi r0, r0, name
+		lwz r0, 0(r0)
+		blr
+	@CatStr(_, name, _Available) ENDP
 ENDM
 
 ; xboxkrnl

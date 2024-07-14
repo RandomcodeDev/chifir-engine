@@ -26,17 +26,14 @@ BASEAPI NORETURN void Base_Quit(s32 error, cstr msg, ...);
 BASEAPI NORETURN void Base_QuitImpl(s32 error, cstr msg);
 
 // Quit if a condition isn't true, add a message and code
-#define ASSERT_MSG_CODE(cond, code, ...)                                                                                         \
+#define ASSERT_MSG_CODE(cond, ...)                                                                                         \
 	if (!(cond))                                                                                                                 \
 	{                                                                                                                            \
-		Base_Quit(code, "Assertion " #cond " failed: " __VA_ARGS__);                                                             \
+		Base_Quit(1, "Assertion " #cond " failed: " __VA_ARGS__);                                                             \
 	}
 
 // Quit if a condition isn't true, add a message
-#define ASSERT_MSG(cond, ...) ASSERT_MSG_CODE(cond, 1, __VA_ARGS__)
-
-// Quit if a condition isn't true, set the exit code
-#define ASSERT_CODE(cond, code) ASSERT_MSG_CODE(cond, code, "error " #code)
+#define ASSERT_MSG(cond, ...) ASSERT_MSG_CODE(cond, __VA_ARGS__)
 
 // Quit if a condition isn't true
 #define ASSERT(cond) ASSERT_MSG(cond, )
@@ -46,6 +43,12 @@ BASEAPI NORETURN void Base_QuitImpl(s32 error, cstr msg);
 
 // Get the number of elements in a stack/static array
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+
+// Stringize something
+#define STRINGIZE(x) #x
+
+// Stringize something, and expand macros one level
+#define STRINGIZE_EXPAND(x) STRINGIZE(x)
 
 // Swap
 template <typename T> static inline void Swap(T& left, T& right)

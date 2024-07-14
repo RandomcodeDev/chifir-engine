@@ -12,7 +12,7 @@ class IContainer
 	static const I BAD_INDEX = (I)-1;
 
 	virtual IContainer(const T* data, usize size) = 0;
-	~IContainer() DEFAULT;
+	virtual ~IContainer() DEFAULT;
 
 	// Get the size
 	virtual usize Size() = 0;

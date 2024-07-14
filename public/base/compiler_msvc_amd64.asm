@@ -3,6 +3,7 @@ TITLE MSVC __security_check_cookie
 OPTION PROLOGUE:NONE
 
 .DATA
+
 errorMsg db "Security cookie has wrong value"
 
 EXTERN __security_cookie : QWORD

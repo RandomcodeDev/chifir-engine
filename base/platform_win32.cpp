@@ -4,20 +4,27 @@
 #include "base/platform.h"
 #include "base/types.h"
 
-extern "C" uptr(__cdecl* STUB_NAME(DbgPrint))(...);
-extern "C" uptr(__stdcall* STUB_NAME(NtTerminateProcess))(...);
+extern "C" BASEAPI bool DbgPrint_Available();
+extern "C" BASEAPI bool NtTerminateProcess_Available();
 
 SYSTEM_BASIC_INFORMATION g_systemInfo;
 
 BASEAPI NORETURN void Base_QuitImpl(s32 code, cstr msg)
 {
-	if (code == 1)
+	if (code == 1 && LastNtStatus() != 0)
 	{
-		// LastErrorValue/LastStatusValue aren't reliable enough
+		code = LastNtStatus();
+	}
+	else if (code == 2 && LastNtError() != 0)
+	{
+		code = LastNtError();
+	}
+	else if (code == 1)
+	{
 		code = STATUS_FATAL_APP_EXIT;
 	}
 
-	if (STUB_NAME(DbgPrint))
+	if (DbgPrint_Available())
 	{
 		DbgPrint("%s\n", msg);
 	}
@@ -25,13 +32,9 @@ BASEAPI NORETURN void Base_QuitImpl(s32 code, cstr msg)
 	// TODO: use NtRaiseHardError
 
 	BREAKPOINT();
-	if (STUB_NAME(NtTerminateProcess))
+	if (NtTerminateProcess_Available())
 	{
 		NtTerminateProcess(NtCurrentProcess(), static_cast<NTSTATUS>(code));
-	}
-	else
-	{
-		BREAKPOINT();
 	}
 
 	ASSUME(0);

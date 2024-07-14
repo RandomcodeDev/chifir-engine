@@ -60,6 +60,17 @@
 #if __WINDOWS__
 		If (.PlatformName in .WindowsLike)
 		{
+			If (.ArchName == 'AMD64')
+			{
+				Exec('$ProjectName$-ASM-Win32Stubs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+				{
+					.ExecExecutable = .MASM
+					.ExecInput = '$ProjectPath$/stubs_win32_amd64.asm'
+					.ExecOutput = '$ObjectDir$/$ProjectPath$/stubs_win32_amd64.obj'
+					.ExecArguments = .MASMOptions
+					.ExecWorkingDir = '$ObjectDir$/$ProjectPath$'
+				}
+			}
 			If (.ArchName == 'x86')
 			{
 				Exec('$ProjectName$-ASM-Win32Stubs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
@@ -98,7 +109,10 @@
 				^LinkerOptions + ' /DLL'
 				If (.ArchName == 'AMD64')
 				{
-					^Libraries + {'$ObjectDir$/$ProjectPath$/compiler_msvc_amd64.obj'}
+					^Libraries + {
+						'$ObjectDir$/$ProjectPath$/compiler_msvc_amd64.obj',
+						'$ObjectDir$/$ProjectPath$/stubs_win32_amd64.obj'
+					}
 				}
 				If (.ArchName == 'x86')
 				{
@@ -111,7 +125,11 @@
 				If (.PlatformName == 'Xbox360')
 				{
 					^LinkerOptions + ' /DEF:$ProjectPath$/Base.def'
-					^Libraries + { '$ObjectDir$/$ProjectPath$/stubs_win32_ppc.obj' }
+					^Libraries +
+					{
+						'$ObjectDir$/$ProjectPath$/compiler_msvc_ppc.obj',
+						'$ObjectDir$/$ProjectPath$/stubs_win32_ppc.obj'
+					}
 				}
 			}
 			If (.PlatformName == 'Linux')

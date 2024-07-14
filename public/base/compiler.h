@@ -16,7 +16,9 @@
 #endif
 
 #define ATTRIBUTE(x)                  __declspec(x)
-#define EXPORT_AS_RAW(a, b)           __pragma(comment(linker, "/export:" b "=" a))
+#define EXPORT_RAW(x)                 __pragma(comment(linker, "/export:" x))
+#define EXPORT(x)                     EXPORT_RAW(#x)
+#define EXPORT_AS_RAW(a, b)           EXPORT_RAW(b "=" a)
 #define EXPORT_CURRENT_FUNCTION_AS(x) EXPORT_AS_RAW(__FUNCTION__, x)
 #define EXPORT_AS(a, b)               EXPORT_AS_RAW(#a, #b)
 #define ALIAS_RAW(a, b)               __pragma(comment(linker, "/alternatename:" b "=" a))

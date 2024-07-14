@@ -42,3 +42,23 @@ BASEAPI dstr Base_Format(cstr format, ...)
 
 	return buf;
 }
+
+BASEAPI dstr Base_StrCopy(dstr RESTRICT dest, cstr RESTRICT src, usize maxCount)
+{
+	usize size = Min(Base_StrLength(src), maxCount);
+	Base_MemCopy(dest, src, size);
+	dest[size] = '\0';
+	return dest;
+}
+
+BASEAPI dstr Base_StrClone(cstr str, usize maxSize)
+{
+	usize size = Min(Base_StrLength(str), maxSize) + 1;
+	dstr buffer = Base_Alloc<char>(size);
+	if (!buffer)
+	{
+		return buffer;
+	}
+
+	return Base_StrCopy(buffer, str, size);
+}

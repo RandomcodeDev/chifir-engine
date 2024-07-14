@@ -59,15 +59,24 @@ MAKE_STUB(NtTerminateProcess, __stdcall, 8)
 MAKE_STUB(RtlFreeHeap, __stdcall, 12)
 
 // user32, because it's more than just forwarded syscalls, unlike kernel32
-MAKE_STUB(AdjustWindowRect, __stdcall, 4)
+MAKE_STUB(AdjustWindowRect, __stdcall, 12)
+MAKE_STUB(ClientToScreen, __stdcall, 8)
 MAKE_STUB(CreateWindowExA, __stdcall, 48)
 MAKE_STUB(DefWindowProcA, __stdcall, 16)
+MAKE_STUB(DestroyWindow, __stdcall, 4)
 MAKE_STUB(DispatchMessageA, __stdcall, 4)
 MAKE_STUB(GetClientRect, __stdcall, 8)
+MAKE_STUB(GetDpiForWindow, __stdcall, 4)
 MAKE_STUB(GetSystemMetrics, __stdcall, 4)
+MAKE_STUB(GetWindowLongPtrA, __stdcall, 8)
+MAKE_STUB(LoadCursorA, __stdcall, 8)
 MAKE_STUB(PeekMessageA, __stdcall, 20)
 MAKE_STUB(RegisterClassExA, __stdcall, 4)
+MAKE_STUB(SetWindowLongPtrA, __stdcall, 12)
+MAKE_STUB(SetWindowTextA, __stdcall, 8)
+MAKE_STUB(ShowWindow, __stdcall, 8)
 MAKE_STUB(TranslateMessage, __stdcall, 4)
+MAKE_STUB(UnregisterClassA, __stdcall, 8)
 #endif
 
 static bool FindNtDll()
@@ -126,13 +135,17 @@ static bool FindLdrGetProcedureAddress()
 		}
 	}
 
-	return STUB_NAME(LdrGetProcedureAddress) != nullptr;
+	return LdrGetProcedureAddress_Available();
 }
 
-#define GET_FUNCTION(lib, fileName)                                                                                              \
+#define GET_FUNCTION_OPTIONAL(lib, name) STUB_NAME(name) = reinterpret_cast<ILibrary*>(lib)->GetSymbol<uptr (*)(...)>(#name);
+#define GET_FUNCTION(lib, name)                                                                                                  \
 	{                                                                                                                            \
-		STUB_NAME(fileName) = reinterpret_cast<ILibrary*>(lib)->GetSymbol<uptr (*)(...)>(#fileName);                             \
-		ASSERT_CODE(STUB_NAME(fileName) != nullptr, NtCurrentTeb()->LastStatusValue);                                            \
+		GET_FUNCTION_OPTIONAL(lib, name)                                                                                         \
+		if (!STUB_AVAILABLE(name)())                                                                                             \
+		{                                                                                                                        \
+			Base_Quit(LastNtStatus(), "Failed to get " STRINGIZE(name) " from " #lib ": NTSTATUS 0x%08X", LastNtStatus());       \
+		}                                                                                                                        \
 	}
 
 bool Base_InitLoader()
@@ -150,6 +163,13 @@ bool Base_InitLoader()
 	CWin32Library ntDll(ntDllBase);
 
 	GET_FUNCTION(&ntDll, DbgPrint)
+
+#ifndef CH_XBOX360
+	// These allow for cleaner handling of any of these failing
+	GET_FUNCTION(&ntDll, NtTerminateProcess)
+	GET_FUNCTION(&ntDll, NtRaiseHardError)
+#endif
+
 	GET_FUNCTION(&ntDll, NtAllocateVirtualMemory)
 	GET_FUNCTION(&ntDll, NtFreeVirtualMemory)
 	GET_FUNCTION(&ntDll, RtlAnsiStringToUnicodeString)
@@ -166,18 +186,15 @@ bool Base_InitLoader()
 	ILibrary* xam = Base_LoadLibrary("xam");
 
 	// XAM
-	MAKE_STUB(xam, QueryPerformanceCounter)
+	GET_FUNCTION(xam, QueryPerformanceCounter)
 #else
 	// These are desktop/OneCore things
 
 	// ntdll
 	GET_FUNCTION(&ntDll, LdrAddRefDll)
-	GET_FUNCTION(&ntDll, LdrGetProcedureAddress)
 	GET_FUNCTION(&ntDll, LdrLoadDll)
 	GET_FUNCTION(&ntDll, LdrUnloadDll)
 	GET_FUNCTION(&ntDll, NtQuerySystemInformation)
-	GET_FUNCTION(&ntDll, NtRaiseHardError)
-	GET_FUNCTION(&ntDll, NtTerminateProcess)
 	GET_FUNCTION(&ntDll, RtlFreeHeap)
 
 	// So unloading it when ntDll goes out of scope doesn't mess anything up, cause the loader wasn't used to "load" it
@@ -187,15 +204,24 @@ bool Base_InitLoader()
 	ASSERT(user32 != nullptr);
 
 	// user32, because it's more than just forwarded syscalls, unlike kernel32
+	GET_FUNCTION(user32, AdjustWindowRect)
+	GET_FUNCTION(user32, ClientToScreen)
 	GET_FUNCTION(user32, CreateWindowExA)
-	GET_FUNCTION(user32, RegisterClassExA)
-	GET_FUNCTION(user32, PeekMessageA)
-	GET_FUNCTION(user32, TranslateMessage)
+	GET_FUNCTION(user32, DefWindowProcA)
+	GET_FUNCTION(user32, DestroyWindow)
 	GET_FUNCTION(user32, DispatchMessageA)
 	GET_FUNCTION(user32, GetClientRect)
+	GET_FUNCTION_OPTIONAL(user32, GetDpiForWindow)
 	GET_FUNCTION(user32, GetSystemMetrics)
-	GET_FUNCTION(user32, AdjustWindowRect)
-	GET_FUNCTION(user32, DefWindowProcA)
+	GET_FUNCTION(user32, GetWindowLongPtrA)
+	GET_FUNCTION(user32, LoadCursorA)
+	GET_FUNCTION(user32, PeekMessageA)
+	GET_FUNCTION(user32, RegisterClassExA)
+	GET_FUNCTION(user32, SetWindowLongPtrA)
+	GET_FUNCTION(user32, SetWindowTextA)
+	GET_FUNCTION(user32, ShowWindow)
+	GET_FUNCTION(user32, TranslateMessage)
+	GET_FUNCTION(user32, UnregisterClassA)
 #endif
 
 	return true;
@@ -215,7 +241,7 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 		dstr fileName = Base_Format("%s%s", name, DLL_EXT);
 		if (!fileName)
 		{
-			NtCurrentTeb()->LastStatusValue = STATUS_NO_MEMORY;
+			LastNtStatus() = STATUS_NO_MEMORY;
 			return nullptr;
 		}
 
@@ -227,7 +253,7 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 		NTSTATUS status = RtlAnsiStringToUnicodeString(&nameUStr, &nameStr, TRUE);
 		if (!NT_SUCCESS(status))
 		{
-			NtCurrentTeb()->LastStatusValue = status;
+			LastNtStatus() = status;
 			return nullptr;
 		}
 
@@ -235,7 +261,7 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 		status = LdrLoadDll(nullptr, nullptr, &nameUStr, &handle);
 		if (!NT_SUCCESS(status))
 		{
-			NtCurrentTeb()->LastStatusValue = status;
+			LastNtStatus() = status;
 			RtlFreeUnicodeString(&nameUStr);
 			return nullptr;
 		}
@@ -266,12 +292,12 @@ void* CWin32Library::GetSymbol(cstr name)
 	ANSI_STRING nameStr = {0};
 	nameStr.Buffer = (dstr)name;
 	nameStr.Length = (u16)Base_StrLength(name);
-	nameStr.MaximumLength = nameStr.Length + 1u;
+	nameStr.MaximumLength = nameStr.Length + 1;
 	void* sym = nullptr;
 	NTSTATUS status = LdrGetProcedureAddress(m_base, &nameStr, 0, &sym);
 	if (!NT_SUCCESS(status))
 	{
-		NtCurrentTeb()->LastStatusValue = status;
+		LastNtStatus() = status;
 		return nullptr;
 	}
 

@@ -106,7 +106,7 @@ BASEAPI u64 Base_Fnv1a64(const void* data, usize size)
 template <typename T>
 FORCEINLINE void Copy(void* RESTRICT dest, const void* RESTRICT src, usize offset, usize& remaining, usize alignment)
 {
-	u32 count = (remaining / alignment) * alignment;
+	usize count = (remaining / alignment) * alignment;
 	for (usize i = offset; i < count; i += alignment)
 	{
 		((T*)dest)[i / alignment] = ((T*)src)[i / alignment];
@@ -181,7 +181,7 @@ template <typename T> FORCEINLINE void Set(void* RESTRICT dest, u8 value, usize 
 #else
 	static_assert(sizeof(fullValue) == sizeof(v128[2]));
 #endif
-	u32 count = (remaining / alignment) * alignment;
+	usize count = (remaining / alignment) * alignment;
 	for (usize i = offset; i < count; i += alignment)
 	{
 		(static_cast<T*>(dest))[i / alignment] = *reinterpret_cast<T*>(fullValue);

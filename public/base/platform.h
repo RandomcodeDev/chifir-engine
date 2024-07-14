@@ -4,6 +4,12 @@
 
 #ifdef CH_WIN32
 #include "phnt_wrapper.h"
+
+// Get the last Win32 error as an NTSTATUS
+#define LastNtError() NTSTATUS_FROM_WIN32(NtCurrentTeb()->LastErrorValue)
+
+// Get the last NTSTATUS
+#define LastNtStatus() NtCurrentTeb()->LastStatusValue
 #endif
 
 #include "base.h"

@@ -18,7 +18,7 @@ struct SystemDependency_t
 class ISystem
 {
   public:
-	~ISystem() DEFAULT;
+	virtual ~ISystem() DEFAULT;
 
 	// Initialize the system
 	virtual bool Initialize() = 0;
@@ -27,7 +27,7 @@ class ISystem
 	virtual void Shutdown() = 0;
 
 	// Get the version of this system
-	virtual u32 GetVersion() = 0;
+	virtual u32 GetVersion() const = 0;
 };
 
 // Exported by DLLs that implement a system
