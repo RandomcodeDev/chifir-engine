@@ -62,11 +62,16 @@ class CWindowsVideoSystem : public IVideoSystem
 
 	u64 GetHandle() const
 	{
-		return (u64)m_window;
+		return reinterpret_cast<uptr>(m_window);
 	}
 
   private:
-	static const u32 WINDOW_STYLE = WS_OVERLAPPEDWINDOW;
+	static const u32 WINDOW_STYLE =
+#ifdef CH_XBOX360
+		0;
+#else
+		WS_OVERLAPPEDWINDOW;
+#endif
 
 	HINSTANCE m_hinstance;
 	HWND m_window;

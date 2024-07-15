@@ -42,7 +42,7 @@ static s32 FindSystemNode(SystemAllocation_t* alloc, void* data)
 static const ssize SYSTEM_ALLOC_SIZE = 64 * 1024 * 1024;
 
 // Minimum alignment of allocations
-static const ssize MINIMUM_ALIGNMENT = alignof(AllocNode_t);
+static const ssize MINIMUM_ALIGNMENT = ALIGNOF(AllocNode_t);
 
 // Maximum alignment of allocations, mainly to set an upper bound on how far back to search for a node in an allocation
 static const ssize MAXIMUM_ALIGNMENT = 64;

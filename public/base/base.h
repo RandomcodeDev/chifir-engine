@@ -94,7 +94,7 @@ BASEAPI void* Base_Alloc(ssize size, ssize alignment = 8);
 // Allocate an array of T with count elements
 template <typename T> static inline T* Base_Alloc(ssize count)
 {
-	return reinterpret_cast<T*>(Base_Alloc(count * sizeof(T), alignof(T)));
+	return reinterpret_cast<T*>(Base_Alloc(count * sizeof(T), ALIGNOF(T)));
 }
 
 // Resize an allocation. block == nullptr is equivalent to Base_Alloc, newSize == 0 is equivalent to Base_Free.

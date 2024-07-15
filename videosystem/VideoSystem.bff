@@ -25,8 +25,15 @@
 			{
 				^UnityInputFiles +
 				{
-					'$ProjectPath$/video_win32.cpp',
 					'$ProjectPath$/../public/base/dllmain.cpp',
+				}
+
+				If (.PlatformName != 'Xbox360')
+				{
+					^UnityInputFiles +
+					{
+						'$ProjectPath$/video_win32.cpp'
+					}
 				}
 			}
 			

@@ -53,5 +53,5 @@ class IVideoSystem : public ISystem
 	/// Get the platform-specific handle (HWND, etc) for the video output
 	virtual u64 GetHandle() const = 0;
 
-	static constexpr u32 VERSION = 1;
+	static const u32 VERSION = 1;
 };

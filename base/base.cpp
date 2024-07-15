@@ -68,8 +68,6 @@ static void Xbox360InitCpuData()
 {
 	g_cpuData.haveSimd128 = true;
 	g_cpuData.haveIntSimd128 = true;
-	Base_StrCopy(g_cpuData.name, "Microsoft", ARRAY_SIZE(g_cpuData.brand));
-	Base_StrCopy(g_cpuData.name, "Xenon XCPU", ARRAY_SIZE(g_cpuData.name));
 }
 #endif
 
@@ -233,11 +231,6 @@ template <typename T> FORCEINLINE void Set(void* dest, u8 value, ssize offset, s
 	u8 fullValue[32] = {value, value, value, value, value, value, value, value, value, value, value,
 						value, value, value, value, value, value, value, value, value, value, value,
 						value, value, value, value, value, value, value, value, value, value};
-#if CH_SIMD256
-	static_assert(sizeof(fullValue) == sizeof(v256));
-#else
-	static_assert(sizeof(fullValue) == sizeof(v128[2]));
-#endif
 	ssize count = (remaining / alignment) * alignment;
 	for (ssize i = offset; i < count; i += alignment)
 	{
@@ -344,7 +337,37 @@ static FORCEINLINE bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 	return _mm_cmpestrc(*reinterpret_cast<const __m128i*>(&a), 16, *reinterpret_cast<const __m128i*>(&b), 16, mode);
 }
 #else
-#error "You need to implement SIMD byte comparison for this architecture"
+static FORCEINLINE bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
+{
+	u32 cr = 0;
+	__vcmpequbR(a, b, &cr);
+	// If completely equal, do nothing and return true
+	if (cr & (1 << 7))
+	{
+		return true;
+	}
+	// If completely inequal, do nothing and return false
+	else if (cr & (1 << 5))
+	{
+		return false;
+	}
+	// If only partially inequal, find the bad index
+	else
+	{
+		// Compare the bytes of the larger thing
+		for (ssize i = 0; i < sizeof(v128); i++)
+		{
+			s8 ab = reinterpret_cast<const s8*>(&a)[i];
+			s8 bb = reinterpret_cast<const s8*>(&b)[i];
+			if (ab != bb)
+			{
+				inequalIdx = i;
+			}
+		}
+
+		return false;
+	}
+}
 #endif
 
 #if CH_SIMD128

@@ -16,7 +16,7 @@ BASEAPI void Plat_Init()
 
 	if (!Base_InitLoader())
 	{
-		Base_QuitSafe(NtCurrentTeb()->LastStatusValue, "Failed to initialize dynamic loader");
+		Base_QuitSafe(LastNtStatus(), "Failed to initialize dynamic loader");
 	}
 
 #ifndef CH_XBOX360

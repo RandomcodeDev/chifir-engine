@@ -27,6 +27,9 @@
 #define ASSUME(x)                     __assume(x)
 // MSVC likes to be told when an intrinsic function is defined
 #define DEFINE_INTRINSIC(x)           __pragma(function(x))
+
+// Initialize the stack security cookie
+extern "C" void __cdecl __security_init_cookie();
 #else
 #define ATTRIBUTE(x) __attribute__((x))
 #define ALIAS(a, b)  extern "C" TYPEOF(a) ATTRIBUTE(alias(#a)) b;
@@ -55,7 +58,7 @@
 #else
 #define RESTRICT __restrict
 #endif
-
+#define ALIGNOF(x) __alignof(x)
 #define FORCEINLINE __forceinline
 
 #ifndef va_copy

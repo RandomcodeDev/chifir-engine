@@ -32,6 +32,10 @@ extern "C"
 
 		LauncherMain();
 
+#ifdef CH_XBOX360
+		ExitThread(STATUS_SUCCESS);
+#else
 		NtTerminateProcess(NtCurrentProcess(), STATUS_SUCCESS);
+#endif
 	}
 }

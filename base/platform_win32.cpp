@@ -6,7 +6,9 @@
 
 extern "C" BASEAPI bool DbgPrint_Available();
 extern "C" BASEAPI bool NtAllocateVirtualMemory_Available();
+#ifndef CH_XBOX360
 extern "C" BASEAPI bool NtTerminateProcess_Available();
+#endif
 
 SYSTEM_BASIC_INFORMATION g_systemInfo;
 
@@ -33,10 +35,14 @@ BASEAPI NORETURN void Base_QuitSafe(s32 code, cstr msg)
 	// TODO: use NtRaiseHardError
 
 	BREAKPOINT();
+#ifdef CH_XBOX360
+	ExitThread(static_cast<u32>(code));
+#else
 	if (NtTerminateProcess_Available())
 	{
 		NtTerminateProcess(NtCurrentProcess(), static_cast<NTSTATUS>(code));
 	}
+#endif
 
 	ASSUME(0);
 }

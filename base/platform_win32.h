@@ -20,6 +20,10 @@
 	extern "C" BASEAPI bool STUB_AVAILABLE(x)();                                                                                 \
 	EXPORT_RAW("_" STRINGIZE(x) "_Available");                                                                                   \
 	EXPORT_AS_RAW(STRINGIZE(x) "_Forwarder", "_" STRINGIZE(x) #paramSize);
+#elif defined CH_XBOX360
+#define MAKE_STUB(x, ...)                                                                                                        \
+	extern "C" BASEAPI bool STUB_AVAILABLE(x)();                                                                                 \
+	EXPORT_RAW(STRINGIZE(x) "_Available");
 #else
 #define MAKE_STUB(x, ...)                                                                                                        \
 	extern "C" uptr (*STUB_NAME(x))(...);                                                                                        \

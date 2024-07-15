@@ -83,6 +83,14 @@
 				{
 					^LibrarianAdditionalInputs + {'$ObjectDir$\$ProjectPath$\compiler_msvc_x86.obj'}
 				}
+				If (.PlatformName == 'Xbox360')
+				{
+					^LibrarianAdditionalInputs + {
+						'public/xbox/crtfpr.obj',
+						'public/xbox/crtgpr.obj',
+						'public/xbox/crtvmx.obj',
+					}
+				}
 			}
 		}
 

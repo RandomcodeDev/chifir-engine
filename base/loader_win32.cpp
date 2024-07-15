@@ -10,11 +10,7 @@
 // On Xbox 360, things are different. xboxkrnl.exe and xam.xex export all the important functions exclusively by ordinal,
 // and are in the XEX format. The reason them only using ordinals isn't an issue is because they don't change between kernel
 // versions, and it's no longer updated, so that can't change. This means that the logic of this file mostly doesn't apply to the
-// 360. The one thing that's left is figuring out if ASLR is used on the 360, and if so, how to get the kernel's base address
-// without linking to it. I don't know if the PEB exists on the 360, and if it does I don't think it's likely required for a
-// reimplementation of this file. I also have to figure out how to parse a XEX in memory, but that shouldn't be hard. XAM seems to
-// be the closest analogue to kernel32, but some functions that would normally just be thin wrappers or directly forwarder are
-// fully implemented inside of it.
+// 360. Because I don't know how the kernel does things, I've decided that just linking to it is a much better idea.
 
 #include "base.h"
 #include "base/base.h"
@@ -33,20 +29,8 @@ bool g_loaderInitialized;
 MAKE_STUB(DbgPrint, __cdecl, )
 MAKE_STUB(NtAllocateVirtualMemory, __stdcall, @24)
 MAKE_STUB(NtFreeVirtualMemory, __stdcall, @16)
-MAKE_STUB(RtlAnsiStringToUnicodeString, __stdcall, @12)
-MAKE_STUB(RtlFreeUnicodeString, __stdcall, @4)
 
-#ifdef CH_XBOX360
-// These are only on Xbox 360
-
-// xboxkrnl
-MAKE_STUB(XexGetProcedureAddress)
-MAKE_STUB(XexLoadImage)
-MAKE_STUB(XexUnloadImage)
-
-// XAM
-MAKE_STUB(QueryPerformanceCounter)
-#else
+#ifndef CH_XBOX360
 // These are desktop/OneCore things
 
 // ntdll
@@ -58,6 +42,8 @@ MAKE_STUB(LdrUnloadDll, __stdcall, @4)
 MAKE_STUB(NtQuerySystemInformation, __stdcall, @16)
 MAKE_STUB(NtRaiseHardError, __stdcall, @0)
 MAKE_STUB(NtTerminateProcess, __stdcall, @8)
+MAKE_STUB(RtlAnsiStringToUnicodeString, __stdcall, @12)
+MAKE_STUB(RtlFreeUnicodeString, __stdcall, @4)
 MAKE_STUB(RtlFreeHeap, __stdcall, @12)
 
 // user32, because it's more than just forwarded syscalls, unlike kernel32
@@ -81,6 +67,8 @@ MAKE_STUB(TranslateMessage, __stdcall, @4)
 MAKE_STUB(UnregisterClassA, __stdcall, @8)
 #endif
 
+#ifdef CH_XBOX360
+#else
 static bool FindNtDll(PPEB_LDR_DATA ldrData)
 {
 	// On desktop NTDLL is always the first image initialized, no matter what (there is no logical reason this would change)
@@ -138,6 +126,7 @@ static bool FindLdrGetProcedureAddress()
 
 	return LdrGetProcedureAddress_Available();
 }
+#endif
 
 #define GET_FUNCTION_OPTIONAL(lib, name)                                                                                         \
 	STUB_NAME(name) = reinterpret_cast<ILibrary*>(lib)->GetSymbol<uptr (*)(...)>(STRINGIZE(name));
@@ -160,6 +149,7 @@ bool Base_InitLoader()
 		return true;
 	}
 
+#ifndef CH_XBOX360
 	if (!FindNtDll(NtCurrentPeb()->Ldr))
 	{
 		return false;
@@ -173,31 +163,14 @@ bool Base_InitLoader()
 	CWindowsLibrary ntDll(ntDllBase);
 	GET_FUNCTION(&ntDll, DbgPrint)
 
-#ifndef CH_XBOX360
 	// These allow for cleaner handling of any of these failing
 	GET_FUNCTION(&ntDll, NtTerminateProcess)
 	GET_FUNCTION(&ntDll, NtRaiseHardError)
-#endif
 
 	GET_FUNCTION(&ntDll, NtAllocateVirtualMemory)
 	GET_FUNCTION(&ntDll, NtFreeVirtualMemory)
 	GET_FUNCTION(&ntDll, RtlAnsiStringToUnicodeString)
 	GET_FUNCTION(&ntDll, RtlFreeUnicodeString)
-
-#ifdef CH_XBOX360
-	// These are only on Xbox 360
-
-	// xboxkrnl
-	GET_FUNCTION(&ntDll, XexGetProcedureAddress)
-	GET_FUNCTION(&ntDll, XexLoadImage)
-	GET_FUNCTION(&ntDll, XexUnloadImage)
-
-	ILibrary* xam = Base_LoadLibrary("xam");
-
-	// XAM
-	GET_FUNCTION(xam, QueryPerformanceCounter)
-#else
-	// These are desktop/OneCore things
 
 	// ntdll
 	GET_FUNCTION(&ntDll, LdrAddRefDll)
@@ -247,6 +220,23 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 		".dll";
 #endif
 
+#ifdef CH_XBOX360
+	if (g_allocUsable)
+	{
+		dstr fileName = Base_Format("%s%s", name, DLL_EXT);
+		if (!fileName)
+		{
+			LastNtStatus() = STATUS_NO_MEMORY;
+			return nullptr;
+		}
+
+		HMODULE xex = LoadLibraryA(fileName);
+		Base_Free(fileName);
+		if (!xex)
+		{
+		}
+	}
+#else
 	if (STUB_NAME(RtlAnsiStringToUnicodeString) && STUB_NAME(LdrLoadDll) && g_allocUsable)
 	{
 		dstr fileName = Base_Format("%s%s", name, DLL_EXT);
@@ -282,6 +272,7 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 		RtlFreeUnicodeString(&nameUStr);
 		return new CWindowsLibrary(handle);
 	}
+#endif
 
 	return nullptr;
 }
@@ -292,15 +283,24 @@ CWindowsLibrary::CWindowsLibrary(void* base) : m_base(base)
 
 CWindowsLibrary::~CWindowsLibrary()
 {
-	if (STUB_NAME(LdrUnloadDll) && m_base)
+#ifdef CH_XBOX360
+	FreeLibrary(reinterpret_cast<HMODULE>(m_base));
+#else
+	if (LdrLoadDll_Available() && m_base)
 	{
 		LdrUnloadDll(m_base);
 	}
+#endif
 }
 
 void* CWindowsLibrary::GetSymbol(cstr name)
 {
-	ASSERT_MSG(STUB_NAME(LdrGetProcedureAddress) != nullptr, "Base_InitLoader has not been called");
+#ifdef CH_XBOX360
+	void* sym = GetProcAddress(reinterpret_cast<HMODULE>(m_base), name);
+	LastNtStatus() = LastNtError();
+	return sym;
+#else
+	ASSERT_MSG(LdrGetProcedureAddress_Available(), "Base_InitLoader has not been called");
 
 	ANSI_STRING nameStr = {0};
 	nameStr.Buffer = (dstr)name;
@@ -315,4 +315,5 @@ void* CWindowsLibrary::GetSymbol(cstr name)
 	}
 
 	return sym;
+#endif
 }

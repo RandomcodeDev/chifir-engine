@@ -183,6 +183,9 @@ Settings
 					 + ' /DCH_PPC64'
 					 + ' /DCH_SIMD128'
 	.LinkerOptions = ' /XEXCONFIG:public\xexconfig.xml'
+				   + ' /LIBPATH:"$Xbox360SDK$\lib\xbox"'
+				   + ' xboxkrnl.lib'
+				   + ' xapilib.lib'
 ]
 
 .MSVC_Xbox360Debug = .MSVC_Common + .MSVC_Xbox360 + .MSVC_Debug

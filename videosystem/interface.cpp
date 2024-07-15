@@ -8,6 +8,7 @@
 extern "C" DLLEXPORT ISystem* CreateInterface()
 {
 #ifdef CH_XBOX360
+	return nullptr;
 #elif defined CH_WIN32
 	return new CWindowsVideoSystem();
 #else
