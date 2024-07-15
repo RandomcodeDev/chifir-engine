@@ -139,15 +139,11 @@ template <typename T> class CLinkedList
 		if (node == m_head)
 		{
 			m_head = m_head->next;
-			m_head->prev = nullptr;
-			return;
 		}
 
 		if (node == m_tail)
 		{
 			m_tail = m_tail->prev;
-			m_tail->next = nullptr;
-			return;
 		}
 
 		if (node->prev)

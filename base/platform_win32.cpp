@@ -58,7 +58,6 @@ bool Base_GetSystemMemory(ssize size)
 		g_memInfo.allocations.Size() < ARRAY_SIZE(memoryNodes),
 		"OS allocation nodes exhausted, increase the size of the memory nodes array");
 
-	g_memInfo.size += size;
 	LinkedNode_t<SystemAllocation_t>* node = &memoryNodes[g_memInfo.allocations.Size()];
 	node->data.size = size;
 
@@ -70,6 +69,7 @@ bool Base_GetSystemMemory(ssize size)
 		return false;
 	}
 
+	g_memInfo.size += size;
 	g_memInfo.allocations.Append(node);
 
 	return true;

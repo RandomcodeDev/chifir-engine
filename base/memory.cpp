@@ -63,6 +63,7 @@ static AllocNode_t* MakeNewNode(ssize size)
 	alloc->data.signature = ALLOC_SIGNATURE;
 
 	node->data.used += alloc->data.size;
+	g_memInfo.used += alloc->data.size;
 
 	return alloc;
 }
@@ -99,7 +100,7 @@ static AllocNode_t* GetFreeNode(ssize size)
 	// Free the rest of the block
 	if (alloc->data.size - size > sizeof(AllocNode_t))
 	{
-		AllocNode_t* next = reinterpret_cast<AllocNode_t*>(reinterpret_cast<u8*>(alloc + 1) + alloc->data.size);
+		AllocNode_t* next = reinterpret_cast<AllocNode_t*>(reinterpret_cast<uptr>(alloc) + size);
 		next->data.size = alloc->data.size - size;
 		alloc->data.size = size;
 		alloc->data.signature = ALLOC_SIGNATURE;
@@ -184,6 +185,7 @@ BASEAPI void* Base_Alloc(ssize size, ssize alignment)
 		// Round up the address of the first byte after the AllocNode_t to be aligned
 		void* block = reinterpret_cast<void*>(ALIGN(reinterpret_cast<uptr>(alloc + 1), realAlignment));
 		Base_MemSet(block, 0, size);
+		g_memInfo.totalAllocated += size;
 		return block;
 	}
 
@@ -245,7 +247,6 @@ BASEAPI void* Base_Realloc(void* block, ssize newSize)
 
 		if (SameSystemNode(node, node->GetNext()) && EffectiveAllocSize(neighbor) > extraSize)
 		{
-
 			u8* newNext = static_cast<u8*>(block) + node->data.size;
 			Base_MemCopy(newNext, node->GetNext(), sizeof(AllocNode_t));
 			s_free.Remove(node->GetNext());
@@ -255,6 +256,7 @@ BASEAPI void* Base_Realloc(void* block, ssize newSize)
 			// Zero the new space added
 			Base_MemSet(static_cast<u8*>(block) + node->data.size - extraSize, 0, extraSize);
 
+			g_memInfo.totalAllocated += newSize - EffectiveSize(node);
 			return block;
 		}
 	}
@@ -304,6 +306,7 @@ BASEAPI void Base_Free(void* block)
 	{
 		AllocNode_t* node = FindNode(block);
 		InsertFreedNode(node);
+		g_memInfo.totalFreed += EffectiveSize(node);
 		CoalesceAllocations();
 	}
 }

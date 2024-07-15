@@ -45,6 +45,8 @@ struct MemoryInfo_t
 	CLinkedList<SystemAllocation_t> allocations;
 	ssize used;
 	ssize size;
+	ssize totalAllocated;
+	ssize totalFreed;
 };
 
 extern MemoryInfo_t g_memInfo;

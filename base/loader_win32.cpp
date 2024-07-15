@@ -268,6 +268,8 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 			return nullptr;
 		}
 
+		Base_Free(fileName);
+
 		void* handle = nullptr;
 		status = LdrLoadDll(nullptr, nullptr, &nameUStr, &handle);
 		if (!NT_SUCCESS(status))
