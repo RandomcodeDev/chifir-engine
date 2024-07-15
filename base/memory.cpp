@@ -136,7 +136,7 @@ static bool SameSystemNode(AllocNode_t* a, AllocNode_t* b)
 
 static bool Contiguous(AllocNode_t* a, AllocNode_t* b)
 {
-	return SameSystemNode(a, b) && reinterpret_cast<sptr>(a) < reinterpret_cast<sptr>(b);
+	return SameSystemNode(a, b) && reinterpret_cast<sptr>(a) + a->data.size == reinterpret_cast<sptr>(b);
 }
 
 // Merges any adjacent (in the allocation list), contiguous (in the same system node) allocations that aren't in use
@@ -245,7 +245,7 @@ BASEAPI void* Base_Realloc(void* block, ssize newSize)
 		ssize extraSize = newSize - node->data.size - sizeof(AllocNode_t);
 		node->data.size = newSize;
 
-		if (SameSystemNode(node, node->GetNext()) && EffectiveAllocSize(neighbor) > extraSize)
+		if (Contiguous(node, node->GetNext()) && EffectiveAllocSize(neighbor) > extraSize)
 		{
 			u8* newNext = static_cast<u8*>(block) + node->data.size;
 			Base_MemCopy(newNext, node->GetNext(), sizeof(AllocNode_t));

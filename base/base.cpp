@@ -69,7 +69,7 @@ static void Xbox360InitCpuData()
 	g_cpuData.haveSimd128 = true;
 	g_cpuData.haveIntSimd128 = true;
 	Base_StrCopy(g_cpuData.name, "Microsoft", ARRAY_SIZE(g_cpuData.brand));
-	Base_StrCopy(g_cpuData.name, "Xenon CPU", ARRAY_SIZE(g_cpuData.name));
+	Base_StrCopy(g_cpuData.name, "Xenon XCPU", ARRAY_SIZE(g_cpuData.name));
 }
 #endif
 
