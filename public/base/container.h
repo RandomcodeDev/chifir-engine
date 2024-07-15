@@ -16,6 +16,12 @@ class IContainer
 	// Get the size
 	virtual ssize Size() const = 0;
 
+	// Whether the container is empty
+	virtual bool IsEmpty() const
+	{
+		return Size() == 0;
+	}
+
 	// Insert an item at index, or append if index == BAD_INDEX
 	virtual I Add(const T& object, I index = BAD_INDEX) = 0;
 

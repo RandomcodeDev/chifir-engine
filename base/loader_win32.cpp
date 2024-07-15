@@ -25,6 +25,8 @@
 
 static PIMAGE_DOS_HEADER ntDllBase;
 
+bool g_loaderInitialized;
+
 // These are in both Xbox 360 and desktop/OneCore
 
 // ntdll/xboxkrnl
@@ -79,19 +81,13 @@ MAKE_STUB(TranslateMessage, __stdcall, @4)
 MAKE_STUB(UnregisterClassA, __stdcall, @8)
 #endif
 
-static bool FindNtDll()
+static bool FindNtDll(PPEB_LDR_DATA ldrData)
 {
-	if (ntDllBase)
-	{
-		return true;
-	}
-
-	PPEB_LDR_DATA ldrData = NtCurrentPeb()->Ldr;
-
 	// On desktop NTDLL is always the first image initialized, no matter what (there is no logical reason this would change)
+	// On WoW64, this _does_ get the 32-bit NTDLL, which is the right one
 	PLIST_ENTRY ntDllLink = ldrData->InInitializationOrderModuleList.Flink;
-	PLDR_DATA_TABLE_ENTRY entry = CONTAINING_RECORD(ntDllLink, LDR_DATA_TABLE_ENTRY, InInitializationOrderLinks);
-	ntDllBase = (PIMAGE_DOS_HEADER)entry->DllBase;
+	PLDR_DATA_TABLE_ENTRY entry = CONTAINING_STRUCTURE(LDR_DATA_TABLE_ENTRY, InInitializationOrderLinks, ntDllLink);
+	ntDllBase = static_cast<PIMAGE_DOS_HEADER>(entry->DllBase);
 
 	return ntDllBase != nullptr;
 }
@@ -99,13 +95,18 @@ static bool FindNtDll()
 // Somehow the Rtl function for this isn't inline in phnt, I guess it does that thing with the last section or whatever
 #define RVA_TO_VA(base, rva) (reinterpret_cast<u8*>(base) + (rva))
 
+static bool CheckWoW64()
+{
+#ifdef CH_I386
+	PIMAGE_NT_HEADERS ntDllNtHdrs = reinterpret_cast<PIMAGE_NT_HEADERS>(RVA_TO_VA(ntDllBase, ntDllBase->e_lfanew));
+	return ntDllNtHdrs->FileHeader.Machine == IMAGE_FILE_MACHINE_AMD64;
+#else
+	return false;
+#endif
+}
+
 static bool FindLdrGetProcedureAddress()
 {
-	if (STUB_NAME(LdrGetProcedureAddress))
-	{
-		return true;
-	}
-
 	PIMAGE_NT_HEADERS ntHdrs = (PIMAGE_NT_HEADERS)RVA_TO_VA(ntDllBase, ntDllBase->e_lfanew);
 	ASSERT(ntHdrs->Signature == IMAGE_NT_SIGNATURE); // Even if this isn't NTDLL, it sure as hell should have the right signature
 	ASSERT(ntHdrs->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR_MAGIC);
@@ -138,7 +139,8 @@ static bool FindLdrGetProcedureAddress()
 	return LdrGetProcedureAddress_Available();
 }
 
-#define GET_FUNCTION_OPTIONAL(lib, name) STUB_NAME(name) = reinterpret_cast<ILibrary*>(lib)->GetSymbol<uptr (*)(...)>(STRINGIZE(name));
+#define GET_FUNCTION_OPTIONAL(lib, name)                                                                                         \
+	STUB_NAME(name) = reinterpret_cast<ILibrary*>(lib)->GetSymbol<uptr (*)(...)>(STRINGIZE(name));
 #define GET_FUNCTION(lib, name)                                                                                                  \
 	{                                                                                                                            \
 		GET_FUNCTION_OPTIONAL(lib, name)                                                                                         \
@@ -148,9 +150,17 @@ static bool FindLdrGetProcedureAddress()
 		}                                                                                                                        \
 	}
 
+#define GET_TEB32(teb) reinterpret_cast<PTEB32>(reinterpret_cast<uptr>(teb) + 0x2000)
+#define GET_PEB32(peb) reinterpret_cast<PPEB32>(reinterpret_cast<uptr>(peb) - 0x1000)
+
 bool Base_InitLoader()
 {
-	if (!FindNtDll())
+	if (g_loaderInitialized)
+	{
+		return true;
+	}
+
+	if (!FindNtDll(NtCurrentPeb()->Ldr))
 	{
 		return false;
 	}
@@ -161,7 +171,6 @@ bool Base_InitLoader()
 	}
 
 	CWindowsLibrary ntDll(ntDllBase);
-
 	GET_FUNCTION(&ntDll, DbgPrint)
 
 #ifndef CH_XBOX360
@@ -223,6 +232,8 @@ bool Base_InitLoader()
 	GET_FUNCTION(user32, TranslateMessage)
 	GET_FUNCTION(user32, UnregisterClassA)
 #endif
+
+	g_loaderInitialized = true;
 
 	return true;
 }

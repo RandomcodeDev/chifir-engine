@@ -181,6 +181,7 @@ BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize 
 		if (misalignment > remaining)
 		{
 			misalignment = remaining;
+			remaining = 0;
 		}
 		else
 		{
@@ -273,6 +274,7 @@ BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size)
 	if (misalignment > remaining)
 	{
 		misalignment = remaining;
+		remaining = 0;
 	}
 	else
 	{
@@ -316,14 +318,17 @@ static FORCEINLINE s32 Compare(const void* RESTRICT a, const void* RESTRICT b, s
 		remaining -= alignment;
 	}
 
-	// Compare the bytes of the larger thing
-	for (ssize j = 0; j < sizeof(T); j++)
+	if (remaining > 0)
 	{
-		s8 ab = static_cast<const s8 * RESTRICT>(a)[i / alignment + j];
-		s8 bb = static_cast<const s8 * RESTRICT>(b)[i / alignment + j];
-		if (ab != bb)
+		// Compare the bytes of the larger thing
+		for (ssize j = 0; j < sizeof(T); j++)
 		{
-			return bb - ab;
+			s8 ab = static_cast<const s8 * RESTRICT>(a)[i / alignment + j];
+			s8 bb = static_cast<const s8 * RESTRICT>(b)[i / alignment + j];
+			if (ab != bb)
+			{
+				return bb - ab;
+			}
 		}
 	}
 
@@ -400,6 +405,7 @@ BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssiz
 		if (misalignment > remaining)
 		{
 			misalignment = remaining;
+			remaining = 0;
 		}
 		else
 		{
@@ -423,8 +429,6 @@ BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssiz
 		{
 			comparison = Compare<u64>(a, b, size - remaining, remaining, alignment);
 		}
-
-		return comparison;
 	}
 
 	comparison = Compare<u8>(a, b, size - remaining, remaining, 1);

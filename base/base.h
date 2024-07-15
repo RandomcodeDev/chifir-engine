@@ -59,4 +59,4 @@ extern void Base_ReleaseSystemMemory(LinkedNode_t<SystemAllocation_t>);
 extern void Base_ReleaseAllMemory();
 
 // So individual implementations don't have to handle formatting the message
-extern NORETURN void Base_QuitImpl(s32 code, cstr msg);
+extern NORETURN void Base_QuitSafe(s32 code, cstr msg);

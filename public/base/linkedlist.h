@@ -47,24 +47,45 @@ template <typename T> class CLinkedList
 
 	void InsertBefore(Node_t* where, Node_t* node)
 	{
+		if (!node)
+		{
+			return;
+		}
+
 		where->prev = node;
 		node->next = where;
-		where = node;
 	}
 
 	void InsertAfter(Node_t* where, Node_t* node)
 	{
+		if (!node)
+		{
+			return;
+		}
+
 		where->next = node;
 		node->prev = where;
-		where = node;
 	}
 
 	void Append(Node_t* node)
 	{
+		if (!node)
+		{
+			return;
+		}
+
 		if (!m_head && !m_tail)
 		{
 			m_head = node;
 			m_tail = node;
+			m_head->prev = nullptr;
+			m_tail->next = nullptr;
+		}
+		else if (m_head == m_tail)
+		{
+			m_head->next = node;
+			m_tail = node;
+			node->prev = m_head;
 		}
 		else
 		{
@@ -79,10 +100,23 @@ template <typename T> class CLinkedList
 
 	void Prepend(Node_t* node)
 	{
+		if (!node)
+		{
+			return;
+		}
+
 		if (!m_head && !m_tail)
 		{
 			m_head = node;
 			m_tail = node;
+			m_head->prev = nullptr;
+			m_tail->next = nullptr;
+		}
+		else if (m_head == m_tail)
+		{
+			m_tail->prev = node;
+			m_head = node;
+			node->next = m_tail;
 		}
 		else
 		{
@@ -97,6 +131,25 @@ template <typename T> class CLinkedList
 
 	void Remove(Node_t* node)
 	{
+		if (!node)
+		{
+			return;
+		}
+
+		if (node == m_head)
+		{
+			m_head = m_head->next;
+			m_head->prev = nullptr;
+			return;
+		}
+
+		if (node == m_tail)
+		{
+			m_tail = m_tail->prev;
+			m_tail->next = nullptr;
+			return;
+		}
+
 		if (node->prev)
 		{
 			node->prev->next = node->next;
@@ -108,22 +161,27 @@ template <typename T> class CLinkedList
 		m_nodeCount--;
 	}
 
-	Node_t* GetHead()
+	Node_t* GetHead() const
 	{
 		return m_head;
 	}
 
-	Node_t* GetTail()
+	Node_t* GetTail() const
 	{
 		return m_tail;
 	}
 
-	ssize Size()
+	ssize Size() const
 	{
 		return m_nodeCount;
 	}
 
-	Node_t* Find(s32 (*Check)(T* cur, void* data), void* data, bool reverse = false)
+	bool IsEmpty() const
+	{
+		return Size() == 0;
+	}
+
+	Node_t* Find(s32 (*Check)(T* cur, void* data), void* data, bool reverse = false) const
 	{
 		if (m_nodeCount == 1)
 		{

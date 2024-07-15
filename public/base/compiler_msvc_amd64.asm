@@ -10,8 +10,8 @@ EXTERN __security_cookie : QWORD
 
 .CODE
 
-Base_QuitImpl TEXTEQU <?Base_QuitImpl@@YAXHPEBD@Z>
-EXTERN Base_QuitImpl : PROC
+Base_QuitSafe TEXTEQU <?Base_QuitSafe@@YAXHPEBD@Z>
+EXTERN Base_QuitSafe : PROC
 
 PUBLIC __security_check_cookie
 __security_check_cookie PROC
@@ -27,7 +27,7 @@ Fail:
 	mov r9, __security_cookie
 	mov ecx, 0C0000409h
 	lea rdx, [errorMsg]
-	call Base_QuitImpl
+	call Base_QuitSafe
 __security_check_cookie ENDP
 
 END

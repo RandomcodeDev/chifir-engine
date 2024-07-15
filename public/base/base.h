@@ -23,20 +23,22 @@ BASEAPI void Base_Shutdown();
 BASEAPI NORETURN void Base_Quit(s32 error, cstr msg, ...);
 
 // This is for when Base_Quit might have side effects that could lead to recursion, such as calling Base_VFormat
-BASEAPI NORETURN void Base_QuitImpl(s32 error, cstr msg);
+BASEAPI NORETURN void Base_QuitSafe(s32 error, cstr msg);
 
-// Quit if a condition isn't true, add a message and code
-#define ASSERT_MSG_CODE(cond, ...)                                                                                         \
+#define ASSERT_IMPL(cond, action)                                                                                                \
 	if (!(cond))                                                                                                                 \
 	{                                                                                                                            \
-		Base_Quit(1, "Assertion " #cond " failed: " __VA_ARGS__);                                                             \
+		action;                                                                                                                  \
 	}
 
 // Quit if a condition isn't true, add a message
-#define ASSERT_MSG(cond, ...) ASSERT_MSG_CODE(cond, __VA_ARGS__)
+#define ASSERT_MSG(cond, ...) ASSERT_IMPL(cond, Base_Quit(1, "Assertion " #cond " failed: " __VA_ARGS__))
+
+// Quit if a condition isn't true, add a message
+#define ASSERT_MSG_SAFE(cond, msg) ASSERT_IMPL(cond, Base_QuitSafe(1, "Assertion " #cond " failed: " msg))
 
 // Quit if a condition isn't true
-#define ASSERT(cond) ASSERT_MSG(cond, )
+#define ASSERT(cond) ASSERT_IMPL(cond, Base_QuitSafe(1, "Assertion " #cond " failed"))
 
 // Round val up to a multiple of align (align must be a power of two)
 #define ALIGN(val, align) (((val) + (align)-1) & ~((align)-1))
@@ -49,6 +51,9 @@ BASEAPI NORETURN void Base_QuitImpl(s32 error, cstr msg);
 
 // Stringize something, and expand macros one level
 #define STRINGIZE_EXPAND(x) STRINGIZE(x)
+
+// Get the address of a structure containing the given pointer
+#define CONTAINING_STRUCTURE(type, member, ptr) (reinterpret_cast<type*>(reinterpret_cast<uptr>(ptr) - offsetof(type, member)))
 
 // Swap
 template <typename T> static inline void Swap(T& left, T& right)

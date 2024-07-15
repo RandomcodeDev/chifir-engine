@@ -32,6 +32,8 @@
 // using those
 extern bool Base_InitLoader();
 
+extern bool g_loaderInitialized;
+
 class CWindowsLibrary : public ILibrary
 {
   public:

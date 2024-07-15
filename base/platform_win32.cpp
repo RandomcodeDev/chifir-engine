@@ -5,11 +5,12 @@
 #include "base/types.h"
 
 extern "C" BASEAPI bool DbgPrint_Available();
+extern "C" BASEAPI bool NtAllocateVirtualMemory_Available();
 extern "C" BASEAPI bool NtTerminateProcess_Available();
 
 SYSTEM_BASIC_INFORMATION g_systemInfo;
 
-BASEAPI NORETURN void Base_QuitImpl(s32 code, cstr msg)
+BASEAPI NORETURN void Base_QuitSafe(s32 code, cstr msg)
 {
 	if (code == 1 && LastNtStatus() != 0)
 	{
@@ -46,6 +47,11 @@ bool Base_GetSystemMemory(ssize size)
 	// changed in the future, this is based on a vacuum currently)
 	static LinkedNode_t<SystemAllocation_t> memoryNodes[64];
 
+	if (!NtAllocateVirtualMemory_Available())
+	{
+		return false;
+	}
+
 	size = ALIGN(size, g_systemInfo.PageSize);
 
 	ASSERT_MSG(
@@ -55,6 +61,7 @@ bool Base_GetSystemMemory(ssize size)
 	g_memInfo.size += size;
 	LinkedNode_t<SystemAllocation_t>* node = &memoryNodes[g_memInfo.allocations.Size()];
 	node->data.size = size;
+
 	NTSTATUS status =
 		NtAllocateVirtualMemory(NtCurrentProcess(), &node->data.memory, 0, (PSIZE_T)&node->data.size, MEM_COMMIT, PAGE_READWRITE);
 	if (!NT_SUCCESS(status))
