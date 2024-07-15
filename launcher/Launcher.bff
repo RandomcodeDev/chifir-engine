@@ -26,6 +26,14 @@
 				{
 					'$ProjectPath$/main_win32.cpp'
 				}
+
+				If (.PlatformName == 'Xbox360')
+				{
+					^UnityInputFiles +
+					{
+						'$ProjectPath$/../public/base/dllmain.cpp'
+					}
+				}
 			}
 			
 			.UnityOutputPath = '$ObjectDir$/$ProjectPath$/'
@@ -49,8 +57,9 @@
 			.LinkerOutput = '$OutputDir$/$GameName$$ExeExtension$'
 			If (.PlatformName == 'Xbox360')
 			{
-				// Has to be linked with the name default
-				^LinkerOutput = '$OutputDir$/default$ExeExtension$'
+				// Has to be a DLL in order to statically link to Base.xex
+				^LinkerOutput = '$OutputDir$/default$DLLExtension$'
+				^LinkerOptions + ' /DLL'
 			}
 			If (.PlatformName == 'Linux')
 			{

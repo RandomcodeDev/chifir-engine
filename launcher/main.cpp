@@ -35,7 +35,7 @@ void TestAlloc()
 	delete[] allocations; // Free the array of pointers
 }
 
-s32 LauncherMain()
+LAUNCHERAPI s32 LauncherMain()
 {
 	Base_Init();
 	Plat_Init();
