@@ -7,7 +7,7 @@ BASEAPI void Plat_Init()
 	// This is to allow the loader to use memory allocation for library names
 #ifdef CH_XBOX360
 	// 64K pages are the default
-	g_systemInfo.PageSize = 0x16000;
+	g_systemInfo.PageSize = 0x10000;
 #else
 	// Every other supported architecture uses 4K pages
 	g_systemInfo.PageSize = 0x1000;

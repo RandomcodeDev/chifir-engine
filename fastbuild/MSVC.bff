@@ -23,7 +23,6 @@ Settings
 					 + ' /Zl' // Omit references to CRT in objects
 					 + ' /W4' // Max warnings
 					 + ' /WX' // Warnings as errors
-					 + ' /Zc:__cplusplus' // Ensure old compilers that actually support C++03 are detected properly
 
 					 // Warnings
 					 + ' /wd4201' // nameless struct
@@ -34,6 +33,7 @@ Settings
 					 + ' /wd4127' // conditional expression is constant
 					 + ' /wd4229' // modifiers on data are ignored
 					 + ' /wd4319' // zero extending 'x' to 'y' of greater type
+					 + ' /wd4163' // 'x': not available as an intrinsic function
 
 	// Global include dirs
 	ForEach(.IncludeDir in .IncludeDirs)
@@ -77,6 +77,8 @@ Settings
 
 					 + ' /Zf' // Faster PDB generation
 					 + ' /utf-8' // Treat sources as UTF-8
+					 + ' /Zc:__cplusplus' // Ensure old compilers that actually support C++03 are detected properly
+					 + ' /Zo' // Debug info for optimized code
 ]
 
 .MSVC_Debug = 
@@ -97,7 +99,6 @@ Settings
 	.CompilerOptions = ' /O2' // Optimize
 					 + ' /Oy' // Omit frame pointers
 					 + ' /Z7' // Debug info
-					 + ' /Zo' // Debug info for optimized code
 					 + ' /GS' // Stack checks
 
 	.LinkerOptions = ' /OPT:REF,ICF' // Remove unreferenced code, fold COMDATs

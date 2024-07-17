@@ -4,7 +4,7 @@
 #include "base/vector.h"
 #include "isystem.h"
 #include "launcher.h"
-#include "video/ivideosystem.h"
+#include "videosystem/ivideosystem.h"
 
 // ChatGPT generated allocator test, so far has shown that it works but is much slower than the normal vcruntime malloc
 void TestAlloc()
@@ -35,13 +35,53 @@ void TestAlloc()
 	delete[] allocations; // Free the array of pointers
 }
 
-LAUNCHERAPI s32 LauncherMain()
+void TestVideoSystem()
 {
+	ILibrary* videoSystemLib = Base_LoadLibrary("VideoSystem");
+	if (!videoSystemLib)
+	{
+		Base_QuitSafe(1, "Failed to load video system DLL");
+	}
+
+	CreateInterface_t CreateInterface = videoSystemLib->GetSymbol<CreateInterface_t>("CreateInterface");
+	if (!CreateInterface)
+	{
+		Base_QuitSafe(1, "Failed to get CreateInterface in video system");
+	}
+
+	IVideoSystem* videoSystem = static_cast<IVideoSystem*>(CreateInterface());
+	if (!videoSystem)
+	{
+		Base_QuitSafe(1, "Failed to create video system interface");
+	}
+
+	if (!videoSystem->Initialize())
+	{
+		Base_QuitSafe(1, "Failed to initialize video system");
+	}
+
+	while (videoSystem->Update())
+	{
+
+	}
+
+	videoSystem->Shutdown();
+	delete videoSystem;
+	delete videoSystemLib;
+}
+
+extern "C" LAUNCHERAPI s32 LauncherMain()
+{
+#ifdef CH_XBOX360
+	__security_init_cookie();
+#endif
+
 	Base_Init();
 	Plat_Init();
 
 	TestAlloc();
 	TestAlloc();
+	TestVideoSystem();
 
 	Plat_Shutdown();
 	Base_Shutdown();

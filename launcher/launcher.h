@@ -11,4 +11,4 @@
 #endif
 
 // Cross-platform entry point
-extern LAUNCHERAPI s32 LauncherMain();
+extern "C" LAUNCHERAPI s32 LauncherMain();

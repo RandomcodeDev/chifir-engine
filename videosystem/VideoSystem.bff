@@ -19,6 +19,7 @@
 			.UnityInputFiles = 
 			{
 				'$ProjectPath$/interface.cpp',
+				'$ProjectPath$/video_null.cpp'
 			}
 
 			If (.PlatformName in .WindowsLike)
@@ -60,6 +61,10 @@
 			If (.PlatformName in .WindowsLike)
 			{
 				^LinkerOptions + ' /DLL'
+				If (.PlatformName == 'Xbox360')
+				{
+					^LinkerOptions + ' /AUTODEF:$ObjectDir$/$ProjectName$/$ProjectName$.def /DEF:$ObjectDir$/$ProjectName$/$ProjectName$.def'
+				}
 			}
 #if __LINUX__
 			If (.PlatformName == 'Linux')

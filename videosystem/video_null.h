@@ -1,4 +1,4 @@
-// Windows-specific stuff for the video system
+// Dummy video system
 
 #pragma once
 
@@ -6,7 +6,7 @@
 #include "base/types.h"
 #include "videosystem/ivideosystem.h"
 
-class CWindowsVideoSystem : public IVideoSystem
+class CNullVideoSystem : public IVideoSystem
 {
   public:
 	bool Initialize();
@@ -62,33 +62,17 @@ class CWindowsVideoSystem : public IVideoSystem
 
 	u64 GetHandle() const
 	{
-		return reinterpret_cast<uptr>(m_window);
+		return 0;
 	}
 
   private:
-	static const u32 WINDOW_STYLE =	WS_OVERLAPPEDWINDOW;
-
-	HINSTANCE m_hinstance;
-	HWND m_window;
 	dstr m_title;
 	u32 m_width;
 	u32 m_height;
-	u32 m_extraWidth;
-	u32 m_extraHeight;
 	u32 m_x;
 	u32 m_y;
 	bool m_resized;
 	bool m_focused;
 	bool m_closed;
 	f32 m_dpi;
-
-	bool RegisterWindowClass();
-	bool InitializeMainWindow();
-	void UpdateSize();
-	void UpdatePosition();
-	void UpdateDpi();
-
-	static LRESULT __stdcall WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam);
 };
-
-#define WINDOW_CLASS "ЧифирWindow"

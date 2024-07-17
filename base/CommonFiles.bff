@@ -63,6 +63,17 @@
 					.ExecWorkingDir = '$ObjectDir$/$ProjectPath$'
 				}
 			}
+			If (.PlatformName == 'Xbox360')
+			{
+				Exec('$ProjectName$-ASM-MSVCSup-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+				{
+					.ExecExecutable = .MASM
+					.ExecInput = '$ProjectPath$/../public/base/compiler_msvc_ppc.asm'
+					.ExecOutput = '$ObjectDir$/$ProjectPath$/compiler_msvc_ppc.obj'
+					.ExecArguments = .MASMOptions
+					.ExecWorkingDir = '$ObjectDir$/$ProjectPath$'
+				}
+			}
 		}
 #endif
 
@@ -89,6 +100,7 @@
 						'public/xbox/crtfpr.obj',
 						'public/xbox/crtgpr.obj',
 						'public/xbox/crtvmx.obj',
+						'$ObjectDir$\$ProjectPath$\compiler_msvc_ppc.obj'
 					}
 				}
 			}

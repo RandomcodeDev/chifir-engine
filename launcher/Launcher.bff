@@ -22,9 +22,12 @@
 			.WindowsLike = {'Windows', 'GDK', 'XboxScarlett', 'Xbox360'}
 			If (.PlatformName in .WindowsLike)
 			{
-				^UnityInputFiles +
+				If (.PlatformName != 'Xbox360')
 				{
-					'$ProjectPath$/main_win32.cpp'
+					^UnityInputFiles +
+					{
+						'$ProjectPath$/main_win32.cpp'
+					}
 				}
 
 				If (.PlatformName == 'Xbox360')
@@ -58,8 +61,8 @@
 			If (.PlatformName == 'Xbox360')
 			{
 				// Has to be a DLL in order to statically link to Base.xex
-				^LinkerOutput = '$OutputDir$/default$DLLExtension$'
-				^LinkerOptions + ' /DLL'
+				^LinkerOutput = '$OutputDir$/$ProjectName$$DLLExtension$'
+				^LinkerOptions + ' /DLL /AUTODEF:$ObjectDir$/$ProjectName$/$ProjectName$.def /DEF:$ObjectDir$/$ProjectName$/$ProjectName$.def'
 			}
 			If (.PlatformName == 'Linux')
 			{

@@ -6,7 +6,9 @@
 
 extern "C" BASEAPI bool DbgPrint_Available();
 extern "C" BASEAPI bool NtAllocateVirtualMemory_Available();
-#ifndef CH_XBOX360
+#ifdef CH_XBOX360
+extern "C" DLLIMPORT void __stdcall XamTerminateTitle();
+#else
 extern "C" BASEAPI bool NtTerminateProcess_Available();
 #endif
 
@@ -18,7 +20,7 @@ BASEAPI NORETURN void Base_QuitSafe(s32 code, cstr msg)
 	{
 		code = LastNtStatus();
 	}
-	else if (code == 2 && LastNtError() != 0)
+	else if (code == 1 && LastNtError() != 0)
 	{
 		code = LastNtError();
 	}
@@ -36,7 +38,7 @@ BASEAPI NORETURN void Base_QuitSafe(s32 code, cstr msg)
 
 	BREAKPOINT();
 #ifdef CH_XBOX360
-	ExitThread(static_cast<u32>(code));
+	XamTerminateTitle();
 #else
 	if (NtTerminateProcess_Available())
 	{

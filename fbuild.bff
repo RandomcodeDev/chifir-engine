@@ -140,6 +140,9 @@
 #include "base/Base.bff"
 #include "utility/Utility.bff"
 #include "launcher/Launcher.bff"
+#if HAVE_MSVC_XBOX360
+#include "launcher/LauncherXbox360.bff"
+#endif
 #include "engine/Engine.bff"
 #include "videosystem/VideoSystem.bff"
 

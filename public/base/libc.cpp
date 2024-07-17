@@ -12,7 +12,7 @@ extern "C"
 		return Base_MemCompare(a, b, size);
 	}
 
-//	DEFINE_INTRINSIC(memmove)
+	DEFINE_INTRINSIC(memmove)
 	void* memmove(void* RESTRICT dest, const void* RESTRICT src, usize size)
 	{
 		return Base_MemCopy(dest, src, size);

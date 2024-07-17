@@ -28,6 +28,7 @@
 #define RtlEnterCriticalSection                  RtlEnterCriticalSection_phnt
 #define RtlTryEnterCriticalSection               RtlTryEnterCriticalSection_phnt
 #define RtlLeaveCriticalSection                  RtlLeaveCriticalSection_phnt
+#define ExitProcess(...)
 #endif
 #include "phnt.h"
 #ifdef CH_XBOX360
@@ -45,4 +46,5 @@
 #undef RtlEnterCriticalSection
 #undef RtlTryEnterCriticalSection
 #undef RtlLeaveCriticalSection
+#undef ExitProcess
 #endif

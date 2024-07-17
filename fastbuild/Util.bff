@@ -15,4 +15,3 @@ function CreateVcxProjectExe(.Name, .Path, .Configs, .Options)
 {
 	CreateVcxProject(.Name, .Path, .Configs, .Options)
 }
-

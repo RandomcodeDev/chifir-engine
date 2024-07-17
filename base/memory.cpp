@@ -169,6 +169,7 @@ BASEAPI void* Base_Alloc(ssize size, ssize alignment)
 
 	ASSERT_MSG_SAFE(realAlignment <= MAXIMUM_ALIGNMENT, "alignment must be less than or equal to 64");
 	ASSERT_MSG_SAFE(realAlignment % 2 == 0, "alignment must be a power of 2");
+	ASSERT_MSG_SAFE(realSize <= SYSTEM_ALLOC_SIZE - sizeof(AllocNode_t), "size must be less than or equal to 67108832");
 
 	AllocNode_t* alloc = GetFreeNode(realSize);
 	if (alloc)

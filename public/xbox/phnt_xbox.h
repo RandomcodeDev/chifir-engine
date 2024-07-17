@@ -1127,8 +1127,6 @@ typedef struct DECLSPEC_ALIGN(8) MEM_EXTENDED_PARAMETER
 
 typedef LONG(NTAPI* PVECTORED_EXCEPTION_HANDLER)(struct _EXCEPTION_POINTERS* ExceptionInfo);
 
-#define ExitProcess(status) NtTerminateProcess(NtCurrentProcess(), status)
-
 #define UNICODE_STRING_MAX_BYTES ((WORD)65534)
 #define UNICODE_STRING_MAX_CHARS (32767)
 
