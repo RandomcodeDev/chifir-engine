@@ -24,6 +24,7 @@ static void CpuId(u32& eax, u32& ebx, u32& ecx, u32& edx)
 
 static void X86InitCpuData()
 {
+	// Processor info and feature bits
 	u32 eax = 0x00000001;
 	u32 ebx = 0x00000000;
 	u32 ecx = 0x00000000;
@@ -31,13 +32,14 @@ static void X86InitCpuData()
 	CpuId(eax, ebx, ecx, edx);
 
 	// Because of bit field shenanigans, these have to be made booleans first
-#ifdef CH_I386 // Widespread adoption of SSE2 predates AMD64
+#ifdef CH_IA32 // Widespread adoption of SSE2 predates AMD64
 	g_cpuData.haveSimd128 = (bool)(edx & (1 << 25));
 	g_cpuData.haveIntSimd128 = (bool)(edx & (1 << 26));
 #else
 	g_cpuData.haveSimd128 = true;
 	g_cpuData.haveIntSimd128 = true;
 #endif
+	g_cpuData.haveSimd128Compare = (bool)(ecx & (1 << 20));
 	g_cpuData.haveSimd256 = (bool)(ecx & (1 << 28));
 
 	u32 regs[16] = {0}; // 0-3 brand, 4-15 model
@@ -45,6 +47,7 @@ static void X86InitCpuData()
 	// brand, EAX = 0
 	CpuId(regs[0], regs[1], regs[2], regs[3]);
 	Base_MemCopy(g_cpuData.brand, regs, 16);
+	g_cpuData.brand[11] = '\0';
 
 	// model name available
 	regs[4] = 0x80000000;
@@ -61,6 +64,7 @@ static void X86InitCpuData()
 		CpuId(regs[12], regs[13], regs[14], regs[15]);
 
 		Base_MemCopy(g_cpuData.name, regs + 4, 48);
+		g_cpuData.name[47] = '\0';
 	}
 }
 #elif defined CH_XBOX360
@@ -68,6 +72,7 @@ static void Xbox360InitCpuData()
 {
 	g_cpuData.haveSimd128 = true;
 	g_cpuData.haveIntSimd128 = true;
+	g_cpuData.haveSimd128Compare = true;
 }
 #endif
 
@@ -314,7 +319,7 @@ static FORCEINLINE s32 Compare(const void* RESTRICT a, const void* RESTRICT b, s
 	if (remaining > 0)
 	{
 		// Compare the bytes of the larger thing
-		for (ssize j = 0; j < sizeof(T); j++)
+		for (usize j = 0; j < SIZEOF(T); j++)
 		{
 			s8 ab = static_cast<const s8 * RESTRICT>(a)[i / alignment + j];
 			s8 bb = static_cast<const s8 * RESTRICT>(b)[i / alignment + j];
@@ -336,7 +341,7 @@ static FORCEINLINE bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 	inequalIdx = _mm_cmpestri(*reinterpret_cast<const __m128i*>(&a), 16, *reinterpret_cast<const __m128i*>(&b), 16, mode);
 	return _mm_cmpestrc(*reinterpret_cast<const __m128i*>(&a), 16, *reinterpret_cast<const __m128i*>(&b), 16, mode);
 }
-#else
+#elif defined CH_XBOX360
 static FORCEINLINE bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 {
 	u32 cr = 0;
@@ -355,7 +360,7 @@ static FORCEINLINE bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 	else
 	{
 		// Compare the bytes of the larger thing
-		for (ssize i = 0; i < sizeof(v128); i++)
+		for (ssize i = 0; i < SIZEOF(v128); i++)
 		{
 			s8 ab = reinterpret_cast<const s8*>(&a)[i];
 			s8 bb = reinterpret_cast<const s8*>(&b)[i];
@@ -441,8 +446,9 @@ BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssiz
 			return comparison;
 		}
 
-#ifdef CH_SIMD128
-		if (g_cpuData.haveIntSimd128 && size - remaining >= 16)
+		// _mm_cmpestr* aren't builtins in Clang, and I don't know how to deal with that on Windows
+#if defined CH_SIMD128 && !defined __clang__
+		if (g_cpuData.haveSimd128Compare && size - remaining >= 16)
 		{
 			comparison = Compare<v128>(a, b, size - remaining, remaining, alignment);
 		}

@@ -19,7 +19,6 @@
 				'$ProjectPath$/main.cpp',
 			}
 
-			.WindowsLike = {'Windows', 'GDK', 'XboxScarlett', 'Xbox360'}
 			If (.PlatformName in .WindowsLike)
 			{
 				If (.PlatformName != 'Xbox360')

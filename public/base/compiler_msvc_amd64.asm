@@ -1,4 +1,4 @@
-TITLE MSVC __security_check_cookie
+TITLE MSVC AMD64 support
 
 OPTION PROLOGUE:NONE
 

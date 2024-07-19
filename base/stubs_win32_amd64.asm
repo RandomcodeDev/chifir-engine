@@ -31,7 +31,7 @@ Avail:
 ENDM
 
 ; ntdll stubs
-MAKE_STUB DbgPrint, 
+MAKE_STUB DbgPrint
 MAKE_STUB LdrAddRefDll
 MAKE_STUB LdrAddDllDirectory
 MAKE_STUB LdrGetProcedureAddress

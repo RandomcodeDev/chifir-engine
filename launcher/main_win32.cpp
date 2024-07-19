@@ -23,7 +23,7 @@ ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 extern "C"
 {
 #ifndef CH_XBOX360
-	NORETURN void __stdcall WinMainCRTStartup()
+	void __stdcall WinMainCRTStartup()
 	{
 		__security_init_cookie();
 

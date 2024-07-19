@@ -70,7 +70,7 @@ static AllocNode_t* MakeNewNode(ssize size)
 
 static ssize EffectiveAllocSize(AllocInfo_t* info)
 {
-	return info->size - sizeof(AllocNode_t);
+	return info->size - SIZEOF(AllocNode_t);
 }
 
 static ssize EffectiveSize(AllocNode_t* node)
@@ -98,7 +98,7 @@ static AllocNode_t* GetFreeNode(ssize size)
 	}
 
 	// Free the rest of the block
-	if (alloc->data.size - size > sizeof(AllocNode_t))
+	if (alloc->data.size - size > SIZEOF(AllocNode_t))
 	{
 		AllocNode_t* next = reinterpret_cast<AllocNode_t*>(reinterpret_cast<uptr>(alloc) + size);
 		next->data.size = alloc->data.size - size;
@@ -120,7 +120,7 @@ static AllocNode_t* FindNode(void* block)
 	{
 		// Ensure that this doesn't go so far back that a different allocation is found
 		ASSERT_MSG_SAFE(
-			reinterpret_cast<sptr>(block) - reinterpret_cast<sptr>(sigAddr) < MAXIMUM_ALIGNMENT + sizeof(AllocNode_t),
+			reinterpret_cast<sptr>(block) - reinterpret_cast<sptr>(sigAddr) < MAXIMUM_ALIGNMENT + SIZEOF(AllocNode_t),
 			"invalid allocation: couldn't find signature before the given address");
 		sigAddr--;
 	}
@@ -162,13 +162,13 @@ static ssize FixAlignment(ssize alignment)
 	return Min(Max(alignment, MINIMUM_ALIGNMENT), MAXIMUM_ALIGNMENT);
 }
 
-BASEAPI void* Base_Alloc(ssize size, ssize alignment)
+BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment)
 {
 	ssize realAlignment = FixAlignment(alignment);
-	ssize realSize = ALIGN(sizeof(AllocNode_t) + size, realAlignment);
+	ssize realSize = ALIGN(SIZEOF(AllocNode_t) + size, realAlignment);
 
 	ASSERT_MSG_SAFE(realAlignment % 2 == 0, "alignment must be a power of 2");
-	ASSERT_MSG_SAFE(realSize <= SYSTEM_ALLOC_SIZE - sizeof(AllocNode_t), "size must be less than or equal to 67108832");
+	ASSERT_MSG_SAFE(realSize <= SYSTEM_ALLOC_SIZE - SIZEOF(AllocNode_t), "size must be less than or equal to 67108832");
 
 	AllocNode_t* alloc = GetFreeNode(realSize);
 	if (alloc)
@@ -213,23 +213,23 @@ BASEAPI void* Base_Realloc(void* block, ssize newSize)
 	if (EffectiveSize(node) > newSize)
 	{
 		ssize freeSize = EffectiveSize(node) - newSize;
-		node->data.size = newSize + sizeof(AllocNode_t);
+		node->data.size = newSize + SIZEOF(AllocNode_t);
 
 		// If it's the tail and there's enough space, make a new node after
-		if (node->IsTail() && freeSize > sizeof(AllocNode_t))
+		if (node->IsTail() && freeSize > SIZEOF(AllocNode_t))
 		{
 			AllocInfo_t newNode;
 			newNode.size = freeSize;
 			newNode.systemAllocation = node->data.systemAllocation;
 			newNode.signature = ALLOC_SIGNATURE;
 			s_free.InsertAfter(node, reinterpret_cast<AllocNode_t*>((static_cast<u8*>(block) + node->data.size)));
-			Base_MemCopy(&node->GetNext()->data, &newNode, sizeof(AllocInfo_t));
+			Base_MemCopy(&node->GetNext()->data, &newNode, SIZEOF(AllocInfo_t));
 		}
 		// Otherwise, move up the next node and increase its size
 		else if (!node->IsTail())
 		{
 			u8* newNext = static_cast<u8*>(block) + node->data.size;
-			Base_MemCopy(newNext, node->GetNext(), sizeof(AllocNode_t));
+			Base_MemCopy(newNext, node->GetNext(), SIZEOF(AllocNode_t));
 			s_free.Remove(node->GetNext());
 			s_free.InsertAfter(node, reinterpret_cast<AllocNode_t*>(newNext));
 			node->GetNext()->data.size += freeSize;
@@ -242,13 +242,13 @@ BASEAPI void* Base_Realloc(void* block, ssize newSize)
 	{
 		AllocInfo_t* neighbor = &node->GetNext()->data;
 		// the node isn't part of the size change
-		ssize extraSize = newSize - node->data.size - sizeof(AllocNode_t);
+		ssize extraSize = newSize - node->data.size - SIZEOF(AllocNode_t);
 		node->data.size = newSize;
 
 		if (Contiguous(node, node->GetNext()) && EffectiveAllocSize(neighbor) > extraSize)
 		{
 			u8* newNext = static_cast<u8*>(block) + node->data.size;
-			Base_MemCopy(newNext, node->GetNext(), sizeof(AllocNode_t));
+			Base_MemCopy(newNext, node->GetNext(), SIZEOF(AllocNode_t));
 			s_free.Remove(node->GetNext());
 			s_free.InsertAfter(node, reinterpret_cast<AllocNode_t*>(newNext));
 			node->GetNext()->data.size -= extraSize;

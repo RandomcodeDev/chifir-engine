@@ -10,13 +10,14 @@
 struct BaseCpuData_t
 {
 #ifdef CH_X86
-	char brand[13];   // GenuineIntel/AuthenticAMD
-	char name[65];    // CPU model name
+	char brand[12];   // GenuineIntel/AuthenticAMD
+	char name[48];    // CPU model name
 	u32 haveName : 1; // CPUID with EAX = 0x80000000 returned 0x80000004 or higher
 #endif
-	u32 haveSimd128 : 1;    // SSE
-	u32 haveIntSimd128 : 1; // SSE2
-	u32 haveSimd256 : 1;    // AVX
+	u32 haveSimd128 : 1;        // SSE
+	u32 haveIntSimd128 : 1;     // SSE2
+	u32 haveSimd128Compare : 1; // SSE4.2 (for 128-bit byte compare instructions)
+	u32 haveSimd256 : 1;        // AVX
 };
 
 // Whether Base_Init has succeeded

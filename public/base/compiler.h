@@ -5,13 +5,11 @@
 
 #pragma once
 
+#include <cstdarg>
+
 #if defined _MSC_VER
-#ifdef CH_X86
 #include <intrin.h>
-#ifdef __clang__
-#include <avxintrin.h>
-#endif
-#elif defined CH_XBOX360
+#ifdef CH_XBOX360
 #include <VectorIntrinsics.h>
 #endif
 
@@ -60,6 +58,13 @@ extern "C" void __cdecl __security_init_cookie();
 #define ALIGNOF(x) __alignof(x)
 #define FORCEINLINE __forceinline
 
+// Xbox 360 doesn't define this
 #ifndef va_copy
-#define va_copy(x, y) x = y
+#define va_copy(dest, source) (dest) = (source)
+#endif
+
+#ifdef CH_WIN32
+#define ALLOCATOR ATTRIBUTE(allocator)
+#else
+#define ALLOCATOR
 #endif

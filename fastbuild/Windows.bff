@@ -2,7 +2,29 @@
 
 .Windows_Common =
 [
-	.CompilerOptions = ' -DCH_WIN32'
+	.CompilerOptions = ' -DCH_WIN32 -D_HAS_EXCEPTIONS=0'
+]
+
+.Windows_MSVC =
+[
+					 // Windows SDK headers
+	.CompilerOptions = ' -I "$WindowsUmIncludePath$"'
+					 + ' -I "$WindowsSharedIncludePath$"'
+					 + ' -I "$WindowsUcrtIncludePath$"'
+
+					 // Compiler headers
+					 + ' -I "$VSBasePath$\VC\Tools\MSVC\$MSVCVersion$\include"'
+]
+
+.Windows_Clang =
+[
+					 // Windows SDK headers
+	.CompilerOptions = ' -isystem "$WindowsUmIncludePath$"'
+					 + ' -isystem "$WindowsSharedIncludePath$"'
+					 + ' -isystem "$WindowsUcrtIncludePath$"'
+
+					 // Compiler headers
+					 + ' -isystem "$VSBasePath$\VC\Tools\MSVC\$MSVCVersion$\include"'
 ]
 
 .Windows =
@@ -24,7 +46,7 @@
 
 .GDKX =
 [
-	.PlatformName = 'XboxScarlett'
+	.PlatformName = 'GDKX'
 	.CompilerOptions = ' -DCH_GDK -DCH_GDKX'
 	.ExeExtension = '.exe'
 	.LibExtension = '.lib'
@@ -40,25 +62,25 @@
 	.DLLExtension = '.xex'
 ]
 
-.WindowsLike = {'Windows', 'GDK', 'XboxScarlett', 'Xbox360'}
+.WindowsLike = {'Windows', 'GDK', 'GDKX', 'Xbox360'}
 
 #if HAVE_MSVC_AMD64
-.GDK_MSVC_AMD64Debug = .Windows_Common + .GDK + .MSVC_AMD64Debug
-.GDK_MSVC_AMD64Release = .Windows_Common + .GDK + .MSVC_AMD64Release
-.GDK_MSVC_AMD64Retail = .Windows_Common + .GDK + .MSVC_AMD64Retail
-.GDKX_MSVC_AMD64Debug = .Windows_Common + .GDKX + .MSVC_AMD64Debug
-.GDKX_MSVC_AMD64Release = .Windows_Common + .GDKX + .MSVC_AMD64Release
-.GDKX_MSVC_AMD64Retail = .Windows_Common + .GDKX + .MSVC_AMD64Retail
+.GDK_MSVC_AMD64Debug = .Windows_Common + .Windows_MSVC + .GDK + .MSVC_AMD64Debug
+.GDK_MSVC_AMD64Release = .Windows_Common + .Windows_MSVC + .GDK + .MSVC_AMD64Release
+.GDK_MSVC_AMD64Retail = .Windows_Common + .Windows_MSVC + .GDK + .MSVC_AMD64Retail
+.GDKX_MSVC_AMD64Debug = .Windows_Common + .Windows_MSVC + .GDKX + .MSVC_AMD64Debug
+.GDKX_MSVC_AMD64Release = .Windows_Common + .Windows_MSVC + .GDKX + .MSVC_AMD64Release
+.GDKX_MSVC_AMD64Retail = .Windows_Common + .Windows_MSVC + .GDKX + .MSVC_AMD64Retail
 #endif
 #if HAVE_MSVC_ARM64
-.Windows_MSVC_ARM64Debug = .Windows_Common + .Windows + .MSVC_ARM64Debug
-.Windows_MSVC_ARM64Release = .Windows_Common + .Windows + .MSVC_ARM64Release
-.Windows_MSVC_ARM64Retail = .Windows_Common + .Windows + .MSVC_ARM64Retail
+.Windows_MSVC_ARM64Debug = .Windows_Common + .Windows_MSVC + .Windows + .MSVC_ARM64Debug
+.Windows_MSVC_ARM64Release = .Windows_Common + .Windows_MSVC + .Windows + .MSVC_ARM64Release
+.Windows_MSVC_ARM64Retail = .Windows_Common + .Windows_MSVC + .Windows + .MSVC_ARM64Retail
 #endif
 #if HAVE_MSVC_X86
-.Windows_MSVC_x86Debug = .Windows_Common + .Windows + .MSVC_x86Debug
-.Windows_MSVC_x86Release = .Windows_Common + .Windows + .MSVC_x86Release
-.Windows_MSVC_x86Retail = .Windows_Common + .Windows + .MSVC_x86Retail
+.Windows_MSVC_x86Debug = .Windows_Common + .Windows_MSVC + .Windows + .MSVC_x86Debug
+.Windows_MSVC_x86Release = .Windows_Common + .Windows_MSVC + .Windows + .MSVC_x86Release
+.Windows_MSVC_x86Retail = .Windows_Common + .Windows_MSVC + .Windows + .MSVC_x86Retail
 #endif
 #if HAVE_MSVC_XBOX360
 .Xbox360_MSVC_Debug = .Windows_Common + .Xbox360 + .MSVC_Xbox360Debug
@@ -72,21 +94,21 @@
 	.CompilerOptions = ' -target x86_64-msvc-windows'
 ]
 
-.GDK_Clang_AMD64Debug = .Windows_Common + .GDK + .Clang_AMD64Debug + .Windows_Clang_AMD64
-.GDK_Clang_AMD64Release = .Windows_Common + .GDK + .Clang_AMD64Release + .Windows_Clang_AMD64
-.GDK_Clang_AMD64Retail = .Windows_Common + .GDK + .Clang_AMD64Retail + .Windows_Clang_AMD64
-.GDKX_Clang_AMD64Debug = .Windows_Common + .GDK + .GDKX + .Clang_AMD64Debug + .Windows_Clang_AMD64
-.GDKX_Clang_AMD64Release = .Windows_Common + .GDK + .GDKX + .Clang_AMD64Release + .Windows_Clang_AMD64
-.GDKX_Clang_AMD64Retail = .Windows_Common + .GDK + .GDKX + .Clang_AMD64Retail + .Windows_Clang_AMD64
+.GDK_Clang_AMD64Debug = .Windows_Common + .Windows_Clang + .GDK + .Clang_AMD64Debug + .Windows_Clang_AMD64
+.GDK_Clang_AMD64Release = .Windows_Common + .Windows_Clang + .GDK + .Clang_AMD64Release + .Windows_Clang_AMD64
+.GDK_Clang_AMD64Retail = .Windows_Common + .Windows_Clang + .GDK + .Clang_AMD64Retail + .Windows_Clang_AMD64
+.GDKX_Clang_AMD64Debug = .Windows_Common + .Windows_Clang + .GDKX + .Clang_AMD64Debug + .Windows_Clang_AMD64
+.GDKX_Clang_AMD64Release = .Windows_Common + .Windows_Clang + .GDKX + .Clang_AMD64Release + .Windows_Clang_AMD64
+.GDKX_Clang_AMD64Retail = .Windows_Common + .Windows_Clang + .GDKX + .Clang_AMD64Retail + .Windows_Clang_AMD64
 
 .Windows_Clang_ARM64 =
 [
 	.CompilerOptions = ' -target aarch64-msvc-windows'
 ]
 
-.Windows_Clang_ARM64Debug = .Windows_Common + .Windows + .Clang_ARM64Debug + .Windows_Clang_ARM64
-.Windows_Clang_ARM64Release = .Windows_Common + .Windows + .Clang_ARM64Release + .Windows_Clang_ARM64
-.Windows_Clang_ARM64Retail = .Windows_Common + .Windows + .Clang_ARM64Retail + .Windows_Clang_ARM64
+.Windows_Clang_ARM64Debug = .Windows_Common + .Windows_Clang + .Windows + .Clang_ARM64Debug + .Windows_Clang_ARM64
+.Windows_Clang_ARM64Release = .Windows_Common + .Windows_Clang + .Windows + .Clang_ARM64Release + .Windows_Clang_ARM64
+.Windows_Clang_ARM64Retail = .Windows_Common + .Windows_Clang + .Windows + .Clang_ARM64Retail + .Windows_Clang_ARM64
 
 .Windows_Clang_x86 =
 [
@@ -94,8 +116,7 @@
 	.CompilerOptions = ' -target i586-msvc-windows'
 ]
 
-.Windows_Clang_x86Debug = .Windows_Common + .Windows + .Clang_x86Debug + .Windows_Clang_x86
-.Windows_Clang_x86Release = .Windows_Common + .Windows + .Clang_x86Release + .Windows_Clang_x86
-.Windows_Clang_x86Retail = .Windows_Common + .Windows + .Clang_x86Retail + .Windows_Clang_x86
+.Windows_Clang_x86Debug = .Windows_Common + .Windows_Clang + .Windows + .Clang_x86Debug + .Windows_Clang_x86
+.Windows_Clang_x86Release = .Windows_Common + .Windows_Clang + .Windows + .Clang_x86Release + .Windows_Clang_x86
+.Windows_Clang_x86Retail = .Windows_Common + .Windows_Clang + .Windows + .Clang_x86Retail + .Windows_Clang_x86
 #endif
-

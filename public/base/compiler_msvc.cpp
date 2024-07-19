@@ -55,7 +55,7 @@ extern "C"
 		(void)addr;
 	}
 
-#if _MSC_VER >= 1700
+#if !defined __clang__ && _MSC_VER >= 1700
 	ATTRIBUTE(guard(suppress))
 #endif
 	void* __CxxFrameHandler3()
@@ -64,7 +64,7 @@ extern "C"
 		// return nullptr;
 	}
 
-#if _MSC_VER >= 1700
+#if !defined __clang__ && _MSC_VER >= 1700
 	ATTRIBUTE(guard(suppress))
 #endif
 	void* __CxxFrameHandler4()
@@ -89,9 +89,7 @@ extern "C"
 	}
 }
 
-#ifndef __clang__
 // Ensures the vtable for type_info is generated
-type_info::~type_info()
+type_info::~type_info() noexcept
 {
 }
-#endif

@@ -3,40 +3,68 @@
 #include "Config.bff"
 
 #if HAVE_CLANG
+#if __WINDOWS__
+.ExeExtension = '.exe'
+#else
+.ExeExtension = ''
+#endif
+
 .Clang_Common = 
 [
 	.CompilerName = 'Clang'
 
-	.Compiler = '$LLVMDir$/bin/clang++'
-	.Linker = '$LLVMDir$/bin/clang++'
-	.Librarian = '$LLVMDir$/llvm-ar'
+	.Compiler = '$LLVMDir$/bin/clang++$ExeExtension$'
+	.Linker = '$LLVMDir$/bin/lld-link$ExeExtension$'
+	.Librarian = '$LLVMDir$/bin/llvm-ar$ExeExtension$'
 
 	.CompilerOptions = ' "%1"' // Input
 					 + ' -o"%2"' // Output
 					 + ' -c' // Compile only
+					 + ' -std=c++14' // The project is technically C++03 with TR1 (because that's what the 360 compiler supports),
+									 // but this is needed on Windows
 					 + ' -ffreestanding' // Disable libc
 					 + ' -fms-extensions' // These are nice to have, especially for COM code
 					 + ' -fno-exceptions' // No exceptions
 					 + ' -fvisibility=hidden' // So internal/private symbols in dynamic libraries don't conflict
+					 + ' -fpermissive' // To make Windows headers work
 					 + ' -Wall' // Most warnings
 					 + ' -Wextra' // More warnings
 					 + ' -Werror' // Warnings as errors
+					 + ' -D__clang__' // For IntelliSense
+					 + ' -fno-rtti' // RTTI doesn't work under Clang on Windows without vcruntime
+
+					 + ' -Wno-#pragma-messages'
+					 + ' -Wno-nonportable-include-path' // None of this is on non-Windows code I control
+					 + ' -Wno-macro-redefined' // This is avoided in any scenario where it matters
+					 + ' -Wno-unused-function' // I don't care, that's the linker's problem
 
 	ForEach(.IncludeDir in .IncludeDirs)
 	{
-		^CompilerOptions + ' -I"$_WORKING_DIR_$/$IncludeDir$'
+		^CompilerOptions + ' -I "$_WORKING_DIR_$/$IncludeDir$"'
+	}
+
+	ForEach(.IncludeDir in .ExternalIncludeDirs)
+	{
+		^CompilerOptions + ' -isystem "$_WORKING_DIR_$/$IncludeDir$"'
 	}
 
 	.CompilerOptionsC = .CompilerOptions
 
-	.LinkerOptions = ' -o"%2"' // Output
+	.LinkerOptions = ' /OUT:"%2"' // Output
 				   + ' "%1"' // Input
-				   + ' -nostdlib' // No libc etc
-				   + ' -fuse-ld=lld' // Use LLD cause it's better
+				   + ' /NODEFAULTLIB' // Disable automatically linking to CRT and others
+				   + ' /SAFESEH:NO'
 	
-	.LibrarianOptions = ' -o"%2"' // Output
+	.LibrarianOptions = ' rc' // Replace/insert, create
+					  + ' "%2"' // Output
 					  + ' "%1"' // Input
-					  + ' -nostdlib' // No libc
+
+	.MASMOptions = ' /c' // Don't link
+				 + ' /Cp' // Preserve identifier case
+				 + ' /Fl' // Make a listing
+				 + ' /nologo' // Don't clog output
+				 + ' "%1"' // Input
+				 + ' /Fo"%2"' // Output
 ]
 
 .Clang_Debug =
@@ -48,7 +76,7 @@
 					 
 					 + ' -DCH_DEBUG'
 	
-	.LinkerOptions = ' -g' // Debug info
+	.LinkerOptions = ' /DEBUG' // Debug info
 ]
 
 .Clang_Release =
@@ -57,10 +85,12 @@
 	
 	.CompilerOptions = ' -O2' // Optimize a bit
 					 + ' -Og' // Improve debugging
-					 + ' -ffast-math' // Faster math
+					 + ' -ffast-math' // 2 plus 2 is 4
 					 + ' -flto=thin' // Faster incremental builds
 
 					 + ' -DCH_RELEASE'
+
+					 + ' -Wno-nan-infinity-disabled' // Fast math, this warning is generated from a Windows header
 ]
 
 .Clang_Retail =
@@ -79,9 +109,11 @@
 .Clang_AMD64 =
 [
 	.ArchName = 'AMD64'
-	.MASM = '$_CURRENT_BFF_DIR_$/../tools/ml64'
+	.MASM = '$_CURRENT_BFF_DIR_$/../tools/ml64$ExeExtension$'
 
 	.CompilerOptions = ' -DCH_X86 -DCH_AMD64 -DCH_SIMD128 -DCH_SIMD256'
+					 + ' -mno-sse' // No SSE in codegen (unless it's explicitly used)
+					 + ' -msse4.2' // Allow using SSE
 ]
 
 .Clang_AMD64Debug = .Clang_Common + .Clang_AMD64 + .Clang_Debug
@@ -91,7 +123,7 @@
 .Clang_ARM64 =
 [
 	.ArchName = 'ARM64'
-	.MASM = '$_CURRENT_BFF_DIR_$/../tools/marmasm'
+	.MASM = '$_CURRENT_BFF_DIR_$/../tools/marmasm$ExeExtension$'
 
 	.CompilerOptions = ' -DCH_ARM64 -DCH_SIMD128 -DCH_SIMD256'
 ]
@@ -102,7 +134,12 @@
 
 .Clang_x86 =
 [
+	.ArchName = 'x86'
+	.MASM = '$_CURRENT_BFF_DIR_$/../tools/ml$ExeExtension$'
+
 	.CompilerOptions = ' -DCH_X86 -DCH_IA32 -DCH_SIMD128 -DCH_SIMD256'
+					 + ' -mno-sse' // No SSE in codegen (unless it's explicitly used)
+					 + ' -msse4.2' // Allow using SSE
 ]
 
 .Clang_x86Debug = .Clang_Common + .Clang_x86 + .Clang_Debug

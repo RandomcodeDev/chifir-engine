@@ -99,9 +99,9 @@ static bool FindLdrGetProcedureAddress()
 	ASSERT(ntHdrs->Signature == IMAGE_NT_SIGNATURE); // Even if this isn't NTDLL, it sure as hell should have the right signature
 	ASSERT(ntHdrs->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR_MAGIC);
 	ASSERT_MSG(
-		ntHdrs->OptionalHeader.SizeOfHeaders >=
-			(ntDllBase->e_lfanew + sizeof(IMAGE_NT_SIGNATURE) + sizeof(IMAGE_FILE_HEADER) + sizeof(IMAGE_OPTIONAL_HEADER) +
-			 IMAGE_DIRECTORY_ENTRY_EXPORT * sizeof(IMAGE_DATA_DIRECTORY)),
+		static_cast<ssize>(ntHdrs->OptionalHeader.SizeOfHeaders) >=
+			(ntDllBase->e_lfanew + SIZEOF(IMAGE_NT_SIGNATURE) + SIZEOF(IMAGE_FILE_HEADER) + SIZEOF(IMAGE_OPTIONAL_HEADER) +
+			 IMAGE_DIRECTORY_ENTRY_EXPORT * SIZEOF(IMAGE_DATA_DIRECTORY)),
 		"Export directory not present");
 
 	PIMAGE_DATA_DIRECTORY exportDirectory = &ntHdrs->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
@@ -246,11 +246,11 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 			return nullptr;
 		}
 
-		ANSI_STRING nameStr = {0};
+		ANSI_STRING nameStr = {};
 		nameStr.Buffer = fileName;
 		nameStr.Length = (u16)Base_StrLength(fileName);
 		nameStr.MaximumLength = nameStr.Length + 1;
-		UNICODE_STRING nameUStr = {0};
+		UNICODE_STRING nameUStr = {};
 		NTSTATUS status = RtlAnsiStringToUnicodeString(&nameUStr, &nameStr, TRUE);
 		if (!NT_SUCCESS(status))
 		{
@@ -302,7 +302,7 @@ void* CWindowsLibrary::GetSymbol(cstr name)
 #else
 	ASSERT_MSG(LdrGetProcedureAddress_Available(), "Base_InitLoader has not been called");
 
-	ANSI_STRING nameStr = {0};
+	ANSI_STRING nameStr = {};
 	nameStr.Buffer = (dstr)name;
 	nameStr.Length = (u16)Base_StrLength(name);
 	nameStr.MaximumLength = nameStr.Length + 1;

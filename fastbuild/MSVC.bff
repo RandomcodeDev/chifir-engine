@@ -23,6 +23,7 @@ Settings
 					 + ' /Zl' // Omit references to CRT in objects
 					 + ' /W4' // Max warnings
 					 + ' /WX' // Warnings as errors
+					 + ' /GR-' // No RTTI
 
 					 // Warnings
 					 + ' /wd4201' // nameless struct
@@ -41,6 +42,11 @@ Settings
 		^CompilerOptions + ' /I"$_WORKING_DIR_$\$IncludeDir$"'
 	}
 
+	ForEach(.IncludeDir in .ExternalIncludeDirs)
+	{
+		^CompilerOptions + ' /I"$_WORKING_DIR_$\$IncludeDir$"'
+	}
+
 	.CompilerOptionsC = .CompilerOptions
 
 	.LinkerOptions = ' /OUT:"%2"' // Output
@@ -55,27 +61,18 @@ Settings
 					  + ' /WX'
 					  + ' /NOLOGO'
 
-	.MASMOptions = ' /c'
-				 + ' /Cp'
-				 + ' /Zd'
-				 + ' /Zi'
-				 + ' /Fl'
-				 + ' /nologo'
-				 + ' "%1"'
-				 + ' /Fo"%2"'
+	.MASMOptions = ' /c' // Don't link
+				 + ' /Cp' // Preserve identifier case
+				 + ' /Fl' // Make a listing (needed for Xbox 360 MASM, it doesn't have line numbers in its errors)
+				 + ' /nologo' // Don't clog output
+				 + ' "%1"' // Input
+				 + ' /Fo"%2"' // Output
 ]
 
 .MSVC_Modern =
 [
 	// Windows SDK include dirs
-	.CompilerOptions = ' /I"$WindowsUmIncludePath$"'
-					 + ' /I"$WindowsSharedIncludePath$"'
-					 + ' /I"$WindowsUcrtIncludePath$"'
-
-					 // Compiler headers
-					 + ' /I"$VSBasePath$\VC\Tools\MSVC\$MSVCVersion$\include"'
-
-					 + ' /Zf' // Faster PDB generation
+	.CompilerOptions = ' /Zf' // Faster PDB generation
 					 + ' /utf-8' // Treat sources as UTF-8
 					 + ' /Zc:__cplusplus' // Ensure old compilers that actually support C++03 are detected properly
 					 + ' /Zo' // Debug info for optimized code

@@ -5,6 +5,8 @@
 #include "compiler.h"
 #include "types.h"
 
+template <typename T> class CLinkedList;
+
 template <typename T> struct LinkedNode_t
 {
 	T data;
@@ -30,7 +32,7 @@ template <typename T> struct LinkedNode_t
 	}
 
   protected:
-	template <typename T> friend class CLinkedList;
+	friend class CLinkedList<T>;
 
 	LinkedNode_t<T>* prev;
 	LinkedNode_t<T>* next;

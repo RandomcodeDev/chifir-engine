@@ -21,7 +21,7 @@ BASEAPI void Plat_Init()
 
 #ifndef CH_XBOX360
 	// Properly determine the page size just in case, and get other info
-	NTSTATUS status = NtQuerySystemInformation(SystemBasicInformation, &g_systemInfo, sizeof(SYSTEM_BASIC_INFORMATION), nullptr);
+	NTSTATUS status = NtQuerySystemInformation(SystemBasicInformation, &g_systemInfo, SIZEOF(SYSTEM_BASIC_INFORMATION), nullptr);
 	if (!NT_SUCCESS(status))
 	{
 		Base_QuitSafe(status, "Failed to get basic system information");

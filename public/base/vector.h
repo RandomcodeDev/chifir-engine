@@ -26,10 +26,10 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		return stbds_arrlenu(m_buffer);
 	}
 
-	ssize Add(const T& object, ssize index = BAD_INDEX)
+	ssize Add(const T& object, ssize index = IContainer<T, ssize>::BAD_INDEX)
 	{
 		m_sorted = false;
-		if (index == BAD_INDEX || index > Size())
+		if (index == IContainer<T, ssize>::BAD_INDEX || index > Size())
 		{
 			stbds_arrput(m_buffer, object);
 			return Size() - 1;

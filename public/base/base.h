@@ -44,7 +44,7 @@ BASEAPI NORETURN void Base_QuitSafe(s32 error, cstr msg);
 #define ALIGN(val, align) (((val) + (align)-1) & ~((align)-1))
 
 // Get the number of elements in a stack/static array
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+#define ARRAY_SIZE(arr) (SIZEOF(arr) / SIZEOF((arr)[0]))
 
 // Stringize something
 #define STRINGIZE(x) #x
@@ -89,12 +89,12 @@ BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssiz
 BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size);
 
 // Allocate aligned memory
-BASEAPI void* Base_Alloc(ssize size, ssize alignment = 8);
+BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment = 8);
 
 // Allocate an array of T with count elements
 template <typename T> static inline T* Base_Alloc(ssize count)
 {
-	return reinterpret_cast<T*>(Base_Alloc(count * sizeof(T), ALIGNOF(T)));
+	return reinterpret_cast<T*>(Base_Alloc(count * SIZEOF(T), ALIGNOF(T)));
 }
 
 // Resize an allocation. block == nullptr is equivalent to Base_Alloc, newSize == 0 is equivalent to Base_Free.

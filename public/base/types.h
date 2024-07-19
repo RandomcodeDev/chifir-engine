@@ -38,6 +38,8 @@ typedef sptr ssize;
 #define SSIZE_MAX INTPTR_MAX
 #endif
 
+#define SIZEOF(x) static_cast<ssize>(sizeof(x))
+
 typedef float f32;
 typedef double f64;
 #ifdef CH_X86
