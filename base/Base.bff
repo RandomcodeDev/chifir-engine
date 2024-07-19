@@ -22,7 +22,6 @@
 				'$ProjectPath$/basicstr.cpp',
 				'$ProjectPath$/memory.cpp',
 				'$ProjectPath$/platform.cpp',
-				'$ProjectPath$/../public/base/libc.cpp',
 				'$ProjectPath$/../public/base/memoverride.cpp',
 				'$ProjectPath$/../public/base/stb.cpp'
 			}
@@ -124,7 +123,7 @@
 				}
 				If (.PlatformName == 'Xbox360')
 				{
-					^LinkerOptions + ' /AUTODEF:$ObjectDir$/$ProjectName$/$ProjectName$.def /DEF:$ObjectDir$/$ProjectName$/$ProjectName$.def'
+					^LinkerOptions + ' /AUTODEF:$ObjectDir$/$ProjectName$/$ProjectName$.def'
 					^Libraries +
 					{
 						'public/xbox/crtfpr.obj',

@@ -14,7 +14,7 @@ ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 #ifdef CH_XBOX360
 #pragma comment(linker, "/SUBSYSTEM:XBOX,2.00")
-#elif defined CH_I386
+#elif defined CH_IA32
 #pragma comment(linker, "/SUBSYSTEM:WINDOWS,5.01")
 #else
 #pragma comment(linker, "/SUBSYSTEM:WINDOWS,5.02")

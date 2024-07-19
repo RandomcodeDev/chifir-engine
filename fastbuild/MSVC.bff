@@ -2,7 +2,7 @@
 
 #include "Config.bff"
 
-#if __WINDOWS__
+#if HAVE_MSVC
 Settings
 {
 	#import TMP
@@ -89,6 +89,8 @@ Settings
 					 + ' /Od' // Disable optimization
 					 //+ ' /RTC1' // Runtime checks
 
+					 + ' /DCH_DEBUG'
+
 	.LinkerOptions = ' /DEBUG'
 ]
 
@@ -100,8 +102,12 @@ Settings
 					 + ' /Oy' // Omit frame pointers
 					 + ' /Z7' // Debug info
 					 + ' /GS' // Stack checks
+					 + ' /GL' // LTO
+
+					 + ' /DCH_RELEASE'
 
 	.LinkerOptions = ' /OPT:REF,ICF' // Remove unreferenced code, fold COMDATs
+				   + ' /LTCG' // LTO
 ]
 
 .MSVC_Retail =
@@ -113,6 +119,8 @@ Settings
 	// Disable debug info
 	.CompilerOptions - ' /Z7'
 					 - ' /Zo'
+
+					 + ' /DCH_RETAIL'
 ]
 
 .MSVC_AMD64 =
@@ -143,7 +151,7 @@ Settings
 	.Librarian = '$VSToolsDir$\lib.exe'
 	.MASM = '$VSToolsDir$\marmasm.exe'
 
-	.CompilerOptions = ' /DCH_ARM64'
+	.CompilerOptions = ' /DCH_ARM64 /DCH_SIMD128 /DCH_SIMD256'
 ]
 
 .MSVC_ARM64Debug = .MSVC_Common + .MSVC_Modern + .MSVC_ARM64 + .MSVC_Debug
@@ -160,7 +168,7 @@ Settings
 	.Librarian = '$VSToolsDir$\lib.exe'
 	.MASM = '$VSToolsDir$\ml.exe'
 
-	.CompilerOptions = ' /DCH_X86 /DCH_I386 /DCH_SIMD128 /DCH_SIMD256'
+	.CompilerOptions = ' /DCH_X86 /DCH_IA32 /DCH_SIMD128 /DCH_SIMD256'
 					 + ' /arch:IA32'
 ]
 

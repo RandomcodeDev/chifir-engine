@@ -63,7 +63,7 @@
 				^LinkerOptions + ' /DLL'
 				If (.PlatformName == 'Xbox360')
 				{
-					^LinkerOptions + ' /AUTODEF:$ObjectDir$/$ProjectName$/$ProjectName$.def /DEF:$ObjectDir$/$ProjectName$/$ProjectName$.def'
+					^LinkerOptions + ' /AUTODEF:$ObjectDir$/$ProjectName$/$ProjectName$.def'
 				}
 			}
 #if __LINUX__

@@ -167,7 +167,6 @@ BASEAPI void* Base_Alloc(ssize size, ssize alignment)
 	ssize realAlignment = FixAlignment(alignment);
 	ssize realSize = ALIGN(sizeof(AllocNode_t) + size, realAlignment);
 
-	ASSERT_MSG_SAFE(realAlignment <= MAXIMUM_ALIGNMENT, "alignment must be less than or equal to 64");
 	ASSERT_MSG_SAFE(realAlignment % 2 == 0, "alignment must be a power of 2");
 	ASSERT_MSG_SAFE(realSize <= SYSTEM_ALLOC_SIZE - sizeof(AllocNode_t), "size must be less than or equal to 67108832");
 
@@ -257,7 +256,7 @@ BASEAPI void* Base_Realloc(void* block, ssize newSize)
 			// Zero the new space added
 			Base_MemSet(static_cast<u8*>(block) + node->data.size - extraSize, 0, extraSize);
 
-			g_memInfo.totalAllocated += newSize - EffectiveSize(node);
+			g_memInfo.totalAllocated += extraSize;
 			return block;
 		}
 	}

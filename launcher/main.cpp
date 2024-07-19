@@ -43,16 +43,10 @@ void TestVideoSystem()
 		Base_QuitSafe(1, "Failed to load video system DLL");
 	}
 
-	CreateInterface_t CreateInterface = videoSystemLib->GetSymbol<CreateInterface_t>("CreateInterface");
-	if (!CreateInterface)
-	{
-		Base_QuitSafe(1, "Failed to get CreateInterface in video system");
-	}
-
-	IVideoSystem* videoSystem = static_cast<IVideoSystem*>(CreateInterface());
+	IVideoSystem* videoSystem = static_cast<IVideoSystem*>(GetSystem(videoSystemLib, IVideoSystem::VERSION));
 	if (!videoSystem)
 	{
-		Base_QuitSafe(1, "Failed to create video system interface");
+		Base_Quit(1, "Failed to create video system interface with version %u or greater", IVideoSystem::VERSION);
 	}
 
 	if (!videoSystem->Initialize())

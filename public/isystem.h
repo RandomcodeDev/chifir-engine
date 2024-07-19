@@ -30,8 +30,5 @@ class ISystem
 	virtual u32 GetVersion() const = 0;
 };
 
-// Exported by DLLs that implement a system
-typedef ISystem* (*CreateInterface_t)();
-
-// Get a system from a library
-UTILAPI ISystem* GetSystem(ILibrary* library);
+// Exported by DLLs that implement a system as "CreateInterface"
+typedef ISystem* (*CreateSystemInterface_t)();

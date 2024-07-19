@@ -10,8 +10,6 @@
 
 extern "C"
 {
-	int _fltused = 0x9875;
-
 #if defined CH_AMD64 || defined CH_ARM64
 	ATTRIBUTE(align(64)) uptr __security_cookie = 0x6942069420694206;
 #else
@@ -55,53 +53,6 @@ extern "C"
 	void __chkstk(uptr addr)
 	{
 		(void)addr;
-	}
-
-	// TODO: make sure this works on 32-bit and non-x86
-	void __GSHandlerCheckCommon(void* EstablisherFrame, void* DispatcherContext, u32* GSHandlerData)
-
-	{
-#ifdef CH_AMD64
-		uptr uVar1;
-		void* pvVar2;
-
-		/* WARNING: Load size is inaccurate */
-		/* WARNING: Load size is inaccurate */
-		pvVar2 = EstablisherFrame;
-		if ((*GSHandlerData & 4) != 0)
-		{
-			pvVar2 = (void*)((sptr) * (int*)((sptr)GSHandlerData + 4) + (sptr)EstablisherFrame &
-							 (sptr) - *(int*)((sptr)GSHandlerData + 8));
-		}
-		uVar1 = (uptr) * (unsigned int*)(*(sptr*)((sptr)DispatcherContext + 0x10) + 8);
-		if ((*(unsigned char*)(uVar1 + 3 + *(sptr*)((sptr)DispatcherContext + 8)) & 0xf) != 0)
-		{
-			EstablisherFrame = (void*)((sptr)EstablisherFrame +
-									   (uptr)(*(unsigned char*)(uVar1 + 3 + *(sptr*)((sptr)DispatcherContext + 8)) & 0xfffffff0));
-		}
-		__security_check_cookie((uptr)EstablisherFrame ^ *(uptr*)((sptr)(int)(*GSHandlerData & 0xfffffff8) + (sptr)pvVar2));
-#else
-		(void)EstablisherFrame;
-		(void)DispatcherContext;
-		(void)GSHandlerData;
-#endif
-	}
-
-	u8 __GSHandlerCheck(
-		unsigned char ExceptionRecord, void* EstablisherFrame, unsigned char ContextRecord, void* DispatcherContext)
-
-	{
-#ifdef CH_AMD64
-		(void)ContextRecord;
-		(void)ExceptionRecord;
-		__GSHandlerCheckCommon(EstablisherFrame, DispatcherContext, *(u32**)((sptr)DispatcherContext + 0x38));
-#else
-		(void)ExceptionRecord;
-		(void)EstablisherFrame;
-		(void)ContextRecord;
-		(void)DispatcherContext;
-#endif
-		return true;
 	}
 
 #if _MSC_VER >= 1700

@@ -9,7 +9,7 @@
 	{
 		Using(.BuildConfig)
 
-		.CompilerOptions + ' -DIN_VIDEO'
+		.CompilerOptions + ' -DIN_UTIL'
 
 		.ObjectDir = 'obj/$CompilerName$/$PlatformName$/$ArchName$/$ConfigName$'
 		.OutputDir = 'out/$CompilerName$/$PlatformName$/$ArchName$/$ConfigName$'
@@ -52,6 +52,10 @@
 			If (.PlatformName in .WindowsLike)
 			{
 				^LinkerOptions + ' /DLL'
+				If (.PlatformName == 'Xbox360')
+				{
+					^LinkerOptions + ' /AUTODEF:$ObjectDir$/$ProjectName$/$ProjectName$.def'
+				}
 			}
 #if __LINUX__
 			If (.PlatformName == 'Linux')

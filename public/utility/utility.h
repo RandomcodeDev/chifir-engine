@@ -11,3 +11,7 @@
 #define UTILAPI DLLIMPORT
 #endif
 
+class ISystem;
+
+// Get a system from a library
+UTILAPI ISystem* GetSystem(ILibrary* library, u32 minVersion = 0);

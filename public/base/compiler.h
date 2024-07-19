@@ -35,7 +35,6 @@ extern "C" void __cdecl __security_init_cookie();
 #define ALIAS(a, b)  extern "C" TYPEOF(a) ATTRIBUTE(alias(#a)) b;
 #define BREAKPOINT() __builtin_trap()
 #define ASSUME(x)    __builtin_assume(x)
-// MSVC likes to be told when an intrinsic function is defined
 #define DEFINE_INTRINSIC(x)
 #endif
 

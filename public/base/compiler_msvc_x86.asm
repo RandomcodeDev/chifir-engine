@@ -10,6 +10,9 @@ cookieMsg db "Security cookie has wrong value"
 
 EXTERN ___security_cookie : DWORD
 
+PUBLIC __fltused
+__fltused DD 9875h
+
 .CODE
 
 PUBLIC @_RTC_CheckStackVars@8
@@ -18,6 +21,12 @@ PUBLIC @_RTC_CheckStackVars@8
 
 Base_QuitSafe TEXTEQU <?Base_QuitSafe@@YAXHPBD@Z>
 EXTERN Base_QuitSafe : PROC
+
+Base_MemSet TEXTEQU <?Base_MemSet@@YAPAXPAXIH@Z>
+EXTERN Base_MemSet : PROC
+
+Base_MemCopy TEXTEQU <?Base_MemCopy@@YAPAXPIAXPIBXH@Z>
+EXTERN Base_MemCopy : PROC
 
 PUBLIC @__security_check_cookie@4
 @__security_check_cookie@4 PROC
@@ -34,6 +43,22 @@ Fail:
 	push 0C0000409h
 	call Base_QuitSafe
 @__security_check_cookie@4 ENDP
+
+PUBLIC _memset
+_memset PROC
+	jmp Base_MemSet
+_memset ENDP
+
+PUBLIC _memcpy
+_memcpy PROC
+	jmp Base_MemCopy
+_memcpy ENDP
+
+PUBLIC __GSHandlerCheck
+__GSHandlerCheck PROC
+	mov eax, 1
+	ret
+__GSHandlerCheck ENDP
 
 ; all functions below this point are copied from SDL
 PUBLIC __ftol

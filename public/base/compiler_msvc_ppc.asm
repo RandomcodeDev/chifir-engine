@@ -7,6 +7,9 @@ cookieMsg db "Security cookie has wrong value"
 
 EXTERN __security_cookie : DWORD
 
+PUBLIC _fltused
+_fltused DD 9875h
+
 .CODE
 
 Base_QuitSafe TEXTEQU <?Base_QuitSafe@@YAXHPBD@Z>

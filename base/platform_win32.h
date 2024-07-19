@@ -14,7 +14,7 @@
 #define STUB_NAME_2(x)      STUB_##x
 #define STUB_NAME(x)        STUB_NAME_2(x)
 // x86 is the only name mangled architecture
-#ifdef CH_I386
+#ifdef CH_IA32
 #define MAKE_STUB(x, callingConv, paramSize)                                                                                     \
 	extern "C" uptr (*STUB_NAME(x))(...);                                                                                        \
 	extern "C" BASEAPI bool STUB_AVAILABLE(x)();                                                                                 \

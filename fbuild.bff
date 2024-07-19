@@ -4,7 +4,7 @@
 .IncludeDirs = { 'public', 'external', 'external/phnt', 'public/xbox' }
 
 #include "fastbuild/MSVC.bff"
-//#include "fastbuild/Clang.bff"
+#include "fastbuild/Clang.bff"
 #include "fastbuild/Windows.bff"
 //#include "fastbuild/Linux.bff"
 #if file_exists("private/fastbuild/Switch.bff")
@@ -41,18 +41,18 @@
 #endif
 
 #if HAVE_CLANG
-	.GDK_Clang_Windows_AMD64Debug,
-	.GDK_Clang_Windows_AMD64Release,
-	.GDK_Clang_Windows_AMD64Retail,
-	.GDKX_Clang_Windows_AMD64Debug,
-	.GDKX_Clang_Windows_AMD64Release,
-	.GDKX_Clang_Windows_AMD64Retail,
-	.Windows_Clang_Windows_ARM64Debug,
-	.Windows_Clang_Windows_ARM64Release,
-	.Windows_Clang_Windows_ARM64Retail,
-	.Windows_Clang_Windows_x86Debug,
-	.Windows_Clang_Windows_x86Release,
-	.Windows_Clang_Windows_x86Retail,
+	.GDK_Clang_AMD64Debug,
+	.GDK_Clang_AMD64Release,
+	.GDK_Clang_AMD64Retail,
+	.GDKX_Clang_AMD64Debug,
+	.GDKX_Clang_AMD64Release,
+	.GDKX_Clang_AMD64Retail,
+	.Windows_Clang_ARM64Debug,
+	.Windows_Clang_ARM64Release,
+	.Windows_Clang_ARM64Retail,
+	.Windows_Clang_x86Debug,
+	.Windows_Clang_x86Release,
+	.Windows_Clang_x86Retail,
 #if HAVE_SWITCH
 	.Switch_Clang_NX64Debug,
 	.Switch_Clang_NX64Release,
@@ -88,18 +88,18 @@
 .Project_MSVC_Windows_ARM64_Debug = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-Windows-ARM64-Debug']
 .Project_MSVC_Windows_ARM64_Release = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Release-MSVC' .Config = 'MSVC-Windows-ARM64-Release']
 .Project_MSVC_Windows_ARM64_Retail = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Retail-MSVC' .Config = 'MSVC-Windows-ARM64-Retail']
-.Project_Clang_Windows_x86_Debug = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-Windows-x86-Debug']
-.Project_Clang_Windows_x86_Release = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Release-Clang' .Config = 'Clang-Windows-x86-Release']
-.Project_Clang_Windows_x86_Retail = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-Windows-x86-Retail']
+.Project_Clang_x86_Debug = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-Windows-x86-Debug']
+.Project_Clang_x86_Release = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Release-Clang' .Config = 'Clang-Windows-x86-Release']
+.Project_Clang_x86_Retail = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-Windows-x86-Retail']
 .Project_Clang_GDK_AMD64_Debug = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDK' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-GDK-AMD64-Debug']
 .Project_Clang_GDK_AMD64_Release = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDK' .SolutionConfig = 'Release-Clang' .Config = 'Clang-GDK-AMD64-Release']
 .Project_Clang_GDK_AMD64_Retail = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDK' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-GDK-AMD64-Retail']
 .Project_Clang_GDKX_AMD64_Debug = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-GDKX-AMD64-Debug']
 .Project_Clang_GDKX_AMD64_Release = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Release-Clang' .Config = 'Clang-GDKX-AMD64-Release']
 .Project_Clang_GDKX_AMD64_Retail = [Using(.ProjectCommon) .Platform = 'x64' .SolutionPlatform = 'GDKX' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-GDKX-AMD64-Retail']
-.Project_Clang_Windows_ARM64_Debug = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-Windows-ARM64-Debug']
-.Project_Clang_Windows_ARM64_Release = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Release-Clang' .Config = 'Clang-Windows-ARM64-Release']
-.Project_Clang_Windows_ARM64_Retail = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-Windows-ARM64-Retail']
+.Project_Clang_ARM64_Debug = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-Windows-ARM64-Debug']
+.Project_Clang_ARM64_Release = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Release-Clang' .Config = 'Clang-Windows-ARM64-Release']
+.Project_Clang_ARM64_Retail = [Using(.ProjectCommon) .Platform = 'ARM64' .SolutionPlatform = 'ARM64' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-Windows-ARM64-Retail']
 .Project_Clang_Switch_NX64_Debug = [Using(.ProjectCommon) .Platform = 'NX64' .SolutionPlatform = 'NX64' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-Switch-NX64-Debug']
 .Project_Clang_Switch_NX64_Release = [Using(.ProjectCommon) .Platform = 'NX64' .SolutionPlatform = 'NX64' .SolutionConfig = 'Release-Clang' .Config = 'Clang-Switch-NX64-Release']
 .Project_Clang_Switch_NX64_Retail = [Using(.ProjectCommon) .Platform = 'NX64' .SolutionPlatform = 'NX64' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-Switch-NX64-Retail']
@@ -120,18 +120,18 @@
 .Targets_MSVC_Windows_ARM64_Debug = {}
 .Targets_MSVC_Windows_ARM64_Release = {}
 .Targets_MSVC_Windows_ARM64_Retail = {}
-.Targets_Clang_Windows_x86_Debug = {}
-.Targets_Clang_Windows_x86_Release = {}
-.Targets_Clang_Windows_x86_Retail = {}
+.Targets_Clang_x86_Debug = {}
+.Targets_Clang_x86_Release = {}
+.Targets_Clang_x86_Retail = {}
 .Targets_Clang_GDK_AMD64_Debug = {}
 .Targets_Clang_GDK_AMD64_Release = {}
 .Targets_Clang_GDK_AMD64_Retail = {}
 .Targets_Clang_GDKX_AMD64_Debug = {}
 .Targets_Clang_GDKX_AMD64_Release = {}
 .Targets_Clang_GDKX_AMD64_Retail = {}
-.Targets_Clang_Windows_ARM64_Debug = {}
-.Targets_Clang_Windows_ARM64_Release = {}
-.Targets_Clang_Windows_ARM64_Retail = {}
+.Targets_Clang_ARM64_Debug = {}
+.Targets_Clang_ARM64_Release = {}
+.Targets_Clang_ARM64_Retail = {}
 .Targets_Clang_Switch_NX64_Debug = {}
 .Targets_Clang_Switch_NX64_Release = {}
 .Targets_Clang_Switch_NX64_Retail = {}

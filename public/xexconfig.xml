@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <xex>
-	<version dword="0x00000000" />
-	<exportnames />
+	<version major="0x00" minor="0x00" build="0x0001" qfe="0x00" />
+	<!--<exportnames />-->
 </xex>
 

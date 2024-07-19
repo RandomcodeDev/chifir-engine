@@ -4,11 +4,11 @@
 
 .GameName = 'FalseKing'
 
-#if __WINDOWS__
+// These only matter on Windows
 .VSBasePath = 'C:\Program Files\Microsoft Visual Studio\2022\Community'
 .VSToolset = 'v143'
 .VSSolutionVersion = '16'
-.MSVCVersion = '14.40.33807'
+.MSVCVersion = '14.39.33519'
 .WindowsSDKBasePath = 'C:\Program Files (x86)\Windows Kits\10'
 .WindowsSDKVersion = '10.0.22621.0'
 .WindowsLibPath = '$WindowsSDKBasePath$\Lib\$WindowsSDKVersion$\um'
@@ -17,11 +17,14 @@
 .WindowsUcrtIncludePath = '$WindowsSDKBasePath$\Include\$WindowsSDKVersion$\ucrt'
 .Xbox360SDK = 'C:\Program Files (x86)\Microsoft Xbox 360 SDK'
 
+.LLVMDir = 'C:\Program Files\LLVM'
+
 // Comment out ones you don't have installed
 #define HAVE_MSVC
 #define HAVE_MSVC_AMD64
 #define HAVE_MSVC_X86
 //#define HAVE_MSVC_ARM64
 //#define HAVE_MSVC_XBOX360
-#endif
+
+#define HAVE_CLANG
 

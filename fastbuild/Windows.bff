@@ -67,17 +67,35 @@
 #endif
 
 #if HAVE_CLANG
-.GDK_Clang_Windows_AMD64Debug = .Windows_Common + .GDK + .Clang_Windows_AMD64Debug
-.GDK_Clang_Windows_AMD64Release = .Windows_Common + .GDK + .Clang_Windows_AMD64Release
-.GDK_Clang_Windows_AMD64Retail = .Windows_Common + .GDK + .Clang_Windows_AMD64Retail
-.GDKX_Clang_Windows_AMD64Debug = .Windows_Common + .GDK + .GDKX + .Clang_Windows_AMD64Debug
-.GDKX_Clang_Windows_AMD64Release = .Windows_Common + .GDK + .GDKX + .Clang_Windows_AMD64Release
-.GDKX_Clang_Windows_AMD64Retail = .Windows_Common + .GDK + .GDKX + .Clang_Windows_AMD64Retail
-.Windows_Clang_Windows_ARM64Debug = .Windows_Common + .Windows + .Clang_Windows_ARM64Debug
-.Windows_Clang_Windows_ARM64Release = .Windows_Common + .Windows + .Clang_Windows_ARM64Release
-.Windows_Clang_Windows_ARM64Retail = .Windows_Common + .Windows + .Clang_Windows_ARM64Retail
-.Windows_Clang_Windows_x86Debug = .Windows_Common + .Windows + .Clang_Windows_x86Debug
-.Windows_Clang_Windows_x86Release = .Windows_Common + .Windows + .Clang_Windows_x86Release
-.Windows_Clang_Windows_x86Retail = .Windows_Common + .Windows + .Clang_Windows_x86Retail
+.Windows_Clang_AMD64 =
+[
+	.CompilerOptions = ' -target x86_64-msvc-windows'
+]
+
+.GDK_Clang_AMD64Debug = .Windows_Common + .GDK + .Clang_AMD64Debug + .Windows_Clang_AMD64
+.GDK_Clang_AMD64Release = .Windows_Common + .GDK + .Clang_AMD64Release + .Windows_Clang_AMD64
+.GDK_Clang_AMD64Retail = .Windows_Common + .GDK + .Clang_AMD64Retail + .Windows_Clang_AMD64
+.GDKX_Clang_AMD64Debug = .Windows_Common + .GDK + .GDKX + .Clang_AMD64Debug + .Windows_Clang_AMD64
+.GDKX_Clang_AMD64Release = .Windows_Common + .GDK + .GDKX + .Clang_AMD64Release + .Windows_Clang_AMD64
+.GDKX_Clang_AMD64Retail = .Windows_Common + .GDK + .GDKX + .Clang_AMD64Retail + .Windows_Clang_AMD64
+
+.Windows_Clang_ARM64 =
+[
+	.CompilerOptions = ' -target aarch64-msvc-windows'
+]
+
+.Windows_Clang_ARM64Debug = .Windows_Common + .Windows + .Clang_ARM64Debug + .Windows_Clang_ARM64
+.Windows_Clang_ARM64Release = .Windows_Common + .Windows + .Clang_ARM64Release + .Windows_Clang_ARM64
+.Windows_Clang_ARM64Retail = .Windows_Common + .Windows + .Clang_ARM64Retail + .Windows_Clang_ARM64
+
+.Windows_Clang_x86 =
+[
+	// i586 is the oldest CPU I have, Mr H is the goat
+	.CompilerOptions = ' -target i586-msvc-windows'
+]
+
+.Windows_Clang_x86Debug = .Windows_Common + .Windows + .Clang_x86Debug + .Windows_Clang_x86
+.Windows_Clang_x86Release = .Windows_Common + .Windows + .Clang_x86Release + .Windows_Clang_x86
+.Windows_Clang_x86Retail = .Windows_Common + .Windows + .Clang_x86Retail + .Windows_Clang_x86
 #endif
 

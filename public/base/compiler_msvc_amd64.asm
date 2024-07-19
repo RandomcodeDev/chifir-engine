@@ -8,10 +8,19 @@ errorMsg db "Security cookie has wrong value"
 
 EXTERN __security_cookie : QWORD
 
+PUBLIC _fltused
+_fltused DD 9875h
+
 .CODE
 
 Base_QuitSafe TEXTEQU <?Base_QuitSafe@@YAXHPEBD@Z>
 EXTERN Base_QuitSafe : PROC
+
+Base_MemSet TEXTEQU <?Base_MemSet@@YAPEAXPEAXI_J@Z>
+EXTERN Base_MemSet : PROC
+
+Base_MemCopy TEXTEQU <?Base_MemCopy@@YAPEAXPEIAXPEIBX_J@Z>
+EXTERN Base_MemCopy : PROC
 
 PUBLIC __security_check_cookie
 __security_check_cookie PROC
@@ -29,6 +38,22 @@ Fail:
 	lea rdx, [errorMsg]
 	call Base_QuitSafe
 __security_check_cookie ENDP
+
+PUBLIC memset
+memset PROC
+	jmp Base_MemSet
+memset ENDP
+
+PUBLIC memcpy
+memcpy PROC
+	jmp Base_MemCopy
+memcpy ENDP
+
+PUBLIC __GSHandlerCheck
+__GSHandlerCheck PROC
+	mov eax, 1
+	ret
+__GSHandlerCheck ENDP
 
 END
 

@@ -55,14 +55,15 @@
 			{
 				'$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
 				'Base-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
-				'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+				'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+				'Utility-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
 			}
 			.LinkerOutput = '$OutputDir$/$GameName$$ExeExtension$'
 			If (.PlatformName == 'Xbox360')
 			{
 				// Has to be a DLL in order to statically link to Base.xex
 				^LinkerOutput = '$OutputDir$/$ProjectName$$DLLExtension$'
-				^LinkerOptions + ' /DLL /AUTODEF:$ObjectDir$/$ProjectName$/$ProjectName$.def /DEF:$ObjectDir$/$ProjectName$/$ProjectName$.def'
+				^LinkerOptions + ' /DLL /AUTODEF:$ObjectDir$/$ProjectName$/$ProjectName$.def'
 			}
 			If (.PlatformName == 'Linux')
 			{
