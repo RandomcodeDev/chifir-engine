@@ -53,6 +53,7 @@ MAKE_STUB CreateWindowExA
 MAKE_STUB DefWindowProcA
 MAKE_STUB DestroyWindow
 MAKE_STUB DispatchMessageA
+MAKE_STUB GetClassInfoExA
 MAKE_STUB GetClientRect
 MAKE_STUB GetDpiForWindow
 MAKE_STUB GetSystemMetrics

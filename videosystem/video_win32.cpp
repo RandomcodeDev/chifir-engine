@@ -48,6 +48,14 @@ void CWindowsVideoSystem::SetTitle(cstr newTitle)
 bool CWindowsVideoSystem::RegisterWindowClass()
 {
 	WNDCLASSEXA wndClass = {};
+
+	// Check if the class is already registered
+	if (GetClassInfoExA(m_hinstance, WINDOW_CLASS, &wndClass))
+	{
+		return true;
+	}
+
+	Base_MemSet(&wndClass, 0, sizeof(WNDCLASSEXA));
 	wndClass.cbSize = sizeof(wndClass);
 	wndClass.lpszClassName = WINDOW_CLASS;
 	wndClass.hInstance = m_hinstance;
@@ -80,7 +88,7 @@ bool CWindowsVideoSystem::InitializeMainWindow()
 	m_extraWidth = m_width - clientArea.right;
 	m_extraHeight = m_height - clientArea.bottom;
 
-	m_title = Base_Format("Чифир Engine");
+	m_title = Base_StrFormat("Чифир Engine");
 
 	// center the window
 	u32 x = GetSystemMetrics(SM_CXSCREEN) / 2 - m_width / 2;

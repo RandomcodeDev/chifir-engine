@@ -3,7 +3,6 @@ TITLE Xbox 360 function stubs
 OPTION PROLOGUE:NONE
 
 MAKE_STUB MACRO name
-	.DATA
 	.CODE
 	; Return true, because it's defined in the kernel/XAM no matter what
 	PUBLIC @CatStr(name, _Available)

@@ -12,11 +12,11 @@ BASEAPI NORETURN void Base_Quit(s32 error, cstr msg, ...)
 
 	va_list args;
 	va_start(args, msg);
-	dstr formattedMsg = Base_VFormat(msg, args);
+	dstr formattedMsg = Base_VStrFormat(msg, args);
 	if (!formattedMsg)
 	{
 		formattedMsg = buffer;
-		Base_VStrPrint(buffer, ARRAY_SIZE(buffer), msg, args);
+		Base_VStrFormat(buffer, ARRAY_SIZE(buffer), msg, args);
 	}
 	va_end(args);
 	Base_QuitSafe(error, formattedMsg);

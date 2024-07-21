@@ -13,12 +13,12 @@ BASEAPI ssize Base_StrLength(cstr str, ssize maxSize = SSIZE_MAX);
 BASEAPI s32 Base_StrCompare(cstr RESTRICT a, cstr RESTRICT b, ssize maxCount = SSIZE_MAX, bool caseSensitive = true);
 
 // Format a string
-BASEAPI u32 Base_VStrPrint(dstr dest, u32 destSize, cstr format, va_list args);
-BASEAPI u32 Base_StrPrint(dstr dest, u32 destSize, cstr format, ...);
+BASEAPI u32 Base_VStrFormat(dstr dest, u32 destSize, cstr format, va_list args);
+BASEAPI u32 Base_StrFormat(dstr dest, u32 destSize, cstr format, ...);
 
 // Format a string, and allocate the buffer for it
-BASEAPI dstr Base_VFormat(cstr format, va_list args);
-BASEAPI dstr Base_Format(cstr format, ...);
+BASEAPI dstr Base_VStrFormat(cstr format, va_list args);
+BASEAPI dstr Base_StrFormat(cstr format, ...);
 
 // Copy a string
 BASEAPI dstr Base_StrCopy(dstr RESTRICT dest, cstr RESTRICT src, ssize maxCount);

@@ -52,6 +52,7 @@
 
 	.LinkerOptions = ' /OUT:"%2"' // Output
 				   + ' "%1"' // Input
+				   + ' /NOLOGO' // No logo on MSVC link.exe
 				   + ' /NODEFAULTLIB' // Disable automatically linking to CRT and others
 				   + ' /SAFESEH:NO'
 	
@@ -62,6 +63,7 @@
 	.MASMOptions = ' /c' // Don't link
 				 + ' /Cp' // Preserve identifier case
 				 + ' /Fl' // Make a listing
+				 + ' /Zf' // Make all symbols public
 				 + ' /nologo' // Don't clog output
 				 + ' "%1"' // Input
 				 + ' /Fo"%2"' // Output

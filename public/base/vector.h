@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <new>
+
 #include "base.h"
 #include "container.h"
 #include "types.h"

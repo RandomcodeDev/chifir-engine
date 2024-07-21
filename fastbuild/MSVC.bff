@@ -64,6 +64,7 @@ Settings
 	.MASMOptions = ' /c' // Don't link
 				 + ' /Cp' // Preserve identifier case
 				 + ' /Fl' // Make a listing (needed for Xbox 360 MASM, it doesn't have line numbers in its errors)
+				 + ' /Zf' // Make all symbols public
 				 + ' /nologo' // Don't clog output
 				 + ' "%1"' // Input
 				 + ' /Fo"%2"' // Output

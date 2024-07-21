@@ -53,6 +53,7 @@ MAKE_STUB(CreateWindowExA, __stdcall, @48)
 MAKE_STUB(DefWindowProcA, __stdcall, @16)
 MAKE_STUB(DestroyWindow, __stdcall, @4)
 MAKE_STUB(DispatchMessageA, __stdcall, @4)
+MAKE_STUB(GetClassInfoExA, __stdcall, @12)
 MAKE_STUB(GetClientRect, __stdcall, @8)
 MAKE_STUB(GetDpiForWindow, __stdcall, @4)
 MAKE_STUB(GetSystemMetrics, __stdcall, @4)
@@ -192,6 +193,7 @@ bool Base_InitLoader()
 	GET_FUNCTION(user32, DefWindowProcA)
 	GET_FUNCTION(user32, DestroyWindow)
 	GET_FUNCTION(user32, DispatchMessageA)
+	GET_FUNCTION(user32, GetClassInfoExA)
 	GET_FUNCTION(user32, GetClientRect)
 	GET_FUNCTION_OPTIONAL(user32, GetDpiForWindow)
 	GET_FUNCTION(user32, GetSystemMetrics)
@@ -223,7 +225,7 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 #ifdef CH_XBOX360
 	if (g_allocUsable)
 	{
-		dstr fileName = Base_Format("%s%s", name, DLL_EXT);
+		dstr fileName = Base_StrFormat("%s%s", name, DLL_EXT);
 		if (!fileName)
 		{
 			LastNtStatus() = STATUS_NO_MEMORY;
@@ -239,7 +241,7 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 #else
 	if (STUB_NAME(RtlAnsiStringToUnicodeString) && STUB_NAME(LdrLoadDll) && g_allocUsable)
 	{
-		dstr fileName = Base_Format("%s%s", name, DLL_EXT);
+		dstr fileName = Base_StrFormat("%s%s", name, DLL_EXT);
 		if (!fileName)
 		{
 			LastNtStatus() = STATUS_NO_MEMORY;

@@ -20,31 +20,31 @@ BASEAPI s32 Base_StrCompare(cstr RESTRICT a, cstr RESTRICT b, ssize maxCount, bo
 	return Base_MemCompare(a, b, size);
 }
 
-BASEAPI dstr Base_VFormat(cstr format, va_list args)
+BASEAPI dstr Base_VStrFormat(cstr format, va_list args)
 {
 	va_list newArgs;
 
 	va_copy(newArgs, args);
 	// Size of string plus nul terminator
-	u32 size = Base_VStrPrint(nullptr, 0, format, newArgs) + 1;
+	u32 size = Base_VStrFormat(nullptr, 0, format, newArgs) + 1;
 	dstr buf = Base_Alloc<char>(size);
 	if (!buf)
 	{
 		va_end(args);
 		return nullptr;
 	}
-	Base_VStrPrint(buf, size, format, newArgs);
+	Base_VStrFormat(buf, size, format, newArgs);
 	va_end(args);
 
 	return buf;
 }
 
-BASEAPI dstr Base_Format(cstr format, ...)
+BASEAPI dstr Base_StrFormat(cstr format, ...)
 {
 	va_list args;
 
 	va_start(args, format);
-	dstr buf = Base_VFormat(format, args);
+	dstr buf = Base_VStrFormat(format, args);
 	va_end(args);
 
 	return buf;

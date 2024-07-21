@@ -114,7 +114,6 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	Base_Init();
 	Plat_Init();
 
-	TestVector();
 	TestVideoSystem();
 
 	Plat_Shutdown();

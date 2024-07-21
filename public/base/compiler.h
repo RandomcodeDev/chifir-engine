@@ -8,15 +8,16 @@
 #include <cstdarg>
 
 #if defined _MSC_VER
-#include <intrin.h>
 #ifdef CH_XBOX360
 #include <VectorIntrinsics.h>
+#else
+#include <intrin.h>
 #endif
 
 #define ATTRIBUTE(x)                  __declspec(x)
 #define EXPORT_RAW(x)                 __pragma(comment(linker, "/export:" x))
 #define EXPORT(x)                     EXPORT_RAW(#x)
-#define EXPORT_AS_RAW(a, b)           EXPORT_RAW(b "=" a)
+#define EXPORT_AS_RAW(orig, alt)      EXPORT_RAW(alt "=" orig)
 #define EXPORT_CURRENT_FUNCTION_AS(x) EXPORT_AS_RAW(__FUNCTION__, x)
 #define EXPORT_AS(a, b)               EXPORT_AS_RAW(#a, #b)
 #define ALIAS_RAW(a, b)               __pragma(comment(linker, "/alternatename:" b "=" a))
@@ -24,7 +25,7 @@
 #define BREAKPOINT()                  __debugbreak()
 #define ASSUME(x)                     __assume(x)
 // MSVC likes to be told when an intrinsic function is defined
-#define DEFINE_INTRINSIC(x)           __pragma(function(x))
+#define DEFINE_INTRINSIC(x) __pragma(function(x))
 
 // Initialize the stack security cookie
 extern "C" void __cdecl __security_init_cookie();
@@ -55,7 +56,7 @@ extern "C" void __cdecl __security_init_cookie();
 #else
 #define RESTRICT __restrict
 #endif
-#define ALIGNOF(x) __alignof(x)
+#define ALIGNOF(x)  __alignof(x)
 #define FORCEINLINE __forceinline
 
 // Xbox 360 doesn't define this
@@ -63,7 +64,7 @@ extern "C" void __cdecl __security_init_cookie();
 #define va_copy(dest, source) (dest) = (source)
 #endif
 
-#ifdef CH_WIN32
+#if defined CH_WIN32 && _MSC_VER >= 1700
 #define ALLOCATOR ATTRIBUTE(allocator)
 #else
 #define ALLOCATOR

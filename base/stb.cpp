@@ -2,7 +2,7 @@
 #include "base/basicstr.h"
 #include "base/types.h"
 
-#define STB_DS_IMPLEMENTATION
+//#define STB_DS_IMPLEMENTATION
 #include "stb.h"
 
 #define STB_SPRINTF_STATIC
@@ -12,7 +12,7 @@
 #endif
 #include "stb/stb_sprintf.h"
 
-BASEAPI u32 Base_VStrPrint(dstr dest, u32 destSize, cstr format, va_list args)
+BASEAPI u32 Base_VStrFormat(dstr dest, u32 destSize, cstr format, va_list args)
 {
 	va_list newArgs;
 	va_copy(newArgs, args);
@@ -28,11 +28,11 @@ BASEAPI u32 Base_VStrPrint(dstr dest, u32 destSize, cstr format, va_list args)
 	return static_cast<u32>(count);
 }
 
-BASEAPI u32 Base_StrPrint(dstr dest, u32 destSize, cstr format, ...)
+BASEAPI u32 Base_StrFormat(dstr dest, u32 destSize, cstr format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	u32 count = Base_VStrPrint(dest, destSize, format, args);
+	u32 count = Base_VStrFormat(dest, destSize, format, args);
 	va_end(args);
 
 	return count;

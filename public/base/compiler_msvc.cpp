@@ -90,6 +90,6 @@ extern "C"
 }
 
 // Ensures the vtable for type_info is generated
-type_info::~type_info() noexcept
+type_info::~type_info()
 {
 }
