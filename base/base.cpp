@@ -126,7 +126,7 @@ static FORCEINLINE void Copy(
 	ssize count = (remaining / alignment) * alignment;
 	if (reverse)
 	{
-		for (ssize i = offset + count - alignment; i >= offset + alignment; i -= alignment)
+		for (ssize i = offset + count - alignment; i >= offset; i -= alignment)
 		{
 			static_cast<T*>(dest)[i / alignment] = static_cast<const T*>(src)[i / alignment];
 			remaining -= alignment;

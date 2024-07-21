@@ -5,7 +5,6 @@
 #define STB_DS_IMPLEMENTATION
 #include "stb.h"
 
-#ifdef IN_BASE
 #define STB_SPRINTF_STATIC
 #define STB_SPRINTF_IMPLEMENTATION
 #if defined _MSC_VER && _MSC_VER >= 1900
@@ -38,4 +37,3 @@ BASEAPI u32 Base_StrPrint(dstr dest, u32 destSize, cstr format, ...)
 
 	return count;
 }
-#endif

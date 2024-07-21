@@ -3,7 +3,10 @@
 
 void* __cdecl operator new(usize size)
 {
-	return Base_Alloc(static_cast<ssize>(Min(size, static_cast<usize>(SSIZE_MAX))));
+	void* block = Base_Alloc(static_cast<ssize>(Min(size, static_cast<usize>(SSIZE_MAX))));
+	// new isn't allowed to return nullptr
+	ASSERT(block != nullptr);
+	return block;
 }
 
 void* __cdecl operator new[](usize size)

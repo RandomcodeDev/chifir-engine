@@ -22,8 +22,8 @@
 				'$ProjectPath$/basicstr.cpp',
 				'$ProjectPath$/memory.cpp',
 				'$ProjectPath$/platform.cpp',
-				'$ProjectPath$/../public/base/memoverride.cpp',
-				'$ProjectPath$/../public/base/stb.cpp'
+				'$ProjectPath$/stb.cpp',
+				'$ProjectPath$/../public/base/memoverride.cpp'
 			}
 
 			If (.PlatformName in .WindowsLike)

@@ -6,11 +6,11 @@
 #include "launcher.h"
 #include "videosystem/ivideosystem.h"
 
-// ChatGPT generated allocator test, so far has shown that it works but is much slower than the normal vcruntime malloc
+// ChatGPT generated allocator test, so far has shown that it works but the size of the coalesced free list doesn't quite add up
 void TestAlloc()
 {
 	const int NumIterations = 500000; // Number of allocation/deallocation cycles
-	const int AllocationSize = 64;   // Size of each allocation in bytes
+	const int AllocationSize = 64;    // Size of each allocation in bytes
 
 	void** allocations = new void*[NumIterations];
 
@@ -35,6 +35,48 @@ void TestAlloc()
 	delete[] allocations; // Free the array of pointers
 }
 
+struct TestStruct
+{
+	int value;
+	TestStruct() : value(5)
+	{
+	}
+	TestStruct(int v) : value(v)
+	{
+	}
+};
+
+// ChatGPT CVector test
+void TestVector()
+{
+	CVector<TestStruct> vec;
+	ASSERT(vec.Size() == 0);
+
+	// Test adding elements
+	vec.Add(TestStruct(1));
+	vec.Add(TestStruct(2));
+	vec.Add(TestStruct(3));
+	ASSERT(vec.Size() == 3);
+
+	// Test accessing elements
+	ASSERT(vec[0].value == 1);
+	ASSERT(vec[1].value == 2);
+	ASSERT(vec[2].value == 3);
+
+	// Test resizing
+	vec.Resize(5);
+	ASSERT(vec.Size() == 5);
+
+	// Test reserve
+	vec.Reserve(10);
+	ASSERT(vec.Size() == 5); // Size should remain the same
+
+	// Test deleting an element
+	vec.Delete(1);
+	ASSERT(vec.Size() == 4);
+	ASSERT(vec[1].value == 3);
+}
+
 void TestVideoSystem()
 {
 	ILibrary* videoSystemLib = Base_LoadLibrary("VideoSystem");
@@ -56,7 +98,6 @@ void TestVideoSystem()
 
 	while (videoSystem->Update())
 	{
-
 	}
 
 	videoSystem->Shutdown();
@@ -73,8 +114,7 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	Base_Init();
 	Plat_Init();
 
-	TestAlloc();
-	TestAlloc();
+	TestVector();
 	TestVideoSystem();
 
 	Plat_Shutdown();

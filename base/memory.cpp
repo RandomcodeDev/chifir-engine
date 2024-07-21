@@ -78,6 +78,17 @@ static ssize EffectiveSize(AllocNode_t* node)
 	return EffectiveAllocSize(&node->data);
 }
 
+static ssize VisibleSize(AllocNode_t* node)
+{
+	uptr nodeAddr = reinterpret_cast<uptr>(node);
+	return EffectiveSize(node) - (ALIGN(nodeAddr, node->data.alignment) - nodeAddr);
+}
+
+static void* VisibleStart(AllocNode_t* node)
+{
+	return reinterpret_cast<void*>(reinterpret_cast<uptr>(node) + node->data.size - VisibleSize(node));
+}
+
 static s32 FindFreeNode(AllocInfo_t* alloc, void* data)
 {
 	if (EffectiveAllocSize(alloc) >= (ssize)data)
@@ -182,8 +193,8 @@ BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment)
 
 	if (alloc)
 	{
-		// Round up the address of the first byte after the AllocNode_t to be aligned
-		void* block = reinterpret_cast<void*>(ALIGN(reinterpret_cast<uptr>(alloc + 1), realAlignment));
+		alloc->data.alignment = static_cast<u8>(realAlignment);
+		void* block = VisibleStart(alloc);
 		Base_MemSet(block, 0, size);
 		g_memInfo.totalAllocated += size;
 		return block;
@@ -268,7 +279,7 @@ BASEAPI void* Base_Realloc(void* block, ssize newSize)
 		return nullptr;
 	}
 
-	Base_MemCopy(newBlock, block, EffectiveSize(node));
+	Base_MemCopy(newBlock, block, VisibleSize(node));
 	Base_Free(block);
 	return newBlock;
 }

@@ -503,16 +503,16 @@ extern "C" {
 #endif
 
 // for security against attackers, seed the library with a random number, at least time() but stronger is better
-extern void stbds_rand_seed(size_t seed);
+extern STBDS_PUBLICDEF void stbds_rand_seed(size_t seed);
 
 // these are the hash functions used internally if you want to test them or use them for other purposes
-extern size_t stbds_hash_bytes(void *p, size_t len, size_t seed);
-extern size_t stbds_hash_string(char *str, size_t seed);
+extern STBDS_PUBLICDEF size_t stbds_hash_bytes(void *p, size_t len, size_t seed);
+extern STBDS_PUBLICDEF size_t stbds_hash_string(char *str, size_t seed);
 
 // this is a simple string arena allocator, initialize with e.g. 'stbds_string_arena my_arena={0}'.
-typedef struct stbds_string_arena stbds_string_arena;
-extern char * stbds_stralloc(stbds_string_arena *a, char *str);
-extern void   stbds_strreset(stbds_string_arena *a);
+typedef STBDS_PUBLICDEF struct stbds_string_arena stbds_string_arena;
+extern STBDS_PUBLICDEF char* stbds_stralloc(stbds_string_arena* a, char* str);
+extern STBDS_PUBLICDEF void stbds_strreset(stbds_string_arena* a);
 
 // have to #define STBDS_UNIT_TESTS to call this
 extern void stbds_unit_tests(void);
@@ -520,17 +520,19 @@ extern void stbds_unit_tests(void);
 ///////////////
 //
 // Everything below here is implementation details
+// 
+// Chifir: these need to be exported from Base anyway though so too bad
 //
 
-extern void * stbds_arrgrowf(void *a, size_t elemsize, size_t addlen, size_t min_cap);
-extern void   stbds_arrfreef(void *a);
-extern void   stbds_hmfree_func(void *p, size_t elemsize);
-extern void * stbds_hmget_key(void *a, size_t elemsize, void *key, size_t keysize, int mode);
-extern void * stbds_hmget_key_ts(void *a, size_t elemsize, void *key, size_t keysize, ptrdiff_t *temp, int mode);
-extern void * stbds_hmput_default(void *a, size_t elemsize);
-extern void * stbds_hmput_key(void *a, size_t elemsize, void *key, size_t keysize, int mode);
-extern void * stbds_hmdel_key(void *a, size_t elemsize, void *key, size_t keysize, size_t keyoffset, int mode);
-extern void * stbds_shmode_func(size_t elemsize, int mode);
+extern STBDS_PUBLICDEF void * stbds_arrgrowf(void *a, size_t elemsize, size_t addlen, size_t min_cap);
+extern STBDS_PUBLICDEF void   stbds_arrfreef(void *a);
+extern STBDS_PUBLICDEF void   stbds_hmfree_func(void *p, size_t elemsize);
+extern STBDS_PUBLICDEF void * stbds_hmget_key(void *a, size_t elemsize, void *key, size_t keysize, int mode);
+extern STBDS_PUBLICDEF void * stbds_hmget_key_ts(void *a, size_t elemsize, void *key, size_t keysize, ptrdiff_t *temp, int mode);
+extern STBDS_PUBLICDEF void * stbds_hmput_default(void *a, size_t elemsize);
+extern STBDS_PUBLICDEF void * stbds_hmput_key(void *a, size_t elemsize, void *key, size_t keysize, int mode);
+extern STBDS_PUBLICDEF void * stbds_hmdel_key(void *a, size_t elemsize, void *key, size_t keysize, size_t keyoffset, int mode);
+extern STBDS_PUBLICDEF void * stbds_shmode_func(size_t elemsize, int mode);
 
 #ifdef __cplusplus
 }
@@ -790,7 +792,7 @@ size_t stbds_rehash_items;
 //int *prev_allocs[65536];
 //int num_prev;
 
-void *stbds_arrgrowf(void *a, size_t elemsize, size_t addlen, size_t min_cap)
+STBDS_PUBLICDEF void *stbds_arrgrowf(void *a, size_t elemsize, size_t addlen, size_t min_cap)
 {
   stbds_array_header temp={0}; // force debugging
   void *b;
@@ -828,7 +830,7 @@ void *stbds_arrgrowf(void *a, size_t elemsize, size_t addlen, size_t min_cap)
   return b;
 }
 
-void stbds_arrfreef(void *a)
+STBDS_PUBLICDEF void stbds_arrfreef(void* a)
 {
   STBDS_FREE(NULL, stbds_header(a));
 }
@@ -879,7 +881,7 @@ typedef struct
 
 static size_t stbds_hash_seed=0x31415926;
 
-void stbds_rand_seed(size_t seed)
+STBDS_PUBLICDEF void stbds_rand_seed(size_t seed)
 {
   stbds_hash_seed = seed;
 }
@@ -1044,7 +1046,7 @@ static stbds_hash_index *stbds_make_hash_index(size_t slot_count, stbds_hash_ind
 #define STBDS_ROTATE_LEFT(val, n)   (((val) << (n)) | ((val) >> (STBDS_SIZE_T_BITS - (n))))
 #define STBDS_ROTATE_RIGHT(val, n)  (((val) >> (n)) | ((val) << (STBDS_SIZE_T_BITS - (n))))
 
-size_t stbds_hash_string(char *str, size_t seed)
+STBDS_PUBLICDEF size_t stbds_hash_string(char* str, size_t seed)
 {
   size_t hash = seed;
   while (*str)
@@ -1144,7 +1146,7 @@ static size_t stbds_siphash_bytes(void *p, size_t len, size_t seed)
 #endif
 }
 
-size_t stbds_hash_bytes(void *p, size_t len, size_t seed)
+STBDS_PUBLICDEF size_t stbds_hash_bytes(void* p, size_t len, size_t seed)
 {
 #ifdef STBDS_SIPHASH_2_4
   return stbds_siphash_bytes(p,len,seed);
@@ -1244,7 +1246,7 @@ static int stbds_is_key_equal(void *a, size_t elemsize, void *key, size_t keysiz
 
 #define stbds_hash_table(a)  ((stbds_hash_index *) stbds_header(a)->hash_table)
 
-void stbds_hmfree_func(void *a, size_t elemsize)
+STBDS_PUBLICDEF void stbds_hmfree_func(void* a, size_t elemsize)
 {
   if (a == NULL) return;
   if (stbds_hash_table(a) != NULL) {
@@ -1309,7 +1311,7 @@ static ptrdiff_t stbds_hm_find_slot(void *a, size_t elemsize, void *key, size_t 
   /* NOTREACHED */
 }
 
-void * stbds_hmget_key_ts(void *a, size_t elemsize, void *key, size_t keysize, ptrdiff_t *temp, int mode)
+STBDS_PUBLICDEF void* stbds_hmget_key_ts(void* a, size_t elemsize, void* key, size_t keysize, ptrdiff_t* temp, int mode)
 {
   size_t keyoffset = 0;
   if (a == NULL) {
@@ -1340,7 +1342,7 @@ void * stbds_hmget_key_ts(void *a, size_t elemsize, void *key, size_t keysize, p
   }
 }
 
-void * stbds_hmget_key(void *a, size_t elemsize, void *key, size_t keysize, int mode)
+STBDS_PUBLICDEF void* stbds_hmget_key(void* a, size_t elemsize, void* key, size_t keysize, int mode)
 {
   ptrdiff_t temp;
   void *p = stbds_hmget_key_ts(a, elemsize, key, keysize, &temp, mode);
@@ -1348,7 +1350,7 @@ void * stbds_hmget_key(void *a, size_t elemsize, void *key, size_t keysize, int 
   return p;
 }
 
-void * stbds_hmput_default(void *a, size_t elemsize)
+STBDS_PUBLICDEF void* stbds_hmput_default(void* a, size_t elemsize)
 {
   // three cases:
   //   a is NULL <- allocate
@@ -1365,7 +1367,7 @@ void * stbds_hmput_default(void *a, size_t elemsize)
 
 static char *stbds_strdup(char *str);
 
-void *stbds_hmput_key(void *a, size_t elemsize, void *key, size_t keysize, int mode)
+STBDS_PUBLICDEF void* stbds_hmput_key(void* a, size_t elemsize, void* key, size_t keysize, int mode)
 {
   size_t keyoffset=0;
   void *raw_a;
@@ -1489,7 +1491,7 @@ void *stbds_hmput_key(void *a, size_t elemsize, void *key, size_t keysize, int m
   }
 }
 
-void * stbds_shmode_func(size_t elemsize, int mode)
+STBDS_PUBLICDEF void* stbds_shmode_func(size_t elemsize, int mode)
 {
   void *a = stbds_arrgrowf(0, elemsize, 0, 1);
   stbds_hash_index *h;
@@ -1500,7 +1502,7 @@ void * stbds_shmode_func(size_t elemsize, int mode)
   return STBDS_ARR_TO_HASH(a,elemsize);
 }
 
-void * stbds_hmdel_key(void *a, size_t elemsize, void *key, size_t keysize, size_t keyoffset, int mode)
+STBDS_PUBLICDEF void* stbds_hmdel_key(void* a, size_t elemsize, void* key, size_t keysize, size_t keyoffset, int mode)
 {
   if (a == NULL) {
     return 0;
@@ -1585,7 +1587,7 @@ static char *stbds_strdup(char *str)
 #define STBDS_STRING_ARENA_BLOCKSIZE_MAX  (1u<<20)
 #endif
 
-char *stbds_stralloc(stbds_string_arena *a, char *str)
+STBDS_PUBLICDEF char* stbds_stralloc(stbds_string_arena* a, char* str)
 {
   char *p;
   size_t len = STBDS_STRLEN(str)+1;
@@ -1633,7 +1635,7 @@ char *stbds_stralloc(stbds_string_arena *a, char *str)
   return p;
 }
 
-void stbds_strreset(stbds_string_arena *a)
+STBDS_PUBLICDEF void stbds_strreset(stbds_string_arena* a)
 {
   stbds_string_block *x,*y;
   x = a->storage;
