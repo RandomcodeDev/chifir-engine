@@ -167,7 +167,7 @@ Settings
 	.MASM = '$VSToolsDir$\ml.exe'
 
 	.CompilerOptions = ' /DCH_X86 /DCH_IA32 /DCH_SIMD128 /DCH_SIMD256'
-					 + ' /arch:IA32'
+					 + ' /arch:IA32' // No vectorization and stuff in codegen, so it can be dynamic
 ]
 
 .MSVC_x86Debug = .MSVC_Common + .MSVC_Modern + .MSVC_x86 + .MSVC_Debug
