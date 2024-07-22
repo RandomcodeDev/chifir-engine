@@ -18,6 +18,7 @@
 		{
 			.UnityInputFiles = 
 			{
+				'$ProjectPath$/log.cpp',
 				'$ProjectPath$/utility.cpp',
 			}
 

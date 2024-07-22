@@ -1,7 +1,6 @@
 = Scene system
-Scenes contain entities. Entities have components like a "renderable", which contains a handle to a mesh and other
-information, and transform information.
-These are some kinds of entities:
+Scenes contain entities. Visible entities have components like a mesh or a camera, and transform information.
+These are some categories of entities:
 #list(
 	[Sky/sun/moon entities],
 	[Details like grass, leaves, etc],

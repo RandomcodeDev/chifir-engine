@@ -20,14 +20,23 @@ component, explain the overall design of the component, any important choices an
 Additionally, when functions are complex, add comments explaining what's happening/why it's happening. The memory manager in
 `base/memory.cpp` is the best example of commenting things so far.
 
+== Naming
+Variables are camel case, prefixed with `g_` for globals and `s_` for static globals. Types are Pascal case, prefixed with `C` for
+classes, `CBase` for abstract classes, and `I` for interfaces, while structs are suffixed with `_t`. Functions are Pascal case,
+with the name of their component and an underscore as a prefix, like `Base_`. Common abbreviations (like str, len, max, min, alloc, buf, src, dest)
+are allowed, but obscure ones should be avoided. Try to balance clearness with succintness when naming variables, so they're easier to type.
+
+== Classes vs structs
+Classes do things, structs store data. That's the distinction so far.
+
 == Headers
 Public headers (ones visible to any component) should include as few headers as possible, and forward declare types where needed.
 In `.cpp` files, all headers for the things used should be included, not just ones that happen to include the right things. Private
 headers are more free to include things, and have references to globals inside components, like `base/base.h`.
 
 == Standard library replacement
-Because the C runtime and STL aren't used, there are some replacements for the commonly used stuff, and there are also common
-utility functions implemented on top of these, like automatically allocating a buffer for snprintf.
+Because the C runtime and STL aren't used, there are some replacements for the commonly used stuff, and there are also utility
+functions commonly implemented on top of these, like automatically allocating a buffer for snprintf.
 
 In terms of replacements for the CRT, `base.h` has `Base_Alloc`, `Base_MemSet`, `Base_MemCopy`, and `Base_MemCompare`, and
 `basicstr.h` has `Base_StrFormat`, `Base_StrCopy`, `Base_StrClone`, and `Base_StrCompare`. They work basically just like
@@ -40,10 +49,12 @@ Additionally, there's `CLinkedList<T>`, which is used for the free list in the m
 control over the nodes for exactly that reason.
 
 == Assertions and error handling
-Assertions are mainly for scenarios that shouldn't happen; don't use them for general error handling. If a piece of memory _must_
-be allocated successfully, like in `operator new()` where the standard technically requires that it not return `nullptr` (even though
-the standard isn't as relevant for the engine), then you can use an assert. For anything else, prefer using functions that return
-`bool`, and return `false` when an error happens. When an unrecoverable error happens, use `Base_Quit` (or `Base_QuitSafe` in functions
-where avoiding memory allocation is important, such as the memory manager where it would recurse) to kill the engine and show the user
-an error message.
+Assertions are mainly for scenarios that shouldn't happen, and are disabled in retail builds because anything triggering them should be caught in
+debug/release builds; don't use them for general error handling. For example, if a piece of memory _must_ be allocated successfully, like in `operator new()` where
+the standard technically requires that it not return `nullptr` (even though the standard isn't as relevant for the engine), or an index is outside
+the valid range, or a parameter is wrong in a way it shouldn't be, then you can use an assert. Normally, you can use the `ASSERT` macro. If a
+condition isn't the most indicative of why something is wrong, `ASSERT_MSG` lets you add a message. For functions which just succeed or fail,
+return `false`, `nullptr`, or some other documented value when an error happens. When an unrecoverable error happens, use `Base_Quit` (or `Base_QuitSafe`
+in functions where avoiding memory allocation is important, such as the memory manager where it would recurse) to kill the engine and show the user an
+error message.
 
