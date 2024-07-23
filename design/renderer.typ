@@ -7,7 +7,7 @@ The hardware interface is an abstraction of Vulkan/Direct3D/GNM/whatever other u
 level, and implements render targets, materials, and geometry primitives, as well as special render targets just for going
 to the screen (they wrap the swap chain images).
 #list(
-	[Handles VkInstance/IDXGIFactory, VkDevice/ID3D12Device, VkCommandBuffer/ID3D12GraphicsCommandList, VkSwapChainKHR/IDXGISwapChain],
+	[Handles `VkInstance`/`IDXGIFactory`, `VkDevice`/`ID3D12Device`, `VkCommandBuffer`/`ID3D12GraphicsCommandList`, `VkSwapChainKHR`/`IDXGISwapChain`],
 	[Creates and manages geometry (VB+IB), textures, render targets, shaders, materials (texture + shader)],
 	[Handles drawing given geometry + material],
 )
@@ -18,8 +18,8 @@ using the hardware interface to render and post-process all of it.
 #list(
 	[Calls for drawing objects and adding lights],
 	[Uses multiple render passes to light and post-process the scene],
-	[Rasterization-based deferred lighting passes],
-	[Ray-tracing-based lighting passes],
+	[Rasterization-based lighting passes],
+	[Ray-tracing-based passes],
 	[Common post-processing passes],
 )
 

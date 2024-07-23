@@ -1,7 +1,6 @@
 #include "base/base.h"
-#include "base/log.h"
+#include "base/vector.h"
+#include "utility/log.h"
+#include "utility/utility.h"
 
-BASEAPI bool Log_Init()
-{
-	return true;
-}
+static CVector<ILogWriter*> s_writers;

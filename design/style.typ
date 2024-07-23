@@ -9,6 +9,11 @@ as well.
   [Only the exact functionality needed is implemented], [Features not built on existing support code take longer],
 )
 
+== Formatting
+Just use `clang-format` aggressively. The only thing that I'm pretty sure it doesn't do is adding curly brackets to one-line
+if statements and loops, which is part of the style. Also, be careful about putting a blank line between headers that shouldn't
+be sorted alphabetically.
+
 == Types
 `public/base/types.h` defines short type names largely based on Rust's type names. Sizes should use the signed `ssize` to make
 calculation errors easier to see, and the fact that it's a size already gives the indication it can't be negative. Any other
@@ -21,10 +26,11 @@ Additionally, when functions are complex, add comments explaining what's happeni
 `base/memory.cpp` is the best example of commenting things so far.
 
 == Naming
-Variables are camel case, prefixed with `g_` for globals and `s_` for static globals. Types are Pascal case, prefixed with `C` for
-classes, `CBase` for abstract classes, and `I` for interfaces, while structs are suffixed with `_t`. Functions are Pascal case,
-with the name of their component and an underscore as a prefix, like `Base_`. Common abbreviations (like str, len, max, min, alloc, buf, src, dest)
-are allowed, but obscure ones should be avoided. Try to balance clearness with succintness when naming variables, so they're easier to type.
+Variables are camel case, prefixed with `m_` for private/protected members, `g_` for globals, and `s_` for static globals. Types are Pascal
+case, prefixed with `C` for classes, `CBase` for abstract classes, and `I` for interfaces, while structs are suffixed with `_t`. Functions are
+Pascal case, with the name of their component and an underscore as a prefix, like `Base_`. Common abbreviations (like str, len, max, min, alloc,
+buf, src, dest) are allowed, but obscure ones should be avoided. Try to balance clearness with succintness when naming variables, so they're
+easier to type.
 
 == Classes vs structs
 Classes do things, structs store data. That's the distinction so far.

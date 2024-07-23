@@ -11,6 +11,7 @@
 #define UTILAPI DLLIMPORT
 #endif
 
+class ILibrary;
 class ISystem;
 
 // Get a system from a library

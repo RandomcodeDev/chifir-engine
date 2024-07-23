@@ -76,7 +76,6 @@ Settings
 	.CompilerOptions = ' /Zf' // Faster PDB generation
 					 + ' /utf-8' // Treat sources as UTF-8
 					 + ' /Zc:__cplusplus' // Ensure old compilers that actually support C++03 are detected properly
-					 + ' /Zo' // Debug info for optimized code
 ]
 
 .MSVC_Debug = 
@@ -90,6 +89,11 @@ Settings
 					 + ' /DCH_DEBUG'
 
 	.LinkerOptions = ' /DEBUG'
+]
+
+.MSVC_DebugModern =
+[
+	.CompilerOptions = ' /Zo' // Debug info for optimized code
 ]
 
 .MSVC_Release =
@@ -135,8 +139,8 @@ Settings
 
 ]
 
-.MSVC_AMD64Debug = .MSVC_Common + .MSVC_Modern + .MSVC_AMD64 + .MSVC_Debug
-.MSVC_AMD64Release = .MSVC_Common + .MSVC_Modern + .MSVC_AMD64 + .MSVC_Release
+.MSVC_AMD64Debug = .MSVC_Common + .MSVC_Modern + .MSVC_AMD64 + .MSVC_Debug + .MSVC_DebugModern
+.MSVC_AMD64Release = .MSVC_Common + .MSVC_Modern + .MSVC_AMD64 + .MSVC_Release + .MSVC_DebugModern
 .MSVC_AMD64Retail = .MSVC_Common + .MSVC_Modern + .MSVC_AMD64 + .MSVC_Retail
 
 .MSVC_ARM64 =
@@ -152,8 +156,8 @@ Settings
 	.CompilerOptions = ' /DCH_ARM64 /DCH_SIMD128 /DCH_SIMD256'
 ]
 
-.MSVC_ARM64Debug = .MSVC_Common + .MSVC_Modern + .MSVC_ARM64 + .MSVC_Debug
-.MSVC_ARM64Release = .MSVC_Common + .MSVC_Modern + .MSVC_ARM64 + .MSVC_Release
+.MSVC_ARM64Debug = .MSVC_Common + .MSVC_Modern + .MSVC_ARM64 + .MSVC_Debug + .MSVC_DebugModern
+.MSVC_ARM64Release = .MSVC_Common + .MSVC_Modern + .MSVC_ARM64 + .MSVC_Release + .MSVC_DebugModern
 .MSVC_ARM64Retail = .MSVC_Common + .MSVC_Modern + .MSVC_ARM64 + .MSVC_Retail
 
 .MSVC_x86 =
@@ -170,8 +174,8 @@ Settings
 					 + ' /arch:IA32' // No vectorization and stuff in codegen, so it can be dynamic
 ]
 
-.MSVC_x86Debug = .MSVC_Common + .MSVC_Modern + .MSVC_x86 + .MSVC_Debug
-.MSVC_x86Release = .MSVC_Common + .MSVC_Modern + .MSVC_x86 + .MSVC_Release
+.MSVC_x86Debug = .MSVC_Common + .MSVC_Modern + .MSVC_x86 + .MSVC_Debug + .MSVC_DebugModern
+.MSVC_x86Release = .MSVC_Common + .MSVC_Modern + .MSVC_x86 + .MSVC_Release + .MSVC_DebugModern
 .MSVC_x86Retail = .MSVC_Common + .MSVC_Modern + .MSVC_x86 + .MSVC_Retail
 
 .MSVC_Xbox360 =

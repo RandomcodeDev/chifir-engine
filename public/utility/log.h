@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "base.h"
-#include "compiler.h"
-#include "string.h"
-#include "types.h"
+#include "base/compiler.h"
+#include "base/string.h"
+#include "base/types.h"
+#include "utility/utility.h"
 
 // Log message priority level
 enum LogLevel_t
@@ -38,5 +38,7 @@ class ILogWriter
 	virtual void Write(const LogMessage_t& message) = 0;
 };
 
-// Initialize logging
-extern BASEAPI bool Log_Init();
+// Add a log writer
+UTILAPI void Log_AddWriter(ILogWriter* writer);
+
+// 
