@@ -339,7 +339,7 @@ static bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 {
 	static const u8 mode = _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_EACH | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 	inequalIdx = _mm_cmpestri(*reinterpret_cast<const __m128i*>(&a), 16, *reinterpret_cast<const __m128i*>(&b), 16, mode);
-	return _mm_cmpestrc(*reinterpret_cast<const __m128i*>(&a), 16, *reinterpret_cast<const __m128i*>(&b), 16, mode);
+	return !_mm_cmpestrc(*reinterpret_cast<const __m128i*>(&a), 16, *reinterpret_cast<const __m128i*>(&b), 16, mode);
 }
 #elif defined CH_XBOX360
 static bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
@@ -372,6 +372,31 @@ static bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 
 		return false;
 	}
+}
+#elif defined CH_ARM64
+static FORCEINLINE bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
+{
+	uint8x16_t cmp = vceqq_u8(a, b);
+	uint64x2_t cmp64 = vreinterpretq_u64_u8(cmp);
+	uint32x2_t cmp32 = vreinterpret_u32_u64(vadd_u64(vget_low_u64(cmp64), vget_high_u64(cmp64)));
+	u64 cmp64_res = vget_lane_u32(cmp32, 0);
+
+	if (cmp64_res == 0xFFFFFFFFFFFFFFFF)
+	{
+		return true;
+	}
+
+	u8* cmpBytes = reinterpret_cast<u8*>(&cmp);
+	for (int i = 0; i < SIZEOF(v128); ++i)
+	{
+		if (cmpBytes[i] == 0)
+		{
+			inequalIdx = i;
+			return false;
+		}
+	}
+
+	return true;
 }
 #endif
 

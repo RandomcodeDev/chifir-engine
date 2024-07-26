@@ -47,10 +47,10 @@ typedef __m128 v128;
 typedef __m256 v256;
 #elif defined CH_XBOX360
 typedef __vector4 v128;
+#elif defined CH_ARM64
+typedef __n128 v128;
+typedef __n128x2 v256;
 #endif
-
-// Note: "wide" and "narrow" refer, generally, to UTF-16 and UTF-8, not just whatever the platform decides.
-// On platforms where wchar_t would be 32 bits, -fshort-wchar is used.
 
 typedef char* dstr;
 typedef const char* cstr;

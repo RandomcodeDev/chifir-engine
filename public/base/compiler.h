@@ -7,10 +7,14 @@
 
 #include <cstdarg>
 
+#ifdef CH_ARM64
+#include <arm_neon.h>
+#endif
+
 #if defined _MSC_VER
 #ifdef CH_XBOX360
 #include <VectorIntrinsics.h>
-#else
+#elif defined CH_X86
 #include <intrin.h>
 #endif
 
