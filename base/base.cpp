@@ -120,7 +120,7 @@ BASEAPI u64 Base_Fnv1a64(const void* data, ssize size)
 }
 
 template <typename T>
-static FORCEINLINE void Copy(
+static void Copy(
 	void* RESTRICT dest, const void* RESTRICT src, ssize offset, ssize& remaining, ssize alignment, bool reverse = false)
 {
 	ssize count = (remaining / alignment) * alignment;
@@ -134,7 +134,7 @@ static FORCEINLINE void Copy(
 	}
 	else
 	{
-		for (ssize i = offset; i < count; i += alignment)
+		for (ssize i = offset; i < offset + count; i += alignment)
 		{
 			static_cast<T*>(dest)[i / alignment] = static_cast<const T*>(src)[i / alignment];
 			remaining -= alignment;
@@ -230,14 +230,14 @@ BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize 
 	return dest;
 }
 
-template <typename T> FORCEINLINE void Set(void* dest, u8 value, ssize offset, ssize& remaining, ssize alignment)
+template <typename T> void Set(void* dest, u8 value, ssize offset, ssize& remaining, ssize alignment)
 {
 	// This is to get around how Clang deals with SIMD intrinsics (shouldn't cause problems)
-	u8 fullValue[32] = {value, value, value, value, value, value, value, value, value, value, value,
-						value, value, value, value, value, value, value, value, value, value, value,
-						value, value, value, value, value, value, value, value, value, value};
+	u64 partValue = 0x0101010101010101 * value;
+	u64 fullValue[4] = {partValue, partValue, partValue, partValue};
+
 	ssize count = (remaining / alignment) * alignment;
-	for (ssize i = offset; i < count; i += alignment)
+	for (ssize i = offset; i < offset + count; i += alignment)
 	{
 		static_cast<T*>(dest)[i / alignment] = *reinterpret_cast<T*>(fullValue);
 		remaining -= alignment;
@@ -306,11 +306,11 @@ BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size)
 }
 
 template <typename T>
-static FORCEINLINE s32 Compare(const void* RESTRICT a, const void* RESTRICT b, ssize offset, ssize& remaining, ssize alignment)
+static s32 Compare(const void* RESTRICT a, const void* RESTRICT b, ssize offset, ssize& remaining, ssize alignment)
 {
 	ssize count = (remaining / alignment) * alignment;
 	ssize i = offset;
-	for (; i < count && static_cast<const T * RESTRICT>(a)[i / alignment] == static_cast<const T * RESTRICT>(b)[i / alignment];
+	for (; i < offset + count && static_cast<const T * RESTRICT>(a)[i / alignment] == static_cast<const T * RESTRICT>(b)[i / alignment];
 		 i += alignment)
 	{
 		remaining -= alignment;
@@ -335,14 +335,14 @@ static FORCEINLINE s32 Compare(const void* RESTRICT a, const void* RESTRICT b, s
 
 #ifdef CH_X86
 // https://github.com/WojciechMula/simd-string/blob/master/memcmp.cpp
-static FORCEINLINE bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
+static bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 {
 	static const u8 mode = _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_EACH | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 	inequalIdx = _mm_cmpestri(*reinterpret_cast<const __m128i*>(&a), 16, *reinterpret_cast<const __m128i*>(&b), 16, mode);
 	return _mm_cmpestrc(*reinterpret_cast<const __m128i*>(&a), 16, *reinterpret_cast<const __m128i*>(&b), 16, mode);
 }
 #elif defined CH_XBOX360
-static FORCEINLINE bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
+static bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 {
 	u32 cr = 0;
 	__vcmpequbR(a, b, &cr);
@@ -376,8 +376,7 @@ static FORCEINLINE bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 #endif
 
 #if CH_SIMD128
-template <>
-FORCEINLINE s32 Compare<v128>(const void* RESTRICT a, const void* RESTRICT b, ssize offset, ssize& remaining, ssize alignment)
+template <> s32 Compare<v128>(const void* RESTRICT a, const void* RESTRICT b, ssize offset, ssize& remaining, ssize alignment)
 {
 	ssize count = (remaining / alignment) * alignment;
 	ssize i = offset;

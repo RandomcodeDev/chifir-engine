@@ -55,7 +55,8 @@
 			{
 				'$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
 				'Base-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
-				'CommonFiles-Lib-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+				'CommonFiles-Lib-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+				'Utility-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
 			}
 			.LinkerOutput = '$OutputDir$/$ProjectName$$DLLExtension$'
 			If (.PlatformName in .WindowsLike)

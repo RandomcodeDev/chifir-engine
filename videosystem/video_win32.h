@@ -91,4 +91,4 @@ class CWindowsVideoSystem : public IVideoSystem
 	static LRESULT __stdcall WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam);
 };
 
-#define WINDOW_CLASS "ЧифирWindow"
+#define WINDOW_CLASS "ChifirWindow"

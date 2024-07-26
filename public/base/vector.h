@@ -88,13 +88,10 @@ template <typename T> class CVector : public IContainer<T, ssize>
 	ssize Add(const T& object, ssize index = IContainer<T, ssize>::BAD_INDEX)
 	{
 		m_sorted = false;
-		if (m_size < m_capacity)
+		m_size++;
+		if (m_size > m_capacity)
 		{
-			m_size++;
-		}
-		else
-		{
-			Resize(m_size + 1);
+			Reserve(Max<ssize>(1, m_capacity * 2));
 		}
 
 		// Append by default
@@ -109,6 +106,19 @@ template <typename T> class CVector : public IContainer<T, ssize>
 			m_buffer[index] = object;
 			return index;
 		}
+	}
+
+	ssize Add(const T* objects, ssize count, ssize startIndex = IContainer<T, ssize>::BAD_INDEX)
+	{
+		Reserve(count);
+
+		ssize index = 0;
+		for (ssize i = 0; i < count; i++)
+		{
+			index = Add(objects[i], startIndex + i);
+		}
+
+		return index - count - 1;
 	}
 
 	void Delete(ssize index = IContainer<T, ssize>::BAD_INDEX)

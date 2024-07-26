@@ -22,7 +22,8 @@ enum LogLevel_t
 struct LogMessage_t
 {
 	LogLevel_t level;
-	s32 line;
+	uptr location;
+	bool isAddress; // Whether location should be displayed in hex
 	cstr file;
 	cstr function;
 	cstr message;
@@ -41,4 +42,16 @@ class ILogWriter
 // Add a log writer
 UTILAPI void Log_AddWriter(ILogWriter* writer);
 
-// 
+// Write a log message
+UTILAPI void Log_Write(const LogMessage_t& message);
+
+// Write a log message, and format it
+UTILAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr file, cstr function, cstr message, ...);
+
+#define Log_Message(level, ...) Log_Write(LogLevel##level, __LINE__, false, __FILE__, __FUNCTION__, __VA_ARGS__)
+#define Log_Trace(...)          Log_Message(Trace, __VA_ARGS__)
+#define Log_Debug(...)          Log_Message(Debug, __VA_ARGS__)
+#define Log_Info(...)           Log_Message(Info, __VA_ARGS__)
+#define Log_Warning(...)        Log_Message(Warning, __VA_ARGS__)
+#define Log_Error(...)          Log_Message(Error, __VA_ARGS__)
+#define Log_FatalError(...)     Log_Message(FatalError, __VA_ARGS__)

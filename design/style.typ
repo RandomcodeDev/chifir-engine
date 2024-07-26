@@ -56,11 +56,10 @@ control over the nodes for exactly that reason.
 
 == Assertions and error handling
 Assertions are mainly for scenarios that shouldn't happen, and are disabled in retail builds because anything triggering them should be caught in
-debug/release builds; don't use them for general error handling. For example, if a piece of memory _must_ be allocated successfully, like in `operator new()` where
-the standard technically requires that it not return `nullptr` (even though the standard isn't as relevant for the engine), or an index is outside
-the valid range, or a parameter is wrong in a way it shouldn't be, then you can use an assert. Normally, you can use the `ASSERT` macro. If a
-condition isn't the most indicative of why something is wrong, `ASSERT_MSG` lets you add a message. For functions which just succeed or fail,
-return `false`, `nullptr`, or some other documented value when an error happens. When an unrecoverable error happens, use `Base_Quit` (or `Base_QuitSafe`
-in functions where avoiding memory allocation is important, such as the memory manager where it would recurse) to kill the engine and show the user an
-error message.
+debug/release builds; don't use them for general error handling. For example, if a piece of memory _must_ be allocated successfully, like in `operator new()`
+where the standard technically requires that it not return `nullptr` (even though the standard isn't as relevant for the engine), or an index is
+outside the valid range, or a parameter is wrong in a way it shouldn't be, then you can use an assert. Normally, you can use the `ASSERT` macro.
+If a condition isn't the most indicative of why something is wrong, `ASSERT_MSG` lets you add a message. For functions which just succeed or fail,
+return `false`, `nullptr`, or some other documented value when an error happens. When an unrecoverable error happens, use `Util_Fatal` (or
+`Base_Quit`/`Base_QuitSafe` in functions where logging isn't available, such as inside of `Base`) to kill the engine and show the user an error message.
 

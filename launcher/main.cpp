@@ -4,6 +4,8 @@
 #include "base/vector.h"
 #include "isystem.h"
 #include "launcher.h"
+#include "utility/log.h"
+#include "utility/utility.h"
 #include "videosystem/ivideosystem.h"
 
 // ChatGPT generated allocator test, so far has shown that it works but the size of the coalesced free list doesn't quite add up
@@ -79,21 +81,23 @@ void TestVector()
 
 void TestVideoSystem()
 {
+	Log_Info("Loading video system");
 	ILibrary* videoSystemLib = Base_LoadLibrary("VideoSystem");
 	if (!videoSystemLib)
 	{
-		Base_QuitSafe(1, "Failed to load video system DLL");
+		Util_Fatal("Failed to load video system DLL");
 	}
 
-	IVideoSystem* videoSystem = static_cast<IVideoSystem*>(GetSystem(videoSystemLib, IVideoSystem::VERSION));
+	Log_Info("Getting video system interface");
+	IVideoSystem* videoSystem = static_cast<IVideoSystem*>(Util_GetSystem(videoSystemLib, IVideoSystem::VERSION));
 	if (!videoSystem)
 	{
-		Base_Quit(1, "Failed to create video system interface with version %u or greater", IVideoSystem::VERSION);
+		Util_Fatal("Failed to create video system interface with version %u or greater", IVideoSystem::VERSION);
 	}
 
 	if (!videoSystem->Initialize())
 	{
-		Base_QuitSafe(1, "Failed to initialize video system");
+		Util_Fatal("Failed to initialize video system");
 	}
 
 	while (videoSystem->Update())
@@ -105,6 +109,28 @@ void TestVideoSystem()
 	delete videoSystemLib;
 }
 
+class CDbgPrintLogWriter : public ILogWriter
+{
+  public:
+	void Write(const LogMessage_t& message)
+	{
+		static const cstr LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
+
+		if (message.isAddress)
+		{
+			DbgPrint(
+				"[%s] [0x%p@%s %s] %s\n", LEVEL_NAMES[message.level], message.location, message.file, message.function,
+				message.message);
+		}
+		else
+		{
+			DbgPrint(
+				"[%s] [%s:%d %s] %s\n", LEVEL_NAMES[message.level], message.file, message.location, message.function,
+				message.message);
+		}
+	}
+};
+
 extern "C" LAUNCHERAPI s32 LauncherMain()
 {
 #ifdef CH_XBOX360
@@ -113,6 +139,8 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 
 	Base_Init();
 	Plat_Init();
+
+	Log_AddWriter(new CDbgPrintLogWriter());
 
 	TestVideoSystem();
 

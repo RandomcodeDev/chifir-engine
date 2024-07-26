@@ -1,10 +1,13 @@
 #include "video_win32.h"
 #include "base/base.h"
 #include "base/basicstr.h"
+#include "utility/log.h"
 
 bool CWindowsVideoSystem::Initialize()
 {
-	m_hinstance = reinterpret_cast<HINSTANCE>(NtCurrentPeb()->ImageBaseAddress);
+	m_hinstance = reinterpret_cast<HINSTANCE>(NtCurrentImageBase());
+
+	Log_Info("Initializing Windows video system");
 
 	if (!RegisterWindowClass() || !InitializeMainWindow())
 	{
@@ -34,6 +37,8 @@ void CWindowsVideoSystem::Shutdown()
 {
 	DestroyWindow(m_window);
 	UnregisterClassA(WINDOW_CLASS, m_hinstance);
+
+	Log_Info("Windows video system shut down");
 }
 
 void CWindowsVideoSystem::SetTitle(cstr newTitle)
@@ -48,21 +53,27 @@ void CWindowsVideoSystem::SetTitle(cstr newTitle)
 bool CWindowsVideoSystem::RegisterWindowClass()
 {
 	WNDCLASSEXA wndClass = {};
+	wndClass.cbSize = sizeof(WNDCLASSEXA);
 
 	// Check if the class is already registered
 	if (GetClassInfoExA(m_hinstance, WINDOW_CLASS, &wndClass))
 	{
+		Log_Debug("GetClassInfoExA(\"" WINDOW_CLASS "\") returned true, assuming window class is already registered");
 		return true;
 	}
 
+	Log_Debug("Registering " WINDOW_CLASS " window class");
+
 	Base_MemSet(&wndClass, 0, sizeof(WNDCLASSEXA));
-	wndClass.cbSize = sizeof(wndClass);
+	wndClass.cbSize = sizeof(WNDCLASSEXA);
+	wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.lpszClassName = WINDOW_CLASS;
 	wndClass.hInstance = m_hinstance;
 	wndClass.lpfnWndProc = WindowProc;
 	wndClass.hCursor = LoadCursorA(nullptr, IDC_ARROW);
 	if (!RegisterClassExA(&wndClass))
 	{
+		Log_Error("Failed to register window class: Win32 error %d (0x%X)", LastNtError(), LastNtError());
 		return false;
 	}
 
@@ -72,6 +83,8 @@ bool CWindowsVideoSystem::RegisterWindowClass()
 bool CWindowsVideoSystem::InitializeMainWindow()
 {
 	RECT clientArea = {};
+
+	Log_Debug("Creating main window");
 
 	// make the window 2/3 of the main monitor's size by default
 	clientArea.left = 0;
@@ -88,16 +101,19 @@ bool CWindowsVideoSystem::InitializeMainWindow()
 	m_extraWidth = m_width - clientArea.right;
 	m_extraHeight = m_height - clientArea.bottom;
 
-	m_title = Base_StrFormat("Чифир Engine");
+	m_title = Base_StrFormat("Chifir Engine");
 
 	// center the window
 	u32 x = GetSystemMetrics(SM_CXSCREEN) / 2 - m_width / 2;
 	u32 y = GetSystemMetrics(SM_CYSCREEN) / 2 - m_height / 2;
+	Log_Info(
+		"Creating %ux%u (internally %ux%u) window at (%u, %u) titled %s", m_width + m_extraWidth, m_height + m_extraHeight, x, y,
+		m_title);
 	m_window =
 		CreateWindowExA(0, WINDOW_CLASS, m_title, WINDOW_STYLE, x, y, m_width, m_height, nullptr, nullptr, m_hinstance, nullptr);
 	if (!m_window)
 	{
-		DbgPrint("0x%X\n", LastNtError());
+		Log_Error("Failed to create window: Win32 error %d (0x%X)", LastNtError(), LastNtError());
 		return false;
 	}
 
