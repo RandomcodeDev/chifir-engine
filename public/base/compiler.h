@@ -63,6 +63,13 @@ extern "C" void __cdecl __security_init_cookie();
 #define ALIGNOF(x)  __alignof(x)
 #define FORCEINLINE __forceinline
 
+// Decorated function name
+#if _MSC_VER <= 1600
+#define FUNCTION_NAME __FUNCDNAME__
+#else
+#define FUNCTION_NAME __PRETTY_FUNCTION__
+#endif
+
 // Xbox 360 doesn't define this
 #ifndef va_copy
 #define va_copy(dest, source) (dest) = (source)

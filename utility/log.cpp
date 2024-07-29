@@ -36,7 +36,8 @@ UTILAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr fil
 
 	// TODO: trim chifir-engine/ and anything before it from file
 	// TODO: keep level within valid range
-	Log_Write(LogMessage_t{level, location, isAddress, file, function, formatted});
+	LogMessage_t messageData = {level, location, isAddress, file, function, formatted};
+	Log_Write(messageData);
 
 	Base_Free(formatted);
 }

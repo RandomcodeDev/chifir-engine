@@ -5,10 +5,14 @@
 #include "dll.h"
 #include "types.h"
 
+#ifdef CH_STATIC
+#define BASEAPI
+#else
 #ifdef IN_BASE
 #define BASEAPI DLLEXPORT
 #else
 #define BASEAPI DLLIMPORT
+#endif
 #endif
 
 // Initialize platform stuff, detect CPU features, and other stuff

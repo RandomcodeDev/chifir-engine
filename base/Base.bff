@@ -50,12 +50,6 @@
 			.UnityOutputPattern = '$ProjectName$_Unity*.cpp'
 		}
 
-		ObjectList('$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
-		{
-			.CompilerInputUnity = '$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
-			.CompilerOutputPath = '$ObjectDir$/$ProjectPath$/'
-		}
-
 #if __WINDOWS__
 		If (.PlatformName in .WindowsLike)
 		{
@@ -95,52 +89,80 @@
 		}
 #endif
 
-		DLL('$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		If (.StaticBuild)
 		{
-			.PreBuildDependencies = {'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'}
-			.Libraries =
+			Library('$ProjectName$-Lib-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
 			{
-				'$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
-			}
-			.LinkerOutput = '$OutputDir$/$ProjectName$$DLLExtension$'
+				.CompilerInputUnity = '$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+				
+
 			If (.PlatformName in .WindowsLike)
 			{
-				^LinkerOptions + ' /DLL'
 				If (.ArchName == 'AMD64')
 				{
-					^Libraries + {
-						'$ObjectDir$/$ProjectPath$/compiler_msvc_amd64.obj',
-						'$ObjectDir$/$ProjectPath$/stubs_win32_amd64.obj'
-					}
+					^LibrarianAdditionalInputs + {'$ObjectDir$/$ProjectPath$/compiler_msvc_amd64.obj'}
 				}
 				If (.ArchName == 'x86')
 				{
-					^Libraries +
-					{
-						'$ObjectDir$/$ProjectPath$/compiler_msvc_x86.obj',
-						'$ObjectDir$/$ProjectPath$/stubs_win32_x86.obj'
-					}
+					^LibrarianAdditionalInputs + {'$ObjectDir$/$ProjectPath$/compiler_msvc_x86.obj'}
 				}
 				If (.PlatformName == 'Xbox360')
 				{
-					^LinkerOptions + ' /AUTODEF:$ObjectDir$/$ProjectName$/$ProjectName$.def'
-					^Libraries +
-					{
+					^LibrarianAdditionalInputs + {
 						'public/xbox/crtfpr.obj',
 						'public/xbox/crtgpr.obj',
 						'public/xbox/crtvmx.obj',
-						'$ObjectDir$/$ProjectPath$/compiler_msvc_ppc.obj',
-						'$ObjectDir$/$ProjectPath$/stubs_win32_ppc.obj'
+						'$ObjectDir$\$ProjectPath$\compiler_msvc_ppc.obj',
+						'$ObjectDir$\$ProjectPath$\stubs_win32_ppc.obj'
 					}
 				}
 			}
-			If (.PlatformName == 'Linux')
+			}
+		}
+
+		If (!.StaticBuild)
+		{
+			ObjectList('$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
 			{
-				^LinkerStampExe	 = '/bin/sh'
-				^ExtractDebugInfo = 'objcopy --only-keep-debug $LinkerOutput$ $LinkerOutput$.debug'
-				^StripDebugInfo = 'objcopy --strip-debug $LinkerOutput$'
-				^AddDebugLink = 'objcopy --add-gnu-debuglink $LinkerOutput$.debug $LinkerOutput$'
-				^LinkerStampExeArgs = '-c "$ExtractDebugInfo$ && $StripDebugInfo$ && $AddDebugLink$"'
+				.CompilerInputUnity = '$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+				.CompilerOutputPath = '$ObjectDir$/$ProjectPath$/'
+			}
+
+			DLL('$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+			{
+				.PreBuildDependencies = {'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'}
+				.Libraries =
+				{
+					'$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+				}
+				.LinkerOutput = '$OutputDir$/$ProjectName$$DLLExtension$'
+				If (.PlatformName in .WindowsLike)
+				{
+					^LinkerOptions + ' /DLL'
+					If (.ArchName == 'AMD64')
+					{
+						^Libraries + {
+							'$ObjectDir$/$ProjectPath$/compiler_msvc_amd64.obj',
+							'$ObjectDir$/$ProjectPath$/stubs_win32_amd64.obj'
+						}
+					}
+					If (.ArchName == 'x86')
+					{
+						^Libraries +
+						{
+							'$ObjectDir$/$ProjectPath$/compiler_msvc_x86.obj',
+							'$ObjectDir$/$ProjectPath$/stubs_win32_x86.obj'
+						}
+					}
+				}
+				If (.PlatformName == 'Linux')
+				{
+					^LinkerStampExe	 = '/bin/sh'
+					^ExtractDebugInfo = 'objcopy --only-keep-debug $LinkerOutput$ $LinkerOutput$.debug'
+					^StripDebugInfo = 'objcopy --strip-debug $LinkerOutput$'
+					^AddDebugLink = 'objcopy --add-gnu-debuglink $LinkerOutput$.debug $LinkerOutput$'
+					^LinkerStampExeArgs = '-c "$ExtractDebugInfo$ && $StripDebugInfo$ && $AddDebugLink$"'
+				}
 			}
 		}
 

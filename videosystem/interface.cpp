@@ -7,7 +7,11 @@
 #include "video_win32.h"
 #endif
 
-extern "C" DLLEXPORT ISystem* CreateInterface()
+extern "C"
+#ifndef CH_STATIC
+DLLEXPORT
+#endif
+ISystem* CreateInterface()
 {
 #ifdef CH_XBOX360
 	return new CNullVideoSystem();

@@ -155,6 +155,7 @@ void CWindowsVideoSystem::UpdateDpi()
 	}
 	else
 	{
+		// TODO: DPI on older systems
 		m_dpi = 1.0;
 	}
 }
@@ -163,11 +164,16 @@ LRESULT __stdcall CWindowsVideoSystem::WindowProc(HWND window, UINT msg, WPARAM 
 {
 	// Get the video system pointer from the window
 	CWindowsVideoSystem* videoSystem = reinterpret_cast<CWindowsVideoSystem*>(GetWindowLongPtrA(window, GWLP_USERDATA));
+	if (!videoSystem || videoSystem->m_window != window)
+	{
+		return DefWindowProcA(window, msg, wparam, lparam);
+	}
 
 	switch (msg)
 	{
 	case WM_DPICHANGED: {
 		videoSystem->UpdateDpi();
+		Log_Debug("Video system DPI changed to %.3f", videoSystem->m_dpi);
 		return 0;
 	}
 	case WM_MOVE: {
@@ -176,6 +182,7 @@ LRESULT __stdcall CWindowsVideoSystem::WindowProc(HWND window, UINT msg, WPARAM 
 	}
 	case WM_SIZE: {
 		videoSystem->UpdateSize();
+		Log_Debug("Window resized to %ux%u", videoSystem->m_width, videoSystem->m_height);
 		return 0;
 	}
 	case WM_CLOSE: {

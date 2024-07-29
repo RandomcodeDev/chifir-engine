@@ -79,36 +79,6 @@ void TestVector()
 	ASSERT(vec[1].value == 3);
 }
 
-void TestVideoSystem()
-{
-	Log_Info("Loading video system");
-	ILibrary* videoSystemLib = Base_LoadLibrary("VideoSystem");
-	if (!videoSystemLib)
-	{
-		Util_Fatal("Failed to load video system DLL");
-	}
-
-	Log_Info("Getting video system interface");
-	IVideoSystem* videoSystem = static_cast<IVideoSystem*>(Util_GetSystem(videoSystemLib, IVideoSystem::VERSION));
-	if (!videoSystem)
-	{
-		Util_Fatal("Failed to create video system interface with version %u or greater", IVideoSystem::VERSION);
-	}
-
-	if (!videoSystem->Initialize())
-	{
-		Util_Fatal("Failed to initialize video system");
-	}
-
-	while (videoSystem->Update())
-	{
-	}
-
-	videoSystem->Shutdown();
-	delete videoSystem;
-	delete videoSystemLib;
-}
-
 class CDbgPrintLogWriter : public ILogWriter
 {
   public:
@@ -142,7 +112,10 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 
 	Log_AddWriter(new CDbgPrintLogWriter());
 
-	TestVideoSystem();
+#ifdef CH_STATIC
+
+#else
+#endif
 
 	Plat_Shutdown();
 	Base_Shutdown();

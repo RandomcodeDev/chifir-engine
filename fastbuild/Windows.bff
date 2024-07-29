@@ -56,7 +56,7 @@
 .Xbox360 =
 [
 	.PlatformName = 'Xbox360'
-	.CompilerOptions = ' -DCH_XBOX360'
+	.CompilerOptions = ' -DCH_XBOX360 -DCH_STATIC'
 	.ExeExtension = '.xex'
 	.LibExtension = '.lib'
 	.DLLExtension = '.xex'
