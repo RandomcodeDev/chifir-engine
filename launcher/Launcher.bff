@@ -48,7 +48,8 @@
 			.CompilerOutputPath = '$ObjectDir$/$ProjectPath$/'
 		}
 
-		Executable('$ProjectName$-EXE-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		Print('$ProjectName$-Exe-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		Executable('$ProjectName$-Exe-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
 		{
 			.Libraries =
 			{
@@ -56,6 +57,13 @@
 				'Base-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
 				'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
 				'Utility-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+			}
+			If (.StaticBuild)
+			{
+				^Libraries +
+				{
+					'VideoSystem-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+				}
 			}
 			.LinkerOutput = '$OutputDir$/$GameName$$ExeExtension$'
 			If (.PlatformName == 'Xbox360')

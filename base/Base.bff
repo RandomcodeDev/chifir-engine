@@ -22,8 +22,14 @@
 				'$ProjectPath$/basicstr.cpp',
 				'$ProjectPath$/memory.cpp',
 				'$ProjectPath$/platform.cpp',
-				'$ProjectPath$/stb.cpp',
-				'$ProjectPath$/../public/base/memoverride.cpp'
+				'$ProjectPath$/stb.cpp'
+			}
+			If (!.StaticBuild)
+			{
+				^UnityInputFiles +
+				{
+					'$ProjectPath$/../public/base/memoverride.cpp'
+				}
 			}
 
 			If (.PlatformName in .WindowsLike)
@@ -33,16 +39,25 @@
 					'$ProjectPath$/init_win32.cpp',
 					'$ProjectPath$/loader_win32.cpp',
 					'$ProjectPath$/platform_win32.cpp',
-					'$ProjectPath$/../public/base/dllmain.cpp',
-					'$ProjectPath$/../public/base/compiler_msvc.cpp'
+				}
+				If (!.StaticBuild)
+				{
+					^UnityInputFiles +
+					{
+						'$ProjectPath$/../public/base/dllmain.cpp',
+						'$ProjectPath$/../public/base/compiler_msvc.cpp'
+					}
 				}
 			}
 
 			If (.CompilerName == 'Clang')
 			{
-				^UnityInputFiles +
+				If (!.StaticBuild)
 				{
-					'$ProjectPath$/../public/base/compiler_clang.cpp'
+					^UnityInputFiles +
+					{
+						'$ProjectPath$/../public/base/compiler_clang.cpp'
+					}
 				}
 			}
 			
@@ -91,32 +106,33 @@
 
 		If (.StaticBuild)
 		{
-			Library('$ProjectName$-Lib-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+			Library('$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
 			{
 				.CompilerInputUnity = '$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
-				
+				.CompilerOutputPath = '$ObjectDir$/$ProjectPath$/'
+				.LibrarianOutput = '$OutputDir$/$ProjectName$$LibExtension$'
 
-			If (.PlatformName in .WindowsLike)
-			{
-				If (.ArchName == 'AMD64')
+				.LibrarianAdditionalInputs = {}
+				If (.PlatformName in .WindowsLike)
 				{
-					^LibrarianAdditionalInputs + {'$ObjectDir$/$ProjectPath$/compiler_msvc_amd64.obj'}
-				}
-				If (.ArchName == 'x86')
-				{
-					^LibrarianAdditionalInputs + {'$ObjectDir$/$ProjectPath$/compiler_msvc_x86.obj'}
-				}
-				If (.PlatformName == 'Xbox360')
-				{
-					^LibrarianAdditionalInputs + {
-						'public/xbox/crtfpr.obj',
-						'public/xbox/crtgpr.obj',
-						'public/xbox/crtvmx.obj',
-						'$ObjectDir$\$ProjectPath$\compiler_msvc_ppc.obj',
-						'$ObjectDir$\$ProjectPath$\stubs_win32_ppc.obj'
+					If (.ArchName == 'AMD64')
+					{
+						^LibrarianAdditionalInputs + {
+							'$ObjectDir$/$ProjectPath$/stubs_win32_amd64.obj'
+						}
+					}
+					If (.ArchName == 'x86')
+					{
+						^LibrarianAdditionalInputs + {
+							'$ObjectDir$/$ProjectPath$/stubs_win32_x86.obj'						}
+					}
+					If (.PlatformName == 'Xbox360')
+					{
+						^LibrarianAdditionalInputs + {
+							'$ObjectDir$\$ProjectPath$\stubs_win32_ppc.obj'
+						}
 					}
 				}
-			}
 			}
 		}
 

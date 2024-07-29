@@ -24,9 +24,12 @@
 
 			If (.PlatformName in .WindowsLike)
 			{
-				^UnityInputFiles +
+				If (!.StaticBuild)
 				{
-					'$ProjectPath$/../public/base/dllmain.cpp',
+					^UnityInputFiles +
+					{
+						'$ProjectPath$/../public/base/dllmain.cpp',
+					}
 				}
 
 				If (.PlatformName != 'Xbox360')
@@ -42,41 +45,51 @@
 			.UnityOutputPattern = '$ProjectName$_Unity*.cpp'
 		}
 
-		ObjectList('$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		If (.StaticBuild)
 		{
-			.CompilerInputUnity = '$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
-			.CompilerOutputPath = '$ObjectDir$/$ProjectPath$/'
+			Print('$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+			Library('$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+			{
+				.CompilerInputUnity = '$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+				.CompilerOutputPath = '$ObjectDir$/$ProjectPath$/'
+				.LibrarianOutput = '$OutputDir$/$ProjectName$$LibExtension$'
+			}
 		}
 
-		DLL('$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		If (!.StaticBuild)
 		{
-			.PreBuildDependencies = {'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'}
-			.Libraries =
+			ObjectList('$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
 			{
-				'$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
-				'Base-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
-				'CommonFiles-Lib-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
-				'Utility-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+				.CompilerInputUnity = '$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+				.CompilerOutputPath = '$ObjectDir$/$ProjectPath$/'
 			}
-			.LinkerOutput = '$OutputDir$/$ProjectName$$DLLExtension$'
-			If (.PlatformName in .WindowsLike)
+
+			DLL('$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
 			{
-				^LinkerOptions + ' /DLL'
-				If (.PlatformName == 'Xbox360')
+				.PreBuildDependencies = {'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'}
+				.Libraries =
 				{
-					^LinkerOptions + ' /AUTODEF:$ObjectDir$/$ProjectName$/$ProjectName$.def'
+					'$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+					'Base-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+					'CommonFiles-Lib-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+					'Utility-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
 				}
-			}
+				.LinkerOutput = '$OutputDir$/$ProjectName$$DLLExtension$'
+				If (.PlatformName in .WindowsLike)
+				{
+					^LinkerOptions + ' /DLL'
+				}
 #if __LINUX__
-			If (.PlatformName == 'Linux')
-			{
-				^LinkerStampExe	 = '/bin/sh'
-				^ExtractDebugInfo = 'objcopy --only-keep-debug $LinkerOutput$ $LinkerOutput$.debug'
-				^StripDebugInfo = 'objcopy --strip-debug $LinkerOutput$'
-				^AddDebugLink = 'objcopy --add-gnu-debuglink $LinkerOutput$.debug $LinkerOutput$'
-				^LinkerStampExeArgs = '-c "$ExtractDebugInfo$ && $StripDebugInfo$ && $AddDebugLink$"'
-			}
+				If (.PlatformName == 'Linux')
+				{
+					^LinkerStampExe	 = '/bin/sh'
+					^ExtractDebugInfo = 'objcopy --only-keep-debug $LinkerOutput$ $LinkerOutput$.debug'
+					^StripDebugInfo = 'objcopy --strip-debug $LinkerOutput$'
+					^AddDebugLink = 'objcopy --add-gnu-debuglink $LinkerOutput$.debug $LinkerOutput$'
+					^LinkerStampExeArgs = '-c "$ExtractDebugInfo$ && $StripDebugInfo$ && $AddDebugLink$"'
+				}
 #endif
+			}
 		}
 
 		// This is the main target

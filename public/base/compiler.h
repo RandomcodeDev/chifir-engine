@@ -64,8 +64,8 @@ extern "C" void __cdecl __security_init_cookie();
 #define FORCEINLINE __forceinline
 
 // Decorated function name
-#if _MSC_VER <= 1600
-#define FUNCTION_NAME __FUNCDNAME__
+#if defined _MSC_VER
+#define FUNCTION_NAME __FUNCSIG__
 #else
 #define FUNCTION_NAME __PRETTY_FUNCTION__
 #endif

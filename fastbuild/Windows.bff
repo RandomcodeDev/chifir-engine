@@ -3,6 +3,7 @@
 .Windows_Common =
 [
 	.CompilerOptions = ' -DCH_WIN32 -D_HAS_EXCEPTIONS=0'
+	.StaticBuild = false
 ]
 
 .Windows_MSVC =
@@ -56,6 +57,7 @@
 .Xbox360 =
 [
 	.PlatformName = 'Xbox360'
+	.StaticBuild = true
 	.CompilerOptions = ' -DCH_XBOX360 -DCH_STATIC'
 	.ExeExtension = '.xex'
 	.LibExtension = '.lib'
