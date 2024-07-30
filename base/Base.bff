@@ -117,19 +117,23 @@
 				{
 					If (.ArchName == 'AMD64')
 					{
-						^LibrarianAdditionalInputs + {
+						^LibrarianAdditionalInputs +
+						{
 							'$ObjectDir$/$ProjectPath$/stubs_win32_amd64.obj'
 						}
 					}
 					If (.ArchName == 'x86')
 					{
-						^LibrarianAdditionalInputs + {
-							'$ObjectDir$/$ProjectPath$/stubs_win32_x86.obj'						}
+						^LibrarianAdditionalInputs +
+						{
+							'$ObjectDir$/$ProjectPath$/stubs_win32_x86.obj'
+						}
 					}
 					If (.PlatformName == 'Xbox360')
 					{
-						^LibrarianAdditionalInputs + {
-							'$ObjectDir$\$ProjectPath$\stubs_win32_ppc.obj'
+						^LibrarianAdditionalInputs +
+						{
+							'$ObjectDir$/$ProjectPath$/stubs_win32_ppc.obj'
 						}
 					}
 				}

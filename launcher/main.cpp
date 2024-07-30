@@ -2,11 +2,56 @@
 #include "base/platform.h"
 #include "base/types.h"
 #include "base/vector.h"
+#include "iapplication.h"
 #include "isystem.h"
 #include "launcher.h"
 #include "utility/log.h"
 #include "utility/utility.h"
 #include "videosystem/ivideosystem.h"
+
+static IApplication* GetApplication(ILibrary* library, CVector<SystemDependency_t>& dependencies)
+{
+	CreateApplicationInterface_t CreateInterface = library->GetSymbol<CreateApplicationInterface_t>("CreateInterface");
+	if (!CreateInterface)
+	{
+		Log_Error("Failed to get CreateInterface in library %s", library->GetName());
+		return nullptr;
+	}
+
+	IApplication* app = CreateInterface();
+	if (!app)
+	{
+		Log_Error("Failed to create application from library %s", library->GetName());
+		return nullptr;
+	}
+
+	dependencies.Add(app->GetRequiredSystems());
+}
+
+static ISystem* GetSystem(ILibrary* library, u32 minVersion = 0)
+{
+	CreateSystemInterface_t CreateInterface = library->GetSymbol<CreateSystemInterface_t>("CreateInterface");
+	if (!CreateInterface)
+	{
+		Log_Error("Failed to get CreateInterface in library %s", library->GetName());
+		return nullptr;
+	}
+
+	ISystem* system = CreateInterface();
+	if (!system)
+	{
+		Log_Error("Failed to create system from library %s", library->GetName());
+		return nullptr;
+	}
+
+	if (system->GetVersion() < minVersion)
+	{
+		delete system;
+		return nullptr;
+	}
+
+	return system;
+}
 
 // ChatGPT generated allocator test, so far has shown that it works but the size of the coalesced free list doesn't quite add up
 void TestAlloc()
@@ -89,7 +134,7 @@ class CDbgPrintLogWriter : public ILogWriter
 		if (message.isAddress)
 		{
 			DbgPrint(
-				"[%s] [0x%p@%s %s] %s\n", LEVEL_NAMES[message.level], message.location, message.file, message.function,
+				"[%s] [0x%llX@%s %s] %s\n", LEVEL_NAMES[message.level], message.location, message.file, message.function,
 				message.message);
 		}
 		else
@@ -113,7 +158,8 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	Log_AddWriter(new CDbgPrintLogWriter());
 
 #ifdef CH_STATIC
-
+	CVector<ISystem*> systems;
+	systems.Add(CreateVideoSystem());
 #else
 #endif
 

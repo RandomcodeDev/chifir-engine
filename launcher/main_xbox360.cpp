@@ -2,11 +2,6 @@
 
 int main(void)
 {
-	if (!LoadLibraryA("Base.xex"))
-	{
-		abort();
-	}
-
 	HMODULE launcher = LoadLibraryA("Launcher.xex");
 	if (!launcher)
 	{

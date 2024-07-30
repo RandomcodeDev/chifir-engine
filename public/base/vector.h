@@ -15,11 +15,17 @@ template <typename T> class CVector : public IContainer<T, ssize>
 	{
 	}
 
+	// Create a vector from the given data
 	CVector(const T* data, ssize size)
 	{
 		Resize(size);
-		// Copying objects should be fine because their vtables stay the same
+		// Copying objects is fine because their vtables stay the same
 		Base_MemCopy(m_buffer, data, m_size);
+	}
+
+	// Duplicate an existing vector
+	CVector(const CVector<T>& other) : CVector(other.Data(), other.Size())
+	{
 	}
 
 	~CVector()
@@ -85,6 +91,7 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		}
 	}
 
+	// Add an object
 	ssize Add(const T& object, ssize index = IContainer<T, ssize>::BAD_INDEX)
 	{
 		m_sorted = false;
@@ -108,6 +115,7 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		}
 	}
 
+	// Add many objects
 	ssize Add(const T* objects, ssize count, ssize startIndex = IContainer<T, ssize>::BAD_INDEX)
 	{
 		Reserve(count);
@@ -121,6 +129,13 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		return index - count - 1;
 	}
 
+	// Add the contents of another vector
+	ssize Add(const CVector<T>& other, ssize startIndex = IContainer<T, ssize>::BAD_INDEX)
+	{
+		return Add(other.Data(), other.Size(), startIndex);
+	}
+
+	// Remove the given element
 	void Delete(ssize index = IContainer<T, ssize>::BAD_INDEX)
 	{
 		// Delete the last element by default
@@ -134,16 +149,23 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		m_sorted = false;
 	}
 
+	// Get the given element
 	T& operator[](const ssize& index) const
 	{
 		ASSERT(index < m_size && index >= 0);
 		return m_buffer[index];
 	}
 
+	// Append an object
 	void operator+=(const T& object)
 	{
 		Add(object);
-		m_sorted = false;
+	}
+
+	// Append the contents of another vector
+	void operator+=(const CVector<T>& other)
+	{
+		Add(other);
 	}
 
 	// Not implemented yet

@@ -96,7 +96,7 @@
 						'public/xbox/crtfpr.obj',
 						'public/xbox/crtgpr.obj',
 						'public/xbox/crtvmx.obj',
-						'$ObjectDir$\$ProjectPath$\compiler_msvc_ppc.obj'
+						'$ObjectDir$/$ProjectPath$/compiler_msvc_ppc.obj'
 					}
 				}
 			}

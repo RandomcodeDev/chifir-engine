@@ -16,11 +16,9 @@
 #endif
 #endif
 
+class IApplication;
 class ILibrary;
 class ISystem;
 
 // Call Base_Quit and also log the message
 UTILAPI NORETURN void Util_Fatal(cstr message, ...);
-
-// Get a system from a library
-UTILAPI ISystem* Util_GetSystem(ILibrary* library, u32 minVersion = 0);

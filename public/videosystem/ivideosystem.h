@@ -57,3 +57,7 @@ class IVideoSystem : public ISystem
 
 	static const u32 VERSION = 1;
 };
+
+#ifdef CH_STATIC
+extern ISystem* CreateVideoSystem();
+#endif

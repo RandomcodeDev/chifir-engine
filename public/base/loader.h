@@ -18,6 +18,9 @@ class ILibrary
 
 	// Get a symbol
 	virtual void* GetSymbol(cstr name) = 0;
+
+	// Get a library's name
+	virtual cstr GetName() = 0;
 };
 
 // Load a library by its base name (no path, no extension, i.e. to load Base.dll you just pass "Base")

@@ -41,12 +41,18 @@ extern bool g_loaderInitialized;
 class CWindowsLibrary : public ILibrary
 {
   public:
-	CWindowsLibrary(void* base);
+	CWindowsLibrary(cstr name, void* base);
 	~CWindowsLibrary();
 
 	void* GetSymbol(cstr name);
 
+	cstr GetName()
+	{
+		return m_name;
+	}
+
   private:
+	dstr m_name;
 	void* m_base;
 };
 

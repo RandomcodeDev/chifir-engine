@@ -161,7 +161,7 @@ bool Base_InitLoader()
 		return false;
 	}
 
-	CWindowsLibrary ntDll(ntDllBase);
+	CWindowsLibrary ntDll("ntdll.dll", ntDllBase);
 	GET_FUNCTION(&ntDll, DbgPrint)
 
 	// These allow for cleaner handling of any of these failing
@@ -260,7 +260,6 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 			return nullptr;
 		}
 
-		Base_Free(fileName);
 
 		void* handle = nullptr;
 		status = LdrLoadDll(nullptr, nullptr, &nameUStr, &handle);
@@ -272,15 +271,21 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 		}
 
 		RtlFreeUnicodeString(&nameUStr);
-		return new CWindowsLibrary(handle);
+
+		CWindowsLibrary* library = new CWindowsLibrary(fileName, handle);
+
+		Base_Free(fileName);
+
+		return library;
 	}
 #endif
 
 	return nullptr;
 }
 
-CWindowsLibrary::CWindowsLibrary(void* base) : m_base(base)
+CWindowsLibrary::CWindowsLibrary(cstr name, void* base) : m_base(base)
 {
+	m_name = Base_StrClone(name);
 }
 
 CWindowsLibrary::~CWindowsLibrary()
@@ -293,6 +298,11 @@ CWindowsLibrary::~CWindowsLibrary()
 		LdrUnloadDll(m_base);
 	}
 #endif
+
+	if (m_name)
+	{
+		Base_Free(m_name);
+	}
 }
 
 void* CWindowsLibrary::GetSymbol(cstr name)
