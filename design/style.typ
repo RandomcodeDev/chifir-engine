@@ -35,6 +35,10 @@ easier to type.
 == Classes vs structs
 Classes do things, structs store data. That's the distinction so far.
 
+== Passing objects around
+Because of C++03 not having move semantics, don't return things that are expensive to copy, like CVector, by value. Instead, take a reference to one
+and fill it like that. This avoids wasteful deep copies.
+
 == Headers
 Public headers (ones visible to any component) should include as few headers as possible, and forward declare types where needed.
 In `.cpp` files, all headers for the things used should be included, not just ones that happen to include the right things. Private

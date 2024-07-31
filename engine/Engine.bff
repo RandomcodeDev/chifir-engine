@@ -18,6 +18,7 @@
 		{
 			.UnityInputFiles = 
 			{
+				'$ProjectPath$/engine.cpp',
 				'$ProjectPath$/interface.cpp',
 			}
 
@@ -58,7 +59,8 @@
 				{
 					'$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
 					'Base-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
-					'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+					'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+					'Utility-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
 				}
 				.LinkerOutput = '$OutputDir$/$ProjectName$$DLLExtension$'
 				If (.PlatformName in .WindowsLike)

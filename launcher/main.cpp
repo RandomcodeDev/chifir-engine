@@ -9,6 +9,9 @@
 #include "utility/utility.h"
 #include "videosystem/ivideosystem.h"
 
+#ifdef CH_STATIC
+extern IApplication* CreateEngine();
+#else
 static IApplication* GetApplication(ILibrary* library, CVector<SystemDependency_t>& dependencies)
 {
 	CreateApplicationInterface_t CreateInterface = library->GetSymbol<CreateApplicationInterface_t>("CreateInterface");
@@ -25,7 +28,7 @@ static IApplication* GetApplication(ILibrary* library, CVector<SystemDependency_
 		return nullptr;
 	}
 
-	dependencies.Add(app->GetRequiredSystems());
+	app->GetRequiredSystems(dependencies);
 
 	return app;
 }
@@ -62,6 +65,7 @@ static ISystem* GetSystem(ILibrary* library, u32 minVersion, bool exactRequired)
 
 	return system;
 }
+#endif
 
 // ChatGPT generated allocator test, so far has shown that it works but the size of the coalesced free list doesn't quite add up
 void TestAlloc()
@@ -167,12 +171,14 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 
 	Log_AddWriter(new CDbgPrintLogWriter());
 
+	cstr appName = "Engine"; // TODO: make this based on a command line arg
+
 #ifdef CH_STATIC
 	CVector<ISystem*> systems;
 	systems.Add(CreateVideoSystem());
-#else
-	cstr appName = "Engine"; // TODO: make this based on a command line arg
 
+	IApplication* app = CreateEngine();
+#else
 	Log_Info("Loading application %s", appName);
 	ILibrary* appLib = Base_LoadLibrary(appName);
 	if (!appLib)
@@ -213,7 +219,7 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	}
 #endif
 
-	Log_Info("Running application %s with %d systems", systems.Size());
+	Log_Info("Running application %s with %d systems", appName, systems.Size());
 	s32 result = app->Run(systems);
 
 	for (ssize i = 0; i < systems.Size(); i++)
@@ -221,10 +227,12 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 		delete systems[i];
 	}
 
+#ifndef CH_STATIC
 	for (ssize i = 0; i < libs.Size(); i++)
 	{
 		delete libs[i];
 	}
+#endif
 
 	Plat_Shutdown();
 	Base_Shutdown();

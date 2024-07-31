@@ -13,7 +13,7 @@ class IApplication
 	virtual ~IApplication() DEFAULT;
 
 	// Get the application's required systems
-	virtual CVector<SystemDependency_t> GetRequiredSystems() = 0;
+	virtual void GetRequiredSystems(CVector<SystemDependency_t>& dependencies) = 0;
 
 	// Run the application
 	// systems is in the same order as the list from GetRequiredSystems
