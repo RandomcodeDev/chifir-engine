@@ -95,7 +95,8 @@ BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size);
 // Allocate aligned memory
 BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment = 8);
 
-// Allocate an array of T with count elements
+// Allocate an array of T with count elements, needs to be initialized with placement new
+// if constructors matter.
 template <typename T> static inline T* Base_Alloc(ssize count)
 {
 	return reinterpret_cast<T*>(Base_Alloc(count * SIZEOF(T), ALIGNOF(T)));

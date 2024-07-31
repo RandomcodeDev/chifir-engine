@@ -30,7 +30,7 @@ struct LogMessage_t
 };
 
 // Log writer interface
-class ILogWriter
+class UTILAPI ILogWriter
 {
   public:
 	virtual ~ILogWriter() DEFAULT;

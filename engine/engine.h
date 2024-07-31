@@ -30,4 +30,10 @@ class CEngine : public IEngine
 	EngineState_t m_state;
 
 	IVideoSystem* m_videoSystem;
+
+	// Initializes the engine's systems in the right order
+	bool InitializeSystems();
+
+	// Shuts down the engine's systems in the right order
+	void ShutdownSystems();
 };

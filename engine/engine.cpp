@@ -16,12 +16,11 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	Log_Info("Initializing engine");
 	m_state = EngineStateStartup;
 
-	Log_Info("Initializing systems");
-
 	m_videoSystem = reinterpret_cast<IVideoSystem*>(systems[0]);
-	if (!m_videoSystem->Initialize())
+
+	if (!InitializeSystems())
 	{
-		Util_Fatal("Failed to initialize video system!");
+		Util_Fatal("Failed to initialize a system!");
 	}
 
 	Log_Info("Initialization done, entering main loop");
@@ -37,7 +36,23 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	Log_Info("Shutting down");
 	m_state = EngineStateShutdown;
 
-	m_videoSystem->Shutdown();
+	ShutdownSystems();
 
 	return 0;
+}
+
+bool CEngine::InitializeSystems()
+{
+	if (!m_videoSystem->Initialize())
+	{
+		Log_FatalError("Video system initialization failed!");
+		return false;
+	}
+
+	return true;
+}
+
+void CEngine::ShutdownSystems()
+{
+	m_videoSystem->Shutdown();
 }

@@ -106,9 +106,10 @@ bool CWindowsVideoSystem::InitializeMainWindow()
 	// center the window
 	u32 x = GetSystemMetrics(SM_CXSCREEN) / 2 - m_width / 2;
 	u32 y = GetSystemMetrics(SM_CYSCREEN) / 2 - m_height / 2;
+
 	Log_Info(
-		"Creating %ux%u (internally %ux%u) window at (%u, %u) titled %s", m_width + m_extraWidth, m_height + m_extraHeight, x, y,
-		m_title);
+		"Creating %ux%u (internally %ux%u) window at (%u, %u) titled %s", m_width, m_height, m_width - m_extraWidth,
+		m_height - m_extraHeight, x, y, m_title);
 	m_window =
 		CreateWindowExA(0, WINDOW_CLASS, m_title, WINDOW_STYLE, x, y, m_width, m_height, nullptr, nullptr, m_hinstance, nullptr);
 	if (!m_window)
