@@ -23,10 +23,8 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		Base_MemCopy(m_buffer, data, m_size);
 	}
 
-	// Duplicate an existing vector
-	CVector(const CVector<T>& other) : CVector(other.Data(), other.Size())
-	{
-	}
+	// No implicit copies, use Add()
+	CVector(const CVector<T>& other) = delete;
 
 	~CVector()
 	{

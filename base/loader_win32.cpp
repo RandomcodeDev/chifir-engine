@@ -283,9 +283,13 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 	return nullptr;
 }
 
-CWindowsLibrary::CWindowsLibrary(cstr name, void* base) : m_base(base)
+CWindowsLibrary::CWindowsLibrary(cstr name, void* base) : m_name(nullptr), m_base(base)
 {
-	m_name = Base_StrClone(name);
+	// For ntdll, Base_Alloc fails because NtAllocateVirtualMemory hasn't been loaded yet
+	if (g_loaderInitialized)
+	{
+		m_name = Base_StrClone(name);
+	}
 }
 
 CWindowsLibrary::~CWindowsLibrary()

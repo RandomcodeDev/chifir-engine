@@ -5,9 +5,15 @@ extern "C" BOOL __stdcall _DllMainCRTStartup(HANDLE hDllHandle, DWORD dwReason, 
     (void)hDllHandle;
     (void)lpreserved;
 
-	if (dwReason == DLL_PROCESS_ATTACH)
+	switch (dwReason)
 	{
+	case DLL_PROCESS_ATTACH:
 		__security_init_cookie();
+		RunGlobalConstructors();
+		break;
+	case DLL_PROCESS_DETACH:
+		RunGlobalDestructors();
+		break;
 	}
 
     return TRUE;

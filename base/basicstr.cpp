@@ -64,7 +64,7 @@ BASEAPI dstr Base_StrClone(cstr str, ssize maxSize)
 	dstr buffer = Base_Alloc<char>(size);
 	if (!buffer)
 	{
-		return buffer;
+		return nullptr;
 	}
 
 	return Base_StrCopy(buffer, str, size);

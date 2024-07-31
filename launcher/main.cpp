@@ -26,9 +26,11 @@ static IApplication* GetApplication(ILibrary* library, CVector<SystemDependency_
 	}
 
 	dependencies.Add(app->GetRequiredSystems());
+
+	return app;
 }
 
-static ISystem* GetSystem(ILibrary* library, u32 minVersion = 0)
+static ISystem* GetSystem(ILibrary* library, u32 minVersion, bool exactRequired)
 {
 	CreateSystemInterface_t CreateInterface = library->GetSymbol<CreateSystemInterface_t>("CreateInterface");
 	if (!CreateInterface)
@@ -44,8 +46,16 @@ static ISystem* GetSystem(ILibrary* library, u32 minVersion = 0)
 		return nullptr;
 	}
 
-	if (system->GetVersion() < minVersion)
+	// TODO: simplify
+	if (exactRequired && system->GetVersion() != minVersion)
 	{
+		Log_Error("System version is %u, version %u is required", system->GetVersion(), minVersion);
+		delete system;
+		return nullptr;
+	}
+	else if (system->GetVersion() < minVersion)
+	{
+		Log_Error("System version is %u, version %u or higher is required", system->GetVersion(), minVersion);
 		delete system;
 		return nullptr;
 	}
@@ -161,10 +171,63 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	CVector<ISystem*> systems;
 	systems.Add(CreateVideoSystem());
 #else
+	cstr appName = "Engine"; // TODO: make this based on a command line arg
+
+	Log_Info("Loading application %s", appName);
+	ILibrary* appLib = Base_LoadLibrary(appName);
+	if (!appLib)
+	{
+		Util_Fatal("Failed to load application %s!", appName);
+	}
+
+	Log_Info("Initializing application %s", appName);
+	CVector<SystemDependency_t> appDependencies;
+	IApplication* app = GetApplication(appLib, appDependencies);
+	if (!app)
+	{
+		Util_Fatal("Failed to initialize application %s!", appName);
+	}
+
+	Log_Info("Loading systems for application %s", appName);
+	CVector<ILibrary*> libs;
+	CVector<ISystem*> systems;
+	for (ssize i = 0; i < appDependencies.Size(); i++)
+	{
+		Log_Info(
+			"Loading %s, %sversion %u", appDependencies[i].name, appDependencies[i].requireExactVersion ? "" : "minimum ",
+			appDependencies[i].minimumVersion);
+		ILibrary* lib = Base_LoadLibrary(appDependencies[i].name);
+		if (!lib)
+		{
+			Util_Fatal("Failed to load system %s!", appDependencies[i].name);
+		}
+		libs.Add(lib);
+
+		Log_Info("Getting interface for %s", appDependencies[i].name);
+		ISystem* system = GetSystem(lib, appDependencies[i].minimumVersion, appDependencies[i].requireExactVersion);
+		if (!system)
+		{
+			Util_Fatal("Failed to get interface for %s, or it's the wrong version!", appDependencies[i].name);
+		}
+		systems.Add(system);
+	}
 #endif
+
+	Log_Info("Running application %s with %d systems", systems.Size());
+	s32 result = app->Run(systems);
+
+	for (ssize i = 0; i < systems.Size(); i++)
+	{
+		delete systems[i];
+	}
+
+	for (ssize i = 0; i < libs.Size(); i++)
+	{
+		delete libs[i];
+	}
 
 	Plat_Shutdown();
 	Base_Shutdown();
 
-	return 0;
+	return result;
 }

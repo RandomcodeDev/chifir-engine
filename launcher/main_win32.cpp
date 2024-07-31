@@ -27,7 +27,9 @@ extern "C"
 	{
 		__security_init_cookie();
 
+		RunGlobalConstructors();
 		LauncherMain();
+		RunGlobalDestructors();
 
 		NtTerminateProcess(NtCurrentProcess(), STATUS_SUCCESS);
 	}

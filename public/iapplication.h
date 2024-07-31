@@ -16,10 +16,9 @@ class IApplication
 	virtual CVector<SystemDependency_t> GetRequiredSystems() = 0;
 
 	// Run the application
-	// systems is in the same order as the list from GetRequiredSystems, but any that aren't required and couldn't be loaded will
-	// be replaced with nullptr
+	// systems is in the same order as the list from GetRequiredSystems
 	// TODO: command line parsing
-	virtual s32 Run(CVector<ISystem*> systems /* TODO: , CCommandLine cmdLine */) = 0;
+	virtual s32 Run(const CVector<ISystem*>& systems /* TODO: , CCommandLine cmdLine */) = 0;
 };
 
 // Exported by DLLs that contain an application as "CreateInterface"

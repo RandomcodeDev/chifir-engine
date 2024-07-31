@@ -31,8 +31,14 @@
 // MSVC likes to be told when an intrinsic function is defined
 #define DEFINE_INTRINSIC(x) __pragma(function(x))
 
-// Initialize the stack security cookie
+// Initialize the stack security cookie, local to the current DLL/EXE
 extern "C" void __cdecl __security_init_cookie();
+
+// Call global constructors, local to the current DLL/EXE
+extern void RunGlobalConstructors();
+
+// Call global destructors, local to the current DLL/EXE
+extern void RunGlobalDestructors();
 #else
 #define ATTRIBUTE(x) __attribute__((x))
 #define ALIAS(a, b)  extern "C" TYPEOF(a) ATTRIBUTE(alias(#a)) b;

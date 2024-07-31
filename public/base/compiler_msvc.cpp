@@ -8,8 +8,38 @@
 #include "platform.h"
 #include "types.h"
 
+typedef void (*_PVFV)(void);
+typedef int (*_PIFV)(void);
+typedef void (*_PVFI)(int);
+
 extern "C"
 {
+	// C initializers
+#pragma section(".CRT$XIA", long, read)
+	__declspec(allocate(".CRT$XIA")) _PIFV __xi_a[] = {0};
+#pragma section(".CRT$XIZ", long, read)
+	__declspec(allocate(".CRT$XIZ")) _PIFV __xi_z[] = {0};
+
+	// C++ constructors
+#pragma section(".CRT$XCA", long, read)
+	__declspec(allocate(".CRT$XCA")) _PVFV __xc_a[] = {0};
+#pragma section(".CRT$XCZ", long, read)
+	__declspec(allocate(".CRT$XCZ")) _PVFV __xc_z[] = {0};
+
+	// C pre-terminators
+#pragma section(".CRT$XPA", long, read)
+	__declspec(allocate(".CRT$XPA")) _PVFV __xp_a[] = {0};
+#pragma section(".CRT$XPZ", long, read)
+	__declspec(allocate(".CRT$XPZ")) _PVFV __xp_z[] = {0};
+
+	// C terminators
+#pragma section(".CRT$XTA", long, read)
+	__declspec(allocate(".CRT$XTA")) _PVFV __xt_a[] = {0};
+#pragma section(".CRT$XTZ", long, read)
+	__declspec(allocate(".CRT$XTZ")) _PVFV __xt_z[] = {0};
+
+#pragma comment(linker, "/merge:.CRT=.rdata")
+
 #if defined CH_AMD64 || defined CH_ARM64
 	ATTRIBUTE(align(64)) uptr __security_cookie = 0x6942069420694206;
 #else
@@ -87,6 +117,51 @@ extern "C"
 		(void)func;
 		return 0;
 	}
+}
+
+static void CallXtors(_PVFV* begin, _PVFV* end)
+{
+	for (_PVFV* iter = begin; iter != end; iter++)
+	{
+		if (*iter)
+		{
+			(**iter)();
+		}
+	}
+}
+
+static s32 CallXtors(_PIFV* begin, _PIFV* end)
+{
+	s32 ret = 0;
+	for (_PIFV* iter = begin; iter != end; iter++)
+	{
+		if (*iter)
+		{
+			ret = (**iter)();
+			if (ret != 0)
+			{
+				return ret;
+			}
+		}
+	}
+
+	return 0;
+}
+
+void RunGlobalConstructors()
+{
+	s32 ret = CallXtors(__xi_a, __xi_z);
+	if (ret != 0)
+	{
+		Base_QuitSafe(ret, "A global constructor failed");
+	}
+	CallXtors(__xc_a, __xc_z);
+}
+
+void RunGlobalDestructors()
+{
+	CallXtors(__xp_a, __xp_z);
+	CallXtors(__xt_a, __xt_z);
 }
 
 // Ensures the vtable for type_info is generated
