@@ -23,9 +23,6 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		Base_MemCopy(m_buffer, data, m_size);
 	}
 
-	// No implicit copies, use Add()
-	CVector(const CVector<T>& other) = delete;
-
 	~CVector()
 	{
 		if (m_buffer)
@@ -186,4 +183,9 @@ template <typename T> class CVector : public IContainer<T, ssize>
 	ssize m_size;
 	ssize m_capacity;
 	bool m_sorted;
+
+	// No implicit copies, use Add()
+	CVector(const CVector<T>& other)
+	{
+	}
 };

@@ -1,15 +1,15 @@
 #once
 
 {
-	.ProjectName = 'Engine'
-	.ProjectPath = 'engine'
+	.ProjectName = '<Name>'
+	.ProjectPath = '<name>'
 
 	.ProjectConfigs = {}
 	ForEach(.BuildConfig in .BuildConfigs)
 	{
 		Using(.BuildConfig)
 
-		.CompilerOptions + ' -DIN_ENGINE'
+		.CompilerOptions + ' -DIN_<NAME>'
 
 		.ObjectDir = 'obj/$CompilerName$/$PlatformName$/$ArchName$/$ConfigName$'
 		.OutputDir = 'out/$CompilerName$/$PlatformName$/$ArchName$/$ConfigName$'
@@ -18,8 +18,6 @@
 		{
 			.UnityInputFiles = 
 			{
-				'$ProjectPath$/engine.cpp',
-				'$ProjectPath$/interface.cpp',
 			}
 
 			If (.PlatformName in .WindowsLike)
@@ -101,3 +99,4 @@
 	.Options = []
 	CreateVcxProject(.ProjectName, .ProjectPath, .ProjectConfigs, .Options)
 }
+

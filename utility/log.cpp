@@ -1,10 +1,38 @@
 #include "utility/log.h"
 #include "base/base.h"
 #include "base/basicstr.h"
+#ifdef CH_WIN32
+#include "base/platform.h"
+#endif
 #include "base/vector.h"
 #include "utility/utility.h"
 
 static CVector<ILogWriter*> s_writers;
+
+#ifdef CH_WIN32
+extern "C" DLLIMPORT bool DbgPrint_Available();
+
+UTILAPI void CDbgPrintLogWriter::Write(const LogMessage_t& message)
+{
+	static const cstr LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
+
+	if (DbgPrint_Available())
+	{
+		if (message.isAddress)
+		{
+			DbgPrint(
+				"[%s] [0x%llX@%s %s] %s\n", LEVEL_NAMES[message.level], message.location, message.file, message.function,
+				message.message);
+		}
+		else
+		{
+			DbgPrint(
+				"[%s] [%s:%d %s] %s\n", LEVEL_NAMES[message.level], message.file, message.location, message.function,
+				message.message);
+		}
+	}
+}
+#endif
 
 UTILAPI void Log_AddWriter(ILogWriter* writer)
 {

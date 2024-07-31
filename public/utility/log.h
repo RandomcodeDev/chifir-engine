@@ -39,6 +39,15 @@ class ILogWriter
 	virtual void Write(const LogMessage_t& message) = 0;
 };
 
+#ifdef CH_WIN32
+// DbgPrint log writer
+class UTILAPI CDbgPrintLogWriter : public ILogWriter
+{
+  public:
+	void Write(const LogMessage_t& message);
+};
+#endif
+
 // Add a log writer
 UTILAPI void Log_AddWriter(ILogWriter* writer);
 

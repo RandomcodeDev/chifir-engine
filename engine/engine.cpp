@@ -4,7 +4,11 @@
 
 void CEngine::GetRequiredSystems(CVector<SystemDependency_t>& dependencies)
 {
-	dependencies.Add(SystemDependency_t{"VideoSystem", IVideoSystem::VERSION, false});
+	static const SystemDependency_t deps[] = {
+		{"VideoSystem", IVideoSystem::VERSION, false}
+	};
+
+	dependencies.Add(deps, ARRAY_SIZE(deps));
 }
 
 s32 CEngine::Run(const CVector<ISystem*>& systems)

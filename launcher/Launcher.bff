@@ -62,6 +62,7 @@
 			{
 				^Libraries +
 				{
+					'Engine-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
 					'VideoSystem-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
 				}
 			}
