@@ -27,4 +27,3 @@ class IGraphicsInstance
 	// Create a swap chain
 	virtual IGraphicsSwapChain* CreateSwapChain() = 0;
 };
-
