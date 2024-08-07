@@ -19,6 +19,8 @@ class IRhiImage;
 enum RhiImageType_t;
 enum RhiImageFormat_t;
 enum RhiImageFlags_t;
+class IRhiPipelineState;
+struct RhiPipelineStateDesc_t;
 
 class IRhiDevice
 {
@@ -42,4 +44,7 @@ class IRhiDevice
 	virtual IRhiImage* CreateImage(
 		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType_t type,
 		RhiImageFormat_t format, RhiImageFlags_t flags) = 0;
+
+	// Create a pipeline state
+	virtual IRhiPipelineState* CreatePipelineState(const RhiPipelineStateDesc_t& desc) = 0;
 };
