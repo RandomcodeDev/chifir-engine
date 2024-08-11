@@ -18,7 +18,7 @@
 #include "types.h"
 
 // Initialize anything necessary to use platform functions. Terminates the process on failure.
-BASEAPI void Plat_Init();
+extern BASEAPI void Plat_Init();
 
 // Shut down platform
-BASEAPI void Plat_Shutdown();
+extern BASEAPI void Plat_Shutdown();

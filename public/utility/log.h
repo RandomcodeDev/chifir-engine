@@ -49,13 +49,13 @@ class UTILAPI CDbgPrintLogWriter : public ILogWriter
 #endif
 
 // Add a log writer
-UTILAPI void Log_AddWriter(ILogWriter* writer);
+extern UTILAPI void Log_AddWriter(ILogWriter* writer);
 
 // Write a log message
-UTILAPI void Log_Write(const LogMessage_t& message);
+extern UTILAPI void Log_Write(const LogMessage_t& message);
 
 // Write a log message, and format it
-UTILAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr file, cstr function, cstr message, ...);
+extern UTILAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr file, cstr function, cstr message, ...);
 
 #define Log_Message(level, ...) Log_Write(LogLevel##level, __LINE__, false, __FILE__, FUNCTION_NAME, __VA_ARGS__)
 #define Log_Trace(...)          Log_Message(Trace, __VA_ARGS__)

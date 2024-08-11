@@ -16,18 +16,18 @@
 #endif
 
 // Initialize platform stuff, detect CPU features, and other stuff
-BASEAPI void Base_Init();
+extern BASEAPI void Base_Init();
 
 // Shut down platform stuff
-BASEAPI void Base_Shutdown();
+extern BASEAPI void Base_Shutdown();
 
 // Exit the process and optionally display an error.
 // For platform specific code, error can be an NTSTATUS or POSIX errno value.
 // Otherwise, use 0 for normal exit, 1 for a possibly relevant platform-specific error code and an error message.
-BASEAPI NORETURN void Base_Quit(s32 error, cstr msg, ...);
+extern BASEAPI NORETURN void Base_Quit(s32 error, cstr msg, ...);
 
 // This is for when Base_Quit might have side effects that could lead to recursion, such as calling Base_VFormat
-BASEAPI NORETURN void Base_QuitSafe(s32 error, cstr msg);
+extern BASEAPI NORETURN void Base_QuitSafe(s32 error, cstr msg);
 
 #define ASSERT_IMPL(cond, action)                                                                                                \
 	if (!(cond))                                                                                                                 \
@@ -80,20 +80,20 @@ template <typename T> static inline T Min(const T& left, const T& right)
 }
 
 // FNV-1a hash
-BASEAPI u32 Base_Fnv1a32(const void* data, ssize size);
-BASEAPI u64 Base_Fnv1a64(const void* data, ssize size);
+extern BASEAPI u32 Base_Fnv1a32(const void* data, ssize size);
+extern BASEAPI u64 Base_Fnv1a64(const void* data, ssize size);
 
 // Copy memory
-BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize size);
+extern BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize size);
 
 // Compare memory
-BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssize size);
+extern BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssize size);
 
 // Clear memory
-BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size);
+extern BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size);
 
 // Allocate aligned memory
-BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment = 8);
+extern BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment = 8);
 
 // Allocate an array of T with count elements, needs to be initialized with placement new
 // if constructors matter.
@@ -103,7 +103,7 @@ template <typename T> static inline T* Base_Alloc(ssize count)
 }
 
 // Resize an allocation. block == nullptr is equivalent to Base_Alloc, newSize == 0 is equivalent to Base_Free.
-BASEAPI void* Base_Realloc(void* block, ssize newSize);
+extern BASEAPI void* Base_Realloc(void* block, ssize newSize);
 
 // Free memory from Base_Alloc
-BASEAPI void Base_Free(void* block);
+extern BASEAPI void Base_Free(void* block);
