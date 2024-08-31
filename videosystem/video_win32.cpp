@@ -1,13 +1,24 @@
 #include "video_win32.h"
 #include "base/base.h"
 #include "base/basicstr.h"
-#include "utility/log.h"
+#include "base/log.h"
+
+extern "C" bool SetProcessDPIAware_Available();
 
 bool CWindowsVideoSystem::Initialize()
 {
 	m_hinstance = reinterpret_cast<HINSTANCE>(NtCurrentImageBase());
 
 	Log_Info("Initializing Windows video system");
+
+	if (SetProcessDPIAware_Available())
+	{
+		Log_Info("Setting DPI awarenesss");
+		if (!SetProcessDPIAware())
+		{
+			Log_Warning("Failed to set DPI awareness: %d (%#X)", LastNtError(), LastNtError());
+		}
+	}
 
 	if (!RegisterWindowClass() || !InitializeMainWindow())
 	{
@@ -73,7 +84,7 @@ bool CWindowsVideoSystem::RegisterWindowClass()
 	wndClass.hCursor = LoadCursorA(nullptr, IDC_ARROW);
 	if (!RegisterClassExA(&wndClass))
 	{
-		Log_Error("Failed to register window class: Win32 error %d (0x%X)", LastNtError(), LastNtError());
+		Log_Error("Failed to register window class: Win32 error %d (%#X)", LastNtError(), LastNtError());
 		return false;
 	}
 
@@ -114,7 +125,7 @@ bool CWindowsVideoSystem::InitializeMainWindow()
 		CreateWindowExA(0, WINDOW_CLASS, m_title, WINDOW_STYLE, x, y, m_width, m_height, nullptr, nullptr, m_hinstance, nullptr);
 	if (!m_window)
 	{
-		Log_Error("Failed to create window: Win32 error %d (0x%X)", LastNtError(), LastNtError());
+		Log_Error("Failed to create window: Win32 error %d (%#X)", LastNtError(), LastNtError());
 		return false;
 	}
 
@@ -182,8 +193,15 @@ LRESULT __stdcall CWindowsVideoSystem::WindowProc(HWND window, UINT msg, WPARAM 
 		return 0;
 	}
 	case WM_SIZE: {
+		u32 width = LOWORD(lparam);
+		u32 height = HIWORD(lparam);
+		Log_Debug("Window resized from %ux%u to %ux%u", videoSystem->m_width, videoSystem->m_height, width, height);
 		videoSystem->UpdateSize();
-		Log_Debug("Window resized to %ux%u", videoSystem->m_width, videoSystem->m_height);
+		return 0;
+	}
+	case WM_ACTIVATEAPP: {
+		videoSystem->m_focused = wparam;
+		Log_Debug("Window %s", videoSystem->m_focused ? "focused" : "unfocused");
 		return 0;
 	}
 	case WM_CLOSE: {

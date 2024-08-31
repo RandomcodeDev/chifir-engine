@@ -1,18 +1,17 @@
-#include "utility/log.h"
 #include "base/base.h"
 #include "base/basicstr.h"
+#include "base/log.h"
 #ifdef CH_WIN32
 #include "base/platform.h"
 #endif
 #include "base/vector.h"
-#include "utility/utility.h"
 
 static CVector<ILogWriter*> s_writers;
 
 #ifdef CH_WIN32
-extern "C" DLLIMPORT bool DbgPrint_Available();
+DECLARE_AVAILABLE(DbgPrint);
 
-UTILAPI void CDbgPrintLogWriter::Write(const LogMessage_t& message)
+BASEAPI void CDbgPrintLogWriter::Write(const LogMessage_t& message)
 {
 	static const cstr LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
 
@@ -34,7 +33,7 @@ UTILAPI void CDbgPrintLogWriter::Write(const LogMessage_t& message)
 }
 #endif
 
-UTILAPI void Log_AddWriter(ILogWriter* writer)
+BASEAPI void Log_AddWriter(ILogWriter* writer)
 {
 	if (writer)
 	{
@@ -42,7 +41,7 @@ UTILAPI void Log_AddWriter(ILogWriter* writer)
 	}
 }
 
-UTILAPI void Log_Write(const LogMessage_t& message)
+BASEAPI void Log_Write(const LogMessage_t& message)
 {
 	for (ssize i = 0; i < s_writers.Size(); i++)
 	{
@@ -50,7 +49,7 @@ UTILAPI void Log_Write(const LogMessage_t& message)
 	}
 }
 
-UTILAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr file, cstr function, cstr message, ...)
+BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr file, cstr function, cstr message, ...)
 {
 	va_list args;
 

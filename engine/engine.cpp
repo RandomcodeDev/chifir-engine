@@ -1,12 +1,12 @@
 #include "engine.h"
-#include "utility/log.h"
+#include "base/log.h"
 #include "videosystem/ivideosystem.h"
 
 void CEngine::GetRequiredSystems(CVector<SystemDependency_t>& dependencies)
 {
 	static const SystemDependency_t deps[] = {
 		{"VideoSystem", IVideoSystem::VERSION, false}
-	};
+    };
 
 	dependencies.Add(deps, ARRAY_SIZE(deps));
 }
@@ -27,10 +27,11 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	m_state = EngineStateRunning;
 	while (m_state >= EngineStateRunning)
 	{
-		if (!m_videoSystem->Update())
-		{
-			m_state = EngineStateShutdown;
-		}
+		CheckState();
+
+		PreFrame();
+		Update();
+		PostFrame();
 	}
 
 	Log_Info("Shutting down");
@@ -52,7 +53,49 @@ bool CEngine::InitializeSystems()
 	return true;
 }
 
+void CEngine::PreFrame()
+{
+	if (!m_videoSystem->Update())
+	{
+		m_state = EngineStateShutdown;
+	}
+
+	m_inFrame = true;
+}
+
+void CEngine::Update()
+{
+}
+
+void CEngine::PostFrame()
+{
+	m_inFrame = false;
+}
+
 void CEngine::ShutdownSystems()
 {
 	m_videoSystem->Shutdown();
+}
+
+void CEngine::CheckState()
+{
+	// TODO: lock engine state here
+
+	if (m_state == EngineStateRunning)
+	{
+		if (!m_videoSystem->Focused())
+		{
+			m_state = EngineStateInactive;
+		}
+	}
+
+	if (m_state == EngineStateInactive)
+	{
+		if (m_videoSystem->Focused())
+		{
+			m_state = EngineStateRunning;
+		}
+	}
+
+	// TODO: unlock engine state here
 }

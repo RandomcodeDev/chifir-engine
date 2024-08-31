@@ -15,7 +15,9 @@ class IEngine : public IApplication
 
 	enum EngineState_t
 	{
-		EngineStateStartup = 0, // The engine is starting up
+		EngineStateUninitialized = 0, // The engine hasn't been started yet
+
+		EngineStateStartup = 50, // The engine is starting up
 		EngineStateShutdown, // The engine is shutting down
 
 		EngineStateRunning = 100, // The engine is running and active

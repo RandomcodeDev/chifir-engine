@@ -2,10 +2,10 @@
 
 #pragma once
 
+#include "base/base.h"
 #include "base/compiler.h"
 #include "base/string.h"
 #include "base/types.h"
-#include "utility/utility.h"
 
 // Log message priority level
 enum LogLevel_t
@@ -30,7 +30,7 @@ struct LogMessage_t
 };
 
 // Log writer interface
-class UTILAPI ILogWriter
+class BASEAPI ILogWriter
 {
   public:
 	virtual ~ILogWriter() DEFAULT;
@@ -41,7 +41,7 @@ class UTILAPI ILogWriter
 
 #ifdef CH_WIN32
 // DbgPrint log writer
-class UTILAPI CDbgPrintLogWriter : public ILogWriter
+class BASEAPI CDbgPrintLogWriter : public ILogWriter
 {
   public:
 	void Write(const LogMessage_t& message);
@@ -49,13 +49,13 @@ class UTILAPI CDbgPrintLogWriter : public ILogWriter
 #endif
 
 // Add a log writer
-extern UTILAPI void Log_AddWriter(ILogWriter* writer);
+extern BASEAPI void Log_AddWriter(ILogWriter* writer);
 
 // Write a log message
-extern UTILAPI void Log_Write(const LogMessage_t& message);
+extern BASEAPI void Log_Write(const LogMessage_t& message);
 
 // Write a log message, and format it
-extern UTILAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr file, cstr function, cstr message, ...);
+extern BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr file, cstr function, cstr message, ...);
 
 #define Log_Message(level, ...) Log_Write(LogLevel##level, __LINE__, false, __FILE__, FUNCTION_NAME, __VA_ARGS__)
 #define Log_Trace(...)          Log_Message(Trace, __VA_ARGS__)

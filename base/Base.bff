@@ -20,6 +20,9 @@
 			{
 				'$ProjectPath$/base.cpp',
 				'$ProjectPath$/basicstr.cpp',
+				'$ProjectPath$/filesystem.cpp',
+				'$ProjectPath$/filesystem_raw.cpp',
+				'$ProjectPath$/log.cpp',
 				'$ProjectPath$/memory.cpp',
 				'$ProjectPath$/platform.cpp',
 				'$ProjectPath$/stb.cpp'
@@ -36,7 +39,7 @@
 			{
 				^UnityInputFiles +
 				{
-					'$ProjectPath$/init_win32.cpp',
+					'$ProjectPath$/filesystem_win32.cpp',
 					'$ProjectPath$/loader_win32.cpp',
 					'$ProjectPath$/platform_win32.cpp',
 				}

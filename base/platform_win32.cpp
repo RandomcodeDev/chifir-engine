@@ -4,15 +4,48 @@
 #include "base/platform.h"
 #include "base/types.h"
 
-extern "C" BASEAPI bool DbgPrint_Available();
-extern "C" BASEAPI bool NtAllocateVirtualMemory_Available();
+DECLARE_AVAILABLE(DbgPrint);
+DECLARE_AVAILABLE(NtAllocateVirtualMemory);
 #ifdef CH_XBOX360
 extern "C" DLLIMPORT void __stdcall XamTerminateTitle();
 #else
-extern "C" BASEAPI bool NtTerminateProcess_Available();
+DECLARE_AVAILABLE(NtTerminateProcess);
 #endif
 
 SYSTEM_BASIC_INFORMATION g_systemInfo;
+
+BASEAPI void Plat_Init()
+{
+	// This is to allow the loader to use memory allocation for library names
+#ifdef CH_XBOX360
+	// 64K pages are the default
+	g_systemInfo.PageSize = 0x10000;
+#else
+	// Every other supported architecture uses 4K pages
+	g_systemInfo.PageSize = 0x1000;
+#endif
+	g_allocUsable = true;
+
+	if (!Base_InitLoader())
+	{
+		Base_QuitSafe(LastNtStatus(), "Failed to initialize dynamic loader");
+	}
+
+#ifndef CH_XBOX360
+	// Properly determine the page size just in case, and get other info
+	NTSTATUS status = NtQuerySystemInformation(SystemBasicInformation, &g_systemInfo, SIZEOF(SYSTEM_BASIC_INFORMATION), nullptr);
+	if (!NT_SUCCESS(status))
+	{
+		Base_Quit(status, "Failed to get basic system information: NTSTATUS %#08X", status);
+	}
+#endif
+
+	g_platInitialized = true;
+}
+
+BASEAPI void Plat_Shutdown()
+{
+}
 
 BASEAPI NORETURN void Base_QuitSafe(s32 code, cstr msg)
 {

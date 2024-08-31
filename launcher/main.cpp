@@ -1,11 +1,11 @@
 #include "base/loader.h"
+#include "base/log.h"
 #include "base/platform.h"
 #include "base/types.h"
 #include "base/vector.h"
 #include "iapplication.h"
 #include "isystem.h"
 #include "launcher.h"
-#include "utility/log.h"
 #include "utility/utility.h"
 #include "videosystem/ivideosystem.h"
 

@@ -9,6 +9,13 @@
 class CWindowsVideoSystem : public IVideoSystem
 {
   public:
+	CWindowsVideoSystem()
+		: m_hinstance(nullptr), m_window(nullptr), m_title(nullptr), m_width(0), m_height(0), m_extraWidth(0), m_extraHeight(0),
+		  m_x(0), m_y(0), m_resized(false), m_focused(false), m_closed(false), m_dpi(1.0)
+	{
+	}
+	~CWindowsVideoSystem() DEFAULT;
+
 	bool Initialize();
 	bool Update();
 	void Shutdown();
@@ -66,7 +73,7 @@ class CWindowsVideoSystem : public IVideoSystem
 	}
 
   private:
-	static const u32 WINDOW_STYLE =	WS_OVERLAPPEDWINDOW;
+	static const u32 WINDOW_STYLE = WS_OVERLAPPEDWINDOW;
 
 	HINSTANCE m_hinstance;
 	HWND m_window;

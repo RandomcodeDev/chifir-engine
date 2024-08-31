@@ -2,15 +2,17 @@
 
 #pragma once
 
-#include "iapplication.h"
 #include "engine/engine.h"
+#include "iapplication.h"
 
 class IVideoSystem;
 
 class CEngine : public IEngine
 {
   public:
-	CEngine() DEFAULT;
+	CEngine() : m_state(EngineStateUninitialized), m_videoSystem(nullptr)
+	{
+	}
 	~CEngine() DEFAULT;
 
 	void GetRequiredSystems(CVector<SystemDependency_t>& dependencies);
@@ -28,12 +30,25 @@ class CEngine : public IEngine
 
   private:
 	EngineState_t m_state;
+	bool m_inFrame;
 
 	IVideoSystem* m_videoSystem;
 
 	// Initializes the engine's systems in the right order
 	bool InitializeSystems();
 
+	// Pre frame stuff
+	void PreFrame();
+
+	// Mid frame stuff
+	void Update();
+
+	// Post frame stuff
+	void PostFrame();
+
 	// Shuts down the engine's systems in the right order
 	void ShutdownSystems();
+
+	// Check if the engine's state should change
+	void CheckState();
 };

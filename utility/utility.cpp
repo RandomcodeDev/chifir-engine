@@ -2,8 +2,8 @@
 
 #include "utility/utility.h"
 #include "base/loader.h"
+#include "base/log.h"
 #include "isystem.h"
-#include "utility/log.h"
 
 UTILAPI NORETURN void Util_Fatal(cstr message, ...)
 {

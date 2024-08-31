@@ -41,9 +41,14 @@ MAKE_STUB LdrGetProcedureAddress, @16
 MAKE_STUB LdrLoadDll, @16
 MAKE_STUB LdrUnloadDll, @4
 MAKE_STUB NtAllocateVirtualMemory, @24
+MAKE_STUB NtClose, @4
+MAKE_STUB NtCreateFile, @44
 MAKE_STUB NtFreeVirtualMemory, @16
+MAKE_STUB NtQueryFullAttributesFile, @8
+MAKE_STUB NtQueryInformationFile, @20
 MAKE_STUB NtQuerySystemInformation, @16
 MAKE_STUB NtRaiseHardError, @0
+MAKE_STUB NtReadFile, @36
 MAKE_STUB NtTerminateProcess, @8
 MAKE_STUB RtlAnsiStringToUnicodeString, @12
 MAKE_STUB RtlFreeHeap, @12
@@ -64,6 +69,7 @@ MAKE_STUB GetWindowLongA, @8
 MAKE_STUB LoadCursorA, @8
 MAKE_STUB PeekMessageA, @20
 MAKE_STUB RegisterClassExA, @4
+MAKE_STUB SetProcessDPIAware, @0
 MAKE_STUB SetWindowLongA, @12
 MAKE_STUB SetWindowTextA, @8
 MAKE_STUB ShowWindow, @8
