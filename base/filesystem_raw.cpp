@@ -3,7 +3,7 @@
 CBaseRawFilesystem::CBaseRawFilesystem(cstr root)
 {
 	ssize len = Base_StrLength(root);
-	while (len > 0 && root[len - 1] == '/' || root[len - 1] == '\\')
+	while (len > 0 && (root[len - 1] == '/' || root[len - 1] == '\\'))
 	{
 		len--;
 	}

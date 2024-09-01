@@ -54,10 +54,9 @@
 	.Windows_Clang_ARM64Release,
 	.Windows_Clang_ARM64Retail,
 	
-	// Clang messes up importing DbgPrint from Base.dll somehow, I can't figure it out yet
-	//.Windows_Clang_x86Debug,
-	//.Windows_Clang_x86Release,
-	//.Windows_Clang_x86Retail,
+	.Windows_Clang_x86Debug,
+	.Windows_Clang_x86Release,
+	.Windows_Clang_x86Retail,
 
 #if HAVE_SWITCH
 	.Switch_Clang_NX64Debug,

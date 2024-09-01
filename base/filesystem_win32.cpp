@@ -130,7 +130,11 @@ IDirIter* CWin32Filesystem::ReadDirectory(cstr path)
 
 ssize CWin32Filesystem::Write(cstr path, const u8* data, ssize count, bool append, ssize offset)
 {
-	(void)(path, data, count, append, offset);
+	(void)path;
+	(void)data;
+	(void)count;
+	(void)append;
+	(void)offset;
 	return -1;
 }
 

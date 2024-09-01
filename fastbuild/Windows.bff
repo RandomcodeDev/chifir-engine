@@ -25,6 +25,7 @@
 					 + ' -isystem "$WindowsUcrtIncludePath$"'
 
 					 // Compiler headers
+					 + ' -isystem "$LLVMDir$\lib\clang\$ClangVersion$\include"'
 					 + ' -isystem "$VSBasePath$\VC\Tools\MSVC\$MSVCVersion$\include"'
 ]
 

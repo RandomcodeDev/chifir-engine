@@ -18,6 +18,7 @@
 .Xbox360SDK = 'C:\Program Files (x86)\Microsoft Xbox 360 SDK'
 
 .LLVMDir = 'C:\Program Files\LLVM'
+.ClangVersion = '18'
 
 // Comment out ones you don't have installed
 #define HAVE_MSVC

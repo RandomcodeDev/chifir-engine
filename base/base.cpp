@@ -199,20 +199,20 @@ BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize 
 
 		// In the event of reverse, this copies from the end of the buffers to either the start or the first aligned point
 #ifdef CH_SIMD256
-		if (g_cpuData.haveSimd256 && size - remaining >= 32)
+		if (alignment == 32 && size - remaining >= alignment)
 		{
 			Copy<v256>(dest, src, size - remaining, remaining, alignment, reverse);
 		}
 		else
 #endif
 #ifdef CH_SIMD128
-			if (g_cpuData.haveSimd128 && size - remaining >= 16)
+			if (alignment == 16 && size - remaining >= alignment)
 		{
 			Copy<v128>(dest, src, size - remaining, remaining, alignment, reverse);
 		}
 		else
 #endif
-			if (size - remaining >= 8)
+			if (alignment == 8 && size - remaining >= alignment)
 		{
 			Copy<u64>(dest, src, size - remaining, remaining, alignment, reverse);
 		}
@@ -281,20 +281,20 @@ BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size)
 	Set<u8>(dest, static_cast<u8>(value), 0, misalignment, 1);
 
 #ifdef CH_SIMD256
-	if (g_cpuData.haveSimd256 && size - remaining >= 32)
+	if (alignment == 32 && size - remaining >= alignment)
 	{
 		Set<v256>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
 	}
 	else
 #endif
 #ifdef CH_SIMD128
-		if (g_cpuData.haveSimd128 && size - remaining >= 16)
+		if (alignment == 16 && size - remaining >= alignment)
 	{
 		Set<v128>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
 	}
 	else
 #endif
-		if (size - remaining >= 8)
+		if (alignment == 8 && size - remaining >= alignment)
 	{
 		Set<u64>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
 	}
@@ -310,7 +310,8 @@ static s32 Compare(const void* RESTRICT a, const void* RESTRICT b, ssize offset,
 {
 	ssize count = (remaining / alignment) * alignment;
 	ssize i = offset;
-	for (; i < offset + count && static_cast<const T * RESTRICT>(a)[i / alignment] == static_cast<const T * RESTRICT>(b)[i / alignment];
+	for (; i < offset + count &&
+		   static_cast<const T * RESTRICT>(a)[i / alignment] == static_cast<const T * RESTRICT>(b)[i / alignment];
 		 i += alignment)
 	{
 		remaining -= alignment;
@@ -471,14 +472,14 @@ BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssiz
 		}
 
 		// _mm_cmpestr* aren't builtins in Clang, and I don't know how to deal with that on Windows
-#if defined CH_SIMD128 && !defined __clang__
-		if (g_cpuData.haveSimd128Compare && size - remaining >= 16)
+#if defined CH_SIMD128
+		if (alignment == 16 && size - remaining >= alignment)
 		{
 			comparison = Compare<v128>(a, b, size - remaining, remaining, alignment);
 		}
 		else
 #endif
-			if (size - remaining >= 8)
+			if (alignment == 8 && size - remaining >= alignment)
 		{
 			comparison = Compare<u64>(a, b, size - remaining, remaining, alignment);
 		}
