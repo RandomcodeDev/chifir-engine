@@ -1,4 +1,5 @@
 #include "engine.h"
+#include "base/filesystem.h"
 #include "base/log.h"
 #include "videosystem/ivideosystem.h"
 
@@ -16,11 +17,17 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	Log_Info("Initializing engine");
 	m_state = EngineStateStartup;
 
+	// Need this for logging
+	if (!InitializeFilesystems())
+	{
+		Base_Quit("Failed to initialize filesystem!");
+	}
+
 	m_videoSystem = reinterpret_cast<IVideoSystem*>(systems[0]);
 
 	if (!InitializeSystems())
 	{
-		Util_Fatal("Failed to initialize a system!");
+		Base_Quit("Failed to initialize a system!");
 	}
 
 	Log_Info("Initialization done, entering main loop");
@@ -40,6 +47,20 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	ShutdownSystems();
 
 	return 0;
+}
+
+bool CEngine::InitializeFilesystems()
+{
+	m_saveFilesystem = Base_CreateRawFilesystem(".");
+	if (!m_saveFilesystem)
+	{
+		Log_Error("Failed to create raw filesystem with root \".\"");
+		return false;
+	}
+
+	Log_AddWriter(new CFileLogWriter(m_saveFilesystem, "chifir.log"));
+
+	return true;
 }
 
 bool CEngine::InitializeSystems()

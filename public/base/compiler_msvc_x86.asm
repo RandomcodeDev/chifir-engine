@@ -19,8 +19,8 @@ PUBLIC @_RTC_CheckStackVars@8
 @_RTC_CheckStackVars@8 PROC
 @_RTC_CheckStackVars@8 ENDP
 
-Base_QuitSafe TEXTEQU <?Base_QuitSafe@@YAXHPBD@Z>
-EXTERN Base_QuitSafe : PROC
+Base_AbortSafe TEXTEQU <?Base_AbortSafe@@YAXHPBD@Z>
+EXTERN Base_AbortSafe : PROC
 
 Base_MemSet TEXTEQU <?Base_MemSet@@YAPAXPAXIH@Z>
 EXTERN Base_MemSet : PROC
@@ -41,7 +41,7 @@ Fail:
 	lea ecx, [cookieMsg]
 	push ecx
 	push 0C0000409h
-	call Base_QuitSafe
+	call Base_AbortSafe
 @__security_check_cookie@4 ENDP
 
 PUBLIC _memset

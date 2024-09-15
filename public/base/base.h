@@ -24,10 +24,13 @@ extern BASEAPI void Base_Shutdown();
 // Exit the process and optionally display an error.
 // For platform specific code, error can be an NTSTATUS or POSIX errno value.
 // Otherwise, use 0 for normal exit, 1 for a possibly relevant platform-specific error code and an error message.
-extern BASEAPI NORETURN void Base_Quit(s32 error, cstr msg, ...);
+extern BASEAPI NORETURN void Base_Abort(s32 error, cstr msg, ...);
 
-// This is for when Base_Quit might have side effects that could lead to recursion, such as calling Base_VFormat
-extern BASEAPI NORETURN void Base_QuitSafe(s32 error, cstr msg);
+// This is for when Base_Abort might have side effects that could lead to recursion, such as calling Base_VFormat
+extern BASEAPI NORETURN void Base_AbortSafe(s32 error, cstr msg);
+
+// Quit and log it
+extern BASEAPI NORETURN void Base_Quit(cstr msg, ...);
 
 #define ASSERT_IMPL(cond, action)                                                                                                \
 	if (!(cond))                                                                                                                 \
@@ -36,13 +39,13 @@ extern BASEAPI NORETURN void Base_QuitSafe(s32 error, cstr msg);
 	}
 
 // Quit if a condition isn't true, add a message
-#define ASSERT_MSG(cond, ...) ASSERT_IMPL(cond, Base_Quit(1, "Assertion " #cond " failed: " __VA_ARGS__))
+#define ASSERT_MSG(cond, ...) ASSERT_IMPL(cond, Base_Abort(1, "Assertion " #cond " failed: " __VA_ARGS__))
 
 // Quit if a condition isn't true, add a message
-#define ASSERT_MSG_SAFE(cond, msg) ASSERT_IMPL(cond, Base_QuitSafe(1, "Assertion " #cond " failed: " msg))
+#define ASSERT_MSG_SAFE(cond, msg) ASSERT_IMPL(cond, Base_AbortSafe(1, "Assertion " #cond " failed: " msg))
 
 // Quit if a condition isn't true
-#define ASSERT(cond) ASSERT_IMPL(cond, Base_QuitSafe(1, "Assertion " #cond " failed"))
+#define ASSERT(cond) ASSERT_IMPL(cond, Base_AbortSafe(1, "Assertion " #cond " failed"))
 
 // Round val up to a multiple of align (align must be a power of two)
 #define ALIGN(val, align) (((val) + (align)-1) & ~((align)-1))

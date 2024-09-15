@@ -12,8 +12,8 @@ _fltused DD 9875h
 
 .CODE
 
-Base_QuitSafe TEXTEQU <?Base_QuitSafe@@YAXHPBD@Z>
-EXTERN Base_QuitSafe : PROC
+Base_AbortSafe TEXTEQU <?Base_AbortSafe@@YAXHPBD@Z>
+EXTERN Base_AbortSafe : PROC
 
 PUBLIC __security_check_cookie
 __security_check_cookie PROC
@@ -27,8 +27,8 @@ Fail:
 	li r3, 0C0000409h
 	lis r4, cookieMsg
 	addi r4, r4, cookieMsg
-	lis r0, Base_QuitSafe
-	addi r0, r0, Base_QuitSafe
+	lis r0, Base_AbortSafe
+	addi r0, r0, Base_AbortSafe
 	mtctr r0
 	bctr
 __security_check_cookie ENDP

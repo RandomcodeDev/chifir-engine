@@ -56,7 +56,7 @@ extern "C"
 
 	NORETURN void __cdecl __report_rangecheckfailure()
 	{
-		Base_QuitSafe(STATUS_STACK_BUFFER_OVERRUN, "Range check failure");
+		Base_AbortSafe(STATUS_STACK_BUFFER_OVERRUN, "Range check failure");
 	}
 
 	// TODO: figure these out
@@ -90,7 +90,7 @@ extern "C"
 #endif
 	void* __CxxFrameHandler3()
 	{
-		Base_QuitSafe(STATUS_UNHANDLED_EXCEPTION, "C++ exception 3");
+		Base_AbortSafe(STATUS_UNHANDLED_EXCEPTION, "C++ exception 3");
 		// return nullptr;
 	}
 
@@ -99,7 +99,7 @@ extern "C"
 #endif
 	void* __CxxFrameHandler4()
 	{
-		Base_Quit(STATUS_UNHANDLED_EXCEPTION, "C++ exception 4");
+		Base_Abort(STATUS_UNHANDLED_EXCEPTION, "C++ exception 4");
 		// return nullptr;
 	}
 
@@ -108,7 +108,7 @@ extern "C"
 		// As far as I can tell, this gets called when a virtual call has no implementation, and normally code to call a handler
 		// would be here. If I cared and this function wasn't implemented directly, the handler would have this same code, which
 		// means that functionality isn't needed here.
-		Base_QuitSafe(STATUS_NOT_FOUND, "Pure virtual call");
+		Base_AbortSafe(STATUS_NOT_FOUND, "Pure virtual call");
 	}
 
 	// TODO: unstub this so global destructors work
@@ -153,7 +153,7 @@ void RunGlobalConstructors()
 	s32 ret = CallXtors(__xi_a, __xi_z);
 	if (ret != 0)
 	{
-		Base_QuitSafe(ret, "A global constructor failed");
+		Base_AbortSafe(ret, "A global constructor failed");
 	}
 	CallXtors(__xc_a, __xc_z);
 }

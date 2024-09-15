@@ -48,6 +48,22 @@ class BASEAPI CDbgPrintLogWriter : public ILogWriter
 };
 #endif
 
+class IWritableFilesystem;
+
+// Filesystem log writer
+class BASEAPI CFileLogWriter : public ILogWriter
+{
+  public:
+	CFileLogWriter(IWritableFilesystem* filesystem, cstr logName, bool addDate = true);
+	~CFileLogWriter();
+
+	void Write(const LogMessage_t& message);
+
+  protected:
+	IWritableFilesystem* m_filesystem;
+	dstr m_filename;
+};
+
 // Add a log writer
 extern BASEAPI void Log_AddWriter(ILogWriter* writer);
 

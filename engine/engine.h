@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "base/filesystem.h"
 #include "engine/engine.h"
 #include "iapplication.h"
 
@@ -32,7 +33,13 @@ class CEngine : public IEngine
 	EngineState_t m_state;
 	bool m_inFrame;
 
+	//IFilesystem* m_mainFilesystem;
+	IWritableFilesystem* m_saveFilesystem;
+
 	IVideoSystem* m_videoSystem;
+
+	// Initializes the filesystems and logging
+	bool InitializeFilesystems();
 
 	// Initializes the engine's systems in the right order
 	bool InitializeSystems();

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "base/base.h"
 #include "base/compiler.h"
 #include "base/types.h"
 #include "base/vector.h"
@@ -73,3 +74,6 @@ class IWritableFilesystem : public IFilesystem
 	// Create a directory
 	virtual bool CreateDirectory(cstr path) = 0;
 };
+
+// Create a raw filesystem (like directly using OS file APIs)
+extern BASEAPI IWritableFilesystem* Base_CreateRawFilesystem(cstr path);

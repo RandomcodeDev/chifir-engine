@@ -60,6 +60,3 @@ extern void Base_ReleaseSystemMemory(LinkedNode_t<SystemAllocation_t>);
 
 // Release all system memory, you shouldn't call this unless you're done with the allocator and any memory it owns
 extern void Base_ReleaseAllMemory();
-
-// So individual implementations don't have to handle formatting the message
-extern NORETURN void Base_QuitSafe(s32 code, cstr msg);

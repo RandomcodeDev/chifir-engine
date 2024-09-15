@@ -1,6 +1,7 @@
+#include "base/log.h"
 #include "base/base.h"
 #include "base/basicstr.h"
-#include "base/log.h"
+#include "base/filesystem.h"
 #ifdef CH_WIN32
 #include "base/platform.h"
 #endif
@@ -33,6 +34,28 @@ BASEAPI void CDbgPrintLogWriter::Write(const LogMessage_t& message)
 }
 #endif
 
+BASEAPI CFileLogWriter::CFileLogWriter(IWritableFilesystem* filesystem, cstr logName, bool addDate) : m_filesystem(filesystem)
+{
+	if (addDate)
+	{
+		// TODO
+	}
+	else
+	{
+	}
+	m_filename = Base_StrClone(logName);
+}
+
+BASEAPI CFileLogWriter::~CFileLogWriter()
+{
+	Base_Free(m_filename);
+}
+
+BASEAPI void CFileLogWriter::Write(const LogMessage_t& message)
+{
+	m_filesystem->Write(m_filename, reinterpret_cast<const u8*>(message.message), Base_StrLength(message.message));
+}
+
 BASEAPI void Log_AddWriter(ILogWriter* writer)
 {
 	if (writer)
@@ -52,7 +75,6 @@ BASEAPI void Log_Write(const LogMessage_t& message)
 BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr file, cstr function, cstr message, ...)
 {
 	va_list args;
-
 	va_start(args, message);
 	dstr formatted = Base_VStrFormat(message, args);
 	va_end(args);

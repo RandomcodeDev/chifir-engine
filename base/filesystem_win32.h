@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef CH_WIN32
+#error "This header is Windows only"
+#endif
+
 #include "base/compiler.h"
 #include "base/filesystem.h"
 #include "base/platform.h"

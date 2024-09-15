@@ -92,7 +92,7 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	ILibrary* appLib = Base_LoadLibrary(appName);
 	if (!appLib)
 	{
-		Util_Fatal("Failed to load application %s!", appName);
+		Base_Quit("Failed to load application %s!", appName);
 	}
 
 	Log_Info("Initializing application %s", appName);
@@ -100,7 +100,7 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	IApplication* app = GetApplication(appLib, appDependencies);
 	if (!app)
 	{
-		Util_Fatal("Failed to initialize application %s!", appName);
+		Base_Quit("Failed to initialize application %s!", appName);
 	}
 
 	Log_Info("Loading systems for application %s", appName);
@@ -114,7 +114,7 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 		ILibrary* lib = Base_LoadLibrary(appDependencies[i].name);
 		if (!lib)
 		{
-			Util_Fatal("Failed to load system %s!", appDependencies[i].name);
+			Base_Quit("Failed to load system %s!", appDependencies[i].name);
 		}
 		libs.Add(lib);
 
@@ -122,7 +122,7 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 		ISystem* system = GetSystem(lib, appDependencies[i].minimumVersion, appDependencies[i].requireExactVersion);
 		if (!system)
 		{
-			Util_Fatal("Failed to get interface for %s, or it's the wrong version!", appDependencies[i].name);
+			Base_Quit("Failed to get interface for %s, or it's the wrong version!", appDependencies[i].name);
 		}
 		systems.Add(system);
 	}

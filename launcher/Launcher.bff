@@ -56,7 +56,7 @@
 				'$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
 				'Base-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
 				'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
-				'Utility-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+				//'Utility-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
 			}
 			If (.StaticBuild)
 			{

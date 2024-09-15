@@ -4,7 +4,7 @@
 #include "base/compiler.h"
 #include "base/types.h"
 
-BASEAPI NORETURN void Base_Quit(s32 error, cstr msg, ...)
+BASEAPI NORETURN void Base_Abort(s32 error, cstr msg, ...)
 {
 	// Used if Base_VFormat fails;
 	char buffer[1024];
@@ -19,5 +19,5 @@ BASEAPI NORETURN void Base_Quit(s32 error, cstr msg, ...)
 		Base_VStrFormat(buffer, ARRAY_SIZE(buffer), msg, args);
 	}
 	va_end(args);
-	Base_QuitSafe(error, formattedMsg);
+	Base_AbortSafe(error, formattedMsg);
 }

@@ -71,7 +71,7 @@
 
 #include "base/CommonFiles.bff"
 #include "base/Base.bff"
-#include "utility/Utility.bff"
+//#include "utility/Utility.bff"
 #include "engine/Engine.bff"
 #include "videosystem/VideoSystem.bff"
 #include "launcher/Launcher.bff"
@@ -286,7 +286,7 @@ VSSolution('solution')
 	.Folder_Support =
 	[
 		.Path = 'Support'
-		.Projects = {'Base-proj', 'CommonFiles-proj', 'External-proj', 'Public-proj', 'Utility-proj'}
+		.Projects = {'Base-proj', 'CommonFiles-proj', 'External-proj', 'Public-proj'}
 	]
 
 	.Folder_Systems =

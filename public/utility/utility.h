@@ -15,10 +15,3 @@
 #define UTILAPI DLLIMPORT
 #endif
 #endif
-
-class IApplication;
-class ILibrary;
-class ISystem;
-
-// Call Base_Quit and also log the message
-extern UTILAPI NORETURN void Util_Fatal(cstr message, ...);

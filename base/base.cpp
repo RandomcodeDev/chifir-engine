@@ -1,6 +1,8 @@
-#include "base/base.h"
 #include "base.h"
+#include "base/base.h"
+#include "base/basicstr.h"
 #include "base/compiler.h"
+#include "base/log.h"
 
 bool g_baseInitialized;
 bool g_platInitialized;
@@ -32,7 +34,7 @@ static void X86InitCpuData()
 	CpuId(eax, ebx, ecx, edx);
 
 	// Because of bit field shenanigans, these have to be made booleans first
-#ifdef CH_IA32 // Widespread adoption of SSE2 predates AMD64
+#ifdef CH_IA32 // Widespread adoption of SSE2 predates AMD64, and it's part of the base spec
 	g_cpuData.haveSimd128 = (bool)(edx & (1 << 25));
 	g_cpuData.haveIntSimd128 = (bool)(edx & (1 << 26));
 #else
@@ -89,6 +91,22 @@ BASEAPI void Base_Init()
 
 BASEAPI void Base_Shutdown()
 {
+}
+
+BASEAPI NORETURN void Base_Quit(cstr message, ...)
+{
+	va_list args;
+
+	va_start(args, message);
+	cstr formatted = Base_VStrFormat(message, args);
+	va_end(args);
+	if (!formatted)
+	{
+		formatted = message;
+	}
+
+	Log_FatalError("%s", formatted);
+	Base_AbortSafe(1, formatted);
 }
 
 template <typename T> static FORCEINLINE T Fnv1a(const u8* data, ssize size, T offsetBasis, T prime)
@@ -176,43 +194,42 @@ BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize 
 
 	// Can only realign if they're misaligned the same amount (they should be, usually pointers are aligned on a reasonable
 	// amount unless it's some arbitrary offset into an array of bytes)
-	ssize srcAlignment = ((uptr)src & alignment);
-	ssize destAlignment = ((uptr)dest & alignment);
-	if (srcAlignment == destAlignment)
+	ssize srcMisalignment = ALIGN(reinterpret_cast<uptr>(src), alignment) - reinterpret_cast<uptr>(src) - 1;
+	ssize destMisalignment = ALIGN(reinterpret_cast<uptr>(dest), alignment) - reinterpret_cast<uptr>(dest) - 1;
+	if (srcMisalignment == destMisalignment)
 	{
-		ssize misalignment = alignment - srcAlignment;
-		if (misalignment > remaining)
+		if (srcMisalignment > remaining)
 		{
-			misalignment = remaining;
+			srcMisalignment = remaining;
 			remaining = 0;
 		}
 		else
 		{
-			remaining -= misalignment;
+			remaining -= srcMisalignment;
 		}
 
 		// Do this afterward
 		if (!reverse)
 		{
-			Copy<u8>(dest, src, 0, misalignment, 1, reverse);
+			Copy<u8>(dest, src, 0, srcMisalignment, 1, reverse);
 		}
 
 		// In the event of reverse, this copies from the end of the buffers to either the start or the first aligned point
 #ifdef CH_SIMD256
-		if (alignment == 32 && size - remaining >= alignment)
+		if (alignment == 32 && remaining >= alignment)
 		{
 			Copy<v256>(dest, src, size - remaining, remaining, alignment, reverse);
 		}
 		else
 #endif
 #ifdef CH_SIMD128
-			if (alignment == 16 && size - remaining >= alignment)
+			if (alignment == 16 && remaining >= alignment)
 		{
 			Copy<v128>(dest, src, size - remaining, remaining, alignment, reverse);
 		}
 		else
 #endif
-			if (alignment == 8 && size - remaining >= alignment)
+			if (alignment == 8 && remaining >= alignment)
 		{
 			Copy<u64>(dest, src, size - remaining, remaining, alignment, reverse);
 		}
@@ -220,7 +237,7 @@ BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize 
 		// Copy unaligned part now if going backward
 		if (reverse)
 		{
-			Copy<u8>(dest, src, 0, misalignment, 1, reverse);
+			Copy<u8>(dest, src, 0, srcMisalignment, 1, reverse);
 		}
 	}
 
@@ -268,7 +285,7 @@ BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size)
 	}
 
 	// Realign
-	ssize misalignment = alignment - ((uptr)dest & alignment);
+	ssize misalignment = ALIGN(reinterpret_cast<uptr>(dest), alignment) - reinterpret_cast<uptr>(dest) - 1;
 	if (misalignment > remaining)
 	{
 		misalignment = remaining;
@@ -281,20 +298,20 @@ BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size)
 	Set<u8>(dest, static_cast<u8>(value), 0, misalignment, 1);
 
 #ifdef CH_SIMD256
-	if (alignment == 32 && size - remaining >= alignment)
+	if (alignment == 32 && remaining >= alignment)
 	{
 		Set<v256>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
 	}
 	else
 #endif
 #ifdef CH_SIMD128
-		if (alignment == 16 && size - remaining >= alignment)
+		if (alignment == 16 && remaining >= alignment)
 	{
 		Set<v128>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
 	}
 	else
 #endif
-		if (alignment == 8 && size - remaining >= alignment)
+		if (alignment == 8 && remaining >= alignment)
 	{
 		Set<u64>(dest, static_cast<u8>(value), size - remaining, remaining, alignment);
 	}
@@ -449,23 +466,22 @@ BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssiz
 
 	// Can only realign if they're misaligned the same amount (they should be, usually pointers are aligned on a reasonable
 	// amount unless it's some arbitrary offset into an array of bytes)
-	ssize aAlignment = ((uptr)a & alignment);
-	ssize bAlignment = ((uptr)b & alignment);
+	ssize aMisalignment = ALIGN(reinterpret_cast<uptr>(a), alignment) - reinterpret_cast<uptr>(a) - 1;
+	ssize bMisalignment = ALIGN(reinterpret_cast<uptr>(b), alignment) - reinterpret_cast<uptr>(b) - 1;
 	s32 comparison;
-	if (aAlignment == bAlignment)
+	if (aMisalignment == bMisalignment)
 	{
-		ssize misalignment = alignment - aAlignment;
-		if (misalignment > remaining)
+		if (aMisalignment > remaining)
 		{
-			misalignment = remaining;
+			aMisalignment = remaining;
 			remaining = 0;
 		}
 		else
 		{
-			remaining -= misalignment;
+			remaining -= aMisalignment;
 		}
 
-		comparison = Compare<u8>(a, b, 0, misalignment, 1);
+		comparison = Compare<u8>(a, b, 0, aMisalignment, 1);
 		if (comparison != 0)
 		{
 			return comparison;
@@ -473,13 +489,13 @@ BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssiz
 
 		// _mm_cmpestr* aren't builtins in Clang, and I don't know how to deal with that on Windows
 #if defined CH_SIMD128
-		if (alignment == 16 && size - remaining >= alignment)
+		if (alignment == 16 && remaining >= alignment)
 		{
 			comparison = Compare<v128>(a, b, size - remaining, remaining, alignment);
 		}
 		else
 #endif
-			if (alignment == 8 && size - remaining >= alignment)
+			if (alignment == 8 && remaining >= alignment)
 		{
 			comparison = Compare<u64>(a, b, size - remaining, remaining, alignment);
 		}

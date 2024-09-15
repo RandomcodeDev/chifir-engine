@@ -7,13 +7,13 @@ extern "C" bool SetProcessDPIAware_Available();
 
 bool CWindowsVideoSystem::Initialize()
 {
-	m_hinstance = reinterpret_cast<HINSTANCE>(NtCurrentImageBase());
+	m_hinstance = static_cast<HINSTANCE>(NtCurrentImageBase());
 
 	Log_Info("Initializing Windows video system");
 
 	if (SetProcessDPIAware_Available())
 	{
-		Log_Info("Setting DPI awarenesss");
+		Log_Info("Setting DPI awareness");
 		if (!SetProcessDPIAware())
 		{
 			Log_Warning("Failed to set DPI awareness: %d (%#X)", LastNtError(), LastNtError());

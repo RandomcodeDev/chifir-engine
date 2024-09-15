@@ -137,7 +137,7 @@ static bool FindLdrGetProcedureAddress()
 		GET_FUNCTION_OPTIONAL(lib, name)                                                                                         \
 		if (!STUB_AVAILABLE(name)())                                                                                             \
 		{                                                                                                                        \
-			Base_Quit(LastNtStatus(), "Failed to get " STRINGIZE(name) " from " #lib ": NTSTATUS 0x%08X", LastNtStatus());       \
+			Base_Abort(LastNtStatus(), "Failed to get " STRINGIZE(name) " from " #lib ": NTSTATUS 0x%08X", LastNtStatus());       \
 		}                                                                                                                        \
 	}
 

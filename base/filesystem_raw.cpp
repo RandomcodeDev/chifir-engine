@@ -1,4 +1,7 @@
 #include "filesystem_raw.h"
+#ifdef CH_WIN32
+#include "filesystem_win32.h"
+#endif
 
 CBaseRawFilesystem::CBaseRawFilesystem(cstr root)
 {
@@ -23,4 +26,11 @@ char* CBaseRawFilesystem::Canonicalize(cstr path)
 		return Base_StrClone(path);
 	}
 	return Base_StrFormat("%s/%s", m_root, path);
+}
+
+BASEAPI IWritableFilesystem* Base_CreateRawFilesystem(cstr path)
+{
+#ifdef CH_WIN32
+	return new CWin32Filesystem(path);
+#endif
 }

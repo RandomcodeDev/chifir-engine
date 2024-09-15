@@ -13,8 +13,8 @@ _fltused DD 9875h
 
 .CODE
 
-Base_QuitSafe TEXTEQU <?Base_QuitSafe@@YAXHPEBD@Z>
-EXTERN Base_QuitSafe : PROC
+Base_AbortSafe TEXTEQU <?Base_AbortSafe@@YAXHPEBD@Z>
+EXTERN Base_AbortSafe : PROC
 
 Base_MemSet TEXTEQU <?Base_MemSet@@YAPEAXPEAXI_J@Z>
 EXTERN Base_MemSet : PROC
@@ -36,7 +36,7 @@ Fail:
 	mov r9, __security_cookie
 	mov ecx, 0C0000409h
 	lea rdx, [errorMsg]
-	call Base_QuitSafe
+	call Base_AbortSafe
 __security_check_cookie ENDP
 
 PUBLIC memset

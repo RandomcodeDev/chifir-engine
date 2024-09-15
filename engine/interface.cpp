@@ -10,5 +10,5 @@ IApplication* CreateEngine()
 extern "C" DLLEXPORT IApplication* CreateInterface()
 #endif
 {
-	return new CEngine();
+	return reinterpret_cast<IApplication*>(new CEngine());
 }

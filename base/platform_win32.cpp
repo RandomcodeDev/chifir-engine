@@ -28,7 +28,7 @@ BASEAPI void Plat_Init()
 
 	if (!Base_InitLoader())
 	{
-		Base_QuitSafe(LastNtStatus(), "Failed to initialize dynamic loader");
+		Base_AbortSafe(LastNtStatus(), "Failed to initialize dynamic loader");
 	}
 
 #ifndef CH_XBOX360
@@ -36,7 +36,7 @@ BASEAPI void Plat_Init()
 	NTSTATUS status = NtQuerySystemInformation(SystemBasicInformation, &g_systemInfo, SIZEOF(SYSTEM_BASIC_INFORMATION), nullptr);
 	if (!NT_SUCCESS(status))
 	{
-		Base_Quit(status, "Failed to get basic system information: NTSTATUS %#08X", status);
+		Base_Abort(status, "Failed to get basic system information: NTSTATUS %#08X", status);
 	}
 #endif
 
@@ -47,7 +47,7 @@ BASEAPI void Plat_Shutdown()
 {
 }
 
-BASEAPI NORETURN void Base_QuitSafe(s32 code, cstr msg)
+BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)
 {
 	if (code == 1 && LastNtStatus() != 0)
 	{

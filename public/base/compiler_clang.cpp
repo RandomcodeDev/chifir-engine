@@ -8,7 +8,7 @@ extern "C"
 	// Presumably emitted for things like a pure virtual call
 	void __std_terminate()
 	{
-		Base_QuitSafe(1, "Invalid behaviour");
+		Base_AbortSafe(1, "Invalid behaviour");
 	}
 
 //#ifdef CH_X86

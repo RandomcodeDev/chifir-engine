@@ -54,6 +54,7 @@ template <typename T> class CLinkedList
 			return;
 		}
 
+		node->prev = where->prev;
 		where->prev = node;
 		node->next = where;
 	}
@@ -65,6 +66,7 @@ template <typename T> class CLinkedList
 			return;
 		}
 
+		node->next = where->next;
 		where->next = node;
 		node->prev = where;
 	}
