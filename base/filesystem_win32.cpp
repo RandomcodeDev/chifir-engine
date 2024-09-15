@@ -51,7 +51,7 @@ bool CWin32Filesystem::Read(cstr path, CVector<u8>& buffer, ssize count, ssize o
 		NtReadFile(file, nullptr, nullptr, nullptr, &ioStatus, buffer.Data(), (ULONG)buffer.Size(), &largeOffset, nullptr);
 	if (!NT_SUCCESS(status))
 	{
-		Log_Error("Failed to read %zu bytes from offset %#X in %s/%s: NTSTATUS %#08X", size, offset, m_root, path, status);
+		Log_Error("Failed to read %zu bytes from offset 0x%X in %s/%s: NTSTATUS 0x%08X", size, offset, m_root, path, status);
 		buffer.Empty();
 		NtClose(file);
 		return false;
@@ -74,7 +74,7 @@ FileType_t CWin32Filesystem::GetFileType(cstr path)
 	RtlFreeUnicodeString(&unicodePath);
 	if (!NT_SUCCESS(status))
 	{
-		Log_Error("Failed to get attributes of %s/%s: NTSTATUS %#08X", m_root, path, status);
+		Log_Error("Failed to get attributes of %s/%s: NTSTATUS 0x%08X", m_root, path, status);
 		return FileTypeUnknown;
 	}
 
@@ -113,7 +113,7 @@ bool CWin32Filesystem::Exists(cstr path)
 	RtlFreeUnicodeString(&unicodePath);
 	if (!NT_SUCCESS(status))
 	{
-		Log_Error("Failed to get attributes of %s/%s: NTSTATUS %#08X", m_root, path, status);
+		Log_Error("Failed to get attributes of %s/%s: NTSTATUS 0x%08X", m_root, path, status);
 		return false;
 	}
 
@@ -168,7 +168,7 @@ HANDLE CWin32Filesystem::OpenFile(cstr path, bool writable)
 	RtlFreeUnicodeString(&unicodePath);
 	if (!NT_SUCCESS(status))
 	{
-		Log_Error("Failed to %s %s/%s: NTSTATUS %#08X", writable ? "create" : "open", m_root, path, status);
+		Log_Error("Failed to %s %s/%s: NTSTATUS 0x%08X", writable ? "create" : "open", m_root, path, status);
 		return nullptr;
 	}
 

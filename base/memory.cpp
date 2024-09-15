@@ -53,7 +53,7 @@ static AllocNode_t* MakeNewNode(ssize size)
 	LinkedNode_t<SystemAllocation_t>* node = g_memInfo.allocations.Find(FindSystemNode, reinterpret_cast<void*>(size));
 	if (!node)
 	{
-		ASSERT_MSG_SAFE(Base_GetSystemMemory(SYSTEM_ALLOC_SIZE), "system memory allocator exhausted");
+		ASSERT_MSG_SAFE(Base_GetSystemMemory(SYSTEM_ALLOC_SIZE) != false, "system memory allocator exhausted or not initialized");
 		node = g_memInfo.allocations.GetTail();
 	}
 

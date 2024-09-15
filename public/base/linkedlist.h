@@ -55,6 +55,10 @@ template <typename T> class CLinkedList
 		}
 
 		node->prev = where->prev;
+		if (where->prev)
+		{
+			where->prev->next = node;
+		}
 		where->prev = node;
 		node->next = where;
 	}
@@ -67,6 +71,10 @@ template <typename T> class CLinkedList
 		}
 
 		node->next = where->next;
+		if (where->next)
+		{
+			where->next->prev = node;
+		}
 		where->next = node;
 		node->prev = where;
 	}
@@ -87,9 +95,10 @@ template <typename T> class CLinkedList
 		}
 		else if (m_head == m_tail)
 		{
-			m_head->next = node;
+			m_tail->next = node;
 			m_tail = node;
-			node->prev = m_head;
+			m_tail->prev = m_head;
+			m_tail->next = nullptr;
 		}
 		else
 		{
@@ -120,7 +129,8 @@ template <typename T> class CLinkedList
 		{
 			m_tail->prev = node;
 			m_head = node;
-			node->next = m_tail;
+			m_head->next = m_tail;
+			m_head->prev = nullptr;
 		}
 		else
 		{

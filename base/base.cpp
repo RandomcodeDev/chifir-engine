@@ -142,19 +142,21 @@ static void Copy(
 	void* RESTRICT dest, const void* RESTRICT src, ssize offset, ssize& remaining, ssize alignment, bool reverse = false)
 {
 	ssize count = (remaining / alignment) * alignment;
+	const void* realSrc = static_cast<const u8 * RESTRICT>(src) + offset;
+	void* realDest = static_cast<u8 * RESTRICT>(dest) + offset;
 	if (reverse)
 	{
-		for (ssize i = offset + count - alignment; i >= offset; i -= alignment)
+		for (ssize i = count - alignment; i >= 0; i -= alignment)
 		{
-			static_cast<T*>(dest)[i / alignment] = static_cast<const T*>(src)[i / alignment];
+			static_cast<T*>(realDest)[i / alignment] = static_cast<const T*>(realSrc)[i / alignment];
 			remaining -= alignment;
 		}
 	}
 	else
 	{
-		for (ssize i = offset; i < offset + count; i += alignment)
+		for (ssize i = 0; i < count; i += alignment)
 		{
-			static_cast<T*>(dest)[i / alignment] = static_cast<const T*>(src)[i / alignment];
+			static_cast<T*>(realDest)[i / alignment] = static_cast<const T*>(realSrc)[i / alignment];
 			remaining -= alignment;
 		}
 	}
@@ -194,8 +196,8 @@ BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize 
 
 	// Can only realign if they're misaligned the same amount (they should be, usually pointers are aligned on a reasonable
 	// amount unless it's some arbitrary offset into an array of bytes)
-	ssize srcMisalignment = ALIGN(reinterpret_cast<uptr>(src), alignment) - reinterpret_cast<uptr>(src) - 1;
-	ssize destMisalignment = ALIGN(reinterpret_cast<uptr>(dest), alignment) - reinterpret_cast<uptr>(dest) - 1;
+	ssize srcMisalignment = ALIGN(reinterpret_cast<uptr>(src), alignment) - reinterpret_cast<uptr>(src);
+	ssize destMisalignment = ALIGN(reinterpret_cast<uptr>(dest), alignment) - reinterpret_cast<uptr>(dest);
 	if (srcMisalignment == destMisalignment)
 	{
 		if (srcMisalignment > remaining)
@@ -254,9 +256,10 @@ template <typename T> void Set(void* dest, u8 value, ssize offset, ssize& remain
 	u64 fullValue[4] = {partValue, partValue, partValue, partValue};
 
 	ssize count = (remaining / alignment) * alignment;
-	for (ssize i = offset; i < offset + count; i += alignment)
+	void* realDest = static_cast<u8*>(dest) + offset;
+	for (ssize i = 0; i < count; i += alignment)
 	{
-		static_cast<T*>(dest)[i / alignment] = *reinterpret_cast<T*>(fullValue);
+		static_cast<T*>(realDest)[i / alignment] = *reinterpret_cast<T*>(fullValue);
 		remaining -= alignment;
 	}
 }
@@ -285,7 +288,7 @@ BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size)
 	}
 
 	// Realign
-	ssize misalignment = ALIGN(reinterpret_cast<uptr>(dest), alignment) - reinterpret_cast<uptr>(dest) - 1;
+	ssize misalignment = ALIGN(reinterpret_cast<uptr>(dest), alignment) - reinterpret_cast<uptr>(dest);
 	if (misalignment > remaining)
 	{
 		misalignment = remaining;
@@ -326,9 +329,11 @@ template <typename T>
 static s32 Compare(const void* RESTRICT a, const void* RESTRICT b, ssize offset, ssize& remaining, ssize alignment)
 {
 	ssize count = (remaining / alignment) * alignment;
-	ssize i = offset;
-	for (; i < offset + count &&
-		   static_cast<const T * RESTRICT>(a)[i / alignment] == static_cast<const T * RESTRICT>(b)[i / alignment];
+	ssize i = 0;
+	const void* RESTRICT realA = static_cast<const u8 * RESTRICT>(a) + offset;
+	const void* RESTRICT realB = static_cast<const u8 * RESTRICT>(b) + offset;
+	for (; i < count &&
+		   static_cast<const T * RESTRICT>(realA)[i / alignment] == static_cast<const T * RESTRICT>(realB)[i / alignment];
 		 i += alignment)
 	{
 		remaining -= alignment;
@@ -339,8 +344,8 @@ static s32 Compare(const void* RESTRICT a, const void* RESTRICT b, ssize offset,
 		// Compare the bytes of the larger thing
 		for (usize j = 0; j < SIZEOF(T); j++)
 		{
-			s8 ab = static_cast<const s8 * RESTRICT>(a)[i / alignment + j];
-			s8 bb = static_cast<const s8 * RESTRICT>(b)[i / alignment + j];
+			s8 ab = static_cast<const s8 * RESTRICT>(realA)[i / alignment + j];
+			s8 bb = static_cast<const s8 * RESTRICT>(realB)[i / alignment + j];
 			if (ab != bb)
 			{
 				return bb - ab;
@@ -422,16 +427,16 @@ static FORCEINLINE bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 template <> s32 Compare<v128>(const void* RESTRICT a, const void* RESTRICT b, ssize offset, ssize& remaining, ssize alignment)
 {
 	ssize count = (remaining / alignment) * alignment;
-	ssize i = offset;
+	ssize i = 0;
 	const v128* va = static_cast<const v128*>(a);
 	const v128* vb = static_cast<const v128*>(b);
 	s32 inequalIdx = 0;
-	for (; i < count && V128ByteEqual(va[i / alignment], vb[i / alignment], inequalIdx); i += alignment)
+	for (; i < count && V128ByteEqual(va[offset + i / alignment], vb[offset + i / alignment], inequalIdx); i += alignment)
 	{
 		remaining -= alignment;
 	}
 
-	return static_cast<const s8*>(a)[i + inequalIdx] - static_cast<const s8*>(a)[i + inequalIdx];
+	return static_cast<const s8*>(a)[offset + i + inequalIdx] - static_cast<const s8*>(a)[offset + i + inequalIdx];
 }
 #endif
 
@@ -466,8 +471,8 @@ BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssiz
 
 	// Can only realign if they're misaligned the same amount (they should be, usually pointers are aligned on a reasonable
 	// amount unless it's some arbitrary offset into an array of bytes)
-	ssize aMisalignment = ALIGN(reinterpret_cast<uptr>(a), alignment) - reinterpret_cast<uptr>(a) - 1;
-	ssize bMisalignment = ALIGN(reinterpret_cast<uptr>(b), alignment) - reinterpret_cast<uptr>(b) - 1;
+	ssize aMisalignment = ALIGN(reinterpret_cast<uptr>(a), alignment) - reinterpret_cast<uptr>(a);
+	ssize bMisalignment = ALIGN(reinterpret_cast<uptr>(b), alignment) - reinterpret_cast<uptr>(b);
 	s32 comparison;
 	if (aMisalignment == bMisalignment)
 	{

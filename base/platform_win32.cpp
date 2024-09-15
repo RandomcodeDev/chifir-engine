@@ -36,7 +36,7 @@ BASEAPI void Plat_Init()
 	NTSTATUS status = NtQuerySystemInformation(SystemBasicInformation, &g_systemInfo, SIZEOF(SYSTEM_BASIC_INFORMATION), nullptr);
 	if (!NT_SUCCESS(status))
 	{
-		Base_Abort(status, "Failed to get basic system information: NTSTATUS %#08X", status);
+		Base_Abort(status, "Failed to get basic system information: NTSTATUS 0x%08X", status);
 	}
 #endif
 

@@ -16,7 +16,7 @@ bool CWindowsVideoSystem::Initialize()
 		Log_Info("Setting DPI awareness");
 		if (!SetProcessDPIAware())
 		{
-			Log_Warning("Failed to set DPI awareness: %d (%#X)", LastNtError(), LastNtError());
+			Log_Warning("Failed to set DPI awareness: %d (0x%X)", LastNtError(), LastNtError());
 		}
 	}
 
@@ -84,7 +84,7 @@ bool CWindowsVideoSystem::RegisterWindowClass()
 	wndClass.hCursor = LoadCursorA(nullptr, IDC_ARROW);
 	if (!RegisterClassExA(&wndClass))
 	{
-		Log_Error("Failed to register window class: Win32 error %d (%#X)", LastNtError(), LastNtError());
+		Log_Error("Failed to register window class: Win32 error %d (0x%X)", LastNtError(), LastNtError());
 		return false;
 	}
 
@@ -125,7 +125,7 @@ bool CWindowsVideoSystem::InitializeMainWindow()
 		CreateWindowExA(0, WINDOW_CLASS, m_title, WINDOW_STYLE, x, y, m_width, m_height, nullptr, nullptr, m_hinstance, nullptr);
 	if (!m_window)
 	{
-		Log_Error("Failed to create window: Win32 error %d (%#X)", LastNtError(), LastNtError());
+		Log_Error("Failed to create window: Win32 error %d (0x%X)", LastNtError(), LastNtError());
 		return false;
 	}
 
