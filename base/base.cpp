@@ -162,6 +162,13 @@ static void Copy(
 	}
 }
 
+#ifdef CH_X86
+static void X86RepMovsb(void* RESTRICT dest, const void* RESTRICT src, ssize size)
+{
+	__movsb(static_cast<u8*>(dest), static_cast<const u8*>(src), static_cast<usize>(size));
+}
+#endif
+
 BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize size)
 {
 	ssize remaining = size;
@@ -179,6 +186,14 @@ BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize 
 
 	// Check if data should be copied in reverse in case of overlap
 	bool reverse = reinterpret_cast<uptr>(dest) > reinterpret_cast<uptr>(src);
+
+#ifdef CH_X86
+	if (!reverse && size >= 1024 && size <= 32 * 1024)
+	{
+		X86RepMovsb(dest, src, size);
+		return dest;
+	}
+#endif
 
 	ssize alignment = 1;
 	if (g_cpuData.haveSimd256 && size >= 32)
@@ -264,6 +279,14 @@ template <typename T> void Set(void* dest, u8 value, ssize offset, ssize& remain
 	}
 }
 
+#ifdef CH_X86
+// rep stosb is faster for big blocks
+static void X86RepStosb(void* dest, u8 value, ssize size)
+{
+	__stosb(static_cast<u8*>(dest), value, static_cast<usize>(size));
+}
+#endif
+
 BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size)
 {
 	ssize remaining = size;
@@ -272,6 +295,15 @@ BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size)
 	{
 		return dest;
 	}
+
+#ifdef CH_X86
+	// https://msrc.microsoft.com/blog/2021/01/building-faster-amd64-memset-routines/
+	if (size >= 1024 && size <= 32 * 1024)
+	{
+		X86RepStosb(dest, static_cast<u8>(value), size);
+		return dest;
+	}
+#endif
 
 	ssize alignment = 1;
 	if (g_cpuData.haveSimd256 && size >= 32)
