@@ -69,10 +69,13 @@ class IWritableFilesystem : public IFilesystem
 	virtual ~IWritableFilesystem() DEFAULT;
 
 	// Write a file
-	virtual ssize Write(cstr path, const u8* data, ssize count, bool append = true, ssize offset = 0) = 0;
+	virtual ssize Write(cstr path, const void* data, ssize count, bool append = true, ssize offset = 0) = 0;
 
 	// Create a directory
 	virtual bool CreateDirectory(cstr path) = 0;
+
+	// Check if writing is safe (i.e. to stop recursion in logging if a write doesn't work)
+	virtual bool IsWriteSafe() = 0;
 };
 
 // Create a raw filesystem (like directly using OS file APIs)

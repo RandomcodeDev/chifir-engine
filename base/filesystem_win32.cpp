@@ -1,6 +1,48 @@
 #include "filesystem_win32.h"
 #include "base/log.h"
 
+CWin32Filesystem::CWin32Filesystem(cstr root) : CBaseRawFilesystem(root)
+{
+	// Get the full path to the root for OBJECT_ATTRIBUTES
+	UNICODE_STRING unicodeRoot = {};
+	ConvertPath(m_root, &unicodeRoot);
+	u32 rootLength = RtlGetFullPathName_U(unicodeRoot.Buffer, 0, nullptr, nullptr);
+	rootLength += 4 * sizeof(wchar_t); // for \??\ and NUL
+	dwstr fullRoot = Base_Alloc<wchar_t>(rootLength);
+	if (!fullRoot)
+	{
+		Base_Quit("Failed to allocate %zu wchars for path %s!", rootLength, m_root);
+	}
+
+	RtlGetFullPathName_U(unicodeRoot.Buffer, rootLength - 4 * sizeof(wchar_t), fullRoot + 4, nullptr);
+	fullRoot[0] = L'\\';
+	fullRoot[1] = L'?';
+	fullRoot[2] = L'?';
+	fullRoot[3] = L'\\';
+	UNICODE_STRING rootString;
+	rootString.Buffer = fullRoot;
+	rootString.Length = static_cast<u16>(rootLength - 1 * sizeof(wchar_t));
+	rootString.MaximumLength = static_cast<u16>(rootLength);
+
+	// Open or create the root
+	OBJECT_ATTRIBUTES objAttrs = RTL_CONSTANT_OBJECT_ATTRIBUTES(&rootString, OBJ_CASE_INSENSITIVE);
+	IO_STATUS_BLOCK ioStatus = {};
+	NTSTATUS status = NtCreateFile(
+		&m_rootHandle, GENERIC_READ | GENERIC_WRITE, &objAttrs, &ioStatus, nullptr, FILE_ATTRIBUTE_DIRECTORY,
+		FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, FILE_OPEN_IF, FILE_DIRECTORY_FILE, nullptr, 0);
+	if (!NT_SUCCESS(status))
+	{
+		Base_Quit("Failed to open directory %s: NTSTATUS 0x%08X", m_root, status);
+	}
+
+	Base_Free(fullRoot);
+}
+
+CWin32Filesystem::~CWin32Filesystem()
+{
+	NtClose(m_rootHandle);
+}
+
 ssize CWin32Filesystem::GetSize(cstr path)
 {
 	HANDLE file = OpenFile(path);
@@ -64,11 +106,10 @@ bool CWin32Filesystem::Read(cstr path, CVector<u8>& buffer, ssize count, ssize o
 
 FileType_t CWin32Filesystem::GetFileType(cstr path)
 {
-	dstr fullPath = Canonicalize(path);
 	UNICODE_STRING unicodePath = {};
-	ConvertPath(fullPath, &unicodePath);
-	Base_Free(fullPath);
-	OBJECT_ATTRIBUTES objAttrs = RTL_CONSTANT_OBJECT_ATTRIBUTES(&unicodePath, 0);
+	ConvertPath(path, &unicodePath);
+	OBJECT_ATTRIBUTES objAttrs = {};
+	InitializeObjectAttributes(&objAttrs, &unicodePath, OBJ_CASE_INSENSITIVE, &m_rootHandle, nullptr);
 	FILE_NETWORK_OPEN_INFORMATION info = {};
 	NTSTATUS status = NtQueryFullAttributesFile(&objAttrs, &info);
 	RtlFreeUnicodeString(&unicodePath);
@@ -128,14 +169,41 @@ IDirIter* CWin32Filesystem::ReadDirectory(cstr path)
 	return nullptr;
 }
 
-ssize CWin32Filesystem::Write(cstr path, const u8* data, ssize count, bool append, ssize offset)
+ssize CWin32Filesystem::Write(cstr path, const void* data, ssize count, bool append, ssize offset)
 {
-	(void)path;
-	(void)data;
-	(void)count;
-	(void)append;
-	(void)offset;
-	return -1;
+	HANDLE file = OpenFile(path, true);
+	if (!file)
+	{
+		return -1;
+	}
+
+	IO_STATUS_BLOCK ioStatus = {};
+	LARGE_INTEGER largeOffset = {};
+	largeOffset.QuadPart = offset;
+	if (append)
+	{
+		ssize size = GetSize(file);
+		largeOffset.QuadPart += size;
+	}
+
+	// NtWriteFile better not modify the buffer
+	NTSTATUS status = NtWriteFile(
+		file, nullptr, nullptr, nullptr, &ioStatus, reinterpret_cast<void*>(reinterpret_cast<uptr>(data)),
+		static_cast<u32>(count), &largeOffset, nullptr);
+	if (!NT_SUCCESS(status))
+	{
+		m_safe = false;
+		Log_Error(
+			"Failed to write %zu bytes to %s/%s at offset 0x%X: NTSTATUS 0x%08X", count, m_root, path, largeOffset.QuadPart,
+			status);
+		m_safe = true;
+		NtClose(file);
+		return -1;
+	}
+
+	NtClose(file);
+
+	return ioStatus.Information;
 }
 
 bool CWin32Filesystem::CreateDirectory(cstr path)
@@ -149,12 +217,11 @@ HANDLE CWin32Filesystem::OpenFile(cstr path, bool writable)
 	HANDLE file = nullptr;
 	IO_STATUS_BLOCK ioStatus = {};
 
-	dstr fullPath = Canonicalize(path);
 	UNICODE_STRING unicodePath = {};
-	ConvertPath(fullPath, &unicodePath);
-	Base_Free(fullPath);
+	ConvertPath(path, &unicodePath);
 
-	OBJECT_ATTRIBUTES objAttrs = RTL_CONSTANT_OBJECT_ATTRIBUTES(&unicodePath, 0);
+	OBJECT_ATTRIBUTES objAttrs = {};
+	InitializeObjectAttributes(&objAttrs, &unicodePath, 0, m_rootHandle, nullptr);
 
 	ACCESS_MASK access = GENERIC_READ;
 	if (writable)
@@ -163,12 +230,15 @@ HANDLE CWin32Filesystem::OpenFile(cstr path, bool writable)
 	}
 
 	NTSTATUS status = NtCreateFile(
-		&file, access, &objAttrs, &ioStatus, nullptr, FILE_ATTRIBUTE_NORMAL, 0, writable ? FILE_OPEN_IF : FILE_OPEN, 0, nullptr,
-		0);
+		&file, access, &objAttrs, &ioStatus, nullptr, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_READ, writable ? FILE_OPEN_IF : FILE_OPEN,
+		0, nullptr, 0);
 	RtlFreeUnicodeString(&unicodePath);
 	if (!NT_SUCCESS(status))
 	{
-		Log_Error("Failed to %s %s/%s: NTSTATUS 0x%08X", writable ? "create" : "open", m_root, path, status);
+		m_safe = false;
+		Log_Error(
+			"Failed to %s %s/%s with access 0x%08X: NTSTATUS 0x%08X", writable ? "create" : "open", m_root, path, access, status);
+		m_safe = true;
 		return nullptr;
 	}
 

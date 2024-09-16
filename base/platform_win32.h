@@ -15,11 +15,11 @@
 #define STUB_NAME(x)        STUB_NAME_2(x)
 // x86 is the only name mangled architecture
 #ifdef CH_IA32
-#define MAKE_STUB(x, callingConv, paramSize)                                                                                     \
+#define MAKE_STUB(x, callingConv, ...)                                                                                     \
 	extern "C" uptr (*STUB_NAME(x))(...);                                                                                        \
 	extern "C" BASEAPI bool STUB_AVAILABLE(x)();                                                                                 \
 	EXPORT_RAW("_" STRINGIZE(x) "_Available");                                                                                   \
-	EXPORT_AS_RAW(STRINGIZE(x) "_Forwarder", "_" STRINGIZE(x) #paramSize);
+	EXPORT_AS_RAW(STRINGIZE(x) "_Forwarder", "_" STRINGIZE(x) #__VA_ARGS__);
 #elif defined CH_XBOX360
 #define MAKE_STUB(x, ...)                                                                                                        \
 	extern "C" BASEAPI bool STUB_AVAILABLE(x)();                                                                                 \

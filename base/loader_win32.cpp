@@ -26,7 +26,7 @@ bool g_loaderInitialized;
 // These are in both Xbox 360 and desktop/OneCore
 
 // ntdll/xboxkrnl
-MAKE_STUB(DbgPrint, __cdecl, )
+MAKE_STUB(DbgPrint, __cdecl)
 MAKE_STUB(NtAllocateVirtualMemory, __stdcall, @24)
 MAKE_STUB(NtFreeVirtualMemory, __stdcall, @16)
 
@@ -39,12 +39,18 @@ MAKE_STUB(LdrAddRefDll, __stdcall, @8)
 MAKE_STUB(LdrGetProcedureAddress, __stdcall, @16)
 MAKE_STUB(LdrLoadDll, __stdcall, @16)
 MAKE_STUB(LdrUnloadDll, __stdcall, @4)
+MAKE_STUB(NtClose, __stdcall, @4)
+MAKE_STUB(NtCreateFile, __stdcall, @44)
+MAKE_STUB(NtQueryInformationFile, __stdcall, @20)
 MAKE_STUB(NtQuerySystemInformation, __stdcall, @16)
 MAKE_STUB(NtRaiseHardError, __stdcall, @0)
+MAKE_STUB(NtReadFile, __stdcall, @36)
 MAKE_STUB(NtTerminateProcess, __stdcall, @8)
+MAKE_STUB(NtWriteFile, __stdcall, @36)
 MAKE_STUB(RtlAnsiStringToUnicodeString, __stdcall, @12)
 MAKE_STUB(RtlFreeUnicodeString, __stdcall, @4)
 MAKE_STUB(RtlFreeHeap, __stdcall, @12)
+MAKE_STUB(RtlGetFullPathName_U, __stdcall, @16)
 
 // user32, because it's more than just forwarded syscalls, unlike kernel32
 MAKE_STUB(AdjustWindowRect, __stdcall, @12)
@@ -137,7 +143,7 @@ static bool FindLdrGetProcedureAddress()
 		GET_FUNCTION_OPTIONAL(lib, name)                                                                                         \
 		if (!STUB_AVAILABLE(name)())                                                                                             \
 		{                                                                                                                        \
-			Base_Abort(LastNtStatus(), "Failed to get " STRINGIZE(name) " from " #lib ": NTSTATUS 0x%08X", LastNtStatus());       \
+			Base_Abort(LastNtStatus(), "Failed to get " STRINGIZE(name) " from " #lib ": NTSTATUS 0x%08X", LastNtStatus());      \
 		}                                                                                                                        \
 	}
 
@@ -169,6 +175,7 @@ bool Base_InitLoader()
 	GET_FUNCTION(&ntDll, NtTerminateProcess)
 	GET_FUNCTION(&ntDll, NtRaiseHardError)
 
+	// These are also important
 	GET_FUNCTION(&ntDll, NtAllocateVirtualMemory)
 	GET_FUNCTION(&ntDll, NtFreeVirtualMemory)
 	GET_FUNCTION(&ntDll, RtlAnsiStringToUnicodeString)
@@ -178,8 +185,14 @@ bool Base_InitLoader()
 	GET_FUNCTION(&ntDll, LdrAddRefDll)
 	GET_FUNCTION(&ntDll, LdrLoadDll)
 	GET_FUNCTION(&ntDll, LdrUnloadDll)
+	GET_FUNCTION(&ntDll, NtClose)
+	GET_FUNCTION(&ntDll, NtCreateFile)
+	GET_FUNCTION(&ntDll, NtQueryInformationFile)
 	GET_FUNCTION(&ntDll, NtQuerySystemInformation)
+	GET_FUNCTION(&ntDll, NtReadFile)
+	GET_FUNCTION(&ntDll, NtWriteFile)
 	GET_FUNCTION(&ntDll, RtlFreeHeap)
+	GET_FUNCTION(&ntDll, RtlGetFullPathName_U)
 
 	// So unloading it when ntDll goes out of scope doesn't mess anything up, cause the loader wasn't used to "load" it
 	LdrAddRefDll(0, ntDllBase);
@@ -261,7 +274,6 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 			LastNtStatus() = status;
 			return nullptr;
 		}
-
 
 		void* handle = nullptr;
 		status = LdrLoadDll(nullptr, nullptr, &nameUStr, &handle);

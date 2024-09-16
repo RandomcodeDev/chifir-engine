@@ -9,13 +9,14 @@
 
 static CVector<ILogWriter*> s_writers;
 
+static const cstr LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
+static const cstr LEVEL_COLORS[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
+
 #ifdef CH_WIN32
 DECLARE_AVAILABLE(DbgPrint);
 
 BASEAPI void CDbgPrintLogWriter::Write(const LogMessage_t& message)
 {
-	static const cstr LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
-
 	if (DbgPrint_Available())
 	{
 		if (message.isAddress)
@@ -53,7 +54,25 @@ BASEAPI CFileLogWriter::~CFileLogWriter()
 
 BASEAPI void CFileLogWriter::Write(const LogMessage_t& message)
 {
-	m_filesystem->Write(m_filename, reinterpret_cast<const u8*>(message.message), Base_StrLength(message.message));
+	if (m_filesystem->IsWriteSafe())
+	{
+		dstr formatted = nullptr;
+		if (message.isAddress)
+		{
+			formatted = Base_StrFormat(
+				"[%s] [0x%llX@%s %s] %s\n", LEVEL_NAMES[message.level], message.location, message.file, message.function,
+				message.message);
+		}
+		else
+		{
+			formatted = Base_StrFormat(
+				"[%s] [%s:%d %s] %s\n", LEVEL_NAMES[message.level], message.file, message.location, message.function,
+				message.message);
+		}
+
+		m_filesystem->Write(m_filename, formatted, Base_StrLength(formatted));
+		Base_Free(formatted);
+	}
 }
 
 BASEAPI void Log_AddWriter(ILogWriter* writer)

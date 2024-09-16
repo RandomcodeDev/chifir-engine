@@ -47,9 +47,11 @@ MAKE_STUB NtQuerySystemInformation
 MAKE_STUB NtRaiseHardError
 MAKE_STUB NtReadFile
 MAKE_STUB NtTerminateProcess
+MAKE_STUB NtWriteFile
 MAKE_STUB RtlAnsiStringToUnicodeString
 MAKE_STUB RtlFreeHeap
 MAKE_STUB RtlFreeUnicodeString
+MAKE_STUB RtlGetFullPathName_U
 
 ; user32 stubs
 MAKE_STUB AdjustWindowRect

@@ -26,9 +26,15 @@ class CBaseRawFilesystem : public IWritableFilesystem
 
 	virtual dstr Canonicalize(cstr path);
 
-	virtual ssize Write(cstr path, const u8* data, ssize count, bool append = true, ssize offset = 0) = 0;
+	virtual ssize Write(cstr path, const void* data, ssize count, bool append = true, ssize offset = 0) = 0;
 	virtual bool CreateDirectory(cstr path) = 0;
+
+	virtual bool IsWriteSafe()
+	{
+		return m_safe;
+	}
 
   protected:
 	dstr m_root;
+	bool m_safe;
 };

@@ -3,7 +3,7 @@
 #include "filesystem_win32.h"
 #endif
 
-CBaseRawFilesystem::CBaseRawFilesystem(cstr root)
+CBaseRawFilesystem::CBaseRawFilesystem(cstr root) : m_safe(true)
 {
 	ssize len = Base_StrLength(root);
 	while (len > 0 && (root[len - 1] == '/' || root[len - 1] == '\\'))
