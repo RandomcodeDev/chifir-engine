@@ -87,7 +87,7 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		if (size > m_capacity)
 		{
 			m_capacity = size;
-			m_buffer = static_cast<T*>(Base_Realloc(m_buffer, m_capacity * sizeof(T)));
+			m_buffer = static_cast<T*>(Base_Realloc(m_buffer, m_capacity * SIZEOF(T)));
 			ASSERT(m_buffer != nullptr);
 		}
 	}

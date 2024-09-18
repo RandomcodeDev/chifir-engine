@@ -1,5 +1,6 @@
 #include "platform_win32.h"
 #include "base.h"
+#include "base/basicstr.h"
 #include "base/compiler.h"
 #include "base/platform.h"
 #include "base/types.h"
@@ -13,6 +14,10 @@ DECLARE_AVAILABLE(NtTerminateProcess);
 #endif
 
 SYSTEM_BASIC_INFORMATION g_systemInfo;
+SYSTEM_PERFORMANCE_INFORMATION g_systemPerfInfo;
+
+static char* s_systemDescription;
+static char* s_hardwareDescription;
 
 BASEAPI void Plat_Init()
 {
@@ -38,13 +43,75 @@ BASEAPI void Plat_Init()
 	{
 		Base_Abort(status, "Failed to get basic system information: NTSTATUS 0x%08X", status);
 	}
+
+	// Need this for RAM available
+	status = NtQuerySystemInformation(
+		SystemPerformanceInformation, &g_systemPerfInfo, SIZEOF(SYSTEM_PERFORMANCE_INFORMATION), nullptr);
+	if (!NT_SUCCESS(status))
+	{
+		Base_Abort(status, "Failed to get system performance information: NTSTATUS 0x%08X", status);
+	}
 #endif
+
+	(void)Plat_GetSystemDescription();
+	(void)Plat_GetHardwareDescription();
 
 	g_platInitialized = true;
 }
 
 BASEAPI void Plat_Shutdown()
 {
+	if (s_systemDescription)
+	{
+		Base_Free(s_systemDescription);
+	}
+	if (s_hardwareDescription)
+	{
+		Base_Free(s_hardwareDescription);
+	}
+}
+
+BASEAPI cstr Plat_GetSystemDescription()
+{
+	if (!s_systemDescription)
+	{
+#ifdef CH_XBOX360
+		// TODO: figure this out, probably easy
+		s_systemDescription = Base_StrClone("");
+#else
+		s_systemDescription = Base_StrFormat(
+			"Windows %u.%u.%u (compatibility set to %u.%u.%u)", USER_SHARED_DATA->NtMajorVersion,
+			USER_SHARED_DATA->NtMinorVersion, USER_SHARED_DATA->NtBuildNumber, NtCurrentPeb()->OSMajorVersion,
+			NtCurrentPeb()->OSMinorVersion, NtCurrentPeb()->OSBuildNumber);
+#endif
+	}
+
+	return s_systemDescription;
+}
+
+BASEAPI cstr Plat_GetHardwareDescription()
+{
+	if (!s_hardwareDescription)
+	{
+#ifdef CH_XBOX360
+		// TODO: figure this out, should be easy
+		s_hardwareDescription = Base_StrClone("");
+#else
+#ifdef CH_X86
+		s64 freeMemory = g_systemPerfInfo.AvailablePages * static_cast<s64>(g_systemInfo.PageSize);
+		s64 physicalMemory = g_systemInfo.NumberOfPhysicalPages * static_cast<s64>(g_systemInfo.PageSize);
+
+		// TODO: do stuff with the funny numbers instead of relying on the name being given directly
+		s_hardwareDescription = Base_StrFormat(
+			"%s %s with %lld bytes of RAM (%lld bytes free)", g_cpuData.brand, g_cpuData.haveName ? g_cpuData.name : "Unknown",
+			physicalMemory, freeMemory);
+#else
+		s_hardwareDescription = Base_StrClone("");
+#endif
+#endif
+	}
+
+	return s_hardwareDescription;
 }
 
 BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)

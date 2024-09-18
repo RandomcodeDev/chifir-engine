@@ -26,3 +26,9 @@ extern BASEAPI void Plat_Init();
 
 // Shut down platform
 extern BASEAPI void Plat_Shutdown();
+
+// Get a description of the OS
+extern BASEAPI cstr Plat_GetSystemDescription();
+
+// Get a description of the hardware (CPU, RAM)
+extern BASEAPI cstr Plat_GetHardwareDescription();

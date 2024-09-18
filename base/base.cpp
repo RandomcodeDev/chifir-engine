@@ -48,8 +48,10 @@ static void X86InitCpuData()
 
 	// brand, EAX = 0
 	CpuId(regs[0], regs[1], regs[2], regs[3]);
-	Base_MemCopy(g_cpuData.brand, regs, 16);
-	g_cpuData.brand[11] = '\0';
+	Base_MemCopy(g_cpuData.brand, regs + 1, 4);
+	Base_MemCopy(g_cpuData.brand + 4, regs + 3, 4);
+	Base_MemCopy(g_cpuData.brand + 8, regs + 2, 4);
+	g_cpuData.brand[12] = '\0';
 
 	// model name available
 	regs[4] = 0x80000000;
@@ -66,7 +68,7 @@ static void X86InitCpuData()
 		CpuId(regs[12], regs[13], regs[14], regs[15]);
 
 		Base_MemCopy(g_cpuData.name, regs + 4, 48);
-		g_cpuData.name[47] = '\0';
+		g_cpuData.name[48] = '\0';
 	}
 }
 #elif defined CH_XBOX360

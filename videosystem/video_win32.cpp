@@ -64,7 +64,7 @@ void CWindowsVideoSystem::SetTitle(cstr newTitle)
 bool CWindowsVideoSystem::RegisterWindowClass()
 {
 	WNDCLASSEXA wndClass = {};
-	wndClass.cbSize = sizeof(WNDCLASSEXA);
+	wndClass.cbSize = SIZEOF(WNDCLASSEXA);
 
 	// Check if the class is already registered
 	if (GetClassInfoExA(m_hinstance, WINDOW_CLASS, &wndClass))
@@ -75,8 +75,8 @@ bool CWindowsVideoSystem::RegisterWindowClass()
 
 	Log_Debug("Registering " WINDOW_CLASS " window class");
 
-	Base_MemSet(&wndClass, 0, sizeof(WNDCLASSEXA));
-	wndClass.cbSize = sizeof(WNDCLASSEXA);
+	Base_MemSet(&wndClass, 0, SIZEOF(WNDCLASSEXA));
+	wndClass.cbSize = SIZEOF(WNDCLASSEXA);
 	wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.lpszClassName = WINDOW_CLASS;
 	wndClass.hInstance = m_hinstance;

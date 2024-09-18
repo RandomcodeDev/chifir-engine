@@ -17,11 +17,12 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	Log_Info("Initializing engine");
 	m_state = EngineStateStartup;
 
-	// Need this for logging
-	if (!InitializeFilesystems())
+	if (!InitializeSaveFilesystem())
 	{
 		Base_Quit("Failed to initialize filesystem!");
 	}
+
+	Log_Info("Engine running on %s on %s", Plat_GetSystemDescription(), Plat_GetHardwareDescription());
 
 	m_videoSystem = reinterpret_cast<IVideoSystem*>(systems[0]);
 
@@ -49,7 +50,7 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	return 0;
 }
 
-bool CEngine::InitializeFilesystems()
+bool CEngine::InitializeSaveFilesystem()
 {
 	m_saveFilesystem = Base_CreateRawFilesystem(".");
 	if (!m_saveFilesystem)
