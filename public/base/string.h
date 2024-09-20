@@ -204,6 +204,18 @@ class CString
 		return *this == other.Data();
 	}
 
+	// Format into the string
+	void Format(cstr format, ...)
+	{
+		va_list args;
+		
+		va_start(args, format);
+		ssize size = Base_VStrFormat(nullptr, 0, format, args);
+		Resize(size);
+		Base_VStrFormat(m_buffer, static_cast<s32>(m_size), format, args);
+		va_end(args);
+	}
+
 	// Not implemented yet
 	ssize Find(s32 (*Compare)(char a, char b)) const
 	{

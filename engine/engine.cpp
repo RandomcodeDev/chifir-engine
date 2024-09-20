@@ -47,6 +47,8 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 
 	ShutdownSystems();
 
+	Log_Info("Shut down finished, returning to launcher");
+
 	return 0;
 }
 

@@ -15,6 +15,8 @@
 #endif
 #endif
 
+class CString;
+
 // Initialize platform stuff, detect CPU features, and other stuff
 extern BASEAPI void Base_Init();
 
@@ -110,3 +112,6 @@ extern BASEAPI void* Base_Realloc(void* block, ssize newSize);
 
 // Free memory from Base_Alloc
 extern BASEAPI void Base_Free(void* block);
+
+// Format a size
+extern BASEAPI CString Base_FormatSize(ssize size);

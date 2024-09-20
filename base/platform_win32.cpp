@@ -103,8 +103,8 @@ BASEAPI cstr Plat_GetHardwareDescription()
 
 		// TODO: do stuff with the funny numbers instead of relying on the name being given directly
 		s_hardwareDescription = Base_StrFormat(
-			"%s %s with %lld bytes of RAM (%lld bytes free)", g_cpuData.brand, g_cpuData.haveName ? g_cpuData.name : "Unknown",
-			physicalMemory, freeMemory);
+			"%s %s with %s of RAM (%s free)", g_cpuData.brand, g_cpuData.haveName ? g_cpuData.name : "Unknown",
+			Base_FormatSize(physicalMemory).Data(), Base_FormatSize(freeMemory).Data());
 #else
 		s_hardwareDescription = Base_StrClone("");
 #endif
