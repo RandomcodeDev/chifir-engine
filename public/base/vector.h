@@ -16,7 +16,7 @@ template <typename T> class CVector : public IContainer<T, ssize>
 	}
 
 	// Create a vector from the given data
-	CVector(const T* data, ssize size)
+	CVector(const T* data, ssize size) : CVector<T>()
 	{
 		Resize(size);
 		// Copying objects is fine because their vtables stay the same
@@ -24,7 +24,7 @@ template <typename T> class CVector : public IContainer<T, ssize>
 	}
 
 	// Avoid this
-	CVector(const CVector<T>& other)
+	CVector(const CVector<T>& other) : CVector<T>()
 	{
 		Add(other);
 	}
@@ -93,7 +93,7 @@ template <typename T> class CVector : public IContainer<T, ssize>
 	}
 
 	// Add an object
-	ssize Add(const T& object, ssize index = IContainer<T, ssize>::BAD_INDEX)
+	ssize Add(const T& object, ssize index = BAD_INDEX)
 	{
 		m_sorted = false;
 		m_size++;
@@ -103,44 +103,46 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		}
 
 		// Append by default
-		if (index == IContainer<T, ssize>::BAD_INDEX || index > m_size)
+		if (index == BAD_INDEX || index > m_size)
 		{
 			m_buffer[m_size - 1] = object;
 			return m_size - 1;
 		}
 		else
 		{
-			Base_MemCopy(&m_buffer[index + 1], &m_buffer[index], m_size - index - 1);
+			Base_MemCopy(m_buffer + index + 1, m_buffer + index, m_size - index - 1);
 			m_buffer[index] = object;
 			return index;
 		}
 	}
 
 	// Add many objects
-	ssize Add(const T* objects, ssize count, ssize startIndex = IContainer<T, ssize>::BAD_INDEX)
+	ssize Add(const T* objects, ssize count, ssize index = BAD_INDEX)
 	{
-		Reserve(count);
+		Resize(m_size + count);
 
-		ssize index = 0;
-		for (ssize i = 0; i < count; i++)
+		if (index == BAD_INDEX || index > m_size)
 		{
-			index = Add(objects[i], startIndex + i);
+			index = m_size - 1;
 		}
+
+		Base_MemCopy(m_buffer + index + count, m_buffer + index, m_size - index);
+		Base_MemCopy(m_buffer + index, objects, count * sizeof(T));
 
 		return index - count - 1;
 	}
 
 	// Add the contents of another vector
-	ssize Add(const CVector<T>& other, ssize startIndex = IContainer<T, ssize>::BAD_INDEX)
+	ssize Add(const CVector<T>& other, ssize index = BAD_INDEX)
 	{
-		return Add(other.Data(), other.Size(), startIndex);
+		return Add(other.Data(), other.Size(), index);
 	}
 
 	// Remove the given element
-	void Delete(ssize index = IContainer<T, ssize>::BAD_INDEX)
+	void Delete(ssize index = BAD_INDEX)
 	{
 		// Delete the last element by default
-		if (index == IContainer<T, ssize>::BAD_INDEX || index > m_size)
+		if (index == BAD_INDEX || index > m_size)
 		{
 			index = m_size - 1;
 		}
@@ -179,7 +181,7 @@ template <typename T> class CVector : public IContainer<T, ssize>
 	ssize Find(s32 (*Compare)(const T& a, const T& b)) const
 	{
 		(void)Compare;
-		return IContainer<T, ssize>::BAD_INDEX;
+		return BAD_INDEX;
 	}
 
 	// Not implemented yet
@@ -189,10 +191,11 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		m_sorted = false;
 	}
 
-	// So other containers that are similar, like strings, can share functionality more easily
-  protected:
+  private:
 	T* m_buffer;
 	ssize m_size;
 	ssize m_capacity;
 	bool m_sorted;
+
+	static const ssize BAD_INDEX = IContainer<T, ssize>::BAD_INDEX;
 };

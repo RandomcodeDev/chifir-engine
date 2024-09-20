@@ -25,8 +25,8 @@ class IContainer
 	// Insert an item at index, or append if index == BAD_INDEX
 	virtual I Add(const T& object, I index = BAD_INDEX) = 0;
 
-	// Insert count objects at startIndex, or at the end
-	virtual I Add(const T* objects, ssize count, ssize startIndex = IContainer<T, ssize>::BAD_INDEX) = 0;
+	// Insert count objects at index, or at the end
+	virtual I Add(const T* objects, ssize count, ssize index = IContainer<T, ssize>::BAD_INDEX) = 0;
 
 	// Remove the specified index if it exists
 	virtual void Delete(I index) = 0;

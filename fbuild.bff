@@ -73,6 +73,7 @@
 #include "base/Base.bff"
 //#include "utility/Utility.bff"
 #include "engine/Engine.bff"
+#include "testapp/TestApp.bff"
 #include "videosystem/VideoSystem.bff"
 #include "launcher/Launcher.bff"
 #if HAVE_MSVC_XBOX360
@@ -295,7 +296,13 @@ VSSolution('solution')
 		.Projects = {'VideoSystem-proj'}
 	]
 
-	.SolutionFolders = {.Folder_Meta, .Folder_Support, .Folder_Systems}
+	.Folder_Tests =
+	[
+		.Path = 'Tests'
+		.Projects = {'TestApp-proj'}
+	]
+
+	.SolutionFolders = {.Folder_Meta, .Folder_Support, .Folder_Systems, .Folder_Tests}
 	.SolutionProjects = {'Launcher-proj', 'Engine-proj'}
 }
 #endif

@@ -254,10 +254,11 @@ BASEAPI void* Base_Realloc(void* block, ssize newSize)
 		AllocInfo_t* neighbor = &node->GetNext()->data;
 		// the node isn't part of the size change
 		ssize extraSize = newSize - node->data.size - SIZEOF(AllocNode_t);
-		node->data.size = newSize;
 
 		if (Contiguous(node, node->GetNext()) && EffectiveAllocSize(neighbor) > extraSize)
 		{
+			node->data.size = newSize + SIZEOF(AllocNode_t);
+
 			u8* newNext = static_cast<u8*>(block) + node->data.size;
 			Base_MemCopy(newNext, node->GetNext(), SIZEOF(AllocNode_t));
 			s_free.Remove(node->GetNext());
