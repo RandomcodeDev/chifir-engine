@@ -192,6 +192,18 @@ class CString
 		return other;
 	}
 
+	// Compare the string
+	bool operator==(cstr other)
+	{
+		return Base_StrCompare(m_buffer, other) == 0;
+	}
+
+	// Compare the string
+	bool operator==(const CString& other)
+	{
+		return *this == other.Data();
+	}
+
 	// Not implemented yet
 	ssize Find(s32 (*Compare)(char a, char b)) const
 	{
