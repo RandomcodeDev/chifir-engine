@@ -114,4 +114,4 @@ extern BASEAPI void* Base_Realloc(void* block, ssize newSize);
 extern BASEAPI void Base_Free(void* block);
 
 // Format a size
-extern BASEAPI CString Base_FormatSize(ssize size);
+extern BASEAPI CString Base_FormatSize(u64 size);

@@ -544,7 +544,7 @@ BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssiz
 	return comparison;
 }
 
-BASEAPI CString Base_FormatSize(ssize size)
+BASEAPI CString Base_FormatSize(u64 size)
 {
 	static const cstr SUFFIXES[] = {
 		"B", "kiB", "MiB", "GiB", "TiB", "PiB (damn)", "EiB (are you sure?)",
@@ -552,12 +552,12 @@ BASEAPI CString Base_FormatSize(ssize size)
 		// impossible and here as a joke anyway
 		"ZiB (who are you?)", "YiB (what are you doing?)", "RiB (why are you doing this?)", "QiB (HOW ARE YOU DOING THIS?)",
 		"?B (what did you do?)"};
-
+	
 	f64 value = static_cast<f64>(size);
 	s32 suffix = 0;
 	while (value >= 1024.0)
 	{
-		value /= 1024;
+		value /= 1024.0;
 		suffix++;
 	}
 

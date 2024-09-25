@@ -195,7 +195,10 @@ LRESULT __stdcall CWindowsVideoSystem::WindowProc(HWND window, UINT msg, WPARAM 
 	case WM_SIZE: {
 		u32 width = LOWORD(lparam);
 		u32 height = HIWORD(lparam);
-		Log_Debug("Window resized from %ux%u to %ux%u", videoSystem->m_width, videoSystem->m_height, width, height);
+		if (videoSystem->m_width != width || videoSystem->m_height != height)
+		{
+			Log_Debug("Window resized from %ux%u to %ux%u", videoSystem->m_width, videoSystem->m_height, width, height);
+		}
 		videoSystem->UpdateSize();
 		return 0;
 	}
