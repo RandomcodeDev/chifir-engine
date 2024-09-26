@@ -554,7 +554,7 @@ BASEAPI CString Base_FormatSize(u64 size)
 		"?B (what did you do?)"};
 	
 	f64 value = static_cast<f64>(size);
-	s32 suffix = 0;
+	ssize suffix = 0;
 	while (value >= 1024.0)
 	{
 		value /= 1024.0;
@@ -563,6 +563,6 @@ BASEAPI CString Base_FormatSize(u64 size)
 
 	// TODO: handle 69, 420, and pi
 	CString string;
-	string.Format("%lf %s", value, SUFFIXES[suffix]);
+	string.Format("%lf %s", value, SUFFIXES[Min(suffix, ARRAY_SIZE(SUFFIXES) - 1)]);
 	return string;
 }
