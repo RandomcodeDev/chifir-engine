@@ -80,7 +80,7 @@ BASEAPI cstr Plat_GetSystemDescription()
 		s_systemDescription = Base_StrClone("");
 #else
 		s_systemDescription = Base_StrFormat(
-			"Windows %u.%u.%u (compatibility set to %u.%u.%u)", USER_SHARED_DATA->NtMajorVersion,
+			"Windows %u.%u.%u (reported as %u.%u.%u)", USER_SHARED_DATA->NtMajorVersion,
 			USER_SHARED_DATA->NtMinorVersion, USER_SHARED_DATA->NtBuildNumber, NtCurrentPeb()->OSMajorVersion,
 			NtCurrentPeb()->OSMinorVersion, NtCurrentPeb()->OSBuildNumber);
 #endif
