@@ -116,17 +116,20 @@ BASEAPI cstr Plat_GetHardwareDescription()
 
 BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)
 {
-	if (code == 1 && LastNtStatus() != 0)
+	if (code == 1)
 	{
-		code = LastNtStatus();
-	}
-	else if (code == 1 && LastNtError() != 0)
-	{
-		code = LastNtError();
-	}
-	else if (code == 1)
-	{
-		code = STATUS_FATAL_APP_EXIT;
+		if (LastNtStatus() != 0)
+		{
+			code = LastNtStatus();
+		}
+		else if (LastNtError() != 0)
+		{
+			code = LastNtError();
+		}
+		else
+		{
+			code = STATUS_FATAL_APP_EXIT;
+		}
 	}
 
 	if (DbgPrint_Available())
