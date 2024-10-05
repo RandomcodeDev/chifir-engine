@@ -136,7 +136,15 @@ static AllocNode_t* FindNode(void* block)
 		sigAddr--;
 	}
 
+#ifdef __clang__
+	// data should be at a constant offset in AllocNode_t
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	AllocNode_t* node = reinterpret_cast<AllocNode_t*>(sigAddr - offsetof(AllocInfo_t, signature) - offsetof(AllocNode_t, data));
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 	return node;
 }
 

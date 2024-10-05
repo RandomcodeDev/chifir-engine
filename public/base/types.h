@@ -5,7 +5,7 @@
 #include <cstdarg>
 #include <cstdint>
 #include <limits>
-#if _MSC_VER >= 1400
+#if !defined CH_WIN32 || _MSC_VER >= 1400
 #include <typeinfo>
 #else
 #include <typeinfo.h>

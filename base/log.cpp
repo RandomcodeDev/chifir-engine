@@ -10,7 +10,7 @@
 static CVector<ILogWriter*> s_writers;
 
 static const cstr LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
-static const cstr LEVEL_COLORS[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
+//static const cstr LEVEL_COLORS[] = {"", "", "", "", "", ""};
 
 #ifdef CH_WIN32
 DECLARE_AVAILABLE(DbgPrint);

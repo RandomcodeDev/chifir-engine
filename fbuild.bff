@@ -57,12 +57,12 @@
 	.Windows_Clang_x86Debug,
 	.Windows_Clang_x86Release,
 	.Windows_Clang_x86Retail,
+#endif
 
 #if HAVE_SWITCH
 	.Switch_Clang_NX64Debug,
 	.Switch_Clang_NX64Release,
 	.Switch_Clang_NX64Retail,
-#endif
 #endif
 #endif
 }

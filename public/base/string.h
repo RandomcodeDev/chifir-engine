@@ -231,7 +231,7 @@ class CString
 
 	static const ssize BAD_INDEX = -1;
 
-	FORCEINLINE void Terminate()
+	void Terminate()
 	{
 		m_buffer[m_size - 1] = 0;
 	}

@@ -11,3 +11,4 @@ fastbuild/Config.bff
 *.fdb
 *.idb
 *.pdb
+private/

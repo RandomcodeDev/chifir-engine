@@ -23,6 +23,7 @@
 					 + ' -std=c++14' // The project is technically C++03 with TR1 (because that's what the 360 compiler supports),
 									 // but this is needed on Windows
 					 + ' -ffreestanding' // Disable libc
+					 + ' -fPIC' // Position independant code is generally useful
 					 + ' -fms-extensions' // These are nice to have, especially for COM code
 					 + ' -fno-exceptions' // No exceptions
 					 + ' -fvisibility=hidden' // So internal/private symbols in dynamic libraries don't conflict
