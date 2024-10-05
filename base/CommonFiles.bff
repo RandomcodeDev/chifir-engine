@@ -36,6 +36,7 @@
 			.UnityOutputPattern = '$ProjectName$_Unity*.cpp'
 		}
 
+#if __WINDOWS__
 		If (.PlatformName in .WindowsLike)
 		{
 			If (.ArchName == 'AMD64')
@@ -72,13 +73,18 @@
 				}
 			}
 		}
+#endif
 
-		Library('$ProjectName$-Lib-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		ObjectList('$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
 		{
 			.CompilerInputUnity = '$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
 			.CompilerOutputPath = '$ObjectDir$/$ProjectPath$/'
+		}
+
+		Library('$ProjectName$-Lib-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		{
 			.LibrarianOutput = '$OutputDir$/$ProjectName$$LibExtension$'
-			.LibrarianAdditionalInputs = {}
+			.LibrarianAdditionalInputs = {'$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'}
 
 			If (.PlatformName in .WindowsLike)
 			{

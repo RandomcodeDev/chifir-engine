@@ -2,12 +2,12 @@ function CreateVcxProject(.Name, .Path, .Configs, .Options)
 {
 	VCXProject('$Name$-proj')
 	{
+		Using(.Options)
+
 		.ProjectConfigs = .Configs
 		.ProjectOutput = 'projects/VisualStudio/$Name$.vcxproj'
-		.ProjectInputPaths = '$Path$/'
-		.ProjectBasePath = '$Path$/'
-
-		Using(.Options)
+		.ProjectInputPaths = {'$Path$/', 'public/$Path$/', 'private/$Path$/'}
+		.ProjectBasePath = {'$Path$/', 'public/$Path$/', 'private/$Path$/'}
 	}
 }
 

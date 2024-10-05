@@ -123,21 +123,15 @@ template <typename T> static FORCEINLINE T Fnv1a(const u8* data, ssize size, T o
 	return hash;
 }
 
-BASEAPI u32 Base_Fnv1a32(const void* data, ssize size)
-{
-	static const u32 OFFSET_BASIS = 0x811c9dc5;
-	static const u32 PRIME = 0x01000193;
+// yay pointless metaprogramming
+#define DEFINE_FNV1A_IMPL(length, offsetBasis, prime)                                                                            \
+	BASEAPI u##length Base_Fnv1a##length(const void* data, ssize size)                                                           \
+	{                                                                                                                            \
+		return Fnv1a<u##length>(reinterpret_cast<const u8*>(data), size, (offsetBasis), (prime));                                \
+	}
 
-	return Fnv1a((u8*)data, size, OFFSET_BASIS, PRIME);
-}
-
-BASEAPI u64 Base_Fnv1a64(const void* data, ssize size)
-{
-	static const u64 OFFSET_BASIS = 0xcbf29ce484222325;
-	static const u64 PRIME = 0x00000100000001B3;
-
-	return Fnv1a((u8*)data, size, OFFSET_BASIS, PRIME);
-}
+DEFINE_FNV1A_IMPL(32, 0x811c9dc5, 0x01000193)
+DEFINE_FNV1A_IMPL(64, 0xcbf29ce484222325, 0x00000100000001B3)
 
 template <typename T>
 static void Copy(
@@ -552,7 +546,7 @@ BASEAPI CString Base_FormatSize(u64 size)
 		// impossible and here as a joke anyway
 		"ZiB (who are you?)", "YiB (what are you doing?)", "RiB (why are you doing this?)", "QiB (HOW ARE YOU DOING THIS?)",
 		"?B (what did you do?)"};
-	
+
 	f64 value = static_cast<f64>(size);
 	ssize suffix = 0;
 	while (value >= 1024.0)

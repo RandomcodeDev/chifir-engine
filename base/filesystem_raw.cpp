@@ -32,5 +32,8 @@ BASEAPI IWritableFilesystem* Base_CreateRawFilesystem(cstr path)
 {
 #ifdef CH_WIN32
 	return new CWin32Filesystem(path);
+#else
+	(void)path;
+	return nullptr;
 #endif
 }

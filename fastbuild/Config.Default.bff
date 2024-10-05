@@ -26,6 +26,7 @@
 #define HAVE_MSVC_X86
 //#define HAVE_MSVC_ARM64
 //#define HAVE_MSVC_XBOX360
-
 #define HAVE_CLANG
 
+.NintendoSDKRoot = 'C:\Nintendo\NintendoSDK'
+.SwitchTitleID = '0100694203488000'
