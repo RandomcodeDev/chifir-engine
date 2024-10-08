@@ -53,6 +53,15 @@
 				}
 			}
 
+			If (.PlatformName == 'Switch')
+			{
+				^UnityInputFiles +
+				{
+					'$ProjectPath$/../private/base/filesystem_switch.cpp',
+					'$ProjectPath$/../private/base/platform_switch.cpp',
+				}
+			}
+
 			If (.CompilerName == 'Clang')
 			{
 				If (!.StaticBuild)

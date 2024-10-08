@@ -6,7 +6,7 @@
 extern "C"
 {
 	// Presumably emitted for things like a pure virtual call
-	void __std_terminate()
+	NORETURN void __std_terminate()
 	{
 		Base_AbortSafe(1, "Invalid behaviour");
 	}

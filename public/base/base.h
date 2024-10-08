@@ -25,7 +25,7 @@ extern BASEAPI void Base_Shutdown();
 
 // Exit the process and optionally display an error.
 // For platform specific code, error can be an NTSTATUS or POSIX errno value.
-// Otherwise, use 0 for normal exit, 1 for a possibly relevant platform-specific error code and an error message.
+// Otherwise, use 0 for normal exit, 1 for a possibly relevant platform-specific error code (such as NtLastError()).
 extern BASEAPI NORETURN void Base_Abort(s32 error, cstr msg, ...);
 
 // This is for when Base_Abort might have side effects that could lead to recursion, such as calling Base_VFormat

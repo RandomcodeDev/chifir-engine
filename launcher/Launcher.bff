@@ -37,6 +37,14 @@
 					}
 				}
 			}
+
+			If (.PlatformName == 'Switch')
+			{
+				^UnityInputFiles +
+				{
+					'$ProjectPath$/../private/launcher/main_switch.cpp'
+				}
+			}
 			
 			.UnityOutputPath = '$ObjectDir$/$ProjectPath$/'
 			.UnityOutputPattern = '$ProjectName$_Unity*.cpp'
@@ -83,10 +91,27 @@
 			}
 		}
 
+#if HAVE_SWITCH
+		If (.PlatformName == 'Switch')
+		{
+			Exec('$ProjectName$-Nso-$CompilerName$-$PlatformName$-$ConfigName$')
+			{
+				.ExecExecutable = '$MakeNso$'
+				.ExecInput = '$OutputDir$/$GameName$$ExeExtension$'
+				.ExecOutput = '$OutputDir$/$GameName$.nso'
+				.ExecArguments = '"%1" "%2"'
+			}
+		}
+#endif
+
 		// This is the main target
 		Alias('$ProjectName$-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
 		{
 			.Targets = '$ProjectName$-Exe-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+			If (.PlatformName == 'Switch')
+			{
+				^Targets = '$ProjectName$-Nso-$CompilerName$-$PlatformName$-$ConfigName$'
+			}
 		}
 		^'Targets_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$' + {'$ProjectName$-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'}
 
