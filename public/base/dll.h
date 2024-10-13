@@ -8,6 +8,6 @@
 #define DLLEXPORT ATTRIBUTE(dllexport)
 #define DLLIMPORT ATTRIBUTE(dllimport)
 #else
-#define DLLEXPORT ATTRIBUTE(visibility("default"))
+#define DLLEXPORT
 #define DLLIMPORT
 #endif

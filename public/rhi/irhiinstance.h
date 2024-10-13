@@ -5,9 +5,8 @@
 #include "base/compiler.h"
 #include "base/types.h"
 #include "base/vector.h"
+#include "irhidevice.h"
 
-struct RhiDeviceInfo_t;
-class IRhiDevice;
 class IRhiSwapChain;
 
 // Represents a DXGI factory, a VkInstance, or whatever ungodly thing legacy APIs use (GL context, etc)
@@ -22,7 +21,7 @@ class IRhiInstance
 	virtual CVector<RhiDeviceInfo_t> GetDeviceInfo() = 0;
 
 	// Create a graphics device
-	virtual IRhiDevice* CreateDevice() = 0;
+	virtual IRhiDevice* CreateDevice(s32 index = 0) = 0;
 
 	// Create a swap chain
 	virtual IRhiSwapChain* CreateSwapChain() = 0;

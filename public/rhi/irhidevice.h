@@ -3,6 +3,7 @@
 #pragma once
 
 #include "base/compiler.h"
+#include "base/string.h"
 #include "base/types.h"
 
 class IRhiCommandQueue;
@@ -21,6 +22,28 @@ enum RhiImageFormat_t;
 enum RhiImageFlags_t;
 class IRhiPipelineState;
 struct RhiPipelineStateDesc_t;
+
+enum RhiDeviceType_t
+{
+	RhiDeviceTypeIntegrated,
+	RhiDeviceTypeDiscrete,
+	RhiDeviceTypeOther
+};
+
+struct RhiDeviceInfo_t
+{
+	CString name;
+	
+	RhiDeviceType_t deviceType;
+
+	u32 vendorId;
+	u32 deviceId;
+
+	s64 deviceMemory;
+	s64 otherMemory;
+	s64 totalMemory;
+	s32 maxTextureSize;
+};
 
 class IRhiDevice
 {

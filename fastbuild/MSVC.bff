@@ -36,6 +36,13 @@ Settings
 					 + ' /wd4319' // zero extending 'x' to 'y' of greater type
 					 + ' /wd4163' // 'x': not available as an intrinsic function
 
+					 // Unfortunately, this is the only way I can get Visual Studio to recognize these
+#if HAVE_SWITCH
+					 + ' /I"$NintendoSDKRoot$/Include"'
+					 + ' /I"$NintendoSDKRoot$/TargetSpecificInclude/NX-NXFP2-a64"'
+					 + ' /I"$NintendoSDKCompiler$/include/aarch64-nintendo-nx-elf"'
+#endif
+
 	// Global include dirs
 	ForEach(.IncludeDir in .IncludeDirs)
 	{
