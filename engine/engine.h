@@ -38,8 +38,11 @@ class CEngine : public IEngine
 
 	IVideoSystem* m_videoSystem;
 
-	// Initializes the filesystems and logging
+	// Initializes the filesystem for save files/other data
 	bool InitializeSaveFilesystem();
+
+	// Adds log writers
+	void AddLogWriters();
 
 	// Initializes the engine's systems in the right order
 	bool InitializeSystems();

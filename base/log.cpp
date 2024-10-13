@@ -9,31 +9,7 @@
 
 static CVector<ILogWriter*> s_writers;
 
-static const cstr LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
-//static const cstr LEVEL_COLORS[] = {"", "", "", "", "", ""};
-
-#ifdef CH_WIN32
-DECLARE_AVAILABLE(DbgPrint);
-
-BASEAPI void CDbgPrintLogWriter::Write(const LogMessage_t& message)
-{
-	if (DbgPrint_Available())
-	{
-		if (message.isAddress)
-		{
-			DbgPrint(
-				"[%s] [0x%llX@%s %s] %s\n", LEVEL_NAMES[message.level], message.location, message.file, message.function,
-				message.message);
-		}
-		else
-		{
-			DbgPrint(
-				"[%s] [%s:%d %s] %s\n", LEVEL_NAMES[message.level], message.file, message.location, message.function,
-				message.message);
-		}
-	}
-}
-#endif
+const cstr ILogWriter::LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
 
 BASEAPI CFileLogWriter::CFileLogWriter(IWritableFilesystem* filesystem, cstr logName, bool addDate) : m_filesystem(filesystem)
 {

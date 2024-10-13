@@ -22,6 +22,8 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 		Base_Quit("Failed to initialize filesystem!");
 	}
 
+	AddLogWriters();
+
 	Log_Info("Engine running on %s on %s", Plat_GetSystemDescription(), Plat_GetHardwareDescription());
 
 	m_videoSystem = reinterpret_cast<IVideoSystem*>(systems[0]);
@@ -61,9 +63,12 @@ bool CEngine::InitializeSaveFilesystem()
 		return false;
 	}
 
-	Log_AddWriter(new CFileLogWriter(m_saveFilesystem, "chifir.log"));
-
 	return true;
+}
+
+void CEngine::AddLogWriters()
+{
+	Log_AddWriter(new CFileLogWriter(m_saveFilesystem, "chifir.log"));
 }
 
 bool CEngine::InitializeSystems()

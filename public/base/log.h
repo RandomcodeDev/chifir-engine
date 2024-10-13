@@ -37,6 +37,10 @@ class BASEAPI ILogWriter
 
 	// Write a message
 	virtual void Write(const LogMessage_t& message) = 0;
+
+  protected:
+	static const cstr LEVEL_NAMES[];
+	// static const cstr LEVEL_COLORS[] = {"", "", "", "", "", ""};
 };
 
 #ifdef CH_WIN32
