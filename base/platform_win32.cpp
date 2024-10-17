@@ -15,6 +15,8 @@ DECLARE_AVAILABLE(NtTerminateProcess);
 DECLARE_AVAILABLE(AllocConsole);
 DECLARE_AVAILABLE(AttachConsole);
 DECLARE_AVAILABLE(GetConsoleMode);
+DECLARE_AVAILABLE(GetStdHandle);
+DECLARE_AVAILABLE(NtWriteFile);
 DECLARE_AVAILABLE(SetConsoleMode);
 #endif
 
@@ -29,6 +31,16 @@ static bool HaveNewConsole()
 {
 	// 10.0.10586 (version 1511)
 	return USER_SHARED_DATA->NtMajorVersion >= 10 && USER_SHARED_DATA->NtBuildNumber >= 10586;
+}
+
+static void WriteConsole(cstr text)
+{
+	u32 length = static_cast<u32>(Base_StrLength(text));
+	IO_STATUS_BLOCK ioStatus = {};
+	if (NtWriteFile_Available() && GetStdHandle_Available())
+	{
+		NtWriteFile(GetStdHandle(STD_OUTPUT_HANDLE), nullptr, nullptr, nullptr, &ioStatus, (dstr)text, length, nullptr, nullptr);
+	}
 }
 #endif
 
@@ -70,25 +82,34 @@ BASEAPI void Plat_Init()
 	(void)Plat_GetSystemDescription();
 	(void)Plat_GetHardwareDescription();
 
+#ifndef CH_XBOX360
 #ifdef CH_WIN32
 	// Get a console
+	bool haveConsole;
 	if (AttachConsole_Available())
 	{
-		if (!AttachConsole(ATTACH_PARENT_PROCESS) && AllocConsole_Available())
+		haveConsole = AttachConsole(ATTACH_PARENT_PROCESS);
+		if (!haveConsole && AllocConsole_Available())
 		{
 #ifndef CH_RETAIL
 			AllocConsole();
 #endif
 		}
+		
+		if (!haveConsole)
+		{
+			WriteConsole("\n");
+		}
 	}
 #endif
 
-	if (HaveNewConsole() && GetConsoleMode_Available() && SetConsoleMode_Available())
+	if (haveConsole && HaveNewConsole() && GetConsoleMode_Available() && SetConsoleMode_Available())
 	{
 		DWORD mode = 0;
 		GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), &mode);
 		SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 	}
+#endif
 
 	g_platInitialized = true;
 }
@@ -236,10 +257,6 @@ void Base_ReleaseAllMemory()
 }
 
 DECLARE_AVAILABLE(DbgPrint);
-#ifndef CH_XBOX360
-DECLARE_AVAILABLE(GetStdHandle);
-DECLARE_AVAILABLE(NtWriteFile);
-#endif
 
 BASEAPI void CDbgPrintLogWriter::Write(const LogMessage_t& message)
 {
@@ -261,16 +278,6 @@ BASEAPI void CDbgPrintLogWriter::Write(const LogMessage_t& message)
 }
 
 #ifndef CH_XBOX360
-static void WriteConsole(cstr text)
-{
-	u32 length = static_cast<u32>(Base_StrLength(text));
-	IO_STATUS_BLOCK ioStatus = {};
-	if (NtWriteFile_Available() && GetStdHandle_Available())
-	{
-		NtWriteFile(GetStdHandle(STD_OUTPUT_HANDLE), nullptr, nullptr, nullptr, &ioStatus, (dstr)text, length, nullptr, nullptr);
-	}
-}
-
 void CWin32ConsoleLogWriter::Write(const LogMessage_t& message)
 {
 	dstr fullMessage;
