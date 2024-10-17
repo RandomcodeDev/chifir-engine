@@ -85,20 +85,20 @@ BASEAPI void Plat_Init()
 #ifndef CH_XBOX360
 #ifdef CH_WIN32
 	// Get a console
-	bool haveConsole;
+	bool haveConsole = false;
 	if (AttachConsole_Available())
 	{
 		haveConsole = AttachConsole(ATTACH_PARENT_PROCESS);
-		if (!haveConsole && AllocConsole_Available())
+		if (haveConsole)
+		{
+			WriteConsole("\n");
+		}
+		else if (AllocConsole_Available())
 		{
 #ifndef CH_RETAIL
 			AllocConsole();
+			haveConsole = true;
 #endif
-		}
-		
-		if (!haveConsole)
-		{
-			WriteConsole("\n");
 		}
 	}
 #endif
