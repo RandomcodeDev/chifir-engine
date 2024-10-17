@@ -8,6 +8,13 @@ function CreateVcxProject(.Name, .Path, .Configs, .Options)
 		.ProjectOutput = 'projects/VisualStudio/$Name$.vcxproj'
 		.ProjectInputPaths = {'$Path$/', 'public/$Path$/', 'private/$Path$/'}
 		.ProjectBasePath = {'$Path$/', 'public/$Path$/', 'private/$Path$/'}
+
+		.IntelliSenseImport =
+		[
+			.Condition = "true"
+			.Project = '..\..\public\IntelliSense.props'
+		]
+		.ProjectProjectImports = {.IntelliSenseImport}
 	}
 }
 

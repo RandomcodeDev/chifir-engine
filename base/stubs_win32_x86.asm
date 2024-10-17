@@ -56,6 +56,13 @@ MAKE_STUB RtlFreeHeap, @12
 MAKE_STUB RtlFreeUnicodeString, @4
 MAKE_STUB RtlGetFullPathName_U, @16
 
+; kernel32 stubs
+MAKE_STUB AllocConsole, @0
+MAKE_STUB AttachConsole, @4
+MAKE_STUB GetConsoleMode, @8
+MAKE_STUB GetStdHandle, @4
+MAKE_STUB SetConsoleMode, @8
+
 ; user32 stubs
 MAKE_STUB AdjustWindowRect, @12
 MAKE_STUB ClientToScreen, @8

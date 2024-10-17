@@ -32,3 +32,6 @@ extern BASEAPI cstr Plat_GetSystemDescription();
 
 // Get a description of the hardware (CPU, RAM)
 extern BASEAPI cstr Plat_GetHardwareDescription();
+
+// Write to the terminal/console (stdout)
+extern BASEAPI void Plat_WriteConsole(cstr message);

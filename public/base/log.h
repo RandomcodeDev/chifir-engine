@@ -40,7 +40,7 @@ class BASEAPI ILogWriter
 
   protected:
 	static const cstr LEVEL_NAMES[];
-	// static const cstr LEVEL_COLORS[] = {"", "", "", "", "", ""};
+	static const cstr LEVEL_COLORED_NAMES[];
 };
 
 #ifdef CH_WIN32
@@ -50,6 +50,15 @@ class BASEAPI CDbgPrintLogWriter : public ILogWriter
   public:
 	void Write(const LogMessage_t& message);
 };
+
+#ifndef CH_XBOX360
+// Windows console log writer
+class BASEAPI CWin32ConsoleLogWriter : public ILogWriter
+{
+  public:
+	void Write(const LogMessage_t& message);
+};
+#endif
 #endif
 
 class IWritableFilesystem;

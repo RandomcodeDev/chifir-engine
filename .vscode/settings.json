@@ -17,5 +17,6 @@
         "xhash": "cpp",
         "xstring": "cpp",
         "xtree": "cpp"
-    }
+    },
+    "clangd.arguments": []
 }

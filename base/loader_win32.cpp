@@ -52,7 +52,14 @@ MAKE_STUB(RtlFreeUnicodeString, __stdcall, @4)
 MAKE_STUB(RtlFreeHeap, __stdcall, @12)
 MAKE_STUB(RtlGetFullPathName_U, __stdcall, @16)
 
-// user32, because it's more than just forwarded syscalls, unlike kernel32
+// Console stuff is all CSR calls i shouldn't rewrite
+MAKE_STUB(AllocConsole, __stdcall, @0)
+MAKE_STUB(AttachConsole, __stdcall, @4)
+MAKE_STUB(GetConsoleMode, __stdcall, @8)
+MAKE_STUB(GetStdHandle, __stdcall, @4)
+MAKE_STUB(SetConsoleMode, __stdcall, @8)
+
+// user32
 MAKE_STUB(AdjustWindowRect, __stdcall, @12)
 MAKE_STUB(ClientToScreen, __stdcall, @8)
 MAKE_STUB(CreateWindowExA, __stdcall, @48)
@@ -197,10 +204,20 @@ bool Base_InitLoader()
 	// So unloading it when ntDll goes out of scope doesn't mess anything up, cause the loader wasn't used to "load" it
 	LdrAddRefDll(0, ntDllBase);
 
+	ILibrary* kernel32 = Base_LoadLibrary("kernel32");
+	ASSERT(kernel32 != nullptr);
+
+	// kernel32
+	GET_FUNCTION(kernel32, AllocConsole)
+	GET_FUNCTION(kernel32, AttachConsole)
+	GET_FUNCTION(kernel32, GetConsoleMode)
+	GET_FUNCTION(kernel32, GetStdHandle)
+	GET_FUNCTION(kernel32, SetConsoleMode)
+
 	ILibrary* user32 = Base_LoadLibrary("user32");
 	ASSERT(user32 != nullptr);
 
-	// user32, because it's more than just forwarded syscalls, unlike kernel32
+	// user32
 	GET_FUNCTION(user32, AdjustWindowRect)
 	GET_FUNCTION(user32, ClientToScreen)
 	GET_FUNCTION(user32, CreateWindowExA)

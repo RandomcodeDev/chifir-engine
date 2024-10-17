@@ -17,7 +17,7 @@ class CString
 	}
 
 	// Create a string from the given buffer
-	CString(cstr data, ssize size = SSIZE_MAX) : CString()
+	CString(cstr data, ssize size = SSIZE_MAX) : m_buffer(nullptr), m_size(0), m_capacity(0), m_sorted(false)
 	{
 		size = Min(size, Base_StrLength(data));
 		Resize(size);
@@ -26,8 +26,11 @@ class CString
 	}
 
 	// Avoid this
-	CString(const CString& other) : CString(other.Data(), other.Length())
+	CString(const CString& other) : m_buffer(nullptr), m_size(0), m_capacity(0), m_sorted(false)
 	{
+		Resize(other.Length());
+		Base_MemCopy(m_buffer, other.Data(), m_size - 1);
+		Terminate();
 	}
 
 	~CString()

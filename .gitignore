@@ -12,3 +12,6 @@ fastbuild/Config.bff
 *.idb
 *.pdb
 private/
+compile_commands.json
+.*cache*/
+*.log

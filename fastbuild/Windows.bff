@@ -9,12 +9,12 @@
 .Windows_MSVC =
 [
 					 // Windows SDK headers
-	.CompilerOptions = ' -I "$WindowsUmIncludePath$"'
-					 + ' -I "$WindowsSharedIncludePath$"'
-					 + ' -I "$WindowsUcrtIncludePath$"'
+	.CompilerOptions = ' /I"$WindowsUmIncludePath$"'
+					 + ' /I"$WindowsSharedIncludePath$"'
+					 + ' /I"$WindowsUcrtIncludePath$"'
 
 					 // Compiler headers
-					 + ' -I "$VSBasePath$\VC\Tools\MSVC\$MSVCVersion$\include"'
+					 + ' /I"$VSBasePath$\VC\Tools\MSVC\$MSVCVersion$\include"'
 ]
 
 .Windows_Clang =
