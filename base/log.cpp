@@ -10,7 +10,7 @@
 static CVector<ILogWriter*> s_writers;
 
 const cstr ILogWriter::LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
-const cstr ILogWriter::LEVEL_COLORED_NAMES[] = {"\x1b[36mTRACE\x1b[0m", "\x1b[38;5;123mD\x1b[38;5;213mE\x1b[38;5;231mB\x1b[38;5;213mU\x1b[38;5;123mG\x1b[0m", "\x1b[32mINFO\x1b[0m", "\x1b[33mWARN\x1b[0m", "\x1b[31mERROR\x1b[0m", "\x1b[30m\x1b[41mFATAL\x1b[0m"};
+const cstr ILogWriter::LEVEL_COLORED_NAMES[] = {"\x1b[38;5;165mTRACE\x1b[0m", "\x1b[38;5;123mD\x1b[38;5;213mE\x1b[38;5;231mB\x1b[38;5;213mU\x1b[38;5;123mG\x1b[0m", "\x1b[38;5;118mINFO\x1b[0m", "\x1b[38;5;214mWARN\x1b[0m", "\x1b[38;5;196mERROR\x1b[0m", "\x1b[30m\x1b[48;5;124mFATAL\x1b[0m"};
 
 BASEAPI CFileLogWriter::CFileLogWriter(IWritableFilesystem* filesystem, cstr logName, bool addDate) : m_filesystem(filesystem)
 {

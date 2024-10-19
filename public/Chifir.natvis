@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
     <Type Name="CVector&lt;*&gt;">
-        <DisplayString>{{size = {m_size}}}</DisplayString>
+        <DisplayString>{{Size = {m_size}}}</DisplayString>
         <Expand>
             <Item Name="Size" ExcludeView="simple">m_size</Item>
             <Item Name="Capacity" ExcludeView="simple">m_capacity</Item>
@@ -12,9 +12,9 @@
         </Expand>
     </Type>
     <Type Name="CString">
-        <DisplayString>{m_buffer,s}</DisplayString>
+        <DisplayString>{m_buffer,s}, {m_size - 1} characters</DisplayString>
         <Expand>
-            <Item Name="Length" ExcludeView="simple">m_length</Item>
+            <Item Name="Length" ExcludeView="simple">m_size - 1</Item>
             <Item Name="Size" ExcludeView="simple">m_size</Item>
             <ArrayItems>
                 <Size>m_size</Size>
