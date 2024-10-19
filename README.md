@@ -23,6 +23,6 @@ generate a Visual Studio solution.
 ## Supported platforms
 So far, 64-bit and 32-bit Windows with MSVC or Clang, Xbox 360 with MSVC, and Nintendo Switch with Clang are supported. I've
 tested the 32-bit binaries as far back as Windows XP in Qemu (I have a Compaq Deskpro 2000 with a Pentium and some Medion laptop
-with a Celeron M from 2004, and some other old PC with a Pentium something that has an MMX sticker on the fround, and I do intend
+with a Celeron M from 2004, and some other old PC with a Pentium something that has an MMX sticker on the front, and I do intend
 to test on them eventually) and they run fine, but because I'm focusing on modern graphics APIs and systems first, that's going
 to change soon.
