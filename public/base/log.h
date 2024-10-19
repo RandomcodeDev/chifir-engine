@@ -39,6 +39,7 @@ class BASEAPI ILogWriter
 	virtual void Write(const LogMessage_t& message) = 0;
 
   protected:
+	// Indexable with any LogLevel_t value
 	static const cstr LEVEL_NAMES[];
 	static const cstr LEVEL_COLORED_NAMES[];
 };

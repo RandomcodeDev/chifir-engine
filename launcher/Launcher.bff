@@ -75,6 +75,10 @@
 				}
 			}
 			.LinkerOutput = '$OutputDir$/$GameName$$ExeExtension$'
+			If (.PlatformName in .WindowsLike)
+			{
+				^LinkerOptions + ' /NATVIS:$ProjectPath$/../public/Chifir.natvis'
+			}
 			If (.PlatformName == 'Xbox360')
 			{
 				// Has to be a DLL in order to statically link to Base.xex

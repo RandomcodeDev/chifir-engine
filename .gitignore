@@ -15,3 +15,4 @@ private/
 compile_commands.json
 .*cache*/
 *.log
+/.vscode/chifir.log

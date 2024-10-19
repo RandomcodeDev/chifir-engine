@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+    <Type Name="CVector&lt;*&gt;">
+        <DisplayString>{{size = {m_size}}}</DisplayString>
+        <Expand>
+            <Item Name="Size" ExcludeView="simple">m_size</Item>
+            <Item Name="Capacity" ExcludeView="simple">m_capacity</Item>
+            <ArrayItems>
+                <Size>m_size</Size>
+                <ValuePointer>m_buffer</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+    <Type Name="CString">
+        <DisplayString>{m_buffer,s}</DisplayString>
+        <Expand>
+            <Item Name="Length" ExcludeView="simple">m_length</Item>
+            <Item Name="Size" ExcludeView="simple">m_size</Item>
+            <ArrayItems>
+                <Size>m_size</Size>
+                <ValuePointer>m_buffer</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+    <Type Name="CLinkedList&lt;*&gt;">
+        <DisplayString>{{Node count = {m_nodeCount}}}</DisplayString>
+        <Expand>
+            <Item Name="Node count">m_nodeCount</Item>
+            <LinkedListItems>
+                <Size>m_nodeCount</Size>
+                <HeadPointer>m_head</HeadPointer>
+                <NextPointer>next</NextPointer>
+                <ValueNode>data</ValueNode>
+            </LinkedListItems>
+        </Expand>
+    </Type>
+</AutoVisualizer>

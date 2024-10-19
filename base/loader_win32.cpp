@@ -3,7 +3,7 @@
 // name that matches its hash. Then, it uses LdrGetProcedureAddress to fill in other stubs of system functions, which are
 // function pointers that use names the linker expects from an import library, allowing phnt's correct declarations to be used
 // without issue. These are basically the same as the import table, but I get to do my own logic for filling them in, so that if
-// some function is missing from one version and not another, it can isn't a fatal error that can't be avoided, allowing for
+// some function is missing from one version and not another, it isn't a fatal error that can't be avoided, allowing for
 // better portability. There are also forwarder functions that are re-exported under the original names so the launcher and video
 // system can import the functions.
 
@@ -22,6 +22,8 @@
 static PIMAGE_DOS_HEADER ntDllBase;
 
 bool g_loaderInitialized;
+
+// stubs are defined in stubs_win32_<arch>.asm
 
 // These are in both Xbox 360 and desktop/OneCore
 

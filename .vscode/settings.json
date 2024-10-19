@@ -18,5 +18,5 @@
         "xstring": "cpp",
         "xtree": "cpp"
     },
-    "clangd.arguments": []
+    "cmake.ignoreCMakeListsMissing": true
 }

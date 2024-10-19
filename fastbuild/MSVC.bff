@@ -24,6 +24,7 @@ Settings
 					 + ' /W4' // Max warnings
 					 + ' /WX' // Warnings as errors
 					 + ' /GR-' // No RTTI
+					 + ' /FS' // Allow multiple to write to PDBs
 
 					 // Warnings
 					 + ' /wd4201' // nameless struct
@@ -95,6 +96,7 @@ Settings
 .MSVC_DebugModern =
 [
 	.CompilerOptions = ' /Zo' // Debug info for optimized code
+					 + ' /ZI' // Edit and continue
 ]
 
 .MSVC_Release =
