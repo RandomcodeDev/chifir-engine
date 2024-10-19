@@ -281,7 +281,7 @@ VSSolution('solution')
 	.Folder_Meta =
 	[
 		.Path = 'Meta'
-		.Items = {'fbuild.bff'}
+		.Items = {'fbuild.bff', 'README.md'}
 		.Projects = {'All-proj', 'FASTBuild-proj', 'Scripts-proj', 'UpdateSolution-proj'}
 	]
 
