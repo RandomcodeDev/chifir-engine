@@ -52,6 +52,7 @@ static void X86InitCpuData()
 	Base_MemCopy(g_cpuData.brand + 4, regs + 3, 4);
 	Base_MemCopy(g_cpuData.brand + 8, regs + 2, 4);
 	g_cpuData.brand[12] = '\0';
+	Base_StrTrim(g_cpuData.brand);
 
 	// model name available
 	regs[4] = 0x80000000;
@@ -69,6 +70,7 @@ static void X86InitCpuData()
 
 		Base_MemCopy(g_cpuData.name, regs + 4, 48);
 		g_cpuData.name[48] = '\0';
+		Base_StrTrim(g_cpuData.name);
 	}
 }
 #elif defined CH_XBOX360
@@ -536,6 +538,45 @@ BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssiz
 
 	comparison = Compare<u8>(a, b, size - remaining, remaining, 1);
 	return comparison;
+}
+
+// TODO: https://stackoverflow.com/questions/14523621/how-to-break-from-a-loop-when-using-sse-intrinsics/14524319#14524319
+BASEAPI ssize Base_MemFind(const void* data, ssize size, u8 value, bool reverse)
+{
+	return Base_MemFind(data, size, &value, 1, reverse);
+}
+
+static bool IsSequence(ssize i, const u8* RESTRICT bytes, ssize size, const u8* RESTRICT sequence, ssize sequenceSize)
+{
+	// if the first byte is equal, and there's enough room for the sequence, is it here?
+	return bytes[i] == sequence[0] && size - i > sequenceSize && Base_MemCompare(bytes + i, sequence, sequenceSize) == 0;
+}
+
+BASEAPI ssize Base_MemFind(const void* RESTRICT data, ssize size, const u8* RESTRICT sequence, ssize sequenceSize, bool reverse)
+{
+	const u8* RESTRICT bytes = static_cast<const u8* RESTRICT>(data);
+	if (reverse)
+	{
+		for (ssize i = size - 1; i >= 0; i--)
+		{
+			if (IsSequence(i, bytes, size, sequence, sequenceSize))
+			{
+				return i;
+			}
+		}
+	}
+	else
+	{
+		for (ssize i = 0; i < size; i++)
+		{
+			if (IsSequence(i, bytes, size, sequence, sequenceSize))
+			{
+				return i;
+			}
+		}
+	}
+
+	return -1;
 }
 
 BASEAPI CString Base_FormatSize(u64 size)

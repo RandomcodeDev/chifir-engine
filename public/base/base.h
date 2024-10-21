@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "compiler.h"
 #include "dll.h"
 #include "types.h"
 
@@ -96,6 +97,12 @@ extern BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT 
 
 // Clear memory
 extern BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size);
+
+// Find a byte in a block of memory
+extern BASEAPI ssize Base_MemFind(const void* data, ssize size, u8 value, bool reverse = false);
+
+// Find a sequence of bytes in a block of memory
+extern BASEAPI ssize Base_MemFind(const void* RESTRICT data, ssize size, const u8* RESTRICT sequence, ssize sequenceSize, bool reverse = false);
 
 // Allocate aligned memory
 extern BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment = 8);

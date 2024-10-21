@@ -69,3 +69,31 @@ BASEAPI dstr Base_StrClone(cstr str, ssize maxSize)
 
 	return Base_StrCopy(buffer, str, size);
 }
+
+BASEAPI ssize Base_CountTrailingWhitespace(cstr str)
+{
+	ssize count = 0;
+	ssize size = Base_StrLength(str);
+	for (ssize i = size - 1; Base_IsWhitespace(str[i]) && i >= 0; i--)
+	{
+		count++;
+	}
+
+	return count;
+}
+
+BASEAPI ssize Base_StrTrim(dstr str)
+{
+	ssize count = Base_CountTrailingWhitespace(str);
+	ssize size = Base_StrLength(str);
+	Base_MemSet(str + size - count - 1, 0, count);
+
+	return size;
+}
+
+BASEAPI dstr Base_StrTrim(cstr str)
+{
+	ssize count = Base_CountTrailingWhitespace(str);
+	ssize size = Base_StrLength(str);
+	return Base_StrClone(str, size - count - 1);
+}
