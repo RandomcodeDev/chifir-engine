@@ -3,6 +3,7 @@
 #include "base/compiler.h"
 #include "base/dll.h"
 #include "base/types.h"
+#include "base/basicstr.h"
 
 BASEAPI ssize Base_StrLength(cstr str, ssize maxSize)
 {
@@ -15,6 +16,7 @@ BASEAPI ssize Base_StrLength(cstr str, ssize maxSize)
 
 BASEAPI s32 Base_StrCompare(cstr RESTRICT a, cstr RESTRICT b, ssize maxCount, bool caseSensitive)
 {
+	// TODO: case insensitive string compare
 	ASSERT_MSG(caseSensitive != false, "Case-insensitive string compare not yet implemented");
 	ssize size = Min(Base_StrLength(a), maxCount);
 	return Base_MemCompare(a, b, size);
@@ -96,4 +98,14 @@ BASEAPI dstr Base_StrTrim(cstr str)
 	ssize count = Base_CountTrailingWhitespace(str);
 	ssize size = Base_StrLength(str);
 	return Base_StrClone(str, size - count - 1);
+}
+
+BASEAPI ssize Base_StrFind(cstr str, char value, bool reverse, ssize maxSize)
+{
+	return Base_MemFind(str, Min(Base_StrLength(str), maxSize), value, reverse);
+}
+
+BASEAPI ssize Base_StrFind(cstr str, cstr sequence, bool reverse, ssize maxSize)
+{
+	return Base_MemFind(str, Min(Base_StrLength(str), maxSize), sequence, Base_StrLength(sequence) - 1, reverse);
 }

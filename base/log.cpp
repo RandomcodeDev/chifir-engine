@@ -6,6 +6,7 @@
 #include "base/platform.h"
 #endif
 #include "base/vector.h"
+#include "log.h"
 
 static CVector<ILogWriter*> s_writers;
 
@@ -79,10 +80,20 @@ BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr fil
 		return;
 	}
 
-	// TODO: trim chifir-engine/ and anything before it from file
-	// TODO: keep level within valid range
-	LogMessage_t messageData = {level, location, isAddress, file, function, formatted};
+	LogMessage_t messageData = {Clamp(level, LogLevelTrace, LogLevelFatalError), location, isAddress, file, function, formatted};
+	ssize pos = Base_StrFind(file, "chifir-engine", true);
+	dstr realFile = nullptr; // stupid c++03 with no const cast
+	if (pos >= 0)
+	{
+		// chifir-engine[\/] is 14 characters, and there's always gonna be a slash
+		realFile = Base_StrClone(file + pos + 14, Base_StrLength(file) - pos - 14);
+		messageData.file = realFile;
+	}
 	Log_Write(messageData);
 
+	if (pos >= 0)
+	{
+		Base_Free(realFile);
+	}
 	Base_Free(formatted);
 }

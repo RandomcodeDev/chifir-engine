@@ -47,3 +47,9 @@ BASEAPI ssize Base_CountTrailingWhitespace(cstr str);
 // Remove trailing whitespace
 extern BASEAPI ssize Base_StrTrim(dstr str);
 extern BASEAPI dstr Base_StrTrim(cstr str);
+
+// Find a character in a string
+extern BASEAPI ssize Base_StrFind(cstr str, char value, bool reverse = false, ssize maxPos = SSIZE_MAX);
+
+// Find a string in a string
+extern BASEAPI ssize Base_StrFind(cstr str, cstr sequence, bool reverse = false, ssize maxPos = SSIZE_MAX);

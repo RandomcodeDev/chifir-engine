@@ -66,7 +66,7 @@ extern BASEAPI NORETURN void Base_Quit(cstr msg, ...);
 #define CONTAINING_STRUCTURE(type, member, ptr) (reinterpret_cast<type*>(reinterpret_cast<uptr>(ptr) - offsetof(type, member)))
 
 // Swap
-template <typename T> static inline void Swap(T& left, T& right)
+template <typename T> static FORCEINLINE void Swap(T& left, T& right)
 {
 	T swap = left;
 	left = right;
@@ -74,15 +74,21 @@ template <typename T> static inline void Swap(T& left, T& right)
 }
 
 // Maximum of two values
-template <typename T> static inline T Max(const T& left, const T& right)
+template <typename T> static FORCEINLINE T Max(const T& left, const T& right)
 {
 	return left > right ? left : right;
 }
 
 // Minimum of two values
-template <typename T> static inline T Min(const T& left, const T& right)
+template <typename T> static FORCEINLINE T Min(const T& left, const T& right)
 {
 	return left < right ? left : right;
+}
+
+// Clamp a value within range
+template <typename T> static FORCEINLINE T Clamp(const T& value, const T& min, const T& max)
+{
+	return Max(min, Min(value, max));
 }
 
 // FNV-1a hash
@@ -102,14 +108,14 @@ extern BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size);
 extern BASEAPI ssize Base_MemFind(const void* data, ssize size, u8 value, bool reverse = false);
 
 // Find a sequence of bytes in a block of memory
-extern BASEAPI ssize Base_MemFind(const void* RESTRICT data, ssize size, const u8* RESTRICT sequence, ssize sequenceSize, bool reverse = false);
+extern BASEAPI ssize Base_MemFind(const void* RESTRICT data, ssize size, const void* RESTRICT sequence, ssize sequenceSize, bool reverse = false);
 
 // Allocate aligned memory
 extern BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment = 8);
 
 // Allocate an array of T with count elements, needs to be initialized with placement new
 // if constructors matter.
-template <typename T> static inline T* Base_Alloc(ssize count)
+template <typename T> static FORCEINLINE T* Base_Alloc(ssize count)
 {
 	return reinterpret_cast<T*>(Base_Alloc(count * SIZEOF(T), ALIGNOF(T)));
 }

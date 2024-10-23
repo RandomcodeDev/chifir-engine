@@ -552,14 +552,15 @@ static bool IsSequence(ssize i, const u8* RESTRICT bytes, ssize size, const u8* 
 	return bytes[i] == sequence[0] && size - i > sequenceSize && Base_MemCompare(bytes + i, sequence, sequenceSize) == 0;
 }
 
-BASEAPI ssize Base_MemFind(const void* RESTRICT data, ssize size, const u8* RESTRICT sequence, ssize sequenceSize, bool reverse)
+BASEAPI ssize Base_MemFind(const void* RESTRICT data, ssize size, const void* RESTRICT sequence, ssize sequenceSize, bool reverse)
 {
 	const u8* RESTRICT bytes = static_cast<const u8* RESTRICT>(data);
+	const u8* RESTRICT sequenceBytes = static_cast<const u8* RESTRICT>(sequence);
 	if (reverse)
 	{
 		for (ssize i = size - 1; i >= 0; i--)
 		{
-			if (IsSequence(i, bytes, size, sequence, sequenceSize))
+			if (IsSequence(i, bytes, size, sequenceBytes, sequenceSize))
 			{
 				return i;
 			}
@@ -569,7 +570,7 @@ BASEAPI ssize Base_MemFind(const void* RESTRICT data, ssize size, const u8* REST
 	{
 		for (ssize i = 0; i < size; i++)
 		{
-			if (IsSequence(i, bytes, size, sequence, sequenceSize))
+			if (IsSequence(i, bytes, size, sequenceBytes, sequenceSize))
 			{
 				return i;
 			}

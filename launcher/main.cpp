@@ -134,12 +134,14 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	Log_Info("Running application %s with %d systems", appName, systems.Size());
 	s32 result = app->Run(systems);
 
+	Log_Trace("Deleting systems");
 	for (ssize i = 0; i < systems.Size(); i++)
 	{
 		delete systems[i];
 	}
 
 #ifndef CH_STATIC
+	Log_Trace("Deleting libraries");
 	for (ssize i = 0; i < libs.Size(); i++)
 	{
 		delete libs[i];
