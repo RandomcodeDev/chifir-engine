@@ -6,7 +6,6 @@
 #include "base/platform.h"
 #endif
 #include "base/vector.h"
-#include "log.h"
 
 static CVector<ILogWriter*> s_writers;
 

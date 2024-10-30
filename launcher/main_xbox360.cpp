@@ -6,16 +6,16 @@ int main(void)
 	if (!launcher)
 	{
 		// TODO: figure out how to display an error
-		abort();
+		return HRESULT_FROM_WIN32(GetLastError());
 	}
 
 	static const UINT16 LAUNCHERMAIN_ORDINAL = 1;
 
 	// By ordinal
-	void* launcherMainAddr = GetProcAddress(launcher, (LPCSTR)LAUNCHERMAIN_ORDINAL);
+	FARPROC launcherMainAddr = GetProcAddress(launcher, (LPCSTR)LAUNCHERMAIN_ORDINAL);
 	if (!launcherMainAddr)
 	{
-		abort();
+		return HRESULT_FROM_WIN32(GetLastError());
 	}
 
 	int (*LauncherMain)() = reinterpret_cast<int(*)()>(launcherMainAddr);
@@ -23,4 +23,3 @@ int main(void)
 
 	return result;
 }
-

@@ -10,6 +10,8 @@ DECLARE_AVAILABLE(DbgPrint);
 DECLARE_AVAILABLE(NtAllocateVirtualMemory);
 #ifdef CH_XBOX360
 extern "C" DLLIMPORT void __stdcall XamTerminateTitle();
+extern "C" DLLIMPORT u8* XboxKrnlVersion;
+extern "C" DLLIMPORT u32* XboxHardwareInfo;
 #else
 DECLARE_AVAILABLE(NtTerminateProcess);
 DECLARE_AVAILABLE(AllocConsole);
@@ -132,7 +134,10 @@ BASEAPI cstr Plat_GetSystemDescription()
 	{
 #ifdef CH_XBOX360
 		// TODO: figure this out, probably easy
-		s_systemDescription = Base_StrClone("Xbox 360 (kernel <kernel version>)");
+		s_systemDescription = Base_StrFormat(
+			"Xbox 360 (kernel %u.%u.%u.%u)", XboxKrnlVersion[0] << 16 | XboxKrnlVersion[1],
+			XboxKrnlVersion[2] << 16 | XboxKrnlVersion[3], XboxKrnlVersion[4] << 16 | XboxKrnlVersion[5], XboxKrnlVersion[6],
+			XboxKrnlVersion[7]);
 #else
 		s_systemDescription = Base_StrFormat(
 			"Windows %u.%u.%u (reported as %u.%u.%u)", USER_SHARED_DATA->NtMajorVersion, USER_SHARED_DATA->NtMinorVersion,
@@ -150,7 +155,7 @@ BASEAPI cstr Plat_GetHardwareDescription()
 	{
 #ifdef CH_XBOX360
 		// TODO: figure this out, should be easy
-		s_hardwareDescription = Base_StrClone("Xbox 360 <model>");
+		s_hardwareDescription = Base_StrFormat("XboxHardwareInfo 0x%X%X", XboxHardwareInfo[0], XboxHardwareInfo[1]);
 #else
 #ifdef CH_X86
 		s64 freeMemory = g_systemPerfInfo.AvailablePages * static_cast<s64>(g_systemInfo.PageSize);

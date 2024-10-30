@@ -102,6 +102,7 @@
 						'public/xbox/crtfpr.obj',
 						'public/xbox/crtgpr.obj',
 						'public/xbox/crtvmx.obj',
+						'public/xbox/u64tod.obj',
 						'$ObjectDir$/$ProjectPath$/compiler_msvc_ppc.obj'
 					}
 				}

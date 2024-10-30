@@ -3,7 +3,14 @@
 
 CWin32Filesystem::CWin32Filesystem(cstr root) : CBaseRawFilesystem(root)
 {
-	// Get the full path to the root for OBJECT_ATTRIBUTES
+#ifdef CH_XBOX360
+	m_rootHandle = CreateFileA(m_root, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0, FILE_OPEN_IF, FILE_ATTRIBUTE_DIRECTORY, nullptr);
+	if (!m_rootHandle)
+	{
+		Base_Quit("Failed to open directory %s: NTSTATUS 0x%08X", m_root, LastNtStatus());
+	}
+#else
+	UNICODE_STRING rootString;
 	UNICODE_STRING unicodeRoot = {};
 	ConvertPath(m_root, &unicodeRoot);
 	u32 rootLength = RtlGetFullPathName_U(unicodeRoot.Buffer, 0, nullptr, nullptr);
@@ -15,11 +22,11 @@ CWin32Filesystem::CWin32Filesystem(cstr root) : CBaseRawFilesystem(root)
 	}
 
 	RtlGetFullPathName_U(unicodeRoot.Buffer, rootLength - 4 * sizeof(wchar_t), fullRoot + 4, nullptr);
+
 	fullRoot[0] = L'\\';
 	fullRoot[1] = L'?';
 	fullRoot[2] = L'?';
 	fullRoot[3] = L'\\';
-	UNICODE_STRING rootString;
 	rootString.Buffer = fullRoot;
 	rootString.Length = static_cast<u16>(rootLength - 1 * sizeof(wchar_t));
 	rootString.MaximumLength = static_cast<u16>(rootLength);
@@ -36,6 +43,7 @@ CWin32Filesystem::CWin32Filesystem(cstr root) : CBaseRawFilesystem(root)
 	}
 
 	Base_Free(fullRoot);
+#endif
 }
 
 CWin32Filesystem::~CWin32Filesystem()

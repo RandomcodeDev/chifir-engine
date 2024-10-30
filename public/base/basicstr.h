@@ -29,14 +29,14 @@ extern BASEAPI dstr Base_StrClone(cstr str, ssize maxSize = SSIZE_MAX);
 // TODO: Is* functions can probably at least use masks for stuff
 
 // Check if whitespace (ASCII ONLY)
-static FORCEINLINE bool Base_IsWhitespace(char c)
+FORCEINLINE bool Base_IsWhitespace(char c)
 {
     // All actually used characters between (NUL, space] are whitespace
     return c > '\0' && c <= ' ';
 }
 
 // Check if decimal digit (ASCII ONLY)
-static FORCEINLINE bool Base_IsDecDigit(char c)
+FORCEINLINE bool Base_IsDecDigit(char c)
 {
     return c >= '0' && c <= '9';
 }

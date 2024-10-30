@@ -19,5 +19,7 @@
         "xtree": "cpp"
     },
     "cmake.ignoreCMakeListsMissing": true,
-    "clangd.arguments": []
+    "clangd.arguments": [
+        "-header-insertion=never"
+    ]
 }
