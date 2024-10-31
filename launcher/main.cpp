@@ -71,7 +71,6 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 {
 #ifdef CH_XBOX360
 	__security_init_cookie();
-	DbgBreakPoint();
 #endif
 
 	Base_Init();
