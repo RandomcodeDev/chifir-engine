@@ -38,6 +38,8 @@
 					 + ' -Wno-macro-redefined' // This is avoided in any scenario where it matters
 					 + ' -Wno-unused-function' // I don't care, that's the linker's problem
 
+					 + ' -DGAME_NAME=\"$GameName$\"'
+
 	ForEach(.IncludeDir in .IncludeDirs)
 	{
 		^CompilerOptions + ' -I "$_WORKING_DIR_$/$IncludeDir$"'

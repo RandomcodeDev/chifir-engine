@@ -24,7 +24,7 @@ static void CpuId(u32& eax, u32& ebx, u32& ecx, u32& edx)
 #endif
 }
 
-static void X86InitCpuData()
+static void InitCpuData()
 {
 	// Processor info and feature bits
 	u32 eax = 0x00000001;
@@ -74,21 +74,21 @@ static void X86InitCpuData()
 	}
 }
 #elif defined CH_XBOX360
-static void Xbox360InitCpuData()
+static void InitCpuData()
 {
 	g_cpuData.haveSimd128 = true;
 	g_cpuData.haveIntSimd128 = true;
 	g_cpuData.haveSimd128Compare = true;
 }
+#else
+static void InitCpuData()
+{
+}
 #endif
 
 BASEAPI void Base_Init()
 {
-#ifdef CH_X86
-	X86InitCpuData();
-#elif defined CH_XBOX360
-	Xbox360InitCpuData();
-#endif
+	InitCpuData();
 
 	g_baseInitialized = true;
 }

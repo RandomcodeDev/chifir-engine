@@ -37,6 +37,8 @@ Settings
 					 + ' /wd4163' // 'x': not available as an intrinsic function
 					 + ' /wd4125' // decimal digit terminates octal escape sequence
 
+					 + ' /DGAME_NAME=\"$GameName$\"'
+
 	// Global include dirs
 	ForEach(.IncludeDir in .IncludeDirs)
 	{
