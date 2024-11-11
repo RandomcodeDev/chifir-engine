@@ -81,7 +81,6 @@
 			}
 			If (.PlatformName == 'Xbox360')
 			{
-				// Has to be a DLL in order to statically link to Base.xex
 				^LinkerOutput = '$OutputDir$/$GameName$$DLLExtension$'
 				^LinkerOptions + ' /DLL /AUTODEF:$ObjectDir$/$ProjectName$/$GameName$.def'
 			}

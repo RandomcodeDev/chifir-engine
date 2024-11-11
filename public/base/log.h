@@ -62,6 +62,14 @@ class BASEAPI CWin32ConsoleLogWriter : public ILogWriter
 #endif
 #endif
 
+#ifdef CH_SWITCH
+class BASEAPI CSwitchLogWriter : public ILogWriter
+{
+  public:
+	void Write(const LogMessage_t& message);
+};
+#endif
+
 class IWritableFilesystem;
 
 // Filesystem log writer
