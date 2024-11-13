@@ -3,15 +3,6 @@
 #include "Config.bff"
 
 #if HAVE_MSVC
-Settings
-{
-	#import TMP
-	.Environment = {
-		'TMP=$TMP$',
-		'SystemRoot=C:\Windows'
-	}
-}
-
 .MSVC_Common =
 [
 	.CompilerName = 'MSVC'
