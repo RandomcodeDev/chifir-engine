@@ -1,0 +1,11 @@
+[phnt]
+name = "phnt"
+author = "Winsider Seminars & Solutions, Inc."
+path = "external/phnt"
+license = "external/phnt/LICENSE"
+
+[stb]
+name = "stb"
+author = "Sean Barrett"
+path = "external/stb"
+license = "external/stb/LICENSE"

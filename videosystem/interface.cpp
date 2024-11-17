@@ -1,10 +1,13 @@
 // DLL interface for video system
 
 #include "isystem.h"
-#ifdef CH_XBOX360
 #include "video_null.h"
-#elif defined CH_WIN32
+#include "videosystem/ivideosystem.h"
+
+#if defined CH_WIN32 && !defined CH_XBOX360
 #include "video_win32.h"
+#elif defined CH_SWITCH
+// #include "video_switch.h"
 #endif
 
 const cstr IVideoSystem::NAME = "VideoSystem";
@@ -15,11 +18,9 @@ ISystem* CreateVideoSystem()
 extern "C" DLLEXPORT ISystem* CreateInterface()
 #endif
 {
-#ifdef CH_XBOX360
-	return new CNullVideoSystem();
-#elif defined CH_WIN32
+#if defined CH_WIN32 && !defined CH_XBOX360
 	return new CWindowsVideoSystem();
 #else
-	return nullptr;
+	return new CNullVideoSystem();
 #endif
 }

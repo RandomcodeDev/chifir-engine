@@ -9,7 +9,7 @@ def generate_def_file(dll_path, def_path, name):
 		print("The DLL does not contain any exports.")
 		return
 
-	with open(def_path, 'w') as def_file:
+	with open(def_path, 'wb') as def_file:
 		def_file.write("LIBRARY " + name + "\n")
 		def_file.write("EXPORTS\n")
 
@@ -18,16 +18,18 @@ def generate_def_file(dll_path, def_path, name):
 
 	print(f"DEF file {def_path} generated for {name} from {dll_path}")
 
-if __name__ == "__main__":
-	if len(sys.argv) < 3:
-		print("Usage: python mkdef.py <path_to_dll> <path_to_def> [name]")
+def main(argc, argv):
+	if argc < 3:
+		print(f"Usage: {argv[0]} <.dll file> <.def file> [lib name]")
 	else:
-		dll_path = sys.argv[1]
-		def_path = sys.argv[2]
+		dll_path = argv[1]
+		def_path = argv[2]
 		name = ""
-		if len(sys.argv) > 3:
-			name = sys.argv[3]
+		if argc > 3:
+			name = argv[3]
 		else:
 			name = os.path.splitext(os.path.basename(dll_path))[0]
 		generate_def_file(dll_path, def_path, name)
 
+if __name__ == "__main__":
+	main(len(sys.argv), sys.argv)

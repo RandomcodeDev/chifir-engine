@@ -84,6 +84,13 @@
 				^LinkerOutput = '$OutputDir$/$GameName$$DLLExtension$'
 				^LinkerOptions + ' /DLL /AUTODEF:$ObjectDir$/$ProjectName$/$GameName$.def'
 			}
+			If (.PlatformName == 'Switch')
+			{
+				^Libraries +
+				{
+					'$NintendoSDKLibraries$/$SwitchLibraryType$/libnn_init_memory.a'
+				}
+			}
 			If (.PlatformName == 'Linux')
 			{
 				^LinkerStampExe	 = '/bin/sh'

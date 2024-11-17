@@ -82,6 +82,9 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	Log_AddWriter(new CWin32ConsoleLogWriter());
 #endif
 #endif
+#ifdef CH_SWITCH
+	Log_AddWriter(new CSwitchLogWriter());
+#endif
 
 	cstr appName = "Engine"; // TODO: make this based on a command line arg
 
