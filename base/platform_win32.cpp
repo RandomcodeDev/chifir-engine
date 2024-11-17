@@ -121,7 +121,7 @@ BASEAPI void Plat_Shutdown()
 {
 #ifndef CH_XBOX360
 	// todo: find a way to figure out cmd's actual prompt from environment to make this seamless
-	WriteConsole("the real prompt is above the log, type commands here>");
+	WriteConsole("\nthe real prompt is above the log, type commands here>");
 #endif
 
 	if (s_systemDescription)
