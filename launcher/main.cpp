@@ -135,9 +135,9 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	Log_Info("Running application %s with %d systems", appName, systems.Size());
 	s32 result = app->Run(systems);
 
-	Log_Trace("Deleting systems");
 	for (ssize i = 0; i < systems.Size(); i++)
 	{
+		Log_Trace("Deleting system %d (%s v%u)", i, systems[i]->GetName(), systems[i]->GetVersion());
 		delete systems[i];
 	}
 

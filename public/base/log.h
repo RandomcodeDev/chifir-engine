@@ -44,6 +44,22 @@ class BASEAPI ILogWriter
 	static const cstr LEVEL_COLORED_NAMES[];
 };
 
+class IWritableFilesystem;
+
+// Filesystem log writer
+class BASEAPI CFileLogWriter : public ILogWriter
+{
+  public:
+	CFileLogWriter(IWritableFilesystem* filesystem, cstr logName, bool addDate = true);
+	~CFileLogWriter();
+
+	void Write(const LogMessage_t& message);
+
+  protected:
+	IWritableFilesystem* m_filesystem;
+	dstr m_filename;
+};
+
 #ifdef CH_WIN32
 // DbgPrint log writer
 class BASEAPI CDbgPrintLogWriter : public ILogWriter
@@ -62,21 +78,14 @@ class BASEAPI CWin32ConsoleLogWriter : public ILogWriter
 #endif
 #endif
 
-class IWritableFilesystem;
-
-// Filesystem log writer
-class BASEAPI CFileLogWriter : public ILogWriter
+#ifdef CH_SWITCH
+// Nintendo Switch log writer
+class BASEAPI CSwitchLogWriter : public ILogWriter
 {
   public:
-	CFileLogWriter(IWritableFilesystem* filesystem, cstr logName, bool addDate = true);
-	~CFileLogWriter();
-
 	void Write(const LogMessage_t& message);
-
-  protected:
-	IWritableFilesystem* m_filesystem;
-	dstr m_filename;
 };
+#endif
 
 // Add a log writer
 extern BASEAPI void Log_AddWriter(ILogWriter* writer);

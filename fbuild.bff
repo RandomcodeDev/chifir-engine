@@ -131,7 +131,7 @@ ForEach(.BuildConfig in .BuildConfigs)
 	'GDKX-AMD64',
 #endif
 	'Windows-x86',
-	'Windows-ARM64',
+	//'Windows-ARM64', // Clang can't do the intrinsics
 #if HAVE_SWITCH
 	'Switch-NX64'
 #endif

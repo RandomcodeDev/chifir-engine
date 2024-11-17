@@ -26,6 +26,9 @@ class ISystem
 	// Shut down the system
 	virtual void Shutdown() = 0;
 
+	// Get the name of this system
+	virtual cstr GetName() const = 0;
+
 	// Get the version of this system
 	virtual u32 GetVersion() const = 0;
 };

@@ -7,6 +7,8 @@
 #include "video_win32.h"
 #endif
 
+const cstr IVideoSystem::NAME = "VideoSystem";
+
 #ifdef CH_STATIC
 ISystem* CreateVideoSystem()
 #else

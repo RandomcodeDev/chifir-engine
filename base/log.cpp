@@ -79,6 +79,7 @@ BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr fil
 		return;
 	}
 
+	// strip repo path from log messages, to make them shorter
 	LogMessage_t messageData = {Clamp(level, LogLevelTrace, LogLevelFatalError), location, isAddress, file, function, formatted};
 	ssize pos = Base_StrFind(file, "chifir-engine", true);
 	dstr realFile = nullptr; // stupid c++03 with no const cast

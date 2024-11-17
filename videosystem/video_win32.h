@@ -20,6 +20,11 @@ class CWindowsVideoSystem : public IVideoSystem
 	bool Update();
 	void Shutdown();
 
+	cstr GetName() const
+	{
+		return NAME;
+	}
+
 	u32 GetVersion() const
 	{
 		return VERSION;
