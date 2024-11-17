@@ -80,6 +80,9 @@
 #if HAVE_MSVC_XBOX360
 #include "launcher/LauncherXbox360.bff"
 #endif
+#if HAVE_SWITCH
+#include "private/launcher/LauncherSwitch.bff"
+#endif
 
 // All for specific target and config
 ForEach(.BuildConfig in .BuildConfigs)

@@ -774,6 +774,7 @@ static inline struct _TEB* NtCurrentTeb(void)
 	__asm
 	{
 		// This is based on PowerPC code from OpenNT (and PowerPC documentation says r.13 is used for this general purpose)
+		// However, I don't think the TEB actually exists on Xbox
         mr r3, r13
 	}
 }

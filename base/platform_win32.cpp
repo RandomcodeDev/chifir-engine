@@ -4,6 +4,7 @@
 #include "base/compiler.h"
 #include "base/log.h"
 #include "base/platform.h"
+#include "base/string.h"
 #include "base/types.h"
 
 DECLARE_AVAILABLE(DbgPrint);
@@ -118,6 +119,11 @@ BASEAPI void Plat_Init()
 
 BASEAPI void Plat_Shutdown()
 {
+#ifndef CH_XBOX360
+	// todo: find a way to figure out cmd's actual prompt from environment to make this seamless
+	WriteConsole("the real prompt is above the log, type commands here>");
+#endif
+
 	if (s_systemDescription)
 	{
 		Base_Free(s_systemDescription);
@@ -214,8 +220,7 @@ BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)
 
 bool Base_GetSystemMemory(ssize size)
 {
-	// Linked list nodes, can contain any size of allocation, but there's a limit to the number of OS allocations (this should be
-	// changed in the future, this is based on a vacuum currently)
+	// Linked list nodes, can contain any size of allocation, but there's a limit to the number of OS allocations
 	static LinkedNode_t<SystemAllocation_t> memoryNodes[64];
 
 	if (!NtAllocateVirtualMemory_Available())
@@ -223,6 +228,7 @@ bool Base_GetSystemMemory(ssize size)
 		return false;
 	}
 
+	// Maximize available space by rounding up to page size directly
 	size = ALIGN(size, g_systemInfo.PageSize);
 
 	ASSERT_MSG(

@@ -3,8 +3,10 @@
 #once
 
 .GameName = 'FalseKing'
+.SwitchTitleID = '0100694203488000'
 
 // These only matter on Windows
+
 .VSBasePath = 'C:\Program Files\Microsoft Visual Studio\2022\Community'
 .VSToolset = 'v143'
 .VSSolutionVersion = '16'
@@ -17,8 +19,12 @@
 .WindowsUcrtIncludePath = '$WindowsSDKBasePath$\Include\$WindowsSDKVersion$\ucrt'
 .Xbox360SDK = 'C:\Program Files (x86)\Microsoft Xbox 360 SDK'
 
+// These matter on anything
+
 .LLVMDir = 'C:\Program Files\LLVM'
 .ClangVersion = '18'
+
+.Python = 'C:\Program Files\Python\Python313\python.exe'
 
 // Comment out ones you don't have installed
 #define HAVE_MSVC
@@ -28,5 +34,6 @@
 //#define HAVE_MSVC_XBOX360
 #define HAVE_CLANG
 
+// Only if you have the private console repo
+
 .NintendoSDKRoot = 'C:\Nintendo\NintendoSDK'
-.SwitchTitleID = '0100694203488000'
