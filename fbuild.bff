@@ -310,4 +310,3 @@ VSSolution('solution')
 	.SolutionProjects = {'Launcher-proj', 'Engine-proj'}
 }
 #endif
-
