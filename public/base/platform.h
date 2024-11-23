@@ -35,3 +35,6 @@ extern BASEAPI cstr Plat_GetHardwareDescription();
 
 // Write to the terminal/console (stdout)
 extern BASEAPI void Plat_WriteConsole(cstr message);
+
+// Get a timestamp in milliseconds (the point it's relative too depends on the platform and isn't reliable)
+extern BASEAPI u64 Plat_GetMilliseconds();
