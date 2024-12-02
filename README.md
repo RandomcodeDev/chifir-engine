@@ -20,8 +20,8 @@ functions are written to use SIMD if the current CPU supports it (on x86, most o
 
 First, you should copy `fastbuild/Config.Default.bff` to `fastbuild/Config.bff` , and change any paths/version numbers. I
 might automate this in the future, but it's probably not necessary. You need FASTBuild, download a binary from the website
-or use the Windows binary in `tools/` . After that, you can run `fbuild` . Another useful command is `fbuild solution` to
-generate a Visual Studio solution.
+or use the Windows binary in `tools/` . After that, you can run `fbuild` in the root of the repo to build everything. Another
+useful command is `fbuild solution` to generate a Visual Studio solution, and `fbuild -compdb [target]` to generate `compile_commands.json`.
 
 ## Supported platforms
 

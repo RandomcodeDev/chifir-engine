@@ -91,6 +91,9 @@ template <typename T> FORCEINLINE T Clamp(const T& value, const T& min, const T&
 	return Max(min, Min(value, max));
 }
 
+// Cast away const/function pointer
+#define CONST_CAST(T, ptr) reinterpret_cast<T>(reinterpret_cast<uptr>(ptr))
+
 // FNV-1a hash
 extern BASEAPI u32 Base_Fnv1a32(const void* data, ssize size);
 extern BASEAPI u64 Base_Fnv1a64(const void* data, ssize size);

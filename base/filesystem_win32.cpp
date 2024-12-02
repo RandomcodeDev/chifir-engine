@@ -196,7 +196,7 @@ ssize CWin32Filesystem::Write(cstr path, const void* data, ssize count, bool app
 
 	// NtWriteFile better not modify the buffer
 	NTSTATUS status = NtWriteFile(
-		file, nullptr, nullptr, nullptr, &ioStatus, reinterpret_cast<void*>(reinterpret_cast<uptr>(data)),
+		file, nullptr, nullptr, nullptr, &ioStatus, CONST_CAST(void*, data),
 		static_cast<u32>(count), &largeOffset, nullptr);
 	if (!NT_SUCCESS(status))
 	{
