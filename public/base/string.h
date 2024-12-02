@@ -1,45 +1,26 @@
-// Dynamic array implementation
+// Dynamic string
 
 #pragma once
-
-#include <new>
 
 #include "base.h"
 #include "basicstr.h"
 #include "container.h"
 #include "types.h"
 
-class CString
+class BASEAPI CString
 {
   public:
-	CString() : m_buffer(nullptr), m_size(0), m_capacity(0), m_sorted(false)
+	CString() : m_buffer(nullptr), m_size(0), m_capacity(0)
 	{
 	}
 
 	// Create a string from the given buffer
-	CString(cstr data, ssize size = SSIZE_MAX) : m_buffer(nullptr), m_size(0), m_capacity(0), m_sorted(false)
-	{
-		size = Min(size, Base_StrLength(data));
-		Resize(size);
-		Base_MemCopy(m_buffer, data, m_size - 1);
-		Terminate();
-	}
+	CString(cstr data, ssize size = SSIZE_MAX);
 
 	// Avoid this
-	CString(const CString& other) : m_buffer(nullptr), m_size(0), m_capacity(0), m_sorted(false)
-	{
-		Resize(other.Length());
-		Base_MemCopy(m_buffer, other.Data(), m_size - 1);
-		Terminate();
-	}
+	CString(const CString& other);
 
-	~CString()
-	{
-		if (m_buffer)
-		{
-			Base_Free(m_buffer);
-		}
-	}
+	~CString();
 
 	// Get the underlying buffer of this string
 	dstr Data() const
@@ -47,111 +28,40 @@ class CString
 		return m_buffer;
 	}
 
+	// Get the number of bytes in the string
 	ssize Size() const
 	{
 		return m_size;
 	}
 
+	// Get the number of characters not including the NUL
 	ssize Length() const
 	{
 		return m_size - 1;
 	}
 
 	// Resize the string to the given size
-	void Resize(ssize newSize)
-	{
-		ssize oldSize = m_size;
-		if (m_capacity < newSize)
-		{
-			Reserve(Max(m_capacity * 2, newSize + 1));
-		}
-		m_size = newSize + 1;
-
-		if (oldSize < newSize)
-		{
-			m_sorted = false;
-			Terminate();
-		}
-	}
+	void Resize(ssize newSize);
 
 	// Reserve space for future additions
-	void Reserve(ssize size)
-	{
-		if (size > m_capacity)
-		{
-			m_capacity = size;
-			m_buffer = static_cast<dstr>(Base_Realloc(m_buffer, m_capacity * sizeof(char)));
-			ASSERT(m_buffer != nullptr);
-		}
-	}
+	void Reserve(ssize size);
 
 	// Add a character
-	ssize Add(char character, ssize index = BAD_INDEX)
-	{
-		m_sorted = false;
-		m_size++;
-		if (m_size - 1 > m_capacity)
-		{
-			Reserve(Max<ssize>(1, m_capacity * 2));
-		}
-
-		// Append by default
-		if (index == BAD_INDEX || index >= m_size - 2)
-		{
-			m_buffer[m_size - 2] = character;
-			Terminate();
-			return m_size - 2;
-		}
-		else
-		{
-			Base_MemCopy(m_buffer + index + 1, m_buffer + index, m_size - index - 2);
-			m_buffer[index] = character;
-			Terminate();
-			return index;
-		}
-	}
+	ssize Add(char character, ssize index = BAD_INDEX);
 
 	// Add another string
-	ssize Add(cstr other, ssize index = BAD_INDEX, ssize count = SSIZE_MAX)
-	{
-		count = Min(count, Base_StrLength(other));
+	ssize Add(cstr other, ssize index = BAD_INDEX, ssize count = SSIZE_MAX);
 
-		// Append by default
-		if (index == BAD_INDEX || index >= m_size - 2)
-		{
-			index = m_size - 1;
-		}
-
-		Resize(m_size + count - 1);
-
-		Base_MemCopy(m_buffer + index + count, m_buffer + index, m_size - index - 1);
-		Base_MemCopy(m_buffer + index, other, count);
-		Terminate();
-		return m_size - 2;
-	}
-
-	// Add the contents of another vector
+	// Add the contents of another string
 	ssize Add(const CString& other, ssize index = BAD_INDEX)
 	{
 		return Add(other.Data(), index, other.Length());
 	}
 
-	// Remove the given element
-	void Delete(ssize index = BAD_INDEX)
-	{
-		// Delete the last character by default
-		if (index == BAD_INDEX || index >= m_size - 2)
-		{
-			index = m_size - 2;
-		}
+	// Remove the given element(s)
+	void Delete(ssize index = BAD_INDEX, ssize count = 1);
 
-		Base_MemCopy(&m_buffer[index], &m_buffer[index + 1], m_size - index - 1);
-		m_size--;
-		Terminate();
-		m_sorted = false;
-	}
-
-	// Empty the vector
+	// Empty the string
 	void Empty()
 	{
 		Resize(0);
@@ -183,17 +93,7 @@ class CString
 	}
 
 	// Multiply the string
-	CString operator*(const ssize& right)
-	{
-		CString other = *this;
-		other.Reserve((m_size - 1) * right + 1);
-		for (ssize i = 0; i < right - 1; i++)
-		{
-			other += *this;
-		}
-
-		return other;
-	}
+	CString operator*(const ssize& right);
 
 	// Compare the string
 	bool operator==(cstr other)
@@ -204,33 +104,20 @@ class CString
 	// Compare the string
 	bool operator==(const CString& other)
 	{
+		// call operator==(cstr other)
 		return *this == other.Data();
 	}
 
 	// Format into the string
-	void Format(cstr format, ...)
-	{
-		va_list args;
-		
-		va_start(args, format);
-		ssize size = Base_VStrFormat(nullptr, 0, format, args);
-		Resize(size);
-		Base_VStrFormat(m_buffer, static_cast<s32>(m_size), format, args);
-		va_end(args);
-	}
+	void Format(cstr format, ...);
 
 	// Not implemented yet
-	ssize Find(s32 (*Compare)(char a, char b)) const
-	{
-		(void)Compare;
-		return BAD_INDEX;
-	}
+	ssize Find(s32 (*Compare)(char a, char b)) const;
 
   private:
 	dstr m_buffer;
 	ssize m_size; // Includes the NUL at the end
 	ssize m_capacity;
-	bool m_sorted;
 
 	static const ssize BAD_INDEX = -1;
 

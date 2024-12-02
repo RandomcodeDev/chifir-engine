@@ -25,7 +25,8 @@
 				'$ProjectPath$/log.cpp',
 				'$ProjectPath$/memory.cpp',
 				'$ProjectPath$/platform.cpp',
-				'$ProjectPath$/stb.cpp'
+				'$ProjectPath$/stb.cpp',
+				'$ProjectPath$/string.cpp'
 			}
 			If (!.StaticBuild)
 			{

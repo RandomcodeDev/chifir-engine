@@ -12,18 +12,28 @@ ATTRIBUTE(dllexport) DWORD NvOptimusEnablement = 0x00000001;
 ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #endif
 
+#ifndef CH_RETAIL
+#define SUBSYSTEM "CONSOLE"
+#else
+#define SUBSYSTEM "WINDOWS"
+#endif
+
 #ifdef CH_XBOX360
 #pragma comment(linker, "/SUBSYSTEM:XBOX,2.00")
 #elif defined CH_IA32
-#pragma comment(linker, "/SUBSYSTEM:WINDOWS,5.01")
+#pragma comment(linker, "/SUBSYSTEM:" SUBSYSTEM ",5.01")
 #else
-#pragma comment(linker, "/SUBSYSTEM:WINDOWS,5.02")
+#pragma comment(linker, "/SUBSYSTEM:" SUBSYSTEM ",5.02")
 #endif
 
 extern "C"
 {
 #ifndef CH_XBOX360
+#ifndef CH_RETAIL
+	void mainCRTStartup()
+#else
 	void __stdcall WinMainCRTStartup()
+#endif
 	{
 		__security_init_cookie();
 
