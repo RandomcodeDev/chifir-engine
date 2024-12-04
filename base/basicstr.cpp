@@ -1,9 +1,9 @@
-#include "base/base.h"
 #include "base/basicstr.h"
+#include "base/base.h"
 #include "base/compiler.h"
 #include "base/dll.h"
+#include "base/string.h"
 #include "base/types.h"
-#include "base/basicstr.h"
 
 BASEAPI ssize Base_StrLength(cstr str, ssize maxSize)
 {
@@ -108,4 +108,33 @@ BASEAPI ssize Base_StrFind(cstr str, char value, bool reverse, ssize maxSize)
 BASEAPI ssize Base_StrFind(cstr str, cstr sequence, bool reverse, ssize maxSize)
 {
 	return Base_MemFind(str, Min(Base_StrLength(str), maxSize), sequence, Base_StrLength(sequence) - 1, reverse);
+}
+
+BASEAPI CString Base_FormatSize(u64 size)
+{
+	static const cstr SUFFIXES[] = {
+		"B", "kiB", "MiB", "GiB", "TiB", "PiB (damn)", "EiB (are you sure?)",
+		// NOTE: these don't all go in increments of 1024, but they're physically
+		// impossible for at least another 50 years or whatever and here as a joke anyway
+		"ZiB (who are you?)", "YiB (what are you doing?)", "RiB (why are you doing this?)", "QiB (HOW ARE YOU DOING THIS?)",
+		"?B (what did you do?)"};
+
+	f64 value = static_cast<f64>(size);
+	ssize suffix = 0;
+	while (value >= 1024.0)
+	{
+		value /= 1024.0;
+		suffix++;
+	}
+
+	// TODO: handle 69, 420, and pi
+	return CString::FormatStr("%lf %s", value, SUFFIXES[Min(suffix, ARRAY_SIZE(SUFFIXES) - 1)]);
+}
+
+BASEAPI CString Base_FormatDateTime(const DateTime_t& time)
+{
+	// https://xkcd.com/1179/
+	return CString::FormatStr(
+		"%04u-%02u-%02u %02u:%02u:%02u.%03u", time.year, time.month, time.day, time.hour, time.minute, time.second,
+		time.millisecond);
 }

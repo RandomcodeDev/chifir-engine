@@ -53,3 +53,9 @@ extern BASEAPI ssize Base_StrFind(cstr str, char value, bool reverse = false, ss
 
 // Find a string in a string
 extern BASEAPI ssize Base_StrFind(cstr str, cstr sequence, bool reverse = false, ssize maxPos = SSIZE_MAX);
+
+// Format a size
+extern BASEAPI CString Base_FormatSize(u64 size);
+
+// Format a date time
+extern BASEAPI CString Base_FormatDateTime(const DateTime_t& time);

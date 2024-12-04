@@ -2,9 +2,8 @@
 #include "base/base.h"
 #include "base/basicstr.h"
 #include "base/filesystem.h"
-#ifdef CH_WIN32
 #include "base/platform.h"
-#endif
+#include "base/types.h"
 #include "base/vector.h"
 
 static CVector<ILogWriter*> s_writers;
@@ -80,7 +79,8 @@ BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr fil
 	}
 
 	// strip repo path from log messages, to make them shorter
-	LogMessage_t messageData = {Clamp(level, LogLevelTrace, LogLevelFatalError), location, isAddress, file, function, formatted};
+	DateTime_t time;
+	LogMessage_t messageData = {Clamp(level, LogLevelTrace, LogLevelFatalError), time, location, isAddress, file, function, formatted};
 	ssize pos = Base_StrFind(file, "chifir-engine", true);
 	dstr realFile = nullptr; // stupid c++03 with no const cast
 	if (pos >= 0)

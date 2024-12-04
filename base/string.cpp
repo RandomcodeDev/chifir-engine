@@ -122,15 +122,15 @@ CString CString::operator*(const ssize& right)
 	return other;
 }
 
-void CString::Format(cstr format, ...)
+void CString::VFormat(cstr format, va_list args)
 {
-	va_list args;
+	va_list args2;
 
-	va_start(args, format);
-	ssize size = Base_VStrFormat(nullptr, 0, format, args);
+	va_copy(args2, args);
+	ssize size = Base_VStrFormat(nullptr, 0, format, args2);
 	Resize(size);
-	Base_VStrFormat(m_buffer, static_cast<s32>(m_size), format, args);
-	va_end(args);
+	Base_VStrFormat(m_buffer, static_cast<s32>(m_size), format, args2);
+	va_end(args2);
 }
 
 ssize CString::Find(s32 (*Compare)(char a, char b)) const

@@ -22,6 +22,7 @@ enum LogLevel_t
 struct LogMessage_t
 {
 	LogLevel_t level;
+	DateTime_t time;
 	uptr location;
 	bool isAddress; // Whether location should be displayed in hex
 	cstr file;
@@ -103,3 +104,8 @@ extern BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, c
 #define Log_Warning(...)        Log_Message(Warning, __VA_ARGS__)
 #define Log_Error(...)          Log_Message(Error, __VA_ARGS__)
 #define Log_FatalError(...)     Log_Message(FatalError, __VA_ARGS__)
+
+#define LOG_FORMAT(color, msg)                                                                                                   \
+	(msg).isAddress ? "[%s] [%s] [%s!0x%llX %s] %s\n" : "[%s] [%s] [%s:%u %s] %s\n",                                             \
+		(color) ? LEVEL_COLORED_NAMES[(msg).level] : LEVEL_NAMES[(msg).level], Base_FormatDateTime((msg).time).Data(),           \
+		(msg).file, (msg).location, (msg).function, (msg).message

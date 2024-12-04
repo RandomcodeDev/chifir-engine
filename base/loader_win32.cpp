@@ -31,6 +31,7 @@ bool g_loaderInitialized;
 MAKE_STUB(DbgPrint, __cdecl)
 MAKE_STUB(NtAllocateVirtualMemory, __stdcall, @24)
 MAKE_STUB(NtFreeVirtualMemory, __stdcall, @16)
+MAKE_STUB(RtlTimeToTimeFields, __stdcall, @8)
 
 #ifndef CH_XBOX360
 // These are desktop/OneCore things
@@ -54,7 +55,7 @@ MAKE_STUB(RtlFreeUnicodeString, __stdcall, @4)
 MAKE_STUB(RtlFreeHeap, __stdcall, @12)
 MAKE_STUB(RtlGetFullPathName_U, __stdcall, @16)
 
-// Console stuff is all CSR calls i shouldn't rewrite
+// Console stuff is all CSR calls I shouldn't rewrite
 MAKE_STUB(AllocConsole, __stdcall, @0)
 MAKE_STUB(AttachConsole, __stdcall, @4)
 MAKE_STUB(GetConsoleMode, __stdcall, @8)
@@ -202,6 +203,7 @@ bool Base_InitLoader()
 	GET_FUNCTION(&ntDll, NtWriteFile)
 	GET_FUNCTION(&ntDll, RtlFreeHeap)
 	GET_FUNCTION(&ntDll, RtlGetFullPathName_U)
+	GET_FUNCTION(&ntDll, RtlTimeToTimeFields)
 
 	// So unloading it when ntDll goes out of scope doesn't mess anything up, cause the loader wasn't used to "load" it
 	LdrAddRefDll(0, ntDllBase);

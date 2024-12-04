@@ -17,7 +17,7 @@ class BASEAPI CString
 	// Create a string from the given buffer
 	CString(cstr data, ssize size = SSIZE_MAX);
 
-	// Avoid this
+	// Avoid this, it's expensive
 	CString(const CString& other);
 
 	~CString();
@@ -109,7 +109,37 @@ class BASEAPI CString
 	}
 
 	// Format into the string
-	void Format(cstr format, ...);
+	void VFormat(cstr format, va_list args);
+
+	// Format into the string
+	void Format(cstr format, ...)
+	{
+		va_list args;
+		va_start(args, format);
+		VFormat(format, args);
+		va_end(args);
+	}
+
+	// Format into a new string
+	static CString VFormatStr(cstr format, va_list args)
+	{
+		CString string;
+		va_list args2;
+		va_copy(args2, args);
+		string.VFormat(format, args2);
+		va_end(args2);
+		return string;
+	}
+
+	// Format into a new string
+	static CString FormatStr(cstr format, ...)
+	{
+		va_list args;
+		va_start(args, format);
+		CString string = VFormatStr(format, args);
+		va_end(args);
+		return string;
+	}
 
 	// Not implemented yet
 	ssize Find(s32 (*Compare)(char a, char b)) const;

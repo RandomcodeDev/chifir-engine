@@ -6,9 +6,12 @@
 #include "base/platform.h"
 #include "base/string.h"
 #include "base/types.h"
+#include "ntexapi.h"
+#include "phnt.h"
 
 DECLARE_AVAILABLE(DbgPrint);
 DECLARE_AVAILABLE(NtAllocateVirtualMemory);
+DECLARE_AVAILABLE(RtlTimeToTimeFields);
 #ifdef CH_XBOX360
 extern "C" DLLIMPORT void __stdcall XamTerminateTitle();
 extern "C" DLLIMPORT u8* XboxKrnlVersion;
@@ -268,38 +271,73 @@ BASEAPI void CDbgPrintLogWriter::Write(const LogMessage_t& message)
 {
 	if (DbgPrint_Available())
 	{
-		if (message.isAddress)
-		{
-			DbgPrint(
-				"[%s] [0x%llX@%s %s] %s\n", LEVEL_NAMES[message.level], message.location, message.file, message.function,
-				message.message);
-		}
-		else
-		{
-			DbgPrint(
-				"[%s] [%s:%d %s] %s\n", LEVEL_NAMES[message.level], message.file, message.location, message.function,
-				message.message);
-		}
+		DbgPrint(LOG_FORMAT(false, message));
 	}
 }
 
 #ifndef CH_XBOX360
 void CWin32ConsoleLogWriter::Write(const LogMessage_t& message)
 {
-	dstr fullMessage;
-
-	if (message.isAddress)
-	{
-		fullMessage = Base_StrFormat(
-			"[%s] [0x%llX@%s %s] %s\n", HaveNewConsole() ? LEVEL_COLORED_NAMES[message.level] : LEVEL_NAMES[message.level],
-			message.location, message.file, message.function, message.message);
-	}
-	else
-	{
-		fullMessage = Base_StrFormat(
-			"[%s] [%s:%d %s] %s\n", HaveNewConsole() ? LEVEL_COLORED_NAMES[message.level] : LEVEL_NAMES[message.level],
-			message.file, message.location, message.function, message.message);
-	}
+	dstr fullMessage = Base_StrFormat(LOG_FORMAT(HaveNewConsole(), message));
 	WriteConsole(fullMessage);
+	Base_Free(fullMessage);
 }
 #endif
+
+static u64 GetSysTime(s64* timeZoneBias = nullptr)
+{
+#ifdef CH_XBOX360
+	// idk
+#else
+	LARGE_INTEGER time;
+	do
+	{
+		time.HighPart = USER_SHARED_DATA->SystemTime.High1Time;
+		time.LowPart = USER_SHARED_DATA->SystemTime.LowPart;
+	} while (time.HighPart != USER_SHARED_DATA->SystemTime.High2Time);
+
+	if (timeZoneBias)
+	{
+		PLARGE_INTEGER timeZone = reinterpret_cast<PLARGE_INTEGER>(timeZoneBias);
+		do
+		{
+			timeZone->HighPart = USER_SHARED_DATA->TimeZoneBias.High1Time;
+			timeZone->LowPart = USER_SHARED_DATA->TimeZoneBias.LowPart;
+		} while (timeZone->HighPart != USER_SHARED_DATA->TimeZoneBias.High2Time);
+	}
+
+	return time.QuadPart;
+#endif
+}
+
+BASEAPI u64 Plat_GetMilliseconds()
+{
+	return GetSysTime() / 10000;
+}
+
+BASEAPI void Plat_GetDateTime(DateTime_t& time, bool utc)
+{
+	s64 timeZoneBias = 0;
+	LARGE_INTEGER ntTime;
+	ntTime.QuadPart = GetSysTime(&timeZoneBias);
+	if (!utc)
+	{
+		ntTime.QuadPart -= timeZoneBias;
+	}
+
+	TIME_FIELDS fields = {};
+	if (RtlTimeToTimeFields_Available())
+	{
+		RtlTimeToTimeFields(&ntTime, &fields);
+
+		time.hour = fields.Hour;
+		time.minute = fields.Minute;
+		time.second = fields.Second;
+		time.millisecond = fields.Milliseconds;
+
+		time.year = fields.Year;
+		time.month = fields.Month;
+		time.day = fields.Day;
+		time.weekDay = fields.Weekday;
+	}
+}

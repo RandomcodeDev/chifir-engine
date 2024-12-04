@@ -55,6 +55,7 @@ MAKE_STUB RtlAnsiStringToUnicodeString, @12
 MAKE_STUB RtlFreeHeap, @12
 MAKE_STUB RtlFreeUnicodeString, @4
 MAKE_STUB RtlGetFullPathName_U, @16
+MAKE_STUB RtlTimeToTimeFields, @8
 
 ; kernel32 stubs
 MAKE_STUB AllocConsole, @0

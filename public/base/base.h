@@ -18,6 +18,25 @@
 
 class CString;
 
+typedef struct DateTime
+{
+	u32 year;
+	u32 month;
+	u32 day;
+
+	u32 hour;
+	u32 minute;
+	u32 second;
+	u32 millisecond;
+	u32 weekDay;
+	
+    DateTime()
+	{
+        extern BASEAPI void Plat_GetDateTime(DateTime&, bool = false);
+		Plat_GetDateTime(*this);
+	}
+} DateTime_t;
+
 // Initialize platform stuff, detect CPU features, and other stuff
 extern BASEAPI void Base_Init();
 
@@ -128,6 +147,3 @@ extern BASEAPI void* Base_Realloc(void* block, ssize newSize);
 
 // Free memory from Base_Alloc
 extern BASEAPI void Base_Free(void* block);
-
-// Format a size
-extern BASEAPI CString Base_FormatSize(u64 size);

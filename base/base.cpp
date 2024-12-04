@@ -554,8 +554,8 @@ static bool IsSequence(ssize i, const u8* RESTRICT bytes, ssize size, const u8* 
 
 BASEAPI ssize Base_MemFind(const void* RESTRICT data, ssize size, const void* RESTRICT sequence, ssize sequenceSize, bool reverse)
 {
-	const u8* RESTRICT bytes = static_cast<const u8* RESTRICT>(data);
-	const u8* RESTRICT sequenceBytes = static_cast<const u8* RESTRICT>(sequence);
+	const u8* RESTRICT bytes = static_cast<const u8 * RESTRICT>(data);
+	const u8* RESTRICT sequenceBytes = static_cast<const u8 * RESTRICT>(sequence);
 	if (reverse)
 	{
 		for (ssize i = size - 1; i >= 0; i--)
@@ -578,27 +578,4 @@ BASEAPI ssize Base_MemFind(const void* RESTRICT data, ssize size, const void* RE
 	}
 
 	return -1;
-}
-
-BASEAPI CString Base_FormatSize(u64 size)
-{
-	static const cstr SUFFIXES[] = {
-		"B", "kiB", "MiB", "GiB", "TiB", "PiB (damn)", "EiB (are you sure?)",
-		// NOTE: these don't all go in increments of 1024, but they're physically
-		// impossible and here as a joke anyway
-		"ZiB (who are you?)", "YiB (what are you doing?)", "RiB (why are you doing this?)", "QiB (HOW ARE YOU DOING THIS?)",
-		"?B (what did you do?)"};
-
-	f64 value = static_cast<f64>(size);
-	ssize suffix = 0;
-	while (value >= 1024.0)
-	{
-		value /= 1024.0;
-		suffix++;
-	}
-
-	// TODO: handle 69, 420, and pi
-	CString string;
-	string.Format("%lf %s", value, SUFFIXES[Min(suffix, ARRAY_SIZE(SUFFIXES) - 1)]);
-	return string;
 }

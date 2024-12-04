@@ -17,5 +17,6 @@ MAKE_STUB DbgPrint
 MAKE_STUB NtAllocateVirtualMemory
 MAKE_STUB NtFreeVirtualMemory
 MAKE_STUB QueryPerformanceCounter
+MAKE_STUB RtlTimeToTimeFields
 
 END
