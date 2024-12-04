@@ -69,10 +69,6 @@ static ISystem* GetSystem(ILibrary* library, u32 minVersion, bool exactRequired)
 
 extern "C" LAUNCHERAPI s32 LauncherMain()
 {
-#ifdef CH_XBOX360
-	__security_init_cookie();
-#endif
-
 	Base_Init();
 	Plat_Init();
 
