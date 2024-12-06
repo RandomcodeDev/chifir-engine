@@ -2,7 +2,7 @@
 
 #include "fastbuild/Util.bff"
 
-.IncludeDirs = { 'public', 'public/xbox' }
+.IncludeDirs = { 'public', 'private', 'private/public', 'public/xbox' }
 .ExternalIncludeDirs = { 'external', 'external/phnt' }
 
 #include "fastbuild/MSVC.bff"

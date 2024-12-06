@@ -1,6 +1,8 @@
 #include "filesystem_raw.h"
 #ifdef CH_WIN32
 #include "filesystem_win32.h"
+#elif defined CH_SWITCH
+#include "base/filesystem_switch.h"
 #endif
 
 CBaseRawFilesystem::CBaseRawFilesystem(cstr root) : m_safe(true)
@@ -32,6 +34,8 @@ BASEAPI IWritableFilesystem* Base_CreateRawFilesystem(cstr path)
 {
 #ifdef CH_WIN32
 	return new CWin32Filesystem(path);
+#elif defined CH_SWITCH
+	return new CSwitchFilesystem(path);
 #else
 	(void)path;
 	return nullptr;

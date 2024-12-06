@@ -99,15 +99,13 @@ bool CWin32Filesystem::Read(cstr path, CVector<u8>& buffer, ssize count, ssize o
 	IO_STATUS_BLOCK ioStatus = {};
 	NTSTATUS status =
 		NtReadFile(file, nullptr, nullptr, nullptr, &ioStatus, buffer.Data(), (ULONG)buffer.Size(), &largeOffset, nullptr);
+	NtClose(file);
 	if (!NT_SUCCESS(status))
 	{
 		Log_Error("Failed to read %zu bytes from offset 0x%X in %s/%s: NTSTATUS 0x%08X", size, offset, m_root, path, status);
 		buffer.Empty();
-		NtClose(file);
 		return false;
 	}
-
-	NtClose(file);
 
 	return true;
 }
@@ -190,8 +188,7 @@ ssize CWin32Filesystem::Write(cstr path, const void* data, ssize count, bool app
 	largeOffset.QuadPart = offset;
 	if (append)
 	{
-		ssize size = GetSize(file);
-		largeOffset.QuadPart += size;
+		largeOffset.QuadPart += GetSize(file);
 	}
 
 	// NtWriteFile better not modify the buffer

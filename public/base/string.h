@@ -74,6 +74,30 @@ class BASEAPI CString
 		return m_buffer[index];
 	}
 
+	// Combine two strings
+	CString operator+(const CString& right)
+	{
+		CString str(*this);
+		str += right;
+		return str;
+	}
+
+	// Combine two strings
+	CString operator+(char right)
+	{
+		CString str(*this);
+		str += right;
+		return str;
+	}
+
+	// Combine two strings
+	CString operator+(cstr right)
+	{
+		CString str(*this);
+		str += right;
+		return str;
+	}
+
 	// Append an object
 	void operator+=(char character)
 	{

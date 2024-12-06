@@ -9,7 +9,7 @@
 
 class IRhiSwapChain;
 
-// Represents a DXGI factory, a VkInstance, or whatever ungodly thing legacy APIs use (GL context, etc)
+// Represents a DXGI factory, a VkInstance, or whatever ungodly thing legacy APIs use (GL context, LPDIRECT3D9, etc)
 class IRhiInstance
 {
 	virtual ~IRhiInstance() DEFAULT;

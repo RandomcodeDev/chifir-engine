@@ -1,9 +1,12 @@
 #include "base/base.h"
 #include "base/basicstr.h"
+#include "base/log.h"
 #include "video_null.h"
 
 bool CNullVideoSystem::Initialize()
 {
+	Log_Debug("Initializing null video system");
+
 	m_title = Base_StrClone("Чифир Engine");
 	if (!m_title)
 	{
@@ -30,6 +33,7 @@ bool CNullVideoSystem::Update()
 void CNullVideoSystem::Shutdown()
 {
 	Base_Free(m_title);
+	Log_Debug("Shutting down null video system");
 }
 
 void CNullVideoSystem::SetTitle(cstr newTitle)

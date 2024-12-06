@@ -4,6 +4,7 @@
 
 #include "compiler.h"
 #include "dll.h"
+#include "macros.h"
 #include "types.h"
 
 #ifdef CH_STATIC
@@ -21,14 +22,14 @@ class CString;
 typedef struct DateTime
 {
 	u32 year;
-	u32 month;
-	u32 day;
+	u32 month; // 1-12
+	u32 day; // 1-31
 
-	u32 hour;
-	u32 minute;
-	u32 second;
-	u32 millisecond;
-	u32 weekDay;
+	u32 hour; // 0-23
+	u32 minute; // 0-59
+	u32 second; // 0-59
+	u32 millisecond; // not guaranteed, 0-999
+	u32 weekDay; // 0-6, sunday to saturday
 	
     DateTime()
 	{
@@ -53,36 +54,6 @@ extern BASEAPI NORETURN void Base_AbortSafe(s32 error, cstr msg);
 
 // Quit and log it
 extern BASEAPI NORETURN void Base_Quit(cstr msg, ...);
-
-#define ASSERT_IMPL(cond, action)                                                                                                \
-	if (!(cond))                                                                                                                 \
-	{                                                                                                                            \
-		action;                                                                                                                  \
-	}
-
-// Quit if a condition isn't true, add a message
-#define ASSERT_MSG(cond, ...) ASSERT_IMPL(cond, Base_Abort(1, "Assertion " #cond " failed: " __VA_ARGS__))
-
-// Quit if a condition isn't true, add a message
-#define ASSERT_MSG_SAFE(cond, msg) ASSERT_IMPL(cond, Base_AbortSafe(1, "Assertion " #cond " failed: " msg))
-
-// Quit if a condition isn't true
-#define ASSERT(cond) ASSERT_IMPL(cond, Base_AbortSafe(1, "Assertion " #cond " failed"))
-
-// Round val up to a multiple of align (align must be a power of two)
-#define ALIGN(val, align) (((val) + (align)-1) & ~((align)-1))
-
-// Get the number of elements in a stack/static array
-#define ARRAY_SIZE(arr) (SIZEOF(arr) / SIZEOF((arr)[0]))
-
-// Stringize something
-#define STRINGIZE(x) #x
-
-// Stringize something, and expand macros one level
-#define STRINGIZE_EXPAND(x) STRINGIZE(x)
-
-// Get the address of a structure containing the given pointer
-#define CONTAINING_STRUCTURE(type, member, ptr) (reinterpret_cast<type*>(reinterpret_cast<uptr>(ptr) - offsetof(type, member)))
 
 // Swap
 template <typename T> FORCEINLINE void Swap(T& left, T& right)
@@ -109,9 +80,6 @@ template <typename T> FORCEINLINE T Clamp(const T& value, const T& min, const T&
 {
 	return Max(min, Min(value, max));
 }
-
-// Cast away const/function pointer
-#define CONST_CAST(T, ptr) reinterpret_cast<T>(reinterpret_cast<uptr>(ptr))
 
 // FNV-1a hash
 extern BASEAPI u32 Base_Fnv1a32(const void* data, ssize size);

@@ -7,6 +7,16 @@
 
 #include <cstdarg>
 
+#include "macros.h"
+
+#ifdef __clang__
+#define COMPILER "Clang " __clang_version__
+#elif defined _MSC_VER
+#define MSVC_STRING_VER(ver) #ver
+#define MSVC_STRING_VER2(ver) MSVC_STRING_VER(ver)
+#define COMPILER "MSVC " MSVC_STRING_VER2(_MSC_FULL_VER)
+#endif
+
 #ifdef CH_ARM64
 #include <arm_neon.h>
 #endif
@@ -90,3 +100,5 @@ extern void RunGlobalDestructors();
 #else
 #define ALLOCATOR
 #endif
+
+#define ALIGNED(x) ATTRIBUTE(aligned(x))

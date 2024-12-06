@@ -40,6 +40,14 @@
 					}
 				}
 			}
+
+			If (.PlatformName == "Switch")
+			{
+				^UnityInputFiles +
+				{
+					'$ProjectPath$/../private/videosystem/video_switch.cpp'
+				}
+			}
 			
 			.UnityOutputPath = '$ObjectDir$/$ProjectPath$/'
 			.UnityOutputPattern = '$ProjectName$_Unity*.cpp'

@@ -39,5 +39,11 @@ extern BASEAPI void Plat_WriteConsole(cstr message);
 // Get a timestamp in milliseconds (the point it's relative to depends on the platform and isn't reliable)
 extern BASEAPI u64 Plat_GetMilliseconds();
 
+// Pause the thread for the given amount of time
+extern BASEAPI void Plat_Sleep(u64 milliseconds);
+
 // Get the date and time
 extern BASEAPI void Plat_GetDateTime(DateTime_t& time, bool utc = false);
+
+// Get the location for saving stuff
+extern BASEAPI cstr Plat_GetSaveLocation();

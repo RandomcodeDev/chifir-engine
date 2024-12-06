@@ -1,6 +1,6 @@
 #include <xtl.h>
 
-int main(void)
+int main()
 {
 	HMODULE launcher = LoadLibraryA(GAME_NAME ".xex");
 	if (!launcher)

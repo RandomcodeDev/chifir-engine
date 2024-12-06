@@ -24,7 +24,7 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 
 	AddLogWriters();
 
-	Log_Info("Engine running on %s on %s", Plat_GetSystemDescription(), Plat_GetHardwareDescription());
+	Log_Info("Engine compiled by " COMPILER " running on %s on %s", Plat_GetSystemDescription(), Plat_GetHardwareDescription());
 
 	m_videoSystem = reinterpret_cast<IVideoSystem*>(systems[0]);
 
@@ -56,10 +56,11 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 
 bool CEngine::InitializeSaveFilesystem()
 {
-	m_saveFilesystem = Base_CreateRawFilesystem(".");
+	Log_Debug("Opening save filesystem %s", Plat_GetSaveLocation());
+	m_saveFilesystem = Base_CreateRawFilesystem(Plat_GetSaveLocation());
 	if (!m_saveFilesystem)
 	{
-		Log_Error("Failed to create raw filesystem with root \".\"");
+		Log_Error("Failed to create raw filesystem with root \"%s\"", Plat_GetSaveLocation());
 		return false;
 	}
 
@@ -73,6 +74,7 @@ void CEngine::AddLogWriters()
 
 bool CEngine::InitializeSystems()
 {
+	Log_Debug("Initializing systems");
 	if (!m_videoSystem->Initialize())
 	{
 		Log_FatalError("Video system initialization failed!");
@@ -103,6 +105,7 @@ void CEngine::PostFrame()
 
 void CEngine::ShutdownSystems()
 {
+	Log_Debug("Shutting down systems");
 	m_videoSystem->Shutdown();
 }
 
