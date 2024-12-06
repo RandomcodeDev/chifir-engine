@@ -17,3 +17,4 @@ compile_commands.json
 *.log
 /.vscode/settings.json
 /.vscode/c_cpp_properties.json
+*cache*

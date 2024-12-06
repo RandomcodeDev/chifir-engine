@@ -7,11 +7,11 @@ from zipfile import ZipFile
 
 def main(argc, argv):
     parser = argparse.ArgumentParser(description="gather third party code licenses")
-    parser.add_argument("--output-dir", "-o", dest="output", help="location to put all licenses", default="licenses")
+    parser.add_argument("--output-dir", "--output", "-o", dest="output", help="location to put all licenses", default="licenses")
     parser.add_argument("--compress", "-c", help="compress to a zip file", default=True, action="store_true")
     parser.add_argument("--licenses", "-l", help="path to licenses.toml", default=os.path.join(os.path.dirname(argv[0]), "licenses.toml"))
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv[1:])
 
     output = None
     if args.compress:
