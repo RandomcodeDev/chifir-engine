@@ -87,6 +87,11 @@
 				{
 					^LinkerOptions + ' /DLL'
 				}
+
+				If (.PlatformName == 'Linux')
+				{
+					^LinkerOptions + ' -shared'
+				}
 			}
 		}
 

@@ -14,10 +14,6 @@
 
 // Declare the _Available function for an imported function
 #define DECLARE_AVAILABLE(func) extern "C" BASEAPI bool func##_Available()
-#elif defined CH_LINUX
-#include <asm/errno.h>
-#include <asm/fcntl.h>
-#include <asm/unistd.h>
 #endif
 
 #include "base.h"
@@ -39,6 +35,9 @@ extern BASEAPI cstr Plat_GetHardwareDescription();
 
 // Write to the terminal/console (stdout)
 extern BASEAPI void Plat_WriteConsole(cstr message);
+
+// Whether you can use ANSI escapes with Plat_WriteConsole
+extern BASEAPI bool Plat_ConsoleHasColor();
 
 // Get a timestamp in milliseconds (the point it's relative to depends on the platform and isn't reliable)
 extern BASEAPI u64 Plat_GetMilliseconds();

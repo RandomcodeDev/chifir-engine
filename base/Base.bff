@@ -55,6 +55,14 @@
 				}
 			}
 
+			If (.PlatformName == 'Linux')
+			{
+				^UnityInputFiles +
+				{
+					'$ProjectPath$/platform_linux.cpp',
+				}
+			}
+
 			If (.PlatformName == 'Switch')
 			{
 				^UnityInputFiles +
@@ -188,6 +196,11 @@
 							'$ObjectDir$/$ProjectPath$/stubs_win32_x86.obj'
 						}
 					}
+				}
+
+				If (.PlatformName == 'Linux')
+				{
+					^LinkerOptions + ' -shared'
 				}
 			}
 		}

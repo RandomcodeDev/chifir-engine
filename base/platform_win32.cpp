@@ -30,23 +30,29 @@ SYSTEM_PERFORMANCE_INFORMATION g_systemPerfInfo;
 static char* s_systemDescription;
 static char* s_hardwareDescription;
 
-#ifndef CH_XBOX360
-static bool HaveNewConsole()
+BASEAPI bool Plat_ConsoleHasColor()
 {
+#ifdef CH_XBOX360
+	return false;
+#else
 	// 10.0.10586 (version 1511)
 	return USER_SHARED_DATA->NtMajorVersion >= 10 && USER_SHARED_DATA->NtBuildNumber >= 10586;
+#endif
 }
 
 BASEAPI void Plat_WriteConsole(cstr text)
 {
+#ifdef CH_XBOX360
+	DbgPrint("%s", text);
+#else
 	u32 length = static_cast<u32>(Base_StrLength(text));
 	IO_STATUS_BLOCK ioStatus = {};
 	if (NtWriteFile_Available() && GetStdHandle_Available())
 	{
 		NtWriteFile(GetStdHandle(STD_OUTPUT_HANDLE), nullptr, nullptr, nullptr, &ioStatus, (dstr)text, length, nullptr, nullptr);
 	}
-}
 #endif
+}
 
 BASEAPI void Plat_Init()
 {
@@ -272,15 +278,6 @@ BASEAPI void CDbgPrintLogWriter::Write(const LogMessage_t& message)
 		DbgPrint(LOG_FORMAT(false, message));
 	}
 }
-
-#ifndef CH_XBOX360
-void CWin32ConsoleLogWriter::Write(const LogMessage_t& message)
-{
-	dstr fullMessage = Base_StrFormat(LOG_FORMAT(HaveNewConsole(), message));
-	Plat_WriteConsole(fullMessage);
-	Base_Free(fullMessage);
-}
-#endif
 
 static u64 GetSysTime(s64* timeZoneBias = nullptr)
 {

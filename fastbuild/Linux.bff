@@ -7,14 +7,24 @@
     .LibExtension = '.a'
     .DLLExtension = '.so'
 
-    .Linker = '$LLVMDir$/bin/ld.lld'
+    .Linker = '$LLVMDir$/bin/clang++'
+
+    .CompilerOptions = ' -fPIC'
+                     + ' -ffreestanding'
+                     + ' -fvisibility=hidden'
     .LinkerOptions = ' -o "%2"'
                    + ' "%1"'
+                   + ' -fuse-ld=lld'
+                   + ' -nostdlib'
+                   + ' -nostartfiles'
+                   + ' -Wl,-export-dynamic'
+                   + ' -rdynamic'
 ]
 
 .Linux_Clang_AMD64 =
 [
 	.CompilerOptions = ' -target x86_64-none-linux'
+	.LinkerOptions = ' -target x86_64-none-linux'
 ]
 
 .Linux_Clang_AMD64Debug = .Linux + .Clang_AMD64Debug + .Linux_Clang_AMD64

@@ -26,6 +26,8 @@ class CLinuxLibrary : public ILibrary
 #define STDIN_FD 0
 #define STDOUT_FD 1
 #define STDERR_FD 2
+
+extern uptr g_errno;
  
 // Make a system call
-extern u64 Base_SysCall(u64 number, u64 arg1 = 0, u64 arg2 = 0, u64 arg3 = 0, u64 arg4 = 0, u64 arg5 = 0, u64 arg6 = 0);
+extern uptr Base_SysCall(uptr number, uptr arg1 = 0, uptr arg2 = 0, uptr arg3 = 0, uptr arg4 = 0, uptr arg5 = 0, uptr arg6 = 0);

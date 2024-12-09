@@ -1,3 +1,9 @@
+[musl]
+name = "musl"
+author = "Rich Felker, et al."
+path = "https://git.musl-libc.org/cgit/musl"
+license = "external/musl.txt"
+
 [phnt]
 name = "phnt"
 author = "Winsider Seminars & Solutions, Inc."

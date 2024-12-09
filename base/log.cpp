@@ -51,6 +51,13 @@ BASEAPI void CFileLogWriter::Write(const LogMessage_t& message)
 	}
 }
 
+BASEAPI void CConsoleLogWriter::Write(const LogMessage_t& message)
+{
+	dstr fullMessage = Base_StrFormat(LOG_FORMAT(Plat_ConsoleHasColor(), message));
+	Plat_WriteConsole(fullMessage);
+	Base_Free(fullMessage);
+}
+
 BASEAPI void Log_AddWriter(ILogWriter* writer)
 {
 	if (writer)
