@@ -3,6 +3,13 @@
 .Windows_Common =
 [
 	.CompilerOptions = ' -DCH_WIN32 -D_HAS_EXCEPTIONS=0'
+
+	.LinkerOptions = ' /OUT:"%2"' // Output
+				   + ' "%1"' // Input
+				   + ' /NOLOGO' // No logo on MSVC link.exe
+				   + ' /NODEFAULTLIB' // Disable automatically linking to CRT and others
+				   + ' /SAFESEH:NO'
+
 	.StaticBuild = false
 ]
 
@@ -27,6 +34,13 @@
 					 // Compiler headers
 					 + ' -isystem "$LLVMDir$\lib\clang\$ClangVersion$\include"'
 					 + ' -isystem "$VSBasePath$\VC\Tools\MSVC\$MSVCVersion$\include"'
+
+	.Linker = '$LLVMDir$/bin/lld-link$ExeExtension$'
+]
+
+.Windows_Clang_Debug =
+[
+	.LinkerOptions = ' /DEBUG'
 ]
 
 .Windows =
@@ -97,7 +111,7 @@
 	.CompilerOptions = ' -target x86_64-msvc-windows'
 ]
 
-.GDK_Clang_AMD64Debug = .Windows_Common + .Windows_Clang + .GDK + .Clang_AMD64Debug + .Windows_Clang_AMD64
+.GDK_Clang_AMD64Debug = .Windows_Common + .Windows_Clang + .Windows_Clang_Debug + .GDK + .Clang_AMD64Debug + .Windows_Clang_AMD64
 .GDK_Clang_AMD64Release = .Windows_Common + .Windows_Clang + .GDK + .Clang_AMD64Release + .Windows_Clang_AMD64
 .GDK_Clang_AMD64Retail = .Windows_Common + .Windows_Clang + .GDK + .Clang_AMD64Retail + .Windows_Clang_AMD64
 .GDKX_Clang_AMD64Debug = .Windows_Common + .Windows_Clang + .GDKX + .Clang_AMD64Debug + .Windows_Clang_AMD64
@@ -109,7 +123,7 @@
 	.CompilerOptions = ' -target aarch64-msvc-windows'
 ]
 
-.Windows_Clang_ARM64Debug = .Windows_Common + .Windows_Clang + .Windows + .Clang_ARM64Debug + .Windows_Clang_ARM64
+.Windows_Clang_ARM64Debug = .Windows_Common + .Windows_Clang + .Windows_Clang_Debug + .Windows + .Clang_ARM64Debug + .Windows_Clang_ARM64
 .Windows_Clang_ARM64Release = .Windows_Common + .Windows_Clang + .Windows + .Clang_ARM64Release + .Windows_Clang_ARM64
 .Windows_Clang_ARM64Retail = .Windows_Common + .Windows_Clang + .Windows + .Clang_ARM64Retail + .Windows_Clang_ARM64
 
@@ -119,7 +133,7 @@
 	.CompilerOptions = ' -target i586-msvc-windows'
 ]
 
-.Windows_Clang_x86Debug = .Windows_Common + .Windows_Clang + .Windows + .Clang_x86Debug + .Windows_Clang_x86
+.Windows_Clang_x86Debug = .Windows_Common + .Windows_Clang + .Windows_Clang_Debug + .Windows + .Clang_x86Debug + .Windows_Clang_x86
 .Windows_Clang_x86Release = .Windows_Common + .Windows_Clang + .Windows + .Clang_x86Release + .Windows_Clang_x86
 .Windows_Clang_x86Retail = .Windows_Common + .Windows_Clang + .Windows + .Clang_x86Retail + .Windows_Clang_x86
 #endif

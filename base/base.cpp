@@ -163,7 +163,11 @@ static void Copy(
 #ifdef CH_X86
 static void X86RepMovsb(void* RESTRICT dest, const void* RESTRICT src, ssize size)
 {
+#ifdef __clang__
+	__asm__("rep movsb": "+D"(dest), "+S"(src), "+c"(size) : : "memory");
+#else
 	__movsb(static_cast<u8*>(dest), static_cast<const u8*>(src), static_cast<usize>(size));
+#endif
 }
 #endif
 
@@ -281,7 +285,11 @@ template <typename T> void Set(void* dest, u8 value, ssize offset, ssize& remain
 // rep stosb is faster for big blocks
 static void X86RepStosb(void* dest, u8 value, ssize size)
 {
+#ifdef __clang__
+	__asm__("rep movsb": "+D"(dest), "+c"(size) : "a"(value) : "memory");
+#else
 	__stosb(static_cast<u8*>(dest), value, static_cast<usize>(size));
+#endif
 }
 #endif
 

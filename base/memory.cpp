@@ -141,7 +141,7 @@ static AllocNode_t* FindNode(void* block)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #endif
-	AllocNode_t* node = reinterpret_cast<AllocNode_t*>(sigAddr - offsetof(AllocInfo_t, signature) - offsetof(AllocNode_t, data));
+	AllocNode_t* node = reinterpret_cast<AllocNode_t*>(sigAddr - OFFSETOF(AllocInfo_t, signature) - OFFSETOF(AllocNode_t, data));
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif

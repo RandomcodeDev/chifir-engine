@@ -21,7 +21,7 @@ typedef uintptr_t uptr;
 
 // Avoid using in cases where underflow could happen
 typedef uptr usize;
-static_assert(sizeof(usize) == sizeof(size_t), "error: sizeof(usize) != sizeof(size_t)");
+static_assert(sizeof(usize) == sizeof(std::size_t), "error: sizeof(usize) != sizeof(size_t)");
 
 typedef int8_t s8;
 typedef int16_t s16;

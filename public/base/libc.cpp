@@ -13,7 +13,7 @@ extern "C"
 	}
 
 	// MSVC doesn't like these defined when /GL is in use
-#if defined _MSC_VER && defined CH_DEBUG
+#if !defined _MSC_VER || (defined _MSC_VER && !defined CH_DEBUG)
 	DEFINE_INTRINSIC(memmove)
 	void* memmove(void* RESTRICT dest, const void* RESTRICT src, usize size)
 	{

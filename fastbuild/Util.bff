@@ -1,3 +1,4 @@
+#if __WINDOWS__
 function CreateVcxProject(.Name, .Path, .Configs, .Options)
 {
 	VCXProject('$Name$-proj')
@@ -22,3 +23,12 @@ function CreateVcxProjectExe(.Name, .Path, .Configs, .Options)
 {
 	CreateVcxProject(.Name, .Path, .Configs, .Options)
 }
+#else
+function CreateVcxProject(.Name, .Path, .Configs, .Options)
+{
+}
+
+function CreateVcxProjectExe(.Name, .Path, .Configs, .Options)
+{
+}
+#endif

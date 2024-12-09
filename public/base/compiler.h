@@ -21,12 +21,13 @@
 #include <arm_neon.h>
 #endif
 
-#if defined _MSC_VER
+#ifdef _MSC_VER
 #ifdef CH_XBOX360
 #include <VectorIntrinsics.h>
-#elif defined CH_X86
+#endif
+
+#ifdef CH_X86
 #include <intrin.h>
-// surely there's a better way to tell Clang that I can use AVX but it can't
 #ifdef __clang__
 #include <avxintrin.h>
 #endif
@@ -54,6 +55,12 @@ extern void RunGlobalConstructors();
 // Call global destructors, local to the current DLL/EXE
 extern void RunGlobalDestructors();
 #else
+#ifdef CH_X86
+#include <cpuid.h>
+#include <immintrin.h>
+#include <x86intrin.h>
+#endif
+
 #define ATTRIBUTE(x) __attribute__((x))
 #define ALIAS(a, b)  extern "C" TYPEOF(a) ATTRIBUTE(alias(#a)) b;
 #define BREAKPOINT() __builtin_trap()

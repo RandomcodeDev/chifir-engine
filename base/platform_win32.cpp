@@ -6,8 +6,6 @@
 #include "base/platform.h"
 #include "base/string.h"
 #include "base/types.h"
-#include "ntexapi.h"
-#include "phnt.h"
 
 DECLARE_AVAILABLE(DbgPrint);
 DECLARE_AVAILABLE(NtAllocateVirtualMemory);
@@ -39,7 +37,7 @@ static bool HaveNewConsole()
 	return USER_SHARED_DATA->NtMajorVersion >= 10 && USER_SHARED_DATA->NtBuildNumber >= 10586;
 }
 
-static void WriteConsole(cstr text)
+BASEAPI void Plat_WriteConsole(cstr text)
 {
 	u32 length = static_cast<u32>(Base_StrLength(text));
 	IO_STATUS_BLOCK ioStatus = {};
@@ -97,7 +95,7 @@ BASEAPI void Plat_Init()
 		haveConsole = AttachConsole(ATTACH_PARENT_PROCESS);
 		if (haveConsole)
 		{
-			WriteConsole("\n");
+			Plat_WriteConsole("\n");
 		}
 		else if (AllocConsole_Available())
 		{
@@ -198,7 +196,7 @@ BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)
 
 	if (DbgPrint_Available())
 	{
-		DbgPrint("%s\n", msg);
+		DbgPrint("Fatal error: %s\n", msg);
 	}
 
 	// TODO: use NtRaiseHardError
@@ -279,7 +277,7 @@ BASEAPI void CDbgPrintLogWriter::Write(const LogMessage_t& message)
 void CWin32ConsoleLogWriter::Write(const LogMessage_t& message)
 {
 	dstr fullMessage = Base_StrFormat(LOG_FORMAT(HaveNewConsole(), message));
-	WriteConsole(fullMessage);
+	Plat_WriteConsole(fullMessage);
 	Base_Free(fullMessage);
 }
 #endif

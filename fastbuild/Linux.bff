@@ -1,0 +1,22 @@
+.Linux =
+[
+    .PlatformName = 'Linux'
+    .StaticBuild = false
+    .CompilerOptions = '-DCH_LINUX'
+    .ExeExtension = ''
+    .LibExtension = '.a'
+    .DLLExtension = '.so'
+
+    .Linker = '$LLVMDir$/bin/ld.lld'
+    .LinkerOptions = ' -o "%2"'
+                   + ' "%1"'
+]
+
+.Linux_Clang_AMD64 =
+[
+	.CompilerOptions = ' -target x86_64-none-linux'
+]
+
+.Linux_Clang_AMD64Debug = .Linux + .Clang_AMD64Debug + .Linux_Clang_AMD64
+.Linux_Clang_AMD64Release = .Linux + .Clang_AMD64Release + .Linux_Clang_AMD64
+.Linux_Clang_AMD64Retail = .Linux + .Clang_AMD64Retail + .Linux_Clang_AMD64

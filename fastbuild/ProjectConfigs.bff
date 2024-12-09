@@ -1,6 +1,5 @@
 // Project configurations
 
-#if __WINDOWS__
 .ProjectCommon =
 [
 	.ProjectBuildCommand = 'cd ^$(SolutionDir)..\..\ & $_FASTBUILD_EXE_PATH_$ -vs -dist -monitor -cache ^$(ProjectName)-^$(Configuration)'
@@ -41,7 +40,9 @@
 .Project_Clang_Switch_NX64_Debug = [Using(.ProjectCommon) .Platform = 'NX64' .SolutionPlatform = 'NX64' .SolutionConfig = 'Debug-Clang' .Config = 'Clang-Switch-NX64-Debug']
 .Project_Clang_Switch_NX64_Release = [Using(.ProjectCommon) .Platform = 'NX64' .SolutionPlatform = 'NX64' .SolutionConfig = 'Release-Clang' .Config = 'Clang-Switch-NX64-Release']
 .Project_Clang_Switch_NX64_Retail = [Using(.ProjectCommon) .Platform = 'NX64' .SolutionPlatform = 'NX64' .SolutionConfig = 'Retail-Clang' .Config = 'Clang-Switch-NX64-Retail']
-#endif
+.Project_Clang_Linux_AMD64_Debug = []
+.Project_Clang_Linux_AMD64_Release = []
+.Project_Clang_Linux_AMD64_Retail = []
 
 .Targets_MSVC_Windows_x86_Debug = {}
 .Targets_MSVC_Windows_x86_Release = {}
@@ -73,3 +74,6 @@
 .Targets_Clang_Switch_NX64_Debug = {}
 .Targets_Clang_Switch_NX64_Release = {}
 .Targets_Clang_Switch_NX64_Retail = {}
+.Targets_Clang_Linux_AMD64_Debug = {}
+.Targets_Clang_Linux_AMD64_Release = {}
+.Targets_Clang_Linux_AMD64_Retail = {}

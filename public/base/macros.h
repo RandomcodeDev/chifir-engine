@@ -37,3 +37,6 @@
 
 // Cast away const/function pointer
 #define CONST_CAST(T, ptr) reinterpret_cast<T>(reinterpret_cast<uptr>(ptr))
+
+// Get the offset of a field in a struct with a stable layout
+#define OFFSETOF(T, m) (reinterpret_cast<uptr>(&static_cast<T*>(nullptr)->m))

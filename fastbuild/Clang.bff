@@ -14,7 +14,6 @@
 	.CompilerName = 'Clang'
 
 	.Compiler = '$LLVMDir$/bin/clang++$ExeExtension$'
-	.Linker = '$LLVMDir$/bin/lld-link$ExeExtension$'
 	.Librarian = '$LLVMDir$/bin/llvm-ar$ExeExtension$'
 
 	.CompilerOptions = ' "%1"' // Input
@@ -51,12 +50,6 @@
 	}
 
 	.CompilerOptionsC = .CompilerOptions
-
-	.LinkerOptions = ' /OUT:"%2"' // Output
-				   + ' "%1"' // Input
-				   + ' /NOLOGO' // No logo on MSVC link.exe
-				   + ' /NODEFAULTLIB' // Disable automatically linking to CRT and others
-				   + ' /SAFESEH:NO'
 	
 	.LibrarianOptions = ' rc' // Replace/insert, create
 					  + ' "%2"' // Output
@@ -79,8 +72,6 @@
 					 + ' -O0' // Disable optimization
 					 
 					 + ' -DCH_DEBUG'
-	
-	.LinkerOptions = ' /DEBUG' // Debug info
 ]
 
 .Clang_Release =

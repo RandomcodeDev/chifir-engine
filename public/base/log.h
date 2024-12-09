@@ -68,25 +68,13 @@ class BASEAPI CDbgPrintLogWriter : public ILogWriter
   public:
 	void Write(const LogMessage_t& message);
 };
+#endif
 
-#ifndef CH_XBOX360
-// Windows console log writer
-class BASEAPI CWin32ConsoleLogWriter : public ILogWriter
+class BASEAPI CConsoleLogWriter : public ILogWriter
 {
   public:
 	void Write(const LogMessage_t& message);
 };
-#endif
-#endif
-
-#ifdef CH_SWITCH
-// Nintendo Switch log writer
-class BASEAPI CSwitchLogWriter : public ILogWriter
-{
-  public:
-	void Write(const LogMessage_t& message);
-};
-#endif
 
 // Add a log writer
 extern BASEAPI void Log_AddWriter(ILogWriter* writer);

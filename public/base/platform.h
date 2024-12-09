@@ -14,6 +14,10 @@
 
 // Declare the _Available function for an imported function
 #define DECLARE_AVAILABLE(func) extern "C" BASEAPI bool func##_Available()
+#elif defined CH_LINUX
+#include <asm/errno.h>
+#include <asm/fcntl.h>
+#include <asm/unistd.h>
 #endif
 
 #include "base.h"

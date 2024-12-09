@@ -8,7 +8,7 @@
 #include "fastbuild/MSVC.bff"
 #include "fastbuild/Clang.bff"
 #include "fastbuild/Windows.bff"
-//#include "fastbuild/Linux.bff"
+#include "fastbuild/Linux.bff"
 #if file_exists("private/fastbuild/Switch.bff")
 #include "private/fastbuild/Switch.bff"
 #endif
@@ -24,7 +24,6 @@
 	.GDKX_MSVC_AMD64Debug,
 	.GDKX_MSVC_AMD64Release,
 	.GDKX_MSVC_AMD64Retail,
-#endif
 #endif
 #if HAVE_MSVC_ARM64
 	.Windows_MSVC_ARM64Debug,
@@ -65,6 +64,13 @@
 	.Switch_Clang_NX64Debug,
 	.Switch_Clang_NX64Release,
 	.Switch_Clang_NX64Retail,
+#endif
+#endif
+
+#if __LINUX__
+	.Linux_Clang_AMD64Debug,
+	.Linux_Clang_AMD64Release,
+	.Linux_Clang_AMD64Retail,
 #endif
 }
 
@@ -128,6 +134,7 @@ ForEach(.BuildConfig in .BuildConfigs)
 #endif
 }
 .CompilerPlatforms_Clang = {
+#if __WINDOWS__
 #if HAVE_CLANG
 	'GDK-AMD64',
 #if HAVE_GDKX
@@ -138,6 +145,10 @@ ForEach(.BuildConfig in .BuildConfigs)
 #if HAVE_SWITCH
 	'Switch-NX64'
 #endif
+#endif
+#endif
+#if __LINUX__
+	'Linux-AMD64'
 #endif
 }
 
