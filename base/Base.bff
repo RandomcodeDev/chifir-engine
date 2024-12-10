@@ -201,6 +201,7 @@
 				If (.PlatformName == 'Linux')
 				{
 					^LinkerOptions + ' -shared'
+								   + ' -ldl'
 				}
 			}
 		}

@@ -8,7 +8,6 @@
 #include <sys/time.h>
 #include <sys/user.h>
 
-#include "platform_linux.h"
 #include "base.h"
 #include "base/base.h"
 #include "base/basicstr.h"
@@ -17,6 +16,7 @@
 #include "base/platform.h"
 #include "base/string.h"
 #include "base/types.h"
+#include "platform_linux.h"
 
 uptr g_errno;
 
@@ -39,26 +39,25 @@ BASEAPI cstr Plat_GetHardwareDescription()
 	return "unknown hardware";
 }
 
-uptr Base_SysCall(uptr number, uptr arg1, uptr arg2, uptr arg3, uptr arg4, uptr arg5, uptr arg6)
+ATTRIBUTE(naked) uptr Base_SysCall(uptr number, uptr arg1, uptr arg2, uptr arg3, uptr arg4, uptr arg5, uptr arg6)
 {
-	uptr retVal = 0;
-	do
-	{
 #ifdef CH_AMD64
-		// RCX is the syscall number, so R10 is used
-		__asm__ volatile("mov %4, %%r10\n"
-						 "mov %5, %%r8\n"
-						 "mov %6, %%r9\n"
-						 "syscall\n"
-						 : "=a"(retVal)
-						 : "c"(number), "D"(arg1), "S"(arg2), "d"(arg3), "g"(arg4), "g"(arg5), "g"(arg6)
-						 : "%r8", "%r9", "%r10");
+	__asm__ volatile("pushq %rbp\n"
+					 "movq %rsp, %rbp\n"
+					 "\n"
+					 "movq %rdi, %rax\n"
+					 "movq %rsi, %rdi\n"
+					 "movq %rdx, %rsi\n"
+					 "movq %rcx, %rdx\n"
+					 "movq %r8, %r10\n" // R10 instead of RCX because syscall uses RCX for the return address
+					 "movq %r9, %r8\n"
+					 "mov 16(%rsp), %r9\n"
+					 "\n"
+					 "syscall\n"
+					 "\n"
+					 "leave\n"
+					 "retq\n");
 #endif
-	} while (retVal == EINTR);
-
-	g_errno = retVal;
-
-	return retVal;
 }
 
 BASEAPI NORETURN void Base_AbortSafe(s32 error, cstr msg)
@@ -90,16 +89,23 @@ bool Base_GetSystemMemory(ssize size)
 	LinkedNode_t<SystemAllocation_t>* node = &memoryNodes[g_memInfo.allocations.Size()];
 	node->data.size = size;
 
-	Base_SysCall(__NR_mmap, reinterpret_cast<uptr>(&node->data.memory), node->data.size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, 0, 0);
-    if (g_errno != 0)
-    {
-        return false;
-    }
+	node->data.memory = reinterpret_cast<void*>(Base_SysCall(
+		__NR_mmap, reinterpret_cast<uptr>(nullptr), node->data.size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+	if (node->data.memory == MAP_FAILED)
+	{
+		return false;
+	}
 
 	g_memInfo.size += size;
 	g_memInfo.allocations.Append(node);
 
-    return true;
+	return true;
+}
+
+BASEAPI ILibrary* Base_LoadLibrary(cstr name)
+{
+	(void)name;
+	return nullptr;
 }
 
 BASEAPI bool Plat_ConsoleHasColor()
