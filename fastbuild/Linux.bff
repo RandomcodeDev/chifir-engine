@@ -2,16 +2,14 @@
 [
     .PlatformName = 'Linux'
     .StaticBuild = false
-    .CompilerOptions = '-DCH_LINUX'
     .ExeExtension = ''
     .LibExtension = '.a'
     .DLLExtension = '.so'
 
     .Linker = '$LLVMDir$/bin/clang++'
 
-    .CompilerOptions = ' -fPIC'
-                     + ' -ffreestanding'
-                     + ' -fvisibility=hidden'
+    .CompilerOptions = '-DCH_LINUX'
+                     + ' -fPIC'
     .LinkerOptions = ' -o "%2"'
                    + ' "%1"'
                    + ' -fuse-ld=lld'

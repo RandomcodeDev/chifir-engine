@@ -3,14 +3,16 @@
 #once
 
 .GameName = 'FalseKing'
+
+.NintendoSDKRoot = 'C:\Nintendo\NintendoSDK'
 .SwitchTitleID = '0100694203488000'
 
+#if __WINDOWS__
 // These only matter on Windows
-
 .VSBasePath = 'C:\Program Files\Microsoft Visual Studio\2022\Community'
 .VSToolset = 'v143'
 .VSSolutionVersion = '16'
-.MSVCVersion = '14.39.33519'
+.MSVCVersion = '14.41.34120'
 .WindowsSDKBasePath = 'C:\Program Files (x86)\Windows Kits\10'
 .WindowsSDKVersion = '10.0.22621.0'
 .WindowsLibPath = '$WindowsSDKBasePath$\Lib\$WindowsSDKVersion$\um'
@@ -18,8 +20,6 @@
 .WindowsSharedIncludePath = '$WindowsSDKBasePath$\Include\$WindowsSDKVersion$\shared'
 .WindowsUcrtIncludePath = '$WindowsSDKBasePath$\Include\$WindowsSDKVersion$\ucrt'
 .Xbox360SDK = 'C:\Program Files (x86)\Microsoft Xbox 360 SDK'
-
-// These matter on anything
 
 .LLVMDir = 'C:\Program Files\LLVM'
 .ClangVersion = '18'
@@ -33,7 +33,16 @@
 //#define HAVE_MSVC_ARM64
 //#define HAVE_MSVC_XBOX360
 #define HAVE_CLANG
+#else
+.WindowsIncludePath = '/usr/x86_64-mingw-w64-mingw32/include'
+.WindowsUmIncludePath = .WindowsIncludePath
+.WindowsSharedIncludePath = .WindowsIncludePath
+.WindowsUcrtIncludePath = .WindowsIncludePath
 
-// Only if you have the private console repo
+.LLVMDir = '/usr'
+.ClangVersion = '14'
 
-.NintendoSDKRoot = 'C:\Nintendo\NintendoSDK'
+.Python = '/usr/bin/python3'
+
+#define HAVE_CLANG
+#endif

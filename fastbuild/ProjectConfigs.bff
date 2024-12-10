@@ -7,7 +7,9 @@
 	.OutputDirectory = '^$(SolutionDir)\build'
 	.IntermediateDirectory = '^$(SolutionDir)\build'
 	.BuildLogFile = '^$(SolutionDir)\Temp\^$(ProjectName)-^$(Configuration).log'
+#if __WINDOWS__
 	.PlatformToolset = '$VSToolset$'
+#endif
 ]
 
 .Project_MSVC_Windows_x86_Debug = [Using(.ProjectCommon) .Platform = 'Win32' .SolutionPlatform = 'x86' .SolutionConfig = 'Debug-MSVC' .Config = 'MSVC-Windows-x86-Debug']

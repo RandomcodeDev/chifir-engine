@@ -24,7 +24,7 @@
 					 + ' -ffreestanding' // Disable libc
 					 + ' -fms-extensions' // These are nice to have, especially for COM code
 					 + ' -fno-exceptions' // No exceptions
-					 + ' -fvisibility=hidden' // So internal/private symbols in dynamic libraries don't conflict
+					 + ' -fvisibility=hidden'
 					 + ' -fpermissive' // To make Windows headers work
 					 + ' -Wall' // Most warnings
 					 + ' -Wextra' // More warnings

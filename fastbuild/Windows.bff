@@ -20,8 +20,10 @@
 					 + ' /I"$WindowsSharedIncludePath$"'
 					 + ' /I"$WindowsUcrtIncludePath$"'
 
+#if HAVE_MSVC
 					 // Compiler headers
 					 + ' /I"$VSBasePath$\VC\Tools\MSVC\$MSVCVersion$\include"'
+#endif
 ]
 
 .Windows_Clang =
@@ -33,7 +35,9 @@
 
 					 // Compiler headers
 					 + ' -isystem "$LLVMDir$\lib\clang\$ClangVersion$\include"'
+#if HAVE_MSVC
 					 + ' -isystem "$VSBasePath$\VC\Tools\MSVC\$MSVCVersion$\include"'
+#endif
 
 	.Linker = '$LLVMDir$/bin/lld-link$ExeExtension$'
 ]

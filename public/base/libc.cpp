@@ -27,7 +27,7 @@ extern "C"
 	}
 
 	DEFINE_INTRINSIC(memset)
-		void* memset(void* dest, s32 value, usize size)
+	void* memset(void* dest, s32 value, usize size)
 	{
 		return Base_MemSet(dest, value, size);
 	}

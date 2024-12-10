@@ -38,6 +38,14 @@
 				}
 			}
 
+			If (.PlatformName == 'Linux')
+			{
+				^UnityInputFiles +
+				{
+					'$ProjectPath$/main_linux.cpp'
+				}
+			}
+
 			If (.PlatformName == 'Switch')
 			{
 				^UnityInputFiles +

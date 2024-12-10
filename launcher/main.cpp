@@ -74,13 +74,8 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 
 #ifdef CH_WIN32
 	Log_AddWriter(new CDbgPrintLogWriter());
-#ifndef CH_XBOX360
-	Log_AddWriter(new CWin32ConsoleLogWriter());
 #endif
-#endif
-#ifdef CH_SWITCH
-	Log_AddWriter(new CSwitchLogWriter());
-#endif
+	Log_AddWriter(new CConsoleLogWriter());
 
 	cstr appName = "Engine"; // TODO: make this based on a command line arg
 
