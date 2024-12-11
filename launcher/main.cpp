@@ -108,22 +108,45 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	for (ssize i = 0; i < appDependencies.Size(); i++)
 	{
 		Log_Info(
-			"Loading %s, %sversion %u", appDependencies[i].name, appDependencies[i].requireExactVersion ? "" : "minimum ",
-			appDependencies[i].minimumVersion);
+			"Loading %s, %sversion %u (%s)", appDependencies[i].name, appDependencies[i].requireExactVersion ? "" : "minimum ",
+			appDependencies[i].minimumVersion, appDependencies[i].required ? "required" : "optional");
 		ILibrary* lib = Base_LoadLibrary(appDependencies[i].name);
 		if (!lib)
 		{
-			Base_Quit("Failed to load system %s!", appDependencies[i].name);
+			if (appDependencies[i].required)
+			{
+				Base_Quit("Failed to load required system %s!", appDependencies[i].name);
+			}
+			else
+			{
+				Log_Error("Failed to load system %s", appDependencies[i].name);
+			}
 		}
-		libs.Add(lib);
-
-		Log_Info("Getting interface for %s", appDependencies[i].name);
-		ISystem* system = GetSystem(lib, appDependencies[i].minimumVersion, appDependencies[i].requireExactVersion);
-		if (!system)
+		else
 		{
-			Base_Quit("Failed to get interface for %s, or it's the wrong version!", appDependencies[i].name);
+			libs.Add(lib);
 		}
-		systems.Add(system);
+
+		if (lib)
+		{
+			Log_Info("Getting interface for %s", appDependencies[i].name);
+			ISystem* system = GetSystem(lib, appDependencies[i].minimumVersion, appDependencies[i].requireExactVersion);
+			if (!system)
+			{
+				if (appDependencies[i].required)
+				{
+					Base_Quit("Failed to get interface for %s, or it's the wrong version!", appDependencies[i].name);
+				}
+				else
+				{
+				}
+			}
+			systems.Add(system);
+		}
+		else
+		{
+			systems.Add(nullptr);
+		}
 	}
 #endif
 
@@ -132,15 +155,21 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 
 	for (ssize i = 0; i < systems.Size(); i++)
 	{
-		Log_Trace("Deleting system %d (%s v%u)", i, systems[i]->GetName(), systems[i]->GetVersion());
-		delete systems[i];
+		if (systems[i])
+		{
+			Log_Trace("Deleting system %d (%s v%u)", i, systems[i]->GetName(), systems[i]->GetVersion());
+			delete systems[i];
+		}
 	}
 
 #ifndef CH_STATIC
 	Log_Trace("Deleting libraries");
 	for (ssize i = 0; i < libs.Size(); i++)
 	{
-		delete libs[i];
+		if (libs[i])
+		{
+			delete libs[i];
+		}
 	}
 #endif
 

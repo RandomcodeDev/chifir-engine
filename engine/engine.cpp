@@ -3,10 +3,19 @@
 #include "base/log.h"
 #include "videosystem/ivideosystem.h"
 
+CEngine::CEngine() : m_state(EngineStateUninitialized), m_videoSystem(nullptr)
+{
+}
+
+CEngine::~CEngine()
+{
+	delete m_saveFilesystem;
+}
+
 void CEngine::GetRequiredSystems(CVector<SystemDependency_t>& dependencies)
 {
 	static const SystemDependency_t deps[] = {
-		{"VideoSystem", IVideoSystem::VERSION, false}
+		{"VideoSystem", IVideoSystem::VERSION, true, false}
     };
 
 	dependencies.Add(deps, ARRAY_SIZE(deps));
@@ -26,6 +35,7 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 
 	Log_Info("Engine compiled by " COMPILER " running on %s on %s", Plat_GetSystemDescription(), Plat_GetHardwareDescription());
 
+	// same order as GetRequiredSystems
 	m_videoSystem = reinterpret_cast<IVideoSystem*>(systems[0]);
 
 	if (!InitializeSystems())

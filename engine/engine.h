@@ -11,10 +11,8 @@ class IVideoSystem;
 class CEngine : public IEngine
 {
   public:
-	CEngine() : m_state(EngineStateUninitialized), m_videoSystem(nullptr)
-	{
-	}
-	~CEngine() DEFAULT;
+	CEngine();
+	~CEngine();
 
 	void GetRequiredSystems(CVector<SystemDependency_t>& dependencies);
 	s32 Run(const CVector<ISystem*>& systems /* TODO: , CCommandLine cmdLine */);

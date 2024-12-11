@@ -39,6 +39,8 @@
 					 + ' -isystem "$VSBasePath$\VC\Tools\MSVC\$MSVCVersion$\include"'
 #endif
 
+					 + ' -ffreestanding' // Disable libc
+
 	.Linker = '$LLVMDir$/bin/lld-link$ExeExtension$'
 ]
 

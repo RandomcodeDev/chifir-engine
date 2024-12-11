@@ -11,6 +11,7 @@ struct SystemDependency_t
 {
 	const char* name;
 	u32 minimumVersion;
+	bool required;
 	bool requireExactVersion;
 };
 

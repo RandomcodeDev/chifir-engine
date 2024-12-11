@@ -16,7 +16,8 @@ class IApplication
 	virtual void GetRequiredSystems(CVector<SystemDependency_t>& dependencies) = 0;
 
 	// Run the application
-	// systems is in the same order as the list from GetRequiredSystems
+	// systems is in the same order as the list from GetRequiredSystems, with nullptrs for optional systems that couldn't be
+	// loaded
 	// TODO: command line parsing
 	virtual s32 Run(const CVector<ISystem*>& systems /* TODO: , CCommandLine cmdLine */) = 0;
 };
