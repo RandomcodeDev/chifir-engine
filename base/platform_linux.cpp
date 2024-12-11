@@ -1,10 +1,12 @@
 #include <ctime>
+#include <dlfcn.h>
 
 #include <asm/errno.h>
 #include <asm/fcntl.h>
 #include <asm/unistd.h>
 
 #include <sys/mman.h>
+#include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/user.h>
 
@@ -18,10 +20,37 @@
 #include "base/types.h"
 #include "platform_linux.h"
 
+dstr g_exeDir;
+
 uptr g_errno;
+
+s64 g_timeZoneOffset;
 
 BASEAPI void Plat_Init()
 {
+	struct stat statBuf;
+	Base_SysCall(__NR_lstat, reinterpret_cast<uptr>("/proc/self/exe"), reinterpret_cast<uptr>(&statBuf));
+	
+	dstr exePath = Base_Alloc<char>(statBuf.st_size);
+	if (!exePath)
+	{
+		Base_AbortSafe(1, "Failed to get executable path!");
+	}
+	
+	Base_SysCall(__NR_readlink, reinterpret_cast<uptr>("/proc/self/exe"), reinterpret_cast<uptr>(exePath), statBuf.st_size);
+
+	ssize index = Base_StrFind(exePath, '/', true);
+	g_exeDir = Base_StrClone(exePath, index < 0 ? 1 : index + 1);
+	if (!g_exeDir)
+	{
+		Base_AbortSafe(1, "Failed to get executable directory!");
+	}
+
+	Base_Free(exePath);
+
+	s64 now = Plat_GetMilliseconds() / 1000;
+	struct tm* local = localtime(&now);
+	g_timeZoneOffset = local->tm_gmtoff;
 }
 
 BASEAPI void Plat_Shutdown()
@@ -36,6 +65,7 @@ BASEAPI cstr Plat_GetSystemDescription()
 
 BASEAPI cstr Plat_GetHardwareDescription()
 {
+	// TODO: cpuid and /proc/meminfo
 	return "unknown hardware";
 }
 
@@ -66,7 +96,7 @@ BASEAPI NORETURN void Base_AbortSafe(s32 error, cstr msg)
 	Plat_WriteConsole("Fatal error: ");
 	Plat_WriteConsole(msg);
 	Plat_WriteConsole("\n");
-	if (error == 1)
+	if (error == 1 && error != static_cast<s32>(g_errno))
 	{
 		error = g_errno;
 	}
@@ -104,8 +134,42 @@ bool Base_GetSystemMemory(ssize size)
 
 BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 {
-	(void)name;
-	return nullptr;
+	static const cstr DLL_EXT = ".so";
+
+	Log_Debug("Loading library %s%s%s", g_exeDir, name, DLL_EXT);
+
+	dstr filename = Base_StrFormat("%s%s%s", g_exeDir, name, DLL_EXT);
+	if (!filename)
+	{
+		return nullptr;
+	}
+
+	void* base = dlopen(filename, RTLD_GLOBAL | RTLD_LAZY);
+	Base_Free(filename);
+	if (!base)
+	{
+		return nullptr;
+	}
+
+	return new CLinuxLibrary(name, base);
+}
+
+CLinuxLibrary::CLinuxLibrary(cstr name, void* base) : m_name(Base_StrClone(name)), m_base(base)
+{
+}
+
+CLinuxLibrary::~CLinuxLibrary()
+{
+	if (!m_name)
+	{
+		Base_Free(m_name);
+	}
+	dlclose(m_base);
+}
+
+void* CLinuxLibrary::GetSymbol(cstr name)
+{
+	return dlsym(m_base, name);
 }
 
 BASEAPI bool Plat_ConsoleHasColor()
@@ -128,91 +192,84 @@ BASEAPI u64 Plat_GetMilliseconds()
 	return time.tv_sec * 1000 + (time.tv_nsec + 500000) / 1000000;
 }
 
-// musl libc code from https://git.musl-libc.org/cgit/musl/tree/src/time/__secs_to_tm.c
 /* 2000-03-01 (mod 400 year, immediately after feb29 */
-#define LEAPOCH (946684800LL + 86400 * (31 + 29))
+#define LEAPOCH (946684800LL + 86400*(31+29))
 
-#define DAYS_PER_400Y (365 * 400 + 97)
-#define DAYS_PER_100Y (365 * 100 + 24)
-#define DAYS_PER_4Y   (365 * 4 + 1)
+#define DAYS_PER_400Y (365*400 + 97)
+#define DAYS_PER_100Y (365*100 + 24)
+#define DAYS_PER_4Y   (365*4   + 1)
 
-static bool UnixTimestampToDateTime(s64 t, DateTime_t& time)
+// https://git.musl-libc.org/cgit/musl/tree/src/time/__secs_to_tm.c
+BASEAPI void Plat_GetDateTime(DateTime_t& time, bool utc)
 {
 	long long days, secs, years;
 	int remdays, remsecs, remyears;
 	int qc_cycles, c_cycles, q_cycles;
 	int months;
-	int wday;
-	static const char days_in_month[] = {31, 30, 31, 30, 31, 31, 30, 31, 30, 31, 31, 29};
+	int wday, yday, leap;
+	static const char days_in_month[] = {31,30,31,30,31,31,30,31,30,31,31,29};
+
+	s64 millis = Plat_GetMilliseconds();
+	s64 t = millis / 1000 + (utc ? 0 : g_timeZoneOffset);
 
 	/* Reject time_t values whose year would overflow int */
 	if (t < INT32_MIN * 31622400LL || t > INT32_MAX * 31622400LL)
-		return false;
+		return;
 
 	secs = t - LEAPOCH;
 	days = secs / 86400;
 	remsecs = secs % 86400;
-	if (remsecs < 0)
-	{
+	if (remsecs < 0) {
 		remsecs += 86400;
 		days--;
 	}
 
-	wday = (3 + days) % 7;
-	if (wday < 0)
-		wday += 7;
+	wday = (3+days)%7;
+	if (wday < 0) wday += 7;
 
 	qc_cycles = days / DAYS_PER_400Y;
 	remdays = days % DAYS_PER_400Y;
-	if (remdays < 0)
-	{
+	if (remdays < 0) {
 		remdays += DAYS_PER_400Y;
 		qc_cycles--;
 	}
 
 	c_cycles = remdays / DAYS_PER_100Y;
-	if (c_cycles == 4)
-		c_cycles--;
+	if (c_cycles == 4) c_cycles--;
 	remdays -= c_cycles * DAYS_PER_100Y;
 
 	q_cycles = remdays / DAYS_PER_4Y;
-	if (q_cycles == 25)
-		q_cycles--;
+	if (q_cycles == 25) q_cycles--;
 	remdays -= q_cycles * DAYS_PER_4Y;
 
 	remyears = remdays / 365;
-	if (remyears == 4)
-		remyears--;
+	if (remyears == 4) remyears--;
 	remdays -= remyears * 365;
 
-	years = remyears + 4 * q_cycles + 100 * c_cycles + 400LL * qc_cycles;
+	leap = !remyears && (q_cycles || !c_cycles);
+	yday = remdays + 31 + 28 + leap;
+	if (yday >= 365+leap) yday -= 365+leap;
 
-	for (months = 0; days_in_month[months] <= remdays; months++)
+	years = remyears + 4*q_cycles + 100*c_cycles + 400LL*qc_cycles;
+
+	for (months=0; days_in_month[months] <= remdays; months++)
 		remdays -= days_in_month[months];
 
-	if (months >= 10)
-	{
+	if (months >= 10) {
 		months -= 12;
 		years++;
 	}
 
-	if (years + 100 > INT32_MAX || years + 100 < INT32_MIN)
-		return false;
+	if (years+100 > INT32_MAX || years+100 < INT32_MIN)
+		return;
 
-	time.year = years + 100;
-	time.month = months + 2;
+	time.year = years + 2000;
+	time.month = months + 3;
 	time.day = remdays + 1;
 	time.weekDay = wday;
 
 	time.hour = remsecs / 3600;
 	time.minute = remsecs / 60 % 60;
 	time.second = remsecs % 60;
-
-	return true;
-}
-
-BASEAPI void Plat_GetDateTime(DateTime_t& time, bool utc)
-{
-	u64 timeZoneOffset = 0;
-	UnixTimestampToDateTime(Plat_GetMilliseconds() / 1000 + (utc ? 0 : timeZoneOffset), time);
+	time.millisecond = millis - (t - (utc ? 0 : g_timeZoneOffset)) * 1000;
 }

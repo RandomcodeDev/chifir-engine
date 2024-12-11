@@ -59,6 +59,7 @@
 			{
 				^UnityInputFiles +
 				{
+					'$ProjectPath$/filesystem_linux.cpp',
 					'$ProjectPath$/platform_linux.cpp',
 				}
 			}
@@ -201,7 +202,6 @@
 				If (.PlatformName == 'Linux')
 				{
 					^LinkerOptions + ' -shared'
-								   + ' -ldl'
 				}
 			}
 		}

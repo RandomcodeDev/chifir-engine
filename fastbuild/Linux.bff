@@ -9,12 +9,11 @@
     .Linker = '$LLVMDir$/bin/clang++'
 
     .CompilerOptions = '-DCH_LINUX'
+                     + ' -DCH_LITTLE_ENDIAN'
                      + ' -fPIC'
     .LinkerOptions = ' -o "%2"'
                    + ' "%1"'
                    + ' -fuse-ld=lld'
-                   + ' -nostdlib'
-                   + ' -nostartfiles'
                    + ' -Wl,-export-dynamic'
                    + ' -rdynamic'
 ]

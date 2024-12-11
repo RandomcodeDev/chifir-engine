@@ -115,3 +115,9 @@ extern BASEAPI void* Base_Realloc(void* block, ssize newSize);
 
 // Free memory from Base_Alloc
 extern BASEAPI void Base_Free(void* block);
+
+// Get the size of an allocation
+extern BASEAPI ssize Base_GetAllocSize(void* block);
+
+// Get the alignment of an allocation
+extern BASEAPI ssize Base_GetAllocAlignment(void* block);

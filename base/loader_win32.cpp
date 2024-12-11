@@ -272,7 +272,12 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 		Base_Free(fileName);
 		if (!xex)
 		{
+			return nullptr;
 		}
+
+		CWindowsLibrary* library = new CWindowsLibrary(fileName, handle);
+
+		return library;
 	}
 #else
 	if (STUB_NAME(RtlAnsiStringToUnicodeString) && STUB_NAME(LdrLoadDll) && g_allocUsable)
@@ -290,6 +295,7 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 		nameStr.MaximumLength = nameStr.Length + 1;
 		UNICODE_STRING nameUStr = {};
 		NTSTATUS status = RtlAnsiStringToUnicodeString(&nameUStr, &nameStr, TRUE);
+		Base_Free(fileName);
 		if (!NT_SUCCESS(status))
 		{
 			LastNtStatus() = status;
@@ -308,8 +314,6 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 		RtlFreeUnicodeString(&nameUStr);
 
 		CWindowsLibrary* library = new CWindowsLibrary(fileName, handle);
-
-		Base_Free(fileName);
 
 		return library;
 	}

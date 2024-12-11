@@ -46,6 +46,10 @@
 // MSVC likes to be told when an intrinsic function is defined
 #define DEFINE_INTRINSIC(x) __pragma(function(x))
 
+#define BYTESWAP16(x) _byteswap_ushort(x)
+#define BYTESWAP32(x) _byteswap_ulong(x)
+#define BYTESWAP64(x) _byteswap_uint64(x)
+
 // Initialize the stack security cookie, local to the current DLL/EXE
 extern "C" void __cdecl __security_init_cookie();
 
@@ -66,6 +70,10 @@ extern void RunGlobalDestructors();
 #define BREAKPOINT() __builtin_trap()
 #define ASSUME(x)    __builtin_assume(x)
 #define DEFINE_INTRINSIC(x)
+
+#define BYTESWAP16(x) __builtin_bswap16(x)
+#define BYTESWAP32(x) __builtin_bswap32(x)
+#define BYTESWAP64(x) __builtin_bswap64(x)
 #endif
 
 #if __cplusplus < 201100L
@@ -109,3 +117,39 @@ extern void RunGlobalDestructors();
 #endif
 
 #define ALIGNED(x) ATTRIBUTE(aligned(x))
+
+#ifdef CH_LITTLE_ENDIAN
+#define LITTLE_ENDIAN_TO_NATIVE_16(x) (x)
+#define LITTLE_ENDIAN_TO_NATIVE_32(x) (x)
+#define LITTLE_ENDIAN_TO_NATIVE_64(x) (x)
+
+#define NATIVE_TO_LITTLE_ENDIAN_16(x) (x)
+#define NATIVE_TO_LITTLE_ENDIAN_32(x) (x)
+#define NATIVE_TO_LITTLE_ENDIAN_64(x) (x)
+
+#define BIG_ENDIAN_TO_NATIVE_16(x) BYTESWAP16(x)
+#define BIG_ENDIAN_TO_NATIVE_32(x) BYTESWAP32(x)
+#define BIG_ENDIAN_TO_NATIVE_64(x) BYTESWAP64(x)
+
+#define NATIVE_TO_BIG_ENDIAN_16(x) BYTESWAP16(x)
+#define NATIVE_TO_BIG_ENDIAN_32(x) BYTESWAP32(x)
+#define NATIVE_TO_BIG_ENDIAN_64(x) BYTESWAP64(x)
+#elif CH_BIG_ENDIAN
+#define LITTLE_ENDIAN_TO_NATIVE_16(x) BYTESWAP16(x)
+#define LITTLE_ENDIAN_TO_NATIVE_32(x) BYTESWAP32(x)
+#define LITTLE_ENDIAN_TO_NATIVE_64(x) BYTESWAP64(x)
+
+#define NATIVE_TO_LITTLE_ENDIAN_16(x) BYTESWAP16(x)
+#define NATIVE_TO_LITTLE_ENDIAN_32(x) BYTESWAP32(x)
+#define NATIVE_TO_LITTLE_ENDIAN_64(x) BYTESWAP64(x)
+
+#define BIG_ENDIAN_TO_NATIVE_16(x) (x)
+#define BIG_ENDIAN_TO_NATIVE_32(x) (x)
+#define BIG_ENDIAN_TO_NATIVE_64(x) (x)
+
+#define NATIVE_TO_BIG_ENDIAN_16(x) (x)
+#define NATIVE_TO_BIG_ENDIAN_32(x) (x)
+#define NATIVE_TO_BIG_ENDIAN_64(x) (x)
+#else
+#error "Unknown endianness"
+#endif

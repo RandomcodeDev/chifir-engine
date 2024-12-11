@@ -321,12 +321,41 @@ static void InsertFreedNode(AllocNode_t* node)
 
 BASEAPI void Base_Free(void* block)
 {
+	ASSERT_MSG_SAFE(block != nullptr, "Block was nullptr");
+
 	// TODO: check if block is within an allocation
+	AllocNode_t* node = FindNode(block);
+	InsertFreedNode(node);
+	g_memInfo.totalFreed += EffectiveSize(node);
+	CoalesceAllocations();
+}
+
+// TODO: condense this
+
+BASEAPI ssize Base_GetAllocSize(void* block)
+{
 	if (block)
 	{
 		AllocNode_t* node = FindNode(block);
-		InsertFreedNode(node);
-		g_memInfo.totalFreed += EffectiveSize(node);
-		CoalesceAllocations();
+		if (node)
+		{
+			return node->data.size;
+		}
 	}
+
+	return -1;
+}
+
+BASEAPI ssize Base_GetAllocAlignment(void* block)
+{
+	if (block)
+	{
+		AllocNode_t* node = FindNode(block);
+		if (node)
+		{
+			return node->data.alignment;
+		}
+	}
+
+	return -1;
 }

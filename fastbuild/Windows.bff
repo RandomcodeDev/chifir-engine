@@ -53,6 +53,8 @@
 	.ExeExtension = '.exe'
 	.LibExtension = '.lib'
 	.DLLExtension = '.dll'
+
+	.CompilerOptions = ' -DCH_LITTLE_ENDIAN'
 ]
 
 .GDK = 
@@ -62,6 +64,8 @@
 	.ExeExtension = '.exe'
 	.LibExtension = '.lib'
 	.DLLExtension = '.dll'
+
+	.CompilerOptions = ' -DCH_LITTLE_ENDIAN'
 ]
 
 .GDKX =
@@ -71,6 +75,8 @@
 	.ExeExtension = '.exe'
 	.LibExtension = '.lib'
 	.DLLExtension = '.dll'
+
+	.CompilerOptions = ' -DCH_LITTLE_ENDIAN'
 ]
 
 .Xbox360 =
@@ -81,6 +87,8 @@
 	.ExeExtension = '.xex'
 	.LibExtension = '.lib'
 	.DLLExtension = '.xex'
+
+	.CompilerOptions = ' -DCH_BIG_ENDIAN'
 ]
 
 .WindowsLike = {'Windows', 'GDK', 'GDKX', 'Xbox360'}

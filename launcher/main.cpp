@@ -77,14 +77,16 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 #endif
 	Log_AddWriter(new CConsoleLogWriter());
 
-	cstr appName = "Engine"; // TODO: make this based on a command line arg
-
 #ifdef CH_STATIC
+	cstr appName = "Engine";
+
 	CVector<ISystem*> systems;
 	systems.Add(CreateVideoSystem());
 
 	IApplication* app = CreateEngine();
 #else
+	cstr appName = "Engine"; // TODO: make this based on a command line arg
+
 	Log_Info("Loading application %s", appName);
 	ILibrary* appLib = Base_LoadLibrary(appName);
 	if (!appLib)
