@@ -104,8 +104,8 @@
 	.MASM = '$_CURRENT_BFF_DIR_$/../tools/ml64$ExeExtension$'
 
 	.CompilerOptions = ' -DCH_X86 -DCH_AMD64 -DCH_SIMD128 -DCH_SIMD256'
-					 + ' -mno-sse' // No SSE in codegen (unless it's explicitly used)
-					 + ' -msse4.2' // Allow using SSE
+					 + ' -march=x86-64-v3'
+					 //+ ' -m'
 ]
 
 .Clang_AMD64Debug = .Clang_Common + .Clang_AMD64 + .Clang_Debug
@@ -130,8 +130,8 @@
 	.MASM = '$_CURRENT_BFF_DIR_$/../tools/ml$ExeExtension$'
 
 	.CompilerOptions = ' -DCH_X86 -DCH_IA32 -DCH_SIMD128 -DCH_SIMD256'
-					 + ' -mno-sse' // No SSE in codegen (unless it's explicitly used)
-					 + ' -msse4.2' // Allow using SSE
+					 + ' -march=pentium'
+					 + ' -msse42' // Allow using SSE
 ]
 
 .Clang_x86Debug = .Clang_Common + .Clang_x86 + .Clang_Debug

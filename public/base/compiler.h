@@ -27,9 +27,10 @@
 #endif
 
 #ifdef CH_X86
-#include <intrin.h>
 #ifdef __clang__
-#include <avxintrin.h>
+#include <x86intrin.h>
+#else
+#include <intrin.h>
 #endif
 #endif
 

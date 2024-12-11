@@ -14,22 +14,30 @@
       "MIMode": "gdb",
       "setupCommands": [
           {
-              "description": "Enable pretty-printing for gdb",
-              "text": "-enable-pretty-printing",
-              "ignoreFailures": true
-          },
-          {
               "description": "Set Disassembly Flavor to Intel",
               "text": "-gdb-set disassembly-flavor intel",
               "ignoreFailures": true
           }
-      ]
+      ],
+      "visualizerFile": "${workspaceFolder}/public/Chifir.natvis"
     },
     {
-      "name": "(Windows) Launch",
+      "name": "(GDK) Launch",
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${workspaceFolder}/out/MSVC/GDK/AMD64/Debug/FalseKing.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "console": "externalTerminal",
+      "visualizerFile": "${workspaceFolder}/public/Chifir.natvis"
+    },
+    {
+      "name": "(GDK Clang) Launch",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/Clang/GDK/AMD64/Debug/FalseKing.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",

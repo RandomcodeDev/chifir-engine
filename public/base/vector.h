@@ -119,12 +119,12 @@ template <typename T> class CVector : public IContainer<T, ssize>
 	// Add many objects
 	ssize Add(const T* objects, ssize count, ssize index = BAD_INDEX)
 	{
-		Resize(m_size + count);
-
 		if (index == BAD_INDEX || index > m_size)
 		{
-			index = m_size - 1;
+			index = Max<ssize>(m_size - 1, 0);
 		}
+
+		Resize(m_size + count);
 
 		Base_MemCopy(m_buffer + index + count, m_buffer + index, m_size - index);
 		Base_MemCopy(m_buffer + index, objects, count * sizeof(T));

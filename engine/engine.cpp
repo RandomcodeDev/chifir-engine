@@ -15,7 +15,8 @@ CEngine::~CEngine()
 void CEngine::GetRequiredSystems(CVector<SystemDependency_t>& dependencies)
 {
 	static const SystemDependency_t deps[] = {
-		{"VideoSystem", IVideoSystem::VERSION, true, false}
+		{"VideoSystem", IVideoSystem::VERSION, true, false},
+		//{"chifir_system_test", 1, true, false},
     };
 
 	dependencies.Add(deps, ARRAY_SIZE(deps));

@@ -6,14 +6,14 @@
 
 extern "C"
 {
+	// MSVC doesn't like these defined when /GL is in use
+#if !defined _MSC_VER || (defined _MSC_VER && !defined CH_DEBUG)
 	DEFINE_INTRINSIC(memcmp)
 	BASEAPI s32 memcmp(const void* RESTRICT a, const void* RESTRICT b, usize size)
 	{
 		return Base_MemCompare(a, b, size);
 	}
 
-	// MSVC doesn't like these defined when /GL is in use
-#if !defined _MSC_VER || (defined _MSC_VER && !defined CH_DEBUG)
 	DEFINE_INTRINSIC(memmove)
 	BASEAPI void* memmove(void* RESTRICT dest, const void* RESTRICT src, usize size)
 	{
@@ -31,7 +31,6 @@ extern "C"
 	{
 		return Base_MemSet(dest, value, size);
 	}
-#endif
 
 	DEFINE_INTRINSIC(strcmp)
 	BASEAPI s32 strcmp(cstr RESTRICT a, cstr RESTRICT b)
@@ -44,5 +43,6 @@ extern "C"
 	{
 		return Base_StrLength(str);
 	}
+#endif
 }
 

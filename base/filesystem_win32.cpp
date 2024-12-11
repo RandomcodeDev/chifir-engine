@@ -28,7 +28,7 @@ CWin32Filesystem::CWin32Filesystem(cstr root) : CBaseRawFilesystem(root)
 	fullRoot[2] = L'?';
 	fullRoot[3] = L'\\';
 	rootString.Buffer = fullRoot;
-	rootString.Length = static_cast<u16>(rootLength - 1 * sizeof(wchar_t));
+	rootString.Length = static_cast<u16>(rootLength - (1 * sizeof(wchar_t)));
 	rootString.MaximumLength = static_cast<u16>(rootLength);
 
 	// Open or create the root
@@ -39,7 +39,7 @@ CWin32Filesystem::CWin32Filesystem(cstr root) : CBaseRawFilesystem(root)
 		FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, FILE_OPEN_IF, FILE_DIRECTORY_FILE, nullptr, 0);
 	if (!NT_SUCCESS(status))
 	{
-		Base_Quit("Failed to open directory %s: NTSTATUS 0x%08X", m_root, status);
+		Base_Quit("Failed to open directory %s (%ls): NTSTATUS 0x%08X", m_root, rootString.Buffer, status);
 	}
 
 	Base_Free(fullRoot);

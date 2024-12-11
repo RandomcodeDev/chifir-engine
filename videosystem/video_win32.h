@@ -22,7 +22,7 @@ class CWindowsVideoSystem : public IVideoSystem
 
 	cstr GetName() const
 	{
-		return NAME;
+		return "Windows Video";
 	}
 
 	u32 GetVersion() const

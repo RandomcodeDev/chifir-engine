@@ -10,8 +10,6 @@
 #include "videosystem/video_switch.h"
 #endif
 
-const cstr IVideoSystem::NAME = "VideoSystem";
-
 #ifdef CH_STATIC
 ISystem* CreateVideoSystem()
 #else

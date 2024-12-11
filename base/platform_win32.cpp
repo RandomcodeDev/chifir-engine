@@ -113,7 +113,7 @@ BASEAPI void Plat_Init()
 	}
 #endif
 
-	if (haveConsole && HaveNewConsole() && GetConsoleMode_Available() && SetConsoleMode_Available())
+	if (haveConsole && Plat_ConsoleHasColor() && GetConsoleMode_Available() && SetConsoleMode_Available())
 	{
 		DWORD mode = 0;
 		GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), &mode);
@@ -335,4 +335,9 @@ BASEAPI void Plat_GetDateTime(DateTime_t& time, bool utc)
 		time.day = fields.Day;
 		time.weekDay = fields.Weekday;
 	}
+}
+
+BASEAPI cstr Plat_GetSaveLocation()
+{
+	return "C:\\temp";
 }

@@ -15,7 +15,7 @@ class CNullVideoSystem : public IVideoSystem
 
 	cstr GetName() const
 	{
-		return NAME;
+		return "Null Video";
 	}
 
 	u32 GetVersion() const

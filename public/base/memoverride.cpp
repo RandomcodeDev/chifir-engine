@@ -5,7 +5,7 @@
 
 extern "C"
 {
-	void* __cdecl malloc(usize size)
+	ATTRIBUTE(restrict) void* __cdecl malloc(usize size)
 	{
 		return Base_Alloc(static_cast<ssize>(static_cast<usize>(size) & SSIZE_MAX));
 	}
@@ -15,12 +15,12 @@ extern "C"
 		Base_Free(block);
 	}
 
-	void* __cdecl calloc(usize count, usize size)
+	ATTRIBUTE(restrict) void* __cdecl calloc(usize count, usize size)
 	{
 		return Base_Alloc(count * size);
 	}
 
-	void* __cdecl realloc(void* block, usize newSize)
+	ATTRIBUTE(restrict) void* __cdecl realloc(void* block, usize newSize)
 	{
 		return Base_Realloc(block, static_cast<ssize>(static_cast<usize>(newSize) & SSIZE_MAX));
 	}

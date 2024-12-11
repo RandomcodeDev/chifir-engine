@@ -63,6 +63,8 @@ static ISystem* GetSystem(ILibrary* library, u32 minVersion, bool exactRequired)
 		return nullptr;
 	}
 
+	Log_Info("Got %s v%d", system->GetName(), system->GetVersion());
+
 	return system;
 }
 #endif
