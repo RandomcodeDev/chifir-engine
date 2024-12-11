@@ -9,10 +9,10 @@
 // Describes a system an application wants loaded for it
 struct SystemDependency_t
 {
-	const char* name;
-	u32 minimumVersion;
-	bool required;
-	bool requireExactVersion;
+	const char* name; // The name of the DLL where the system can be found
+	u32 minimumVersion; // The minimum version of the system
+	bool required; // Whether the system is required
+	bool requireExactVersion; // Whether the version of the system can exceed the minimum
 };
 
 // Represents a module of the engine that implements some functionality, such as rendering or windowing or input
