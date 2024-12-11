@@ -50,3 +50,6 @@ extern BASEAPI void Plat_GetDateTime(DateTime_t& time, bool utc = false);
 
 // Get the location for saving stuff
 extern BASEAPI cstr Plat_GetSaveLocation();
+
+// Get an environment variable
+extern BASEAPI cstr Plat_GetEnvironment(cstr name);

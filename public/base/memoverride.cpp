@@ -42,18 +42,13 @@ extern "C"
 
 	int posix_memalign(void** memptr, usize alignment, usize size)
 	{
-		if (memptr)
+		*memptr = memalign(alignment, size);
+		if (!*memptr)
 		{
-			*memptr = memalign(alignment, size);
-			if (!*memptr)
-			{
-				return ENOMEM;
-			}
-
-			return 0;
+			return ENOMEM;
 		}
 
-		return EINVAL;
+		return 0;
 	}
 }
 

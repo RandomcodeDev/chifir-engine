@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <ctime>
 #include <dlfcn.h>
 
@@ -28,25 +29,16 @@ s64 g_timeZoneOffset;
 
 BASEAPI void Plat_Init()
 {
-	struct stat statBuf;
-	Base_SysCall(__NR_lstat, reinterpret_cast<uptr>("/proc/self/exe"), reinterpret_cast<uptr>(&statBuf));
-	
-	dstr exePath = Base_Alloc<char>(statBuf.st_size);
-	if (!exePath)
-	{
-		Base_AbortSafe(1, "Failed to get executable path!");
-	}
-	
-	Base_SysCall(__NR_readlink, reinterpret_cast<uptr>("/proc/self/exe"), reinterpret_cast<uptr>(exePath), statBuf.st_size);
+	char exePath[1024];
+
+	Base_SysCall(__NR_readlink, reinterpret_cast<uptr>("/proc/self/exe"), reinterpret_cast<uptr>(exePath), ARRAY_SIZE(exePath));
 
 	ssize index = Base_StrFind(exePath, '/', true);
-	g_exeDir = Base_StrClone(exePath, index < 0 ? 1 : index + 1);
+	g_exeDir = Base_StrClone(exePath, index);
 	if (!g_exeDir)
 	{
 		Base_AbortSafe(1, "Failed to get executable directory!");
 	}
-
-	Base_Free(exePath);
 
 	s64 now = Plat_GetMilliseconds() / 1000;
 	struct tm* local = localtime(&now);
@@ -183,6 +175,35 @@ BASEAPI void Plat_WriteConsole(cstr message)
 	Base_SysCall(__NR_write, STDOUT_FD, reinterpret_cast<uptr>(message), Base_StrLength(message));
 }
 
+BASEAPI cstr Plat_GetSaveLocation()
+{
+	static char s_saveDir[1024];
+
+	if (!Base_StrLength(s_saveDir))
+	{
+		if (Plat_GetEnvironment("XDG_USER_DATA_HOME") && Base_StrLength(Plat_GetEnvironment("XDG_USER_DATA_HOME")))
+		{
+			Base_StrFormat(s_saveDir, ARRAY_SIZE(s_saveDir), "%s" GAME_NAME "/", Plat_GetEnvironment("XDG_USER_DATA_HOME"));
+		}
+		else if (Plat_GetEnvironment("HOME") && Base_StrLength(Plat_GetEnvironment("HOME")))
+		{
+			Base_StrFormat(s_saveDir, ARRAY_SIZE(s_saveDir), "%s/.local/share/" GAME_NAME "/", Plat_GetEnvironment("HOME"));
+		}
+		else
+		{
+			// good enough
+			Base_StrCopy(s_saveDir, "/tmp/" GAME_NAME "/", ARRAY_SIZE(s_saveDir));
+		}
+	}
+
+	return s_saveDir;
+}
+
+BASEAPI cstr Plat_GetEnvironment(cstr name)
+{
+	return getenv(name);
+}
+
 BASEAPI u64 Plat_GetMilliseconds()
 {
 	struct timespec time = {};
@@ -193,11 +214,11 @@ BASEAPI u64 Plat_GetMilliseconds()
 }
 
 /* 2000-03-01 (mod 400 year, immediately after feb29 */
-#define LEAPOCH (946684800LL + 86400*(31+29))
+#define LEAPOCH (946684800LL + 86400 * (31 + 29))
 
-#define DAYS_PER_400Y (365*400 + 97)
-#define DAYS_PER_100Y (365*100 + 24)
-#define DAYS_PER_4Y   (365*4   + 1)
+#define DAYS_PER_400Y (365 * 400 + 97)
+#define DAYS_PER_100Y (365 * 100 + 24)
+#define DAYS_PER_4Y   (365 * 4 + 1)
 
 // https://git.musl-libc.org/cgit/musl/tree/src/time/__secs_to_tm.c
 BASEAPI void Plat_GetDateTime(DateTime_t& time, bool utc)
@@ -207,7 +228,7 @@ BASEAPI void Plat_GetDateTime(DateTime_t& time, bool utc)
 	int qc_cycles, c_cycles, q_cycles;
 	int months;
 	int wday, yday, leap;
-	static const char days_in_month[] = {31,30,31,30,31,31,30,31,30,31,31,29};
+	static const char days_in_month[] = {31, 30, 31, 30, 31, 31, 30, 31, 30, 31, 31, 29};
 
 	s64 millis = Plat_GetMilliseconds();
 	s64 t = millis / 1000 + (utc ? 0 : g_timeZoneOffset);
@@ -219,48 +240,56 @@ BASEAPI void Plat_GetDateTime(DateTime_t& time, bool utc)
 	secs = t - LEAPOCH;
 	days = secs / 86400;
 	remsecs = secs % 86400;
-	if (remsecs < 0) {
+	if (remsecs < 0)
+	{
 		remsecs += 86400;
 		days--;
 	}
 
-	wday = (3+days)%7;
-	if (wday < 0) wday += 7;
+	wday = (3 + days) % 7;
+	if (wday < 0)
+		wday += 7;
 
 	qc_cycles = days / DAYS_PER_400Y;
 	remdays = days % DAYS_PER_400Y;
-	if (remdays < 0) {
+	if (remdays < 0)
+	{
 		remdays += DAYS_PER_400Y;
 		qc_cycles--;
 	}
 
 	c_cycles = remdays / DAYS_PER_100Y;
-	if (c_cycles == 4) c_cycles--;
+	if (c_cycles == 4)
+		c_cycles--;
 	remdays -= c_cycles * DAYS_PER_100Y;
 
 	q_cycles = remdays / DAYS_PER_4Y;
-	if (q_cycles == 25) q_cycles--;
+	if (q_cycles == 25)
+		q_cycles--;
 	remdays -= q_cycles * DAYS_PER_4Y;
 
 	remyears = remdays / 365;
-	if (remyears == 4) remyears--;
+	if (remyears == 4)
+		remyears--;
 	remdays -= remyears * 365;
 
 	leap = !remyears && (q_cycles || !c_cycles);
 	yday = remdays + 31 + 28 + leap;
-	if (yday >= 365+leap) yday -= 365+leap;
+	if (yday >= 365 + leap)
+		yday -= 365 + leap;
 
-	years = remyears + 4*q_cycles + 100*c_cycles + 400LL*qc_cycles;
+	years = remyears + 4 * q_cycles + 100 * c_cycles + 400LL * qc_cycles;
 
-	for (months=0; days_in_month[months] <= remdays; months++)
+	for (months = 0; days_in_month[months] <= remdays; months++)
 		remdays -= days_in_month[months];
 
-	if (months >= 10) {
+	if (months >= 10)
+	{
 		months -= 12;
 		years++;
 	}
 
-	if (years+100 > INT32_MAX || years+100 < INT32_MIN)
+	if (years + 100 > INT32_MAX || years + 100 < INT32_MIN)
 		return;
 
 	time.year = years + 2000;
