@@ -19,7 +19,7 @@
 #include "base/loader.h"
 #include "platform_win32.h"
 
-static PIMAGE_DOS_HEADER ntDllBase;
+static PIMAGE_DOS_HEADER s_ntDllBase;
 
 bool g_loaderInitialized;
 
@@ -62,6 +62,9 @@ MAKE_STUB(GetConsoleMode, __stdcall, @8)
 MAKE_STUB(GetStdHandle, __stdcall, @4)
 MAKE_STUB(SetConsoleMode, __stdcall, @8)
 
+// shell32
+MAKE_STUB(SHGetFolderPathA, __stdcall, @20)
+
 // user32
 MAKE_STUB(AdjustWindowRect, __stdcall, @12)
 MAKE_STUB(ClientToScreen, __stdcall, @8)
@@ -93,9 +96,9 @@ static bool FindNtDll(PPEB_LDR_DATA ldrData)
 	// On WoW64, this _does_ get the 32-bit NTDLL, which is the right one
 	PLIST_ENTRY ntDllLink = ldrData->InInitializationOrderModuleList.Flink;
 	PLDR_DATA_TABLE_ENTRY entry = CONTAINING_STRUCTURE(LDR_DATA_TABLE_ENTRY, InInitializationOrderLinks, ntDllLink);
-	ntDllBase = static_cast<PIMAGE_DOS_HEADER>(entry->DllBase);
+	s_ntDllBase = static_cast<PIMAGE_DOS_HEADER>(entry->DllBase);
 
-	return ntDllBase != nullptr;
+	return s_ntDllBase != nullptr;
 }
 
 // Somehow the Rtl function for this isn't inline in phnt, I guess it does that thing with the last section or whatever
@@ -113,31 +116,31 @@ static bool CheckWoW64()
 
 static bool FindLdrGetProcedureAddress()
 {
-	PIMAGE_NT_HEADERS ntHdrs = (PIMAGE_NT_HEADERS)RVA_TO_VA(ntDllBase, ntDllBase->e_lfanew);
+	PIMAGE_NT_HEADERS ntHdrs = (PIMAGE_NT_HEADERS)RVA_TO_VA(s_ntDllBase, s_ntDllBase->e_lfanew);
 	ASSERT(ntHdrs->Signature == IMAGE_NT_SIGNATURE); // Even if this isn't NTDLL, it sure as hell should have the right signature
 	ASSERT(ntHdrs->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR_MAGIC);
 	ASSERT_MSG(
 		static_cast<ssize>(ntHdrs->OptionalHeader.SizeOfHeaders) >=
-			(ntDllBase->e_lfanew + SIZEOF(IMAGE_NT_SIGNATURE) + SIZEOF(IMAGE_FILE_HEADER) + SIZEOF(IMAGE_OPTIONAL_HEADER) +
+			(s_ntDllBase->e_lfanew + SIZEOF(IMAGE_NT_SIGNATURE) + SIZEOF(IMAGE_FILE_HEADER) + SIZEOF(IMAGE_OPTIONAL_HEADER) +
 			 IMAGE_DIRECTORY_ENTRY_EXPORT * SIZEOF(IMAGE_DATA_DIRECTORY)),
 		"Export directory not present");
 
 	PIMAGE_DATA_DIRECTORY exportDirectory = &ntHdrs->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
-	PIMAGE_EXPORT_DIRECTORY exports = (PIMAGE_EXPORT_DIRECTORY)RVA_TO_VA(ntDllBase, exportDirectory->VirtualAddress);
+	PIMAGE_EXPORT_DIRECTORY exports = (PIMAGE_EXPORT_DIRECTORY)RVA_TO_VA(s_ntDllBase, exportDirectory->VirtualAddress);
 
 	u64 nameCount = exports->NumberOfNames;
-	u32* nameAddrs = (u32*)RVA_TO_VA(ntDllBase, exports->AddressOfNames);
-	u16* ordinals = (u16*)RVA_TO_VA(ntDllBase, exports->AddressOfNameOrdinals);
-	u32* functions = (u32*)RVA_TO_VA(ntDllBase, exports->AddressOfFunctions);
+	u32* nameAddrs = (u32*)RVA_TO_VA(s_ntDllBase, exports->AddressOfNames);
+	u16* ordinals = (u16*)RVA_TO_VA(s_ntDllBase, exports->AddressOfNameOrdinals);
+	u32* functions = (u32*)RVA_TO_VA(s_ntDllBase, exports->AddressOfFunctions);
 
 	static const u64 TARGET_HASH = 0x49d2dcb66c6c2384;
 	for (u64 i = 0; i < nameCount; i++)
 	{
-		cstr name = (cstr)RVA_TO_VA(ntDllBase, nameAddrs[i]);
+		cstr name = (cstr)RVA_TO_VA(s_ntDllBase, nameAddrs[i]);
 		u64 hash = Base_Fnv1a64(name, Base_StrLength(name));
 		if (hash == TARGET_HASH) // To get around collisions
 		{
-			STUB_NAME(LdrGetProcedureAddress) = (uptr(*)(...))RVA_TO_VA(ntDllBase, functions[ordinals[i]]);
+			STUB_NAME(LdrGetProcedureAddress) = (uptr(*)(...))RVA_TO_VA(s_ntDllBase, functions[ordinals[i]]);
 			break;
 		}
 	}
@@ -178,7 +181,7 @@ bool Base_InitLoader()
 		return false;
 	}
 
-	CWindowsLibrary ntDll("ntdll.dll", ntDllBase);
+	CWindowsLibrary ntDll("ntdll.dll", s_ntDllBase);
 	GET_FUNCTION(&ntDll, DbgPrint)
 
 	// These allow for cleaner handling of any of these failing
@@ -206,7 +209,7 @@ bool Base_InitLoader()
 	GET_FUNCTION(&ntDll, RtlTimeToTimeFields)
 
 	// So unloading it when ntDll goes out of scope doesn't mess anything up, cause the loader wasn't used to "load" it
-	LdrAddRefDll(0, ntDllBase);
+	LdrAddRefDll(0, s_ntDllBase);
 
 	ILibrary* kernel32 = Base_LoadLibrary("kernel32");
 	ASSERT(kernel32 != nullptr);
@@ -217,6 +220,12 @@ bool Base_InitLoader()
 	GET_FUNCTION(kernel32, GetConsoleMode)
 	GET_FUNCTION(kernel32, GetStdHandle)
 	GET_FUNCTION(kernel32, SetConsoleMode)
+
+	ILibrary* shell32 = Base_LoadLibrary("shell32");
+	ASSERT(shell32 != nullptr);
+
+	// shell32
+	GET_FUNCTION(shell32, SHGetFolderPathA)
 
 	ILibrary* user32 = Base_LoadLibrary("user32");
 	ASSERT(user32 != nullptr);
@@ -242,6 +251,11 @@ bool Base_InitLoader()
 	GET_FUNCTION(user32, ShowWindow)
 	GET_FUNCTION(user32, TranslateMessage)
 	GET_FUNCTION(user32, UnregisterClassA)
+
+	// can't do this cause the dlls would unload and stuff
+	//delete kernel32;
+	//delete shell32;
+	//delete user32;
 #endif
 
 	g_loaderInitialized = true;

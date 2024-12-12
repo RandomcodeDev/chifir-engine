@@ -1,3 +1,5 @@
+#include <shlobj.h>
+
 #include "platform_win32.h"
 #include "base.h"
 #include "base/basicstr.h"
@@ -339,5 +341,13 @@ BASEAPI void Plat_GetDateTime(DateTime_t& time, bool utc)
 
 BASEAPI cstr Plat_GetSaveLocation()
 {
-	return "C:\\temp";
+	static char s_directory[MAX_PATH + 1] = {0};
+
+	if (!Base_StrLength(s_directory))
+	{
+		SHGetFolderPathA(nullptr, CSIDL_APPDATA | CSIDL_FLAG_CREATE, nullptr, SHGFP_TYPE_CURRENT, s_directory);
+		s_directory[Min(ARRAY_SIZE(s_directory) - 1, Base_StrLength(s_directory))] = '/';
+	}
+
+	return s_directory;
 }

@@ -61,6 +61,9 @@ MAKE_STUB GetConsoleMode
 MAKE_STUB GetStdHandle
 MAKE_STUB SetConsoleMode
 
+; shell32 stubs
+MAKE_STUB SHGetFolderPathA
+
 ; user32 stubs
 MAKE_STUB AdjustWindowRect
 MAKE_STUB ClientToScreen

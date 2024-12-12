@@ -12,7 +12,7 @@
         </Expand>
     </Type>
     <Type Name="CString">
-        <DisplayString>"{m_buffer,s}", {m_size - 1} characters</DisplayString>
+        <DisplayString>{m_buffer,s}, {m_size - 1} characters</DisplayString>
         <Expand>
             <Item Name="Length" ExcludeView="simple">m_size - 1</Item>
             <Item Name="Size" ExcludeView="simple">m_size</Item>

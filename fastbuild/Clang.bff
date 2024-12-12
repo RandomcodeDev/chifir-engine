@@ -105,7 +105,6 @@
 
 	.CompilerOptions = ' -DCH_X86 -DCH_AMD64 -DCH_SIMD128 -DCH_SIMD256'
 					 + ' -march=x86-64-v3'
-					 //+ ' -m'
 ]
 
 .Clang_AMD64Debug = .Clang_Common + .Clang_AMD64 + .Clang_Debug
@@ -131,7 +130,6 @@
 
 	.CompilerOptions = ' -DCH_X86 -DCH_IA32 -DCH_SIMD128 -DCH_SIMD256'
 					 + ' -march=pentium'
-					 + ' -msse42' // Allow using SSE
 ]
 
 .Clang_x86Debug = .Clang_Common + .Clang_x86 + .Clang_Debug
