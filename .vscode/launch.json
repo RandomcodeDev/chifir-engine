@@ -2,26 +2,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "(Linux) Launch",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/out/Clang/Linux/AMD64/Debug/FalseKing",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${fileDirname}",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "setupCommands": [
-        {
-          "description": "Set Disassembly Flavor to Intel",
-          "text": "-gdb-set disassembly-flavor intel",
-          "ignoreFailures": true
-        }
-      ],
-      "visualizerFile": "${workspaceFolder}/public/Chifir.natvis"
-    },
-    {
       "name": "(GDK) Launch",
       "type": "cppvsdbg",
       "request": "launch",
@@ -63,6 +43,26 @@
           "ignoreFailures": true
         }
       ]
-    }
+    },
+    {
+      "name": "(Linux) Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/Clang/Linux/AMD64/Debug/FalseKing",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Set Disassembly Flavor to Intel",
+          "text": "-gdb-set disassembly-flavor intel",
+          "ignoreFailures": true
+        }
+      ],
+      "visualizerFile": "${workspaceFolder}/public/Chifir.natvis"
+    },
   ]
 }

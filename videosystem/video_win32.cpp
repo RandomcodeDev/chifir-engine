@@ -112,7 +112,7 @@ bool CWindowsVideoSystem::InitializeMainWindow()
 	m_extraWidth = m_width - clientArea.right;
 	m_extraHeight = m_height - clientArea.bottom;
 
-	m_title = Base_StrFormat("Chifir Engine");
+	m_title = Base_StrClone(GAME_NAME);
 
 	// center the window
 	u32 x = GetSystemMetrics(SM_CXSCREEN) / 2 - m_width / 2;

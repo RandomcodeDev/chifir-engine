@@ -7,7 +7,7 @@ bool CNullVideoSystem::Initialize()
 {
 	Log_Debug("Initializing null video system");
 
-	m_title = Base_StrClone("Чифир Engine");
+	m_title = Base_StrClone(GAME_NAME);
 	if (!m_title)
 	{
 		return false;

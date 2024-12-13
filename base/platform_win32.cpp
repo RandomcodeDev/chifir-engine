@@ -143,7 +143,6 @@ BASEAPI cstr Plat_GetSystemDescription()
 	if (!s_systemDescription)
 	{
 #ifdef CH_XBOX360
-		// TODO: figure this out, probably easy
 		s_systemDescription = Base_StrFormat(
 			"Xbox 360 (kernel %u.%u.%u.%u)", XboxKrnlVersion[0] << 16 | XboxKrnlVersion[1],
 			XboxKrnlVersion[2] << 16 | XboxKrnlVersion[3], XboxKrnlVersion[4] << 16 | XboxKrnlVersion[5], XboxKrnlVersion[6],
@@ -347,6 +346,7 @@ BASEAPI cstr Plat_GetSaveLocation()
 	{
 		SHGetFolderPathA(nullptr, CSIDL_APPDATA | CSIDL_FLAG_CREATE, nullptr, SHGFP_TYPE_CURRENT, s_directory);
 		s_directory[Min(ARRAY_SIZE(s_directory) - 1, Base_StrLength(s_directory))] = '/';
+		Base_StrCopy(s_directory + Base_StrLength(s_directory), GAME_NAME, Min(ARRAY_SIZE(s_directory) - Base_StrLength(s_directory), ARRAY_SIZE(GAME_NAME)));
 	}
 
 	return s_directory;
