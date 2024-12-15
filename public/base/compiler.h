@@ -47,6 +47,9 @@
 // MSVC likes to be told when an intrinsic function is defined
 #define DEFINE_INTRINSIC(x) __pragma(function(x))
 
+#define OPTIMIZE_OFF _Pragma("optimize(\"\", off)")
+#define OPTIMIZE_ON _Pragma("optimize(\"\", on)")
+
 #define BYTESWAP16(x) _byteswap_ushort(x)
 #define BYTESWAP32(x) _byteswap_ulong(x)
 #define BYTESWAP64(x) _byteswap_uint64(x)
@@ -71,6 +74,9 @@ extern void RunGlobalDestructors();
 #define BREAKPOINT() __builtin_trap()
 #define ASSUME(x)    __builtin_assume(x)
 #define DEFINE_INTRINSIC(x)
+
+#define OPTIMIZE_OFF _Pragma("clang optimize(\"\", off)")
+#define OPTIMIZE_ON _Pragma("clang optimize(\"\", on)")
 
 #define BYTESWAP16(x) __builtin_bswap16(x)
 #define BYTESWAP32(x) __builtin_bswap32(x)

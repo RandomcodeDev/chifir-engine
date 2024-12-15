@@ -39,16 +39,6 @@ Fail:
 	call Base_AbortSafe
 __security_check_cookie ENDP
 
-PUBLIC memset
-memset PROC
-	jmp Base_MemSet
-memset ENDP
-
-PUBLIC memcpy
-memcpy PROC
-	jmp Base_MemCopy
-memcpy ENDP
-
 PUBLIC __GSHandlerCheck
 __GSHandlerCheck PROC
 	mov eax, 1

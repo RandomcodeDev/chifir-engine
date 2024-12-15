@@ -135,6 +135,8 @@ template <typename T> static FORCEINLINE T Fnv1a(const u8* data, ssize size, T o
 DEFINE_FNV1A_IMPL(32, 0x811c9dc5, 0x01000193)
 DEFINE_FNV1A_IMPL(64, 0xcbf29ce484222325, 0x00000100000001B3)
 
+OPTIMIZE_OFF
+
 template <typename T>
 static void Copy(
 	void* RESTRICT dest, const void* RESTRICT src, ssize offset, ssize& remaining, ssize alignment, bool reverse = false)
@@ -587,3 +589,5 @@ BASEAPI ssize Base_MemFind(const void* RESTRICT data, ssize size, const void* RE
 
 	return -1;
 }
+
+OPTIMIZE_ON

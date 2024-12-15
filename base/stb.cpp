@@ -3,14 +3,17 @@
 #include "base/types.h"
 
 //#define STB_DS_IMPLEMENTATION
-#include "stb.h"
+//#include "stb.h"
 
+// TODO: this is probably bad, should make LTO actually work
+OPTIMIZE_OFF
 #define STB_SPRINTF_STATIC
 #define STB_SPRINTF_IMPLEMENTATION
 #if defined _MSC_VER && _MSC_VER >= 1900
 #define STBSP__ASAN ATTRIBUTE(safebuffers)
 #endif
 #include "stb/stb_sprintf.h"
+OPTIMIZE_ON
 
 BASEAPI u32 Base_VStrFormat(dstr dest, u32 destSize, cstr format, va_list args)
 {

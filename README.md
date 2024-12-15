@@ -25,12 +25,13 @@ useful command is `fbuild solution` to generate a Visual Studio solution, and `f
 
 ## Supported platforms
 
-|       | GDK AMD64 | Windows x86 | Windows ARM64 | Xbox 360 | Nintendo Switch |
-|-------|-----------|-------------|---------------|----------|-----------------|
-| Clang | yes       | yes         | no            | no       | yes             |
-| MSVC  | yes       | yes         | yes           | yes      | no              |
+|       | GDK AMD64 | Windows x86 | Windows ARM64 | Xbox 360 | Nintendo Switch | Linux |
+|-------|-----------|-------------|---------------|----------|-----------------|-------|
+| Clang | yes       | yes         | no            | no       | yes             | kinda |
+| MSVC  | yes       | yes         | yes           | yes      | no              | no    |
 
 ## Build requirements
 
 For Windows, you need Visual Studio or Clang. You also need the GDK to build the x64 version. For Xbox 360, you need the
 SDK, it's on Internet Archive. For Switch, you need version 15.3.2 of the SDK (also on Internet Archive), and the private repo.
+For Linux, you need Clang.
