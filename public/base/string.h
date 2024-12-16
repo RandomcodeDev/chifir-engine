@@ -7,6 +7,8 @@
 #include "container.h"
 #include "types.h"
 
+template <typename T> class CVector;
+
 class BASEAPI CString
 {
   public:
@@ -62,7 +64,7 @@ class BASEAPI CString
 	void Delete(ssize index = BAD_INDEX, ssize count = 1);
 
 	// Empty the string
-	void Empty()
+	void Clear()
 	{
 		Resize(0);
 	}
@@ -120,13 +122,13 @@ class BASEAPI CString
 	CString operator*(const ssize& right);
 
 	// Compare the string
-	bool operator==(cstr other)
+	bool operator==(cstr other) const
 	{
 		return Base_StrCompare(m_buffer, other) == 0;
 	}
 
 	// Compare the string
-	bool operator==(const CString& other)
+	bool operator==(const CString& other) const
 	{
 		// call operator==(cstr other)
 		return *this == other.Data();
@@ -165,8 +167,33 @@ class BASEAPI CString
 		return string;
 	}
 
-	// Not implemented yet
-	ssize Find(s32 (*Compare)(char a, char b)) const;
+	// Find a character
+	ssize Find(char c, bool reverse = false, ssize offset = 0) const
+	{
+		// TODO: add offset to Base_MemFind and Base_StrFind, this is kinda ugly
+		offset = Min(offset, m_size - 1);
+		ssize subOffset = Base_StrFind(m_buffer + offset, c, reverse, m_size - offset - 1);
+		return subOffset < 0 ? -1 : subOffset + offset;
+	}
+
+	// Find a substring
+	ssize Find(cstr str, bool reverse = false, ssize offset = 0) const
+	{
+		offset = Min(offset, m_size - 1);
+		return Base_StrFind(m_buffer + offset, str, reverse, m_size - offset - 1);
+	}
+	
+	// Get a substring
+	CString SubString(ssize start = 0, ssize count = -1) const
+	{
+		count = Clamp<ssize>(count, 0, m_size - 1);
+		start = Clamp<ssize>(start, 0, m_size - count - 1);
+
+		return CString(m_buffer + start, count);
+	}
+
+	// Split the string at each occurence of a character
+	CVector<CString> Split(char c = ' ') const;
 
   private:
 	dstr m_buffer;

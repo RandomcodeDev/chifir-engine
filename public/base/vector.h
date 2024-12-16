@@ -126,7 +126,6 @@ template <typename T> class CVector : public IContainer<T, ssize>
 
 		Resize(m_size + count);
 
-		Base_MemCopy(m_buffer + index + count, m_buffer + index, m_size - index);
 		Base_MemCopy(m_buffer + index, objects, count * sizeof(T));
 
 		return index - count - 1;

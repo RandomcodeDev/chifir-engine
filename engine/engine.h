@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "base/filesystem.h"
 #include "engine/engine.h"
 #include "iapplication.h"
 
+class IWritableFilesystem;
 class IVideoSystem;
 
 class CEngine : public IEngine

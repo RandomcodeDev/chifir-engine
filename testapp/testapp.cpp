@@ -13,21 +13,8 @@ s32 CTestApp::Run(const CVector<ISystem*>& systems)
 
 	Log_Info("Running test app");
 
-	CString string = "asdf";
-	Log_Info("%s %zu %zu", string.Data(), string.Size(), string.Length());
-
-	Log_FatalError("test");
-	Log_Error("test");
-	Log_Warning("test");
-	Log_Info("test");
-	Log_Debug("test");
-	Log_Trace("test");
-
-	string += "asdf";
-	string.Add("asdf", 2);
-	string.Delete(2);
-	string = "asdf";
-	CString other = string * 5;
+	CString string = "a s d f";
+	CVector<CString> parts = string.Split();
 
 	return 0;
 }

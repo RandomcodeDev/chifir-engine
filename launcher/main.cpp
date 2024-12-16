@@ -87,7 +87,7 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 
 	IApplication* app = CreateEngine();
 #else
-	cstr appName = "Engine"; // TODO: make this based on a command line arg
+	cstr appName = "TestApp"; // TODO: make this based on a command line arg
 
 	Log_Info("Loading application %s", appName);
 	ILibrary* appLib = Base_LoadLibrary(appName);

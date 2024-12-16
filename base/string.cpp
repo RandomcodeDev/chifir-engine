@@ -2,10 +2,12 @@
 #pragma once
 
 #include "base/string.h"
+#include "base/basicstr.h"
+#include "base/vector.h"
 
 CString::CString(cstr data, ssize size) : m_buffer(nullptr), m_size(0), m_capacity(0)
 {
-	size = Min(size, Base_StrLength(data));
+	size = Clamp<ssize>(size, 1, Base_StrLength(data));
 	Resize(size);
 	Base_MemCopy(m_buffer, data, m_size - 1);
 	Terminate();
@@ -100,10 +102,10 @@ void CString::Delete(ssize index, ssize count)
 	{
 		index = m_size - 2;
 	}
-    if (index + count > m_size - 1)
-    {
-        count = 1;
-    }
+	if (index + count > m_size - 1)
+	{
+		count = 1;
+	}
 
 	Base_MemCopy(&m_buffer[index], &m_buffer[index + count + 1], m_size - index - count - 1);
 	m_size -= count;
@@ -133,8 +135,24 @@ void CString::VFormat(cstr format, va_list args)
 	va_end(args2);
 }
 
-ssize CString::Find(s32 (*Compare)(char a, char b)) const
+CVector<CString> CString::Split(char c) const
 {
-	(void)Compare;
-	return BAD_INDEX;
+	CVector<CString> parts;
+
+	ssize i = 0;
+	ssize prev = 0;
+	do
+	{
+		i = Find(c, false, i);
+		if (i >= 0)
+		{
+			parts.Add(SubString(prev, i - prev));
+			i++;
+			prev = i;
+		}
+	} while (i >= 0);
+
+	parts.Add(SubString(prev));
+
+	return parts;
 }
