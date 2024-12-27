@@ -185,7 +185,7 @@ BASEAPI cstr Plat_GetHardwareDescription()
 
 BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)
 {
-	if (code == 1)
+	if (code == ABORT_RELEVANT_ERROR)
 	{
 		if (LastNtStatus() != 0)
 		{

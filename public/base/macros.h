@@ -9,13 +9,13 @@
 	}
 
 // Quit if a condition isn't true, add a message
-#define ASSERT_MSG(cond, ...) ASSERT_IMPL(cond, Base_Abort(1, "Assertion " #cond " failed: " __VA_ARGS__))
+#define ASSERT_MSG(cond, ...) ASSERT_IMPL(cond, Base_Abort(ABORT_RELEVANT_ERROR, "Assertion " #cond " failed: " __VA_ARGS__))
 
 // Quit if a condition isn't true, add a message
-#define ASSERT_MSG_SAFE(cond, msg) ASSERT_IMPL(cond, Base_AbortSafe(1, "Assertion " #cond " failed: " msg))
+#define ASSERT_MSG_SAFE(cond, msg) ASSERT_IMPL(cond, Base_AbortSafe(ABORT_RELEVANT_ERROR, "Assertion " #cond " failed: " msg))
 
 // Quit if a condition isn't true
-#define ASSERT(cond) ASSERT_IMPL(cond, Base_AbortSafe(1, "Assertion " #cond " failed"))
+#define ASSERT(cond) ASSERT_IMPL(cond, Base_AbortSafe(ABORT_RELEVANT_ERROR, "Assertion " #cond " failed"))
 
 // Round val up to a multiple of align (align must be a power of two)
 #define ALIGN(val, align) (((val) + (align) - 1) & ~((align) - 1))

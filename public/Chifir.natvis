@@ -30,7 +30,7 @@
                 <Size>m_nodeCount</Size>
                 <HeadPointer>m_head</HeadPointer>
                 <NextPointer>next</NextPointer>
-                <ValueNode>data</ValueNode>
+                <ValueNode>this</ValueNode>
             </LinkedListItems>
         </Expand>
     </Type>

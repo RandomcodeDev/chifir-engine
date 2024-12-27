@@ -110,7 +110,7 @@ BASEAPI NORETURN void Base_Quit(cstr message, ...)
 	}
 
 	Log_FatalError("%s", formatted);
-	Base_AbortSafe(1, formatted);
+	Base_AbortSafe(ABORT_RELEVANT_ERROR, formatted);
 }
 
 template <typename T> static FORCEINLINE T Fnv1a(const u8* data, ssize size, T offsetBasis, T prime)

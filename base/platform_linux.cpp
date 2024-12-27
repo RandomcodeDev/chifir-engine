@@ -37,7 +37,7 @@ BASEAPI void Plat_Init()
 	g_exeDir = Base_StrClone(exePath, index);
 	if (!g_exeDir)
 	{
-		Base_AbortSafe(1, "Failed to get executable directory!");
+		Base_AbortSafe(ABORT_RELEVANT_ERROR, "Failed to get executable directory!");
 	}
 
 	s64 now = Plat_GetMilliseconds() / 1000;
@@ -88,7 +88,7 @@ BASEAPI NORETURN void Base_AbortSafe(s32 error, cstr msg)
 	Plat_WriteConsole("Fatal error: ");
 	Plat_WriteConsole(msg);
 	Plat_WriteConsole("\n");
-	if (error == 1 && error != static_cast<s32>(g_errno))
+	if (error == ABORT_RELEVANT_ERROR)
 	{
 		error = g_errno;
 	}

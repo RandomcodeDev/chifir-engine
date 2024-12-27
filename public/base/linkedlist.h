@@ -44,14 +44,32 @@ template <typename T> class CLinkedList
   public:
 	typedef LinkedNode_t<T> Node_t;
 
-	CLinkedList() DEFAULT;
-	~CLinkedList() DEFAULT;
-
-	void InsertBefore(Node_t* where, Node_t* node)
+	CLinkedList() : m_head(nullptr), m_tail(nullptr), m_nodeCount(0)
 	{
-		if (!node)
+	}
+	~CLinkedList()
+	{
+		for (Node_t* current = m_head; current->next != nullptr && current->next != m_tail; current = current->next)
 		{
-			return;
+			if (current->prev)
+			{
+				current->prev->next = nullptr;
+			}
+			current->prev = nullptr;
+		}
+	}
+
+	bool InsertBefore(Node_t* where, Node_t* node)
+	{
+		if (!node || where == node)
+		{
+			return false;
+		}
+
+		if (where == m_head)
+		{
+			Prepend(node);
+			return true;
 		}
 
 		node->prev = where->prev;
@@ -61,13 +79,22 @@ template <typename T> class CLinkedList
 		}
 		where->prev = node;
 		node->next = where;
+
+		m_nodeCount++;
+		return true;
 	}
 
-	void InsertAfter(Node_t* where, Node_t* node)
+	bool InsertAfter(Node_t* where, Node_t* node)
 	{
-		if (!node)
+		if (!node || where == node)
 		{
-			return;
+			return false;
+		}
+
+		if (where == m_tail)
+		{
+			Append(node);
+			return true;
 		}
 
 		node->next = where->next;
@@ -77,6 +104,9 @@ template <typename T> class CLinkedList
 		}
 		where->next = node;
 		node->prev = where;
+
+		m_nodeCount++;
+		return true;
 	}
 
 	void Append(Node_t* node)
@@ -88,10 +118,7 @@ template <typename T> class CLinkedList
 
 		if (!m_head && !m_tail)
 		{
-			m_head = node;
-			m_tail = node;
-			m_head->prev = nullptr;
-			m_tail->next = nullptr;
+			Initialize(node);
 		}
 		else if (m_head == m_tail)
 		{
@@ -120,10 +147,7 @@ template <typename T> class CLinkedList
 
 		if (!m_head && !m_tail)
 		{
-			m_head = node;
-			m_tail = node;
-			m_head->prev = nullptr;
-			m_tail->next = nullptr;
+			Initialize(node);
 		}
 		else if (m_head == m_tail)
 		{
@@ -168,6 +192,10 @@ template <typename T> class CLinkedList
 		{
 			node->next->prev = node->prev;
 		}
+
+		node->prev = nullptr;
+		node->next = nullptr;
+
 		m_nodeCount--;
 	}
 
@@ -193,40 +221,15 @@ template <typename T> class CLinkedList
 
 	Node_t* Find(s32 (*Check)(T* cur, void* data), void* data, bool reverse = false) const
 	{
-		if (m_nodeCount == 1)
+		Node_t* cur = reverse ? m_tail : m_head;
+		while (cur)
 		{
-			if (Check(&m_head->data, data) == 0)
+			if (Check(&cur->data, data) == 0)
 			{
-				return m_head;
+				return cur;
 			}
+			cur = reverse ? cur->GetPrev() : cur->GetNext();
 		}
-		else if (reverse)
-		{
-			if (m_tail)
-			{
-				for (Node_t* cur = m_tail; cur; cur = cur->GetPrev())
-				{
-					if (Check(&cur->data, data) == 0)
-					{
-						return cur;
-					}
-				}
-			}
-		}
-		else
-		{
-			if (m_head)
-			{
-				for (Node_t* cur = m_head; cur; cur = cur->GetNext())
-				{
-					if (Check(&cur->data, data) == 0)
-					{
-						return cur;
-					}
-				}
-			}
-		}
-
 		return nullptr;
 	}
 
@@ -235,4 +238,12 @@ template <typename T> class CLinkedList
 	Node_t* m_tail;
 
 	ssize m_nodeCount;
+
+	void Initialize(Node_t* node)
+	{
+		m_head = node;
+		m_tail = node;
+		m_head->prev = nullptr;
+		m_tail->next = nullptr;
+	}
 };

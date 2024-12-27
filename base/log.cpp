@@ -89,18 +89,12 @@ BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr fil
 	DateTime_t time;
 	LogMessage_t messageData = {Clamp(level, LogLevelTrace, LogLevelFatalError), time, location, isAddress, file, function, formatted};
 	ssize pos = Base_StrFind(file, "chifir-engine", true);
-	dstr realFile = nullptr; // stupid c++03 with no const cast
 	if (pos >= 0)
 	{
 		// chifir-engine[\/] is 14 characters, and there's always gonna be a slash
-		realFile = Base_StrClone(file + pos + 14, Base_StrLength(file) - pos - 14);
-		messageData.file = realFile;
+		messageData.file = file + pos + 14;
 	}
 	Log_Write(messageData);
 
-	if (pos >= 0)
-	{
-		Base_Free(realFile);
-	}
 	Base_Free(formatted);
 }

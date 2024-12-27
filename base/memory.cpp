@@ -13,10 +13,11 @@ MemoryInfo_t g_memInfo;
 // Signature so header can be found in aligned blocks (also is 'CHFALLOC' in ASCII on little endian)
 static const u64 ALLOC_SIGNATURE = 0x434F4C4C41464843;
 
+// TODO: make smaller
 struct AllocInfo_t
 {
 	ssize size; // Includes the size of the AllocNode_t header
-	u8 alignment;
+	u64 alignment;
 	LinkedNode_t<SystemAllocation_t>* systemAllocation;
 	u64 signature; // Must equal ALLOC_SIGNATURE
 };
@@ -158,7 +159,7 @@ static bool Contiguous(AllocNode_t* a, AllocNode_t* b)
 	return SameSystemNode(a, b) && reinterpret_cast<sptr>(a) + a->data.size == reinterpret_cast<sptr>(b);
 }
 
-// Merges any adjacent (in the allocation list), contiguous (in the same system node) allocations that aren't in use
+// Merges any free allocations that are on the same system node and are back to back
 // TODO: add more advanced ways of de-fragmenting
 static void CoalesceAllocations()
 {
@@ -171,6 +172,7 @@ static void CoalesceAllocations()
 			{
 				alloc->data.size += next->data.size;
 				s_free.Remove(next);
+				Base_MemSet(&next->data, 0, sizeof(AllocInfo_t));
 			}
 		}
 	}
@@ -293,15 +295,15 @@ BASEAPI void* Base_Realloc(void* block, ssize newSize)
 	return newBlock;
 }
 
-static void InsertFreedNode(AllocNode_t* node)
+static bool InsertFreedNode(AllocNode_t* node)
 {
 	if (s_free.IsEmpty())
 	{
 		s_free.Prepend(node);
-		return;
+		return true;
 	}
 
-	// Find the appropriate position to insert the node to keep the list sorted by address
+	// Find the node that should be before this one
 	AllocNode_t* current = s_free.GetHead();
 	while (!current->IsTail() && (current->data.systemAllocation != node->data.systemAllocation ||
 								  reinterpret_cast<sptr>(current) < reinterpret_cast<sptr>(node)))
@@ -311,11 +313,12 @@ static void InsertFreedNode(AllocNode_t* node)
 
 	if (current->IsHead())
 	{
-		s_free.Prepend(node);
+		s_free.Append(node);
+		return true;
 	}
 	else
 	{
-		s_free.InsertBefore(current, node);
+		return s_free.InsertAfter(current, node);
 	}
 }
 
@@ -325,37 +328,25 @@ BASEAPI void Base_Free(void* block)
 
 	// TODO: check if block is within an allocation
 	AllocNode_t* node = FindNode(block);
-	InsertFreedNode(node);
+	ASSERT_MSG_SAFE(InsertFreedNode(node) == true, "Double free detected");
 	g_memInfo.totalFreed += EffectiveSize(node);
 	CoalesceAllocations();
 }
 
-// TODO: condense this
-
-BASEAPI ssize Base_GetAllocSize(void* block)
-{
-	if (block)
-	{
-		AllocNode_t* node = FindNode(block);
-		if (node)
-		{
-			return node->data.size;
-		}
+#define GET_FIELD(func, type, field)                                                                                             \
+	BASEAPI type Base_##func(void* block)                                                                                        \
+	{                                                                                                                            \
+		if (block)                                                                                                               \
+		{                                                                                                                        \
+			AllocNode_t* node = FindNode(block);                                                                                 \
+			if (node)                                                                                                            \
+			{                                                                                                                    \
+				return node->data.field;                                                                                         \
+			}                                                                                                                    \
+		}                                                                                                                        \
+                                                                                                                                 \
+		return static_cast<type>(-1);                                                                                            \
 	}
 
-	return -1;
-}
-
-BASEAPI ssize Base_GetAllocAlignment(void* block)
-{
-	if (block)
-	{
-		AllocNode_t* node = FindNode(block);
-		if (node)
-		{
-			return node->data.alignment;
-		}
-	}
-
-	return -1;
-}
+GET_FIELD(GetAllocSize, ssize, size)
+GET_FIELD(GetAllocAlignment, ssize, alignment)
