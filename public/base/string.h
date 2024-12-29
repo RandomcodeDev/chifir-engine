@@ -160,9 +160,10 @@ class BASEAPI CString
 	// Format into a new string
 	static CString FormatStr(cstr format, ...)
 	{
+		CString string;
 		va_list args;
 		va_start(args, format);
-		CString string = VFormatStr(format, args);
+		string.VFormat(format, args);
 		va_end(args);
 		return string;
 	}

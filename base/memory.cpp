@@ -1,11 +1,12 @@
 // This is a basic general allocator that can serve as a basis for more specialized things like bump allocators. It's implemented
 // on top of Base_GetSystemMemory, and uses a free list with the nodes as headers to chunks of memory. It still needs to be tested
 // more thoroughly, and is missing error logging, statistics, and thread safety. It also can't handle individual allocations
-// larger than 64MB. Additionally, fragmentation is yet to be handled.
+// larger than 64MB.
 
 #include "base.h"
 #include "base/base.h"
 #include "base/dll.h"
+#include "base/platform.h"
 #include "base/types.h"
 
 MemoryInfo_t g_memInfo;
@@ -113,9 +114,13 @@ static AllocNode_t* GetFreeNode(ssize size)
 	if (alloc->data.size - size > SIZEOF(AllocNode_t))
 	{
 		AllocNode_t* next = reinterpret_cast<AllocNode_t*>(reinterpret_cast<uptr>(alloc) + size);
+		next->data.systemAllocation = alloc->data.systemAllocation;
 		next->data.size = alloc->data.size - size;
+		next->data.signature = ALLOC_SIGNATURE;
+
 		alloc->data.size = size;
 		alloc->data.signature = ALLOC_SIGNATURE;
+
 		// Keep sorted
 		s_free.InsertAfter(alloc, next);
 	}
@@ -213,8 +218,27 @@ BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment)
 	return nullptr;
 }
 
-// Resize an allocation. If the new size is smaller, possibly make a new free node of the regained space. If it's larger, attempt
-// to take from the next contiguous node. Otherwise, make a new allocation and copy data over.
+static bool InsertFreedNode(AllocNode_t* node)
+{
+	if (s_free.IsEmpty())
+	{
+		s_free.Append(node);
+		return true;
+	}
+
+	// Find the node that should be before this one
+	AllocNode_t* current = s_free.GetHead();
+	while (!current->IsTail() && (current->data.systemAllocation != node->data.systemAllocation ||
+								  reinterpret_cast<sptr>(current) < reinterpret_cast<sptr>(node)))
+	{
+		current = current->GetNext();
+	}
+
+	ASSERT_MSG_SAFE(current != node, "Double free detected, node is already in free list");
+	return s_free.InsertAfter(current, node);
+}
+
+// Resize an allocation. Currently just makes a new allocation and copies data over.
 BASEAPI void* Base_Realloc(void* block, ssize newSize)
 {
 	if (!block)
@@ -230,59 +254,6 @@ BASEAPI void* Base_Realloc(void* block, ssize newSize)
 
 	AllocNode_t* node = FindNode(block);
 
-	// Shrink this node
-	if (EffectiveSize(node) > newSize)
-	{
-		ssize freeSize = EffectiveSize(node) - newSize;
-		node->data.size = newSize + SIZEOF(AllocNode_t);
-
-		// If it's the tail and there's enough space, make a new node after
-		if (node->IsTail() && freeSize > SIZEOF(AllocNode_t))
-		{
-			AllocInfo_t newNode;
-			newNode.size = freeSize;
-			newNode.systemAllocation = node->data.systemAllocation;
-			newNode.signature = ALLOC_SIGNATURE;
-			s_free.InsertAfter(node, reinterpret_cast<AllocNode_t*>((static_cast<u8*>(block) + node->data.size)));
-			Base_MemCopy(&node->GetNext()->data, &newNode, SIZEOF(AllocInfo_t));
-		}
-		// Otherwise, move up the next node and increase its size
-		else if (!node->IsTail())
-		{
-			u8* newNext = static_cast<u8*>(block) + node->data.size;
-			Base_MemCopy(newNext, node->GetNext(), SIZEOF(AllocNode_t));
-			s_free.Remove(node->GetNext());
-			s_free.InsertAfter(node, reinterpret_cast<AllocNode_t*>(newNext));
-			node->GetNext()->data.size += freeSize;
-		}
-
-		return block;
-	}
-	// Either take from the next node, or just free this one and get another one that fits
-	else if (!node->IsTail())
-	{
-		AllocInfo_t* neighbor = &node->GetNext()->data;
-		// the node isn't part of the size change
-		ssize extraSize = newSize - node->data.size - SIZEOF(AllocNode_t);
-
-		if (Contiguous(node, node->GetNext()) && EffectiveAllocSize(neighbor) > extraSize)
-		{
-			node->data.size = newSize + SIZEOF(AllocNode_t);
-
-			u8* newNext = static_cast<u8*>(block) + node->data.size;
-			Base_MemCopy(newNext, node->GetNext(), SIZEOF(AllocNode_t));
-			s_free.Remove(node->GetNext());
-			s_free.InsertAfter(node, reinterpret_cast<AllocNode_t*>(newNext));
-			node->GetNext()->data.size -= extraSize;
-
-			// Zero the new space added
-			Base_MemSet(static_cast<u8*>(block) + node->data.size - extraSize, 0, extraSize);
-
-			g_memInfo.totalAllocated += extraSize;
-			return block;
-		}
-	}
-
 	// If execution reaches here, free this node and get a new one, copying over the contents
 	void* newBlock = Base_Alloc(newSize, node->data.alignment);
 	if (!newBlock)
@@ -295,42 +266,15 @@ BASEAPI void* Base_Realloc(void* block, ssize newSize)
 	return newBlock;
 }
 
-static bool InsertFreedNode(AllocNode_t* node)
-{
-	if (s_free.IsEmpty())
-	{
-		s_free.Prepend(node);
-		return true;
-	}
-
-	// Find the node that should be before this one
-	AllocNode_t* current = s_free.GetHead();
-	while (!current->IsTail() && (current->data.systemAllocation != node->data.systemAllocation ||
-								  reinterpret_cast<sptr>(current) < reinterpret_cast<sptr>(node)))
-	{
-		current = current->GetNext();
-	}
-
-	if (current->IsHead())
-	{
-		s_free.Append(node);
-		return true;
-	}
-	else
-	{
-		return s_free.InsertAfter(current, node);
-	}
-}
-
 BASEAPI void Base_Free(void* block)
 {
 	ASSERT_MSG_SAFE(block != nullptr, "Block was nullptr");
 
 	// TODO: check if block is within an allocation
 	AllocNode_t* node = FindNode(block);
-	ASSERT_MSG_SAFE(InsertFreedNode(node) == true, "Double free detected");
 	g_memInfo.totalFreed += EffectiveSize(node);
 	CoalesceAllocations();
+	
 }
 
 #define GET_FIELD(func, type, field)                                                                                             \
