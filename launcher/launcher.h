@@ -1,4 +1,4 @@
-// Internal definitions for the launcher
+/// Internal definitions for the launcher
 
 #pragma once
 
@@ -10,5 +10,5 @@
 #define LAUNCHERAPI
 #endif
 
-// Cross-platform entry point
+/// Cross-platform entry point
 extern "C" LAUNCHERAPI s32 LauncherMain();

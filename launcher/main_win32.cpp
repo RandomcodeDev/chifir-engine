@@ -1,5 +1,7 @@
 #include "base/platform.h"
+#include "base/string.h"
 #include "base/types.h"
+#include "base/vector.h"
 #include "launcher.h"
 
 #ifndef CH_DEBUG

@@ -1,4 +1,4 @@
-// Dynamic array implementation
+/// Dynamic array implementation
 
 #pragma once
 
@@ -15,15 +15,15 @@ template <typename T> class CVector : public IContainer<T, ssize>
 	{
 	}
 
-	// Create a vector from the given data
+	/// Create a vector from the given data
 	CVector(const T* data, ssize size) : CVector<T>()
 	{
 		Resize(size);
-		// Copying objects is fine because their vtables stay the same
+		/// Copying objects is fine because their vtables stay the same
 		Base_MemCopy(m_buffer, data, m_size);
 	}
 
-	// Avoid this
+	/// Avoid this
 	CVector(const CVector<T>& other) : CVector<T>()
 	{
 		Add(other);
@@ -41,7 +41,7 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		}
 	}
 
-	// Get the underlying buffer of this vector
+	/// Get the underlying buffer of this vector
 	T* Data() const
 	{
 		return m_buffer;
@@ -52,7 +52,7 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		return m_size;
 	}
 
-	// Resize the vector to the given size
+	/// Resize the vector to the given size
 	void Resize(ssize newSize)
 	{
 		ssize oldSize = m_size;
@@ -66,7 +66,7 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		{
 			for (ssize i = oldSize; i < newSize; i++)
 			{
-				// Construct all the objects
+				/// Construct all the objects
 				new (&m_buffer[i]) T;
 			}
 			m_sorted = false;
@@ -75,13 +75,13 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		{
 			for (ssize i = newSize; i < oldSize; i++)
 			{
-				// Destroy the objects
+				/// Destroy the objects
 				m_buffer[i].~T();
 			}
 		}
 	}
 
-	// Reserve space for future additions
+	/// Reserve space for future additions
 	void Reserve(ssize size)
 	{
 		if (size > m_capacity)
@@ -92,7 +92,7 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		}
 	}
 
-	// Add an object
+	/// Add an object
 	ssize Add(const T& object, ssize index = BAD_INDEX)
 	{
 		m_sorted = false;
@@ -102,7 +102,7 @@ template <typename T> class CVector : public IContainer<T, ssize>
 			Reserve(Max<ssize>(1, m_capacity * 2));
 		}
 
-		// Append by default
+		/// Append by default
 		if (index == BAD_INDEX || index > m_size)
 		{
 			m_buffer[m_size - 1] = object;
@@ -116,7 +116,7 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		}
 	}
 
-	// Add many objects
+	/// Add many objects
 	ssize Add(const T* objects, ssize count, ssize index = BAD_INDEX)
 	{
 		if (index == BAD_INDEX || index > m_size)
@@ -131,16 +131,16 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		return index - count - 1;
 	}
 
-	// Add the contents of another vector
+	/// Add the contents of another vector
 	ssize Add(const CVector<T>& other, ssize index = BAD_INDEX)
 	{
 		return Add(other.Data(), other.Size(), index);
 	}
 
-	// Remove the given element
+	/// Remove the given element
 	void Delete(ssize index = BAD_INDEX)
 	{
-		// Delete the last element by default
+		/// Delete the last element by default
 		if (index == BAD_INDEX || index > m_size)
 		{
 			index = m_size - 1;
@@ -151,39 +151,39 @@ template <typename T> class CVector : public IContainer<T, ssize>
 		m_sorted = false;
 	}
 
-	// Empty the vector
+	/// Empty the vector
 	void Empty()
 	{
 		Resize(0);
 	}
 
-	// Get the given element
+	/// Get the given element
 	T& operator[](const ssize& index) const
 	{
 		ASSERT(index < m_size && index >= 0);
 		return m_buffer[index];
 	}
 
-	// Append an object
+	/// Append an object
 	void operator+=(const T& object)
 	{
 		Add(object);
 	}
 
-	// Append the contents of another vector
+	/// Append the contents of another vector
 	void operator+=(const CVector<T>& other)
 	{
 		Add(other);
 	}
 
-	// Not implemented yet
+	/// Not implemented yet
 	ssize Find(s32 (*Compare)(const T& a, const T& b)) const
 	{
 		(void)Compare;
 		return BAD_INDEX;
 	}
 
-	// Not implemented yet
+	/// Not implemented yet
 	void Sort(s32 (*Compare)(const T& a, const T& b))
 	{
 		(void)Compare;

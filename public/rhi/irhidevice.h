@@ -1,10 +1,12 @@
-// RHI device interface
+/// RHI device interface
 
 #pragma once
 
 #include "base/compiler.h"
 #include "base/string.h"
 #include "base/types.h"
+
+#include "rhi.h"
 
 class IRhiCommandQueue;
 enum RhiCommandQueueType_t;
@@ -45,29 +47,29 @@ struct RhiDeviceInfo_t
 	s32 maxTextureSize;
 };
 
-class IRhiDevice
+class RHIAPI IRhiDevice
 {
   public:
 	virtual ~IRhiDevice() DEFAULT;
 
-	// Create a command queue
+	/// Create a command queue
 	virtual IRhiCommandQueue* CreateCommandQueue(RhiCommandQueueType_t type, RhiCommandQueueFlags_t flags) = 0;
 
-	// Create a command list
+	/// Create a command list
 	virtual IRhiCommandList* CreateCommandList(IRhiCommandQueue* queue, RhiCommandListFlags_t flags) = 0;
 
-	// Create a fence
+	/// Create a fence
 	virtual IRhiFence* CreateFence(u64 initialValue = 0) = 0;
 
-	// Create a buffer
+	/// Create a buffer
 	virtual IRhiBuffer* CreateBuffer(
 		ssize size, RhiMemoryLocation_t location, RhiMemoryUsage_t usage, RhiBufferFlags_t flags) = 0;
 
-	// Create an image
+	/// Create an image
 	virtual IRhiImage* CreateImage(
 		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType_t type,
 		RhiImageFormat_t format, RhiImageFlags_t flags) = 0;
 
-	// Create a pipeline state
+	/// Create a pipeline state
 	virtual IRhiPipelineState* CreatePipelineState(const RhiPipelineStateDesc_t& desc) = 0;
 };

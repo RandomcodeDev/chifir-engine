@@ -8,6 +8,7 @@
 #include "base/platform.h"
 #include "base/string.h"
 #include "base/types.h"
+#include "base/vector.h"
 
 DECLARE_AVAILABLE(DbgPrint);
 DECLARE_AVAILABLE(NtAllocateVirtualMemory);
@@ -31,6 +32,9 @@ SYSTEM_PERFORMANCE_INFORMATION g_systemPerfInfo;
 
 static char* s_systemDescription;
 static char* s_hardwareDescription;
+
+static char** s_cmdLineArgs;
+static u32 s_cmdLineArgCount;
 
 BASEAPI bool Plat_ConsoleHasColor()
 {
@@ -136,6 +140,11 @@ BASEAPI void Plat_Shutdown()
 	{
 		Base_Free(s_hardwareDescription);
 	}
+}
+
+BASEAPI void Plat_GetArgs(CVector<CString>& args)
+{
+	(void)args;
 }
 
 BASEAPI cstr Plat_GetSystemDescription()

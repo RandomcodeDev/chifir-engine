@@ -74,6 +74,9 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	Base_Init();
 	Plat_Init();
 
+	CVector<CString> args;
+	Plat_GetArgs(args);
+
 #ifdef CH_WIN32
 	Log_AddWriter(new CDbgPrintLogWriter());
 #endif
@@ -87,7 +90,11 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 
 	IApplication* app = CreateEngine();
 #else
-	cstr appName = "TestApp"; // TODO: make this based on a command line arg
+	cstr appName = "Engine"; // TODO: make this better
+	if (args.Size() > 1)
+	{
+		appName = args[1].Data();
+	}
 
 	Log_Info("Loading application %s", appName);
 	ILibrary* appLib = Base_LoadLibrary(appName);

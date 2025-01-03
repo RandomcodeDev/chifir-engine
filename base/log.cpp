@@ -9,7 +9,13 @@
 static CVector<ILogWriter*> s_writers;
 
 const cstr ILogWriter::LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
-const cstr ILogWriter::LEVEL_COLORED_NAMES[] = {"\x1b[38;5;126mT\x1b[38;5;161mR\x1b[38;5;231mA\x1b[38;5;208mC\x1b[38;5;196mE\x1b[0m", "\x1b[38;5;123mD\x1b[38;5;213mE\x1b[38;5;231mB\x1b[38;5;213mU\x1b[38;5;123mG\x1b[0m", "\x1b[38;5;118mINFO\x1b[0m", "\x1b[38;5;214mWARN\x1b[0m", "\x1b[38;5;196mERROR\x1b[0m", "\x1b[30m\x1b[48;5;124mFATAL\x1b[0m"};
+const cstr ILogWriter::LEVEL_COLORED_NAMES[] = {
+	"\x1b[38;5;126mT\x1b[38;5;161mR\x1b[38;5;231mA\x1b[38;5;208mC\x1b[38;5;196mE\x1b[0m",
+	"\x1b[38;5;123mD\x1b[38;5;213mE\x1b[38;5;231mB\x1b[38;5;213mU\x1b[38;5;123mG\x1b[0m",
+	"\x1b[38;5;118mINFO\x1b[0m",
+	"\x1b[38;5;214mWARN\x1b[0m",
+	"\x1b[38;5;196mERROR\x1b[0m",
+	"\x1b[30m\x1b[48;5;124mFATAL\x1b[0m"};
 
 BASEAPI CFileLogWriter::CFileLogWriter(IWritableFilesystem* filesystem, cstr logName, bool addDate) : m_filesystem(filesystem)
 {
@@ -33,19 +39,7 @@ BASEAPI void CFileLogWriter::Write(const LogMessage_t& message)
 	if (m_filesystem->IsWriteSafe())
 	{
 		dstr formatted = nullptr;
-		if (message.isAddress)
-		{
-			formatted = Base_StrFormat(
-				"[%s] [0x%llX@%s %s] %s\n", LEVEL_NAMES[message.level], message.location, message.file, message.function,
-				message.message);
-		}
-		else
-		{
-			formatted = Base_StrFormat(
-				"[%s] [%s:%d %s] %s\n", LEVEL_NAMES[message.level], message.file, message.location, message.function,
-				message.message);
-		}
-
+		formatted = Base_StrFormat(LOG_FORMAT(false, message));
 		m_filesystem->Write(m_filename, formatted, Base_StrLength(formatted));
 		Base_Free(formatted);
 	}
@@ -87,7 +81,8 @@ BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr fil
 
 	// strip repo path from log messages, to make them shorter
 	DateTime_t time;
-	LogMessage_t messageData = {Clamp(level, LogLevelTrace, LogLevelFatalError), time, location, isAddress, file, function, formatted};
+	LogMessage_t messageData = {
+		Clamp(level, LogLevelTrace, LogLevelFatalError), time, location, isAddress, file, function, formatted};
 	ssize pos = Base_StrFind(file, "chifir-engine", true);
 	if (pos >= 0)
 	{

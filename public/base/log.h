@@ -1,4 +1,4 @@
-// Logging system
+/// Logging system
 
 #pragma once
 
@@ -7,7 +7,7 @@
 #include "base/string.h"
 #include "base/types.h"
 
-// Log message priority level
+/// Log message priority level
 enum LogLevel_t
 {
 	LogLevelTrace,
@@ -18,36 +18,36 @@ enum LogLevel_t
 	LogLevelFatalError
 };
 
-// Represents a log message
+/// Represents a log message
 struct LogMessage_t
 {
 	LogLevel_t level;
 	DateTime_t time;
 	uptr location;
-	bool isAddress; // Whether location should be displayed in hex
+	bool isAddress; /// Whether location should be displayed in hex
 	cstr file;
 	cstr function;
 	cstr message;
 };
 
-// Log writer interface
+/// Log writer interface
 class BASEAPI ILogWriter
 {
   public:
 	virtual ~ILogWriter() DEFAULT;
 
-	// Write a message
+	/// Write a message
 	virtual void Write(const LogMessage_t& message) = 0;
 
   protected:
-	// Indexable with any LogLevel_t value
+	/// Indexable with any LogLevel_t value
 	static const cstr LEVEL_NAMES[];
 	static const cstr LEVEL_COLORED_NAMES[];
 };
 
 class IWritableFilesystem;
 
-// Filesystem log writer
+/// Filesystem log writer
 class BASEAPI CFileLogWriter : public ILogWriter
 {
   public:
@@ -62,7 +62,7 @@ class BASEAPI CFileLogWriter : public ILogWriter
 };
 
 #ifdef CH_WIN32
-// DbgPrint log writer
+/// DbgPrint log writer
 class BASEAPI CDbgPrintLogWriter : public ILogWriter
 {
   public:
@@ -76,13 +76,13 @@ class BASEAPI CConsoleLogWriter : public ILogWriter
 	void Write(const LogMessage_t& message);
 };
 
-// Add a log writer
+/// Add a log writer
 extern BASEAPI void Log_AddWriter(ILogWriter* writer);
 
-// Write a log message
+/// Write a log message
 extern BASEAPI void Log_Write(const LogMessage_t& message);
 
-// Write a log message, and format it
+/// Write a log message, and format it
 extern BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr file, cstr function, cstr message, ...);
 
 #define Log_Message(level, ...) Log_Write(LogLevel##level, __LINE__, false, __FILE__, FUNCTION_NAME, __VA_ARGS__)

@@ -59,35 +59,38 @@
 .GDK = 
 [
 	.PlatformName = 'GDK'
-	.CompilerOptions = ' -DCH_GDK'
 	.ExeExtension = '.exe'
 	.LibExtension = '.lib'
 	.DLLExtension = '.dll'
 
-	.CompilerOptions = ' -DCH_LITTLE_ENDIAN'
+	.CompilerOptions = ' -DCH_GDK'
+					 + ' -DCH_LITTLE_ENDIAN'
 ]
 
 .GDKX =
 [
 	.PlatformName = 'GDKX'
-	.CompilerOptions = ' -DCH_GDK -DCH_GDKX'
 	.ExeExtension = '.exe'
 	.LibExtension = '.lib'
 	.DLLExtension = '.dll'
 
-	.CompilerOptions = ' -DCH_LITTLE_ENDIAN'
+	.CompilerOptions = ' -DCH_GDK'
+					 + ' -DCH_GDKX'
+					 + ' -DCH_LITTLE_ENDIAN'
 ]
 
 .Xbox360 =
 [
 	.PlatformName = 'Xbox360'
-	.StaticBuild = true
-	.CompilerOptions = ' -DCH_XBOX360 -DCH_STATIC'
 	.ExeExtension = '.xex'
 	.LibExtension = '.lib'
 	.DLLExtension = '.xex'
+	
+	.StaticBuild = true
 
-	.CompilerOptions = ' -DCH_BIG_ENDIAN'
+	.CompilerOptions = ' -DCH_XBOX360'
+					 + ' -DCH_STATIC'
+					 + ' -DCH_BIG_ENDIAN'
 ]
 
 .WindowsLike = {'Windows', 'GDK', 'GDKX', 'Xbox360'}

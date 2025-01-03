@@ -1,7 +1,7 @@
-// Implements/stubs everything MSVC asks for, like the security cookie, GS handling, RTC stuff
-// This is basically because it's too hard to separate the runtime from certain compiler builtins,
-// so this file implements the bare minimum, at times using functions from the engine to replace
-// functionality normally provided by the CRT.
+/// Implements/stubs everything MSVC asks for, like the security cookie, GS handling, RTC stuff
+/// This is basically because it's too hard to separate the runtime from certain compiler builtins,
+/// so this file implements the bare minimum, at times using functions from the engine to replace
+/// functionality normally provided by the CRT.
 
 #include "base.h"
 #include "compiler.h"
@@ -14,25 +14,25 @@ typedef void (*_PVFI)(int);
 
 extern "C"
 {
-	// C initializers
+	/// C initializers
 #pragma section(".CRT$XIA", long, read)
 	__declspec(allocate(".CRT$XIA")) _PIFV __xi_a[] = {0};
 #pragma section(".CRT$XIZ", long, read)
 	__declspec(allocate(".CRT$XIZ")) _PIFV __xi_z[] = {0};
 
-	// C++ constructors
+	/// C++ constructors
 #pragma section(".CRT$XCA", long, read)
 	__declspec(allocate(".CRT$XCA")) _PVFV __xc_a[] = {0};
 #pragma section(".CRT$XCZ", long, read)
 	__declspec(allocate(".CRT$XCZ")) _PVFV __xc_z[] = {0};
 
-	// C pre-terminators
+	/// C pre-terminators
 #pragma section(".CRT$XPA", long, read)
 	__declspec(allocate(".CRT$XPA")) _PVFV __xp_a[] = {0};
 #pragma section(".CRT$XPZ", long, read)
 	__declspec(allocate(".CRT$XPZ")) _PVFV __xp_z[] = {0};
 
-	// C terminators
+	/// C terminators
 #pragma section(".CRT$XTA", long, read)
 	__declspec(allocate(".CRT$XTA")) _PVFV __xt_a[] = {0};
 #pragma section(".CRT$XTZ", long, read)
@@ -49,7 +49,7 @@ extern "C"
 
 	void __cdecl __security_init_cookie()
 	{
-		// TODO: randomize the cookie here
+		/// TODO: randomize the cookie here
 
 		__security_cookie_complement = ~__security_cookie;
 	}
@@ -59,7 +59,7 @@ extern "C"
 		Base_AbortSafe(STATUS_STACK_BUFFER_OVERRUN, "Range check failure");
 	}
 
-	// TODO: figure these out
+	/// TODO: figure these out
 	void __cdecl _RTC_InitBase()
 	{
 	}
@@ -91,7 +91,7 @@ extern "C"
 	void* __CxxFrameHandler3()
 	{
 		Base_AbortSafe(STATUS_UNHANDLED_EXCEPTION, "C++ exception 3");
-		// return nullptr;
+		/// return nullptr;
 	}
 
 #if !defined __clang__ && _MSC_VER >= 1700
@@ -100,18 +100,18 @@ extern "C"
 	void* __CxxFrameHandler4()
 	{
 		Base_Abort(STATUS_UNHANDLED_EXCEPTION, "C++ exception 4");
-		// return nullptr;
+		/// return nullptr;
 	}
 
 	int __cdecl _purecall()
 	{
-		// As far as I can tell, this gets called when a virtual call has no implementation, and normally code to call a handler
-		// would be here. If I cared and this function wasn't implemented directly, the handler would have this same code, which
-		// means that functionality isn't needed here.
+		/// As far as I can tell, this gets called when a virtual call has no implementation, and normally code to call a handler
+		/// would be here. If I cared and this function wasn't implemented directly, the handler would have this same code, which
+		/// means that functionality isn't needed here.
 		Base_AbortSafe(STATUS_NOT_FOUND, "Pure virtual call");
 	}
 
-	// TODO: unstub this so global destructors work
+	/// TODO: unstub this so global destructors work
 	int __cdecl atexit(void (*func)())
 	{
 		(void)func;
@@ -164,7 +164,7 @@ void RunGlobalDestructors()
 	CallXtors(__xt_a, __xt_z);
 }
 
-// Ensures the vtable for type_info is generated
+/// Ensures the vtable for type_info is generated
 type_info::~type_info()
 {
 }

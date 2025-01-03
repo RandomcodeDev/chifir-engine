@@ -1,4 +1,4 @@
-// Type definitions
+/// Type definitions
 
 #pragma once
 
@@ -19,7 +19,7 @@ typedef uint32_t u32;
 typedef uint64_t u64;
 typedef uintptr_t uptr;
 
-// Avoid using in cases where underflow could happen
+/// Avoid using in cases where underflow could happen
 typedef uptr usize;
 static_assert(sizeof(usize) == sizeof(std::size_t), "error: sizeof(usize) != sizeof(size_t)");
 
@@ -30,7 +30,7 @@ typedef int64_t s64;
 typedef intptr_t sptr;
 typedef sptr ssize;
 
-// These two are in POSIX, so no use redefining them
+/// These two are in POSIX, so no use redefining them
 #ifndef SSIZE_MIN
 #define SSIZE_MIN INTPTR_MIN
 #endif

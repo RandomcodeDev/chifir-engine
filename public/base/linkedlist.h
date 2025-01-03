@@ -1,4 +1,4 @@
-// Linked list
+/// Linked list
 
 #pragma once
 
@@ -38,7 +38,7 @@ template <typename T> struct LinkedNode_t
 	LinkedNode_t<T>* next;
 };
 
-// A doubly linked list,
+/// A doubly linked list,
 template <typename T> class CLinkedList
 {
   public:

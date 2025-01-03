@@ -1,4 +1,4 @@
-// Public engine interface for other components
+/// Public engine interface for other components
 
 #pragma once
 
@@ -15,18 +15,18 @@ class IEngine : public IApplication
 
 	enum EngineState_t
 	{
-		EngineStateUninitialized = 0, // The engine hasn't been started yet
+		EngineStateUninitialized = 0, /// The engine hasn't been started yet
 
-		EngineStateStartup = 50, // The engine is starting up
-		EngineStateShutdown, // The engine is shutting down
+		EngineStateStartup = 50, /// The engine is starting up
+		EngineStateShutdown, /// The engine is shutting down
 
-		EngineStateRunning = 100, // The engine is running and active
-		EngineStateInactive, // The engine is running but not active (i.e. the window is unfocused)
+		EngineStateRunning = 100, /// The engine is running and active
+		EngineStateInactive, /// The engine is running but not active (i.e. the window is unfocused)
 	};
 
-	// Get the engine's current state
+	/// Get the engine's current state
 	virtual EngineState_t GetState() = 0;
 
-	// Tell the engine to quit
+	/// Tell the engine to quit
 	virtual void Quit() = 0;
 };

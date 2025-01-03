@@ -3,7 +3,7 @@
 #include "fastbuild/Util.bff"
 
 .IncludeDirs = { 'public', 'private', 'private/public', 'public/xbox' }
-.ExternalIncludeDirs = { 'external', 'external/phnt' }
+.ExternalIncludeDirs = { 'external', 'external/glad', 'external/phnt' }
 
 #include "fastbuild/MSVC.bff"
 #include "fastbuild/Clang.bff"
@@ -76,11 +76,15 @@
 
 #include "fastbuild/ProjectConfigs.bff"
 
+.VulkanPlatforms = {'Windows', 'GDK', 'Switch', 'Linux'}
+
 #include "base/CommonFiles.bff"
 #include "base/Base.bff"
 //#include "utility/Utility.bff"
 #include "engine/Engine.bff"
 #include "testapp/TestApp.bff"
+#include "rhi/Rhi.bff"
+#include "rendersystem/RenderSystem.bff"
 #include "videosystem/VideoSystem.bff"
 #include "launcher/Launcher.bff"
 #if HAVE_MSVC_XBOX360

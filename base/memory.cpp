@@ -1,7 +1,7 @@
-// This is a basic general allocator that can serve as a basis for more specialized things like bump allocators. It's implemented
-// on top of Base_GetSystemMemory, and uses a free list with the nodes as headers to chunks of memory. It still needs to be tested
-// more thoroughly, and is missing error logging, statistics, and thread safety. It also can't handle individual allocations
-// larger than 64MB.
+/// This is a basic general allocator that can serve as a basis for more specialized things like bump allocators. It's implemented
+/// on top of Base_GetSystemMemory, and uses a free list with the nodes as headers to chunks of memory. It still needs to be tested
+/// more thoroughly, and is missing error logging, statistics, and thread safety. It also can't handle individual allocations
+/// larger than 64MB.
 
 #include "base.h"
 #include "base/base.h"
@@ -11,10 +11,10 @@
 
 MemoryInfo_t g_memInfo;
 
-// Signature so header can be found in aligned blocks (also is 'CHFALLOC' in ASCII on little endian)
+/// Signature so header can be found in aligned blocks (also is 'CHFALLOC' in ASCII on little endian)
 static const u64 ALLOC_SIGNATURE = 0x434F4C4C41464843;
 
-// TODO: make smaller
+/// TODO: make smaller
 struct AllocInfo_t
 {
 	ssize size; // Includes the size of the AllocNode_t header
@@ -25,9 +25,9 @@ struct AllocInfo_t
 
 typedef LinkedNode_t<AllocInfo_t> AllocNode_t;
 
-// List of unused blocks. Nodes are stored at the start of each chunk of memory in the allocator's control, and their size is
-// included in AllocInfo_t's size member.
-// TODO: once threading has been implemented, this MUST be made thread safe.
+/// List of unused blocks. Nodes are stored at the start of each chunk of memory in the allocator's control, and their size is
+/// included in AllocInfo_t's size member.
+/// TODO: once threading has been implemented, this MUST be made thread safe.
 static CLinkedList<AllocInfo_t> s_free;
 
 static s32 FindSystemNode(SystemAllocation_t* alloc, void* data)
@@ -40,16 +40,16 @@ static s32 FindSystemNode(SystemAllocation_t* alloc, void* data)
 	return 1;
 }
 
-// Size of system nodes which are directly allocated with NtAllocateVirtualMemory/mmap
+/// Size of system nodes which are directly allocated with NtAllocateVirtualMemory/mmap
 static const ssize SYSTEM_ALLOC_SIZE = 64 * 1024 * 1024;
 
-// Minimum alignment of allocations
+/// Minimum alignment of allocations
 static const ssize MINIMUM_ALIGNMENT = ALIGNOF(AllocNode_t);
 
-// Maximum alignment of allocations, mainly to set an upper bound on how far back to search for a node in an allocation
+/// Maximum alignment of allocations, mainly to set an upper bound on how far back to search for a node in an allocation
 static const ssize MAXIMUM_ALIGNMENT = 64;
 
-// This finds a system node with the requested size, or allocates a new one of a fixed size, and then makes a new AllocNode_t
+/// This finds a system node with the requested size, or allocates a new one of a fixed size, and then makes a new AllocNode_t
 static AllocNode_t* MakeNewNode(ssize size)
 {
 	LinkedNode_t<SystemAllocation_t>* node = g_memInfo.allocations.Find(FindSystemNode, reinterpret_cast<void*>(size));
@@ -101,7 +101,7 @@ static s32 FindFreeNode(AllocInfo_t* alloc, void* data)
 	return 1;
 }
 
-// Finds or creates a node of the required size
+/// Finds or creates a node of the required size
 static AllocNode_t* GetFreeNode(ssize size)
 {
 	AllocNode_t* alloc = s_free.Find(FindFreeNode, reinterpret_cast<void*>(size));
@@ -128,7 +128,7 @@ static AllocNode_t* GetFreeNode(ssize size)
 	return alloc;
 }
 
-// Finds the header for a block by its signature
+/// Finds the header for a block by its signature
 static AllocNode_t* FindNode(void* block)
 {
 	u8* sigAddr = static_cast<u8*>(block);
@@ -164,8 +164,8 @@ static bool Contiguous(AllocNode_t* a, AllocNode_t* b)
 	return SameSystemNode(a, b) && reinterpret_cast<sptr>(a) + a->data.size == reinterpret_cast<sptr>(b);
 }
 
-// Merges any free allocations that are on the same system node and are back to back
-// TODO: add more advanced ways of de-fragmenting
+/// Merges any free allocations that are on the same system node and are back to back
+/// TODO: add more advanced ways of de-fragmenting
 static void CoalesceAllocations()
 {
 	if (s_free.Size() > 1)
@@ -238,7 +238,7 @@ static bool InsertFreedNode(AllocNode_t* node)
 	return s_free.InsertAfter(current, node);
 }
 
-// Resize an allocation. Currently just makes a new allocation and copies data over.
+/// Resize an allocation. Currently just makes a new allocation and copies data over.
 BASEAPI void* Base_Realloc(void* block, ssize newSize)
 {
 	if (!block)
@@ -274,23 +274,32 @@ BASEAPI void Base_Free(void* block)
 	AllocNode_t* node = FindNode(block);
 	g_memInfo.totalFreed += EffectiveSize(node);
 	CoalesceAllocations();
-	
 }
 
-#define GET_FIELD(func, type, field)                                                                                             \
-	BASEAPI type Base_##func(void* block)                                                                                        \
-	{                                                                                                                            \
-		if (block)                                                                                                               \
-		{                                                                                                                        \
-			AllocNode_t* node = FindNode(block);                                                                                 \
-			if (node)                                                                                                            \
-			{                                                                                                                    \
-				return node->data.field;                                                                                         \
-			}                                                                                                                    \
-		}                                                                                                                        \
-                                                                                                                                 \
-		return static_cast<type>(-1);                                                                                            \
+BASEAPI ssize Base_GetAllocSize(void *block)
+{
+	if (block)
+	{
+		AllocNode_t* node = FindNode(block);
+		if (node)
+		{
+			return VisibleSize(node);
+		}
 	}
 
-GET_FIELD(GetAllocSize, ssize, size)
-GET_FIELD(GetAllocAlignment, ssize, alignment)
+	return static_cast<ssize>(-1);
+}
+
+BASEAPI ssize Base_GetAllocAlignment(void* block)
+{
+	if (block)
+	{
+		AllocNode_t* node = FindNode(block);
+		if (node)
+		{
+			return node->data.alignment;
+		}
+	}
+
+	return static_cast<ssize>(-1);
+}

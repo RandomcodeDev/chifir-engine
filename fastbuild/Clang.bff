@@ -35,6 +35,7 @@
 					 + ' -Wno-nonportable-include-path' // None of this is on non-Windows code I control
 					 + ' -Wno-macro-redefined' // This is avoided in any scenario where it matters
 					 + ' -Wno-unused-function' // I don't care, that's the linker's problem
+					 + ' -Wno-unknown-attributes'
 
 					 + ' -DGAME_NAME=\"$GameName$\"'
 
@@ -130,6 +131,8 @@
 
 	.CompilerOptions = ' -DCH_X86 -DCH_IA32 -DCH_SIMD128 -DCH_SIMD256'
 					 + ' -march=pentium'
+					 + ' -msse4.2'
+					 + ' -mavx2'
 ]
 
 .Clang_x86Debug = .Clang_Common + .Clang_x86 + .Clang_Debug

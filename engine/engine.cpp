@@ -1,6 +1,7 @@
 #include "engine.h"
 #include "base/filesystem.h"
 #include "base/log.h"
+#include "rendersystem/irendersystem.h"
 #include "videosystem/ivideosystem.h"
 
 CEngine::CEngine() : m_state(EngineStateUninitialized), m_videoSystem(nullptr)
@@ -16,6 +17,7 @@ void CEngine::GetRequiredSystems(CVector<SystemDependency_t>& dependencies)
 {
 	static const SystemDependency_t deps[] = {
 		{"VideoSystem", IVideoSystem::VERSION, true, false},
+		{"RenderSystem", IRenderSystem::VERSION, true, false}
     };
 
 	dependencies.Add(deps, ARRAY_SIZE(deps));
@@ -37,6 +39,7 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 
 	// same order as GetRequiredSystems
 	m_videoSystem = reinterpret_cast<IVideoSystem*>(systems[0]);
+	m_renderSystem = reinterpret_cast<IRenderSystem*>(systems[1]);
 
 	if (!InitializeSystems())
 	{
@@ -91,6 +94,12 @@ bool CEngine::InitializeSystems()
 		return false;
 	}
 
+	if (!m_renderSystem->Initialize(m_videoSystem))
+	{
+		Log_FatalError("Render system initialization failed!");
+		return false;
+	}
+
 	return true;
 }
 
@@ -101,6 +110,8 @@ void CEngine::PreFrame()
 		m_state = EngineStateShutdown;
 	}
 
+	m_renderSystem->BeginFrame();
+
 	m_inFrame = true;
 }
 
@@ -110,12 +121,15 @@ void CEngine::Update()
 
 void CEngine::PostFrame()
 {
+	m_renderSystem->EndFrame();
+
 	m_inFrame = false;
 }
 
 void CEngine::ShutdownSystems()
 {
 	Log_Debug("Shutting down systems");
+	m_renderSystem->Shutdown();
 	m_videoSystem->Shutdown();
 }
 

@@ -79,6 +79,9 @@
 				^Libraries +
 				{
 					'Engine-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+					'Rhi-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+					'RhiVulkan-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+					'RenderSystem-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
 					'VideoSystem-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
 				}
 			}

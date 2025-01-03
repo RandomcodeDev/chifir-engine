@@ -1,0 +1,100 @@
+#once
+
+{
+	.ProjectName = 'RenderSystem'
+	.ProjectPath = 'rendersystem'
+
+	.ProjectConfigs = {}
+	ForEach(.BuildConfig in .BuildConfigs)
+	{
+		Using(.BuildConfig)
+
+		.CompilerOptions + ' -DIN_RENDER'
+
+		.ObjectDir = 'obj/$CompilerName$/$PlatformName$/$ArchName$/$ConfigName$'
+		.OutputDir = 'out/$CompilerName$/$PlatformName$/$ArchName$/$ConfigName$'
+
+		Unity('$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		{
+			.UnityInputFiles = 
+			{
+				'$ProjectPath$/interface.cpp',
+				'$ProjectPath$/render.cpp'
+			}
+
+			If (.PlatformName in .WindowsLike)
+			{
+				If (!.StaticBuild)
+				{
+					^UnityInputFiles +
+					{
+						'$ProjectPath$/../public/base/dllmain.cpp',
+					}
+				}
+			}
+			
+			.UnityOutputPath = '$ObjectDir$/$ProjectPath$/'
+			.UnityOutputPattern = '$ProjectName$_Unity*.cpp'
+		}
+
+		If (.StaticBuild)
+		{
+			Print('$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+			Library('$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+			{
+				.CompilerInputUnity = '$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+				.CompilerOutputPath = '$ObjectDir$/$ProjectPath$/'
+				.LibrarianOutput = '$OutputDir$/$ProjectName$$LibExtension$'
+			}
+		}
+
+		If (!.StaticBuild)
+		{
+			ObjectList('$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+			{
+				.CompilerInputUnity = '$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+				.CompilerOutputPath = '$ObjectDir$/$ProjectPath$/'
+			}
+
+			DLL('$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+			{
+				.PreBuildDependencies = {'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'}
+				.Libraries =
+				{
+					'$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+					'Base-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+					'CommonFiles-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+					'Rhi-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$',
+					//'Utility-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+				}
+				.LinkerOutput = '$OutputDir$/$ProjectName$$DLLExtension$'
+				If (.PlatformName in .WindowsLike)
+				{
+					^LinkerOptions + ' /DLL'
+				}
+
+				If (.PlatformName == 'Linux')
+				{
+					^LinkerOptions + ' -shared'
+				}
+			}
+		}
+
+		// This is the main target
+		Alias('$ProjectName$-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
+		{
+			.Targets = '$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+		}
+		^'Targets_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$' + {'$ProjectName$-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'}
+
+		.ProjectConfig = 
+		[
+			Using(.'Project_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$')
+			.Target = '$ProjectName$-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
+		]
+		^ProjectConfigs + .ProjectConfig
+	}
+
+	.Options = []
+	CreateVcxProject(.ProjectName, .ProjectPath, .ProjectConfigs, .Options)
+}

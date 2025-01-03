@@ -1,4 +1,4 @@
-// Definitions for importing/exporting functions from shared libraries
+/// Definitions for importing/exporting functions from shared libraries
 
 #pragma once
 

@@ -156,7 +156,7 @@ void CWindowsVideoSystem::UpdatePosition()
 	m_y = clientPos.y;
 }
 
-extern "C" BASEAPI bool GetDpiForWindow_Available();
+DECLARE_AVAILABLE(GetDpiForWindow);
 
 void CWindowsVideoSystem::UpdateDpi()
 {
@@ -197,7 +197,7 @@ LRESULT __stdcall CWindowsVideoSystem::WindowProc(HWND window, UINT msg, WPARAM 
 		u32 height = HIWORD(lparam);
 		if (videoSystem->m_width != width || videoSystem->m_height != height)
 		{
-			Log_Debug("Window resized from %ux%u to %ux%u", videoSystem->m_width, videoSystem->m_height, width, height);
+			Log_Trace("Window resized from %ux%u to %ux%u", videoSystem->m_width, videoSystem->m_height, width, height);
 			videoSystem->m_resized = true;
 		}
 		videoSystem->UpdateSize();

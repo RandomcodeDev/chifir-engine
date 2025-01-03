@@ -1,7 +1,7 @@
-// Compiler-specific defines.
+/// Compiler-specific defines.
 //
-// In general, anything non-standard should be behind a common macro, so that if in the future some compiler doesn't have
-// it, it can be replaced more easily.
+/// In general, anything non-standard should be behind a common macro, so that if in the future some compiler doesn't have
+/// it, it can be replaced more easily.
 
 #pragma once
 
@@ -44,23 +44,26 @@
 #define ALIAS(a, b)                   ALIAS_RAW(#a, #b)
 #define BREAKPOINT()                  __debugbreak()
 #define ASSUME(x)                     __assume(x)
-// MSVC likes to be told when an intrinsic function is defined
+/// MSVC likes to be told when an intrinsic function is defined
 #define DEFINE_INTRINSIC(x) __pragma(function(x))
 
 #define OPTIMIZE_OFF _Pragma("optimize(\"\", off)")
 #define OPTIMIZE_ON _Pragma("optimize(\"\", on)")
 
+/// Get the return address of the current function
+#define GetReturnAddress() reinterpret_cast<uptr>(_ReturnAddress())
+
 #define BYTESWAP16(x) _byteswap_ushort(x)
 #define BYTESWAP32(x) _byteswap_ulong(x)
 #define BYTESWAP64(x) _byteswap_uint64(x)
 
-// Initialize the stack security cookie, local to the current DLL/EXE
+/// Initialize the stack security cookie, local to the current DLL/EXE
 extern "C" void __cdecl __security_init_cookie();
 
-// Call global constructors, local to the current DLL/EXE
+/// Call global constructors, local to the current DLL/EXE
 extern void RunGlobalConstructors();
 
-// Call global destructors, local to the current DLL/EXE
+/// Call global destructors, local to the current DLL/EXE
 extern void RunGlobalDestructors();
 #else
 #ifdef CH_X86
@@ -78,22 +81,25 @@ extern void RunGlobalDestructors();
 #define OPTIMIZE_OFF _Pragma("clang optimize(\"\", off)")
 #define OPTIMIZE_ON _Pragma("clang optimize(\"\", on)")
 
+/// Get the return address of the current function
+#define GetReturnAddress() reinterpret_cast<uptr>(__builtin_return_address(0))
+
 #define BYTESWAP16(x) __builtin_bswap16(x)
 #define BYTESWAP32(x) __builtin_bswap32(x)
 #define BYTESWAP64(x) __builtin_bswap64(x)
 #endif
 
 #if __cplusplus < 201100L
-// Because = default is invalid in C++03
+/// Because = default is invalid in C++03
 #define DEFAULT                                                                                                                  \
 	{                                                                                                                            \
 	}
 #else
-// Because = default is invalid in C++03
+/// Because = default is invalid in C++03
 #define DEFAULT = default
 #endif
 
-// MSVC and Clang/GCC understand all of these equally
+/// MSVC and Clang/GCC understand all of these equally
 
 #define TYPEOF(x) __typeof__(x)
 #define NORETURN  ATTRIBUTE(noreturn)
@@ -105,14 +111,14 @@ extern void RunGlobalDestructors();
 #define ALIGNOF(x)  __alignof(x)
 #define FORCEINLINE __forceinline
 
-// Decorated function name
+/// Decorated function name
 #if defined _MSC_VER
 #define FUNCTION_NAME __FUNCSIG__
 #else
 #define FUNCTION_NAME __PRETTY_FUNCTION__
 #endif
 
-// Xbox 360 doesn't define this
+/// Xbox 360 doesn't define this
 #ifndef va_copy
 #define va_copy(dest, source) (dest) = (source)
 #endif

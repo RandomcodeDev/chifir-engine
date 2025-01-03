@@ -3,9 +3,15 @@
 #include "base.h"
 #include "types.h"
 
+#ifdef _MSC_VER
+#define RESTRICT_FUNC ATTRIBUTE(restrict)
+#else
+#defien RESTRICT_FUNC
+#endif
+
 extern "C"
 {
-	ATTRIBUTE(restrict) void* __cdecl malloc(usize size)
+	RESTRICT_FUNC void* __cdecl malloc(usize size)
 	{
 		return Base_Alloc(static_cast<ssize>(static_cast<usize>(size) & SSIZE_MAX));
 	}
@@ -15,12 +21,12 @@ extern "C"
 		Base_Free(block);
 	}
 
-	ATTRIBUTE(restrict) void* __cdecl calloc(usize count, usize size)
+	RESTRICT_FUNC void* __cdecl calloc(usize count, usize size)
 	{
 		return Base_Alloc(count * size);
 	}
 
-	ATTRIBUTE(restrict) void* __cdecl realloc(void* block, usize newSize)
+	RESTRICT_FUNC void* __cdecl realloc(void* block, usize newSize)
 	{
 		return Base_Realloc(block, static_cast<ssize>(static_cast<usize>(newSize) & SSIZE_MAX));
 	}

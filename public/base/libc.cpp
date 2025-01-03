@@ -1,4 +1,4 @@
-// libc functions that forward to Base functions for when libraries won't listen
+/// libc functions that forward to Base functions for when libraries won't listen
 
 #include "base.h"
 #include "basicstr.h"
@@ -6,8 +6,8 @@
 
 extern "C"
 {
-	// MSVC doesn't like these defined when /GL is in use
-#if !defined _MSC_VER || (defined _MSC_VER && !defined CH_DEBUG)
+	/// MSVC doesn't like these defined when /GL is in use
+#if !defined _MSC_VER || (defined _MSC_VER && defined CH_DEBUG)
 	DEFINE_INTRINSIC(memcmp)
 	s32 memcmp(const void* RESTRICT a, const void* RESTRICT b, usize size)
 	{
