@@ -6,7 +6,7 @@
 #ifdef _MSC_VER
 #define RESTRICT_FUNC ATTRIBUTE(restrict)
 #else
-#defien RESTRICT_FUNC
+#define RESTRICT_FUNC
 #endif
 
 extern "C"

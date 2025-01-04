@@ -5,11 +5,14 @@
 #include "base/types.h"
 #include "launcher.h"
 
+extern BASEAPI void Base_Internal_SetArgs(s32 argc, char* argv[]);
+
 void Startup(s32 argc, char* argv[], void (*DynamicAtExit)())
 {
 	char** envp = argv + argc + 1;
 	(void)envp;
 
+	Base_Internal_SetArgs(argc, argv);
 	s32 code = LauncherMain();
 
 	if (DynamicAtExit)
@@ -17,7 +20,7 @@ void Startup(s32 argc, char* argv[], void (*DynamicAtExit)())
 		DynamicAtExit();
 	}
 
-	// Base_SysCall is limited to Base.so
+	// Base_SysCall is internal to Base.so
 	__asm__("movl %1, %%ecx\n"
 			"movl %0, %%edi\n"
 			"syscall\n"

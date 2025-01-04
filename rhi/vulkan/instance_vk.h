@@ -35,4 +35,5 @@ class RHIAPI CVulkanRhiInstance : public IRhiInstance
   private:
     ILibrary* m_vulkanLib;
 	VkInstance m_instance;
+    VkDebugUtilsMessengerEXT m_debugMessenger;
 };

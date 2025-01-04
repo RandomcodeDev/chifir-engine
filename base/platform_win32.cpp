@@ -172,7 +172,6 @@ BASEAPI cstr Plat_GetHardwareDescription()
 	if (!s_hardwareDescription)
 	{
 #ifdef CH_XBOX360
-		// TODO: figure this out, should be easy
 		s_hardwareDescription = Base_StrFormat("XboxHardwareInfo 0x%X%X", XboxHardwareInfo[0], XboxHardwareInfo[1]);
 #else
 #ifdef CH_X86
@@ -184,7 +183,8 @@ BASEAPI cstr Plat_GetHardwareDescription()
 			"%s %s with %s of RAM (%s free)", g_cpuData.brand, g_cpuData.haveName ? g_cpuData.name : "Unknown",
 			Base_FormatSize(physicalMemory).Data(), Base_FormatSize(freeMemory).Data());
 #else
-		s_hardwareDescription = Base_StrClone("");
+		// TODO: ARM?
+		s_hardwareDescription = Base_StrClone("<unknown>");
 #endif
 #endif
 	}

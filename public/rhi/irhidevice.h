@@ -9,33 +9,33 @@
 #include "rhi.h"
 
 class IRhiCommandQueue;
-enum RhiCommandQueueType_t;
-enum RhiCommandQueueFlags_t;
+enum class RhiCommandQueueType_t;
+enum class RhiCommandQueueFlags_t;
 class IRhiCommandList;
-enum RhiCommandListFlags_t;
+enum class RhiCommandListFlags_t;
 class IRhiFence;
-enum RhiMemoryLocation_t;
-enum RhiMemoryUsage_t;
+enum class RhiMemoryLocation_t;
+enum class RhiMemoryUsage_t;
 class IRhiBuffer;
-enum RhiBufferFlags_t;
+enum class RhiBufferFlags_t;
 class IRhiImage;
-enum RhiImageType_t;
-enum RhiImageFormat_t;
-enum RhiImageFlags_t;
+enum class RhiImageType_t;
+enum class RhiImageFormat_t;
+enum class RhiImageFlags_t;
 class IRhiPipelineState;
 struct RhiPipelineStateDesc_t;
 
-enum RhiDeviceType_t
+enum class RhiDeviceType_t
 {
-	RhiDeviceTypeIntegrated,
-	RhiDeviceTypeDiscrete,
-	RhiDeviceTypeOther
+	Integrated,
+	Discrete,
+	Other
 };
 
 struct RhiDeviceInfo_t
 {
 	CString name;
-	
+
 	RhiDeviceType_t deviceType;
 
 	u32 vendorId;
@@ -67,8 +67,8 @@ class RHIAPI IRhiDevice
 
 	/// Create an image
 	virtual IRhiImage* CreateImage(
-		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType_t type,
-		RhiImageFormat_t format, RhiImageFlags_t flags) = 0;
+		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType_t type, RhiImageFormat_t format,
+		RhiImageFlags_t flags) = 0;
 
 	/// Create a pipeline state
 	virtual IRhiPipelineState* CreatePipelineState(const RhiPipelineStateDesc_t& desc) = 0;

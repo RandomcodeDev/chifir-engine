@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/compiler.h"
+#include "base/types.h"
 
 #ifdef IN_RHI
 #define RHIAPI DLLEXPORT
@@ -8,9 +9,9 @@
 #define RHIAPI DLLIMPORT
 #endif
 
-enum RhiBackendType_t
+enum class RhiBackendType_t : s32
 {
-	RhiBackendTypeNone,
-	RhiBackendTypeVulkan,
-	RhiBackendTypeUnknown,
+	None,
+	Vulkan,
+	Unknown,
 };

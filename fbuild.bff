@@ -3,7 +3,10 @@
 #include "fastbuild/Util.bff"
 
 .IncludeDirs = { 'public', 'private', 'private/public', 'public/xbox' }
-.ExternalIncludeDirs = { 'external', 'external/glad', 'external/phnt' }
+.ExternalIncludeDirs = { 'external', 'external/volk', 'external/vulkan', 'external/phnt' }
+
+// TODO: remove entirely or come up with a way to make this work
+#undef HAVE_MSVC_XBOX360
 
 #include "fastbuild/MSVC.bff"
 #include "fastbuild/Clang.bff"

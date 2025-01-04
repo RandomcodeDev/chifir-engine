@@ -99,7 +99,9 @@
 			{
 				^Libraries +
 				{
-					'$NintendoSDKLibraries$/$SwitchLibraryType$/libnn_init_memory.a'
+					'$NintendoSDKLibraries$/$SwitchLibraryType$/libnn_init_memory.a',
+					'$NintendoSDKLibraries$/$SwitchLibraryType$/opengl.nss',
+					'$NintendoSDKLibraries$/$SwitchLibraryType$/vulkan.nss',
 				}
 			}
 		}

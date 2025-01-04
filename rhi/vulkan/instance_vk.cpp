@@ -11,17 +11,21 @@ cstr REQUIRED_EXTENSIONS[] = {
 #elif defined CH_LINUX
 	VK_KHR_XCB_SURFACE_EXTENSION_NAME,
 #endif
-	VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
+#ifdef VULKAN_DEBUG
+	VK_EXT_DEBUG_UTILS_EXTENSION_NAME
+#endif
+};
 
 cstr REQUIRED_LAYERS[] = {
 #ifdef CH_SWITCH
 	"VK_LAYER_NN_vi_swapchain",
 #endif
-#ifdef CH_DEBUG
-	"VK_LAYER_KHRONOS_validation"
+#ifdef VULKAN_DEBUG
+	"VK_LAYER_KHRONOS_validation",
 #endif
-};
+	nullptr};
 
+#ifdef VULKAN_DEBUG
 cstr LAYER_NAME = "VK_LAYER_KHRONOS_validation";
 
 const VkBool32 SETTING_VALIDATE_CORE = VK_TRUE;
@@ -48,15 +52,24 @@ const VkLayerSettingEXT LAYER_SETTINGS[] = {
 	//{LAYER_NAME,				 "enables", VK_LAYER_SETTING_TYPE_STRING_EXT,      ARRAY_SIZE(SETTING_ENABLES), SETTING_ENABLES},
 	{LAYER_NAME,        "printf_to_stdout", VK_LAYER_SETTING_TYPE_BOOL32_EXT,                                1,        &SETTING_PRINTF_TO_STDOUT}
 };
+#endif
 
-GLADapiproc GladLoadFunction(void* userData, cstr name)
+PFN_vkVoidFunction VolkLoadFunction(void* userData, cstr name)
 {
 	ILibrary* lib = static_cast<ILibrary*>(userData);
-	return lib->GetSymbol<GLADapiproc>(name);
+	PFN_vkVoidFunction symbol = lib->GetSymbol<PFN_vkVoidFunction>(name);
+	if (!symbol)
+	{
+		Log_Error("Failed to get Vulkan symbol %s!", name);
+	}
+	return symbol;
 }
 
 bool CVulkanRhiInstance::Initialize()
 {
+	Log_Debug("Initializing Vulkan instance");
+
+	Log_Debug("Loading Vulkan runtime");
 	m_vulkanLib = Base_LoadLibrary("vulkan-1");
 	if (!m_vulkanLib)
 	{
@@ -64,12 +77,7 @@ bool CVulkanRhiInstance::Initialize()
 		return false;
 	}
 
-	if (!gladLoadVulkanUserPtr(VK_NULL_HANDLE, GladLoadFunction, m_vulkanLib))
-	{
-		Log_Error("Failed to get Vulkan API!");
-		Destroy();
-		return false;
-	}
+	volkInitializeCustom(VolkLoadFunction, m_vulkanLib);
 
 	VkApplicationInfo appInfo = {};
 	appInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -83,6 +91,22 @@ bool CVulkanRhiInstance::Initialize()
 	instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	instanceCreateInfo.pApplicationInfo = &appInfo;
 
+	instanceCreateInfo.ppEnabledExtensionNames = REQUIRED_EXTENSIONS;
+	instanceCreateInfo.enabledExtensionCount = ARRAY_SIZE(REQUIRED_EXTENSIONS);
+	Log_Debug("Required extensions:");
+	for (u32 i = 0; i < instanceCreateInfo.enabledExtensionCount; i++)
+	{
+		Log_Debug("\t%s", instanceCreateInfo.ppEnabledExtensionNames[i]);
+	}
+
+	instanceCreateInfo.ppEnabledLayerNames = REQUIRED_LAYERS;
+	instanceCreateInfo.enabledLayerCount = ARRAY_SIZE(REQUIRED_LAYERS) - 1;
+	Log_Debug("Required layers:");
+	for (u32 i = 0; i < instanceCreateInfo.enabledLayerCount; i++)
+	{
+		Log_Debug("\t%s", instanceCreateInfo.ppEnabledLayerNames[i]);
+	}
+
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
 	debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 	debugCreateInfo.messageSeverity =
@@ -92,21 +116,24 @@ bool CVulkanRhiInstance::Initialize()
 								  VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
 	debugCreateInfo.pfnUserCallback = VkDebugCallback;
 
-    VkLayerSettingsCreateInfoEXT layerSettingsCreateInfo = {};
-    layerSettingsCreateInfo.sType = VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT;
-    layerSettingsCreateInfo.pSettings = LAYER_SETTINGS;
-    layerSettingsCreateInfo.settingCount = ARRAY_SIZE(LAYER_SETTINGS);
-    layerSettingsCreateInfo.pNext = &debugCreateInfo;
-
-#ifdef CH_DEBUG
-#ifdef CH_SWITCH
-    instanceCreateInfo.pNext = &debugCreateInfo;
-#else
-    instanceCreateInfo.pNext = &layerSettingsCreateInfo;
-#endif
+#ifdef VULKAN_DEBUG
+	VkLayerSettingsCreateInfoEXT layerSettingsCreateInfo = {};
+	layerSettingsCreateInfo.sType = VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT;
+	layerSettingsCreateInfo.pSettings = LAYER_SETTINGS;
+	layerSettingsCreateInfo.settingCount = ARRAY_SIZE(LAYER_SETTINGS);
+	layerSettingsCreateInfo.pNext = &debugCreateInfo;
+	instanceCreateInfo.pNext = &layerSettingsCreateInfo;
 #endif
 
+	Log_Debug("Creating VkInstance");
 	VkResult result = vkCreateInstance(&instanceCreateInfo, &g_vkAllocationCallbacks, &m_instance);
+	if (result == VK_ERROR_LAYER_NOT_PRESENT)
+	{
+		Log_Debug("Validation layer(s) missing, retrying");
+		instanceCreateInfo.enabledLayerCount = 0;
+		result = vkCreateInstance(&instanceCreateInfo, &g_vkAllocationCallbacks, &m_instance);
+	}
+
 	if (result != VK_SUCCESS)
 	{
 		Log_Error("Failed to create VkInstance: %s", GetVkResultString(result));
@@ -114,11 +141,24 @@ bool CVulkanRhiInstance::Initialize()
 		return false;
 	}
 
+	Log_Debug("Loading additional Vulkan functions");
+	volkLoadInstance(m_instance);
+
+#ifdef VULKAN_DEBUG
+	Log_Debug("Creating real debug messenger");
+	vkCreateDebugUtilsMessengerEXT(m_instance, &debugMessengerCreateInfo, &g_vkAllocationCallbacks, &m_debugMessenger);
+#endif
+
 	return true;
 }
 
 void CVulkanRhiInstance::Destroy()
 {
+	if (m_debugMessenger)
+	{
+		vkDestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, &g_vkAllocationCallbacks);
+	}
+
 	if (m_instance)
 	{
 		vkDestroyInstance(m_instance, &g_vkAllocationCallbacks);

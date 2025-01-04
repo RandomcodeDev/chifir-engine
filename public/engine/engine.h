@@ -13,15 +13,15 @@ class IEngine : public IApplication
 	virtual void GetRequiredSystems(CVector<SystemDependency_t>& dependencies) = 0;
 	virtual s32 Run(const CVector<ISystem*>& systems /* TODO: , CCommandLine cmdLine */) = 0;
 
-	enum EngineState_t
+	enum class EngineState_t : s32
 	{
-		EngineStateUninitialized = 0, /// The engine hasn't been started yet
+		Uninitialized = 0, /// The engine hasn't been started yet
 
-		EngineStateStartup = 50, /// The engine is starting up
-		EngineStateShutdown, /// The engine is shutting down
+		Startup = 50, /// The engine is starting up
+		Shutdown, /// The engine is shutting down
 
-		EngineStateRunning = 100, /// The engine is running and active
-		EngineStateInactive, /// The engine is running but not active (i.e. the window is unfocused)
+		Running = 100, /// The engine is running and active
+		Inactive, /// The engine is running but not active (i.e. the window is unfocused)
 	};
 
 	/// Get the engine's current state

@@ -20,18 +20,25 @@ class IRenderSystem : public ISystem
 	virtual void BeginFrame() = 0;
 	virtual void EndFrame() = 0;
 
-    virtual cstr GetName() const
-    {
-        return "Render";
-    }
+	virtual cstr GetName() const
+	{
+		return "Render";
+	}
 
-    virtual u32 GetVersion() const
-    {
-        return VERSION;
-    }
+	virtual u32 GetVersion() const
+	{
+		return VERSION;
+	}
 
 	static const u32 VERSION = 1;
 
   private:
-	virtual bool Initialize() { return false; };
+	virtual bool Initialize()
+	{
+		return false;
+	};
 };
+
+#ifdef CH_STATIC
+extern ISystem* CreateRenderSystem();
+#endif

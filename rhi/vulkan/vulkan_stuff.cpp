@@ -89,7 +89,7 @@ cstr GetVkResultString(VkResult result)
 		X(VK_OPERATION_DEFERRED_KHR)
 		X(VK_OPERATION_NOT_DEFERRED_KHR)
 		X(VK_PIPELINE_COMPILE_REQUIRED_EXT)
-#ifndef PURPL_SWITCH
+#ifndef CH_SWITCH
 		X(VK_ERROR_IMAGE_USAGE_NOT_SUPPORTED_KHR)
 		X(VK_ERROR_VIDEO_PICTURE_LAYOUT_NOT_SUPPORTED_KHR)
 		X(VK_ERROR_VIDEO_PROFILE_OPERATION_NOT_SUPPORTED_KHR)
@@ -116,19 +116,19 @@ VkBool32 VKAPI_CALL VkDebugCallback(
 	switch (severity)
 	{
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-		level = LogLevelTrace;
+		level = LogLevel_t::Trace;
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-		level = LogLevelDebug;
+		level = LogLevel_t::Debug;
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-		level = LogLevelInfo;
+		level = LogLevel_t::Info;
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-		level = LogLevelWarning;
+		level = LogLevel_t::Warning;
 		break;
 	default:
-		level = LogLevelDebug;
+		level = LogLevel_t::Debug;
 		break;
 	}
 
@@ -136,9 +136,9 @@ VkBool32 VKAPI_CALL VkDebugCallback(
 		typeStr, ARRAY_SIZE(typeStr), "%s%s%smessage", (types & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT) ? "general " : "",
 		(types & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT) ? "performance " : "",
 		(types & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT) ? "validation " : "");
-	typeStr[0] = (CHAR)Base_ToUpper(typeStr[0]);
+	typeStr[0] = Base_ToUpper(typeStr[0]);
 	// TODO: symbol name getting?
-	Log_Write(level, GetReturnAddress(), true, "Vulkan", typeStr, callbackData->pMessage);
+	Log_Write(level, Plat_GetReturnAddress(), true, "Vulkan", typeStr, callbackData->pMessage);
 
-	return TRUE;
+	return true;
 }

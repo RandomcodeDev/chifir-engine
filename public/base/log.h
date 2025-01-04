@@ -8,14 +8,14 @@
 #include "base/types.h"
 
 /// Log message priority level
-enum LogLevel_t
+enum class LogLevel_t : s32
 {
-	LogLevelTrace,
-	LogLevelDebug,
-	LogLevelInfo,
-	LogLevelWarning,
-	LogLevelError,
-	LogLevelFatalError
+	Trace = 0,
+	Debug,
+	Info,
+	Warning,
+	Error,
+	FatalError
 };
 
 /// Represents a log message
@@ -85,7 +85,7 @@ extern BASEAPI void Log_Write(const LogMessage_t& message);
 /// Write a log message, and format it
 extern BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr file, cstr function, cstr message, ...);
 
-#define Log_Message(level, ...) Log_Write(LogLevel##level, __LINE__, false, __FILE__, FUNCTION_NAME, __VA_ARGS__)
+#define Log_Message(level, ...) Log_Write(LogLevel_t::level, __LINE__, false, __FILE__, FUNCTION_NAME, __VA_ARGS__)
 #define Log_Trace(...)          Log_Message(Trace, __VA_ARGS__)
 #define Log_Debug(...)          Log_Message(Debug, __VA_ARGS__)
 #define Log_Info(...)           Log_Message(Info, __VA_ARGS__)
@@ -95,5 +95,5 @@ extern BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, c
 
 #define LOG_FORMAT(color, msg)                                                                                                   \
 	(msg).isAddress ? "[%s] [%s] [%s!0x%llX %s] %s\n" : "[%s] [%s] [%s:%u %s] %s\n",                                             \
-		(color) ? LEVEL_COLORED_NAMES[(msg).level] : LEVEL_NAMES[(msg).level], Base_FormatDateTime((msg).time).Data(),           \
+		(color) ? LEVEL_COLORED_NAMES[s32((msg).level)] : LEVEL_NAMES[s32((msg).level)], Base_FormatDateTime((msg).time).Data(),           \
 		(msg).file, (msg).location, (msg).function, (msg).message

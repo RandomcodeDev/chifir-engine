@@ -58,7 +58,7 @@ extern BASEAPI NORETURN void Base_AbortSafe(s32 error, cstr msg);
 extern BASEAPI NORETURN void Base_Quit(cstr msg, ...);
 
 /// Swap
-template <typename T> FORCEINLINE void Swap(T& left, T& right)
+template <typename T> constexpr void Swap(T& left, T& right)
 {
 	T swap = left;
 	left = right;
@@ -66,19 +66,19 @@ template <typename T> FORCEINLINE void Swap(T& left, T& right)
 }
 
 /// Maximum of two values
-template <typename T> FORCEINLINE T Max(const T& left, const T& right)
+template <typename T> constexpr T Max(const T& left, const T& right)
 {
 	return left > right ? left : right;
 }
 
 /// Minimum of two values
-template <typename T> FORCEINLINE T Min(const T& left, const T& right)
+template <typename T> constexpr T Min(const T& left, const T& right)
 {
 	return left < right ? left : right;
 }
 
 /// Clamp a value within range
-template <typename T> FORCEINLINE T Clamp(const T& value, const T& min, const T& max)
+template <typename T> constexpr T Clamp(const T& value, const T& min, const T& max)
 {
 	return Max(min, Min(value, max));
 }
@@ -107,7 +107,7 @@ extern BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment = 8);
 
 /// Allocate an array of T with count elements, needs to be initialized with placement new
 /// if constructors matter.
-template <typename T> FORCEINLINE T* Base_Alloc(ssize count)
+template <typename T> constexpr T* Base_Alloc(ssize count)
 {
 	return reinterpret_cast<T*>(Base_Alloc(count * SIZEOF(T), ALIGNOF(T)));
 }

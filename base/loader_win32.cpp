@@ -380,6 +380,7 @@ void* CWindowsLibrary::GetSymbol(cstr name)
 	if (!NT_SUCCESS(status))
 	{
 		LastNtStatus() = status;
+		Log_Error("Failed to get address of symbol %s: NTSTATUS 0x%08X", name, status);
 		return nullptr;
 	}
 

@@ -4,7 +4,7 @@
 #include "rendersystem/irendersystem.h"
 #include "videosystem/ivideosystem.h"
 
-CEngine::CEngine() : m_state(EngineStateUninitialized), m_videoSystem(nullptr)
+CEngine::CEngine() : m_state(EngineState_t::Uninitialized), m_videoSystem(nullptr)
 {
 }
 
@@ -26,7 +26,7 @@ void CEngine::GetRequiredSystems(CVector<SystemDependency_t>& dependencies)
 s32 CEngine::Run(const CVector<ISystem*>& systems)
 {
 	Log_Info("Initializing engine");
-	m_state = EngineStateStartup;
+	m_state = EngineState_t::Startup;
 
 	if (!InitializeSaveFilesystem())
 	{
@@ -47,8 +47,8 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	}
 
 	Log_Info("Initialization done, entering main loop");
-	m_state = EngineStateRunning;
-	while (m_state >= EngineStateRunning)
+	m_state = EngineState_t::Running;
+	while (m_state >= EngineState_t::Running)
 	{
 		CheckState();
 
@@ -58,7 +58,7 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	}
 
 	Log_Info("Shutting down");
-	m_state = EngineStateShutdown;
+	m_state = EngineState_t::Shutdown;
 
 	ShutdownSystems();
 
@@ -107,7 +107,7 @@ void CEngine::PreFrame()
 {
 	if (!m_videoSystem->Update())
 	{
-		m_state = EngineStateShutdown;
+		m_state = EngineState_t::Shutdown;
 	}
 
 	m_renderSystem->BeginFrame();
@@ -137,19 +137,19 @@ void CEngine::CheckState()
 {
 	// TODO: lock engine state here
 
-	if (m_state == EngineStateRunning)
+	if (m_state == EngineState_t::Running)
 	{
 		if (!m_videoSystem->Focused())
 		{
-			m_state = EngineStateInactive;
+			m_state = EngineState_t::Inactive;
 		}
 	}
 
-	if (m_state == EngineStateInactive)
+	if (m_state == EngineState_t::Inactive)
 	{
 		if (m_videoSystem->Focused())
 		{
-			m_state = EngineStateRunning;
+			m_state = EngineState_t::Running;
 		}
 	}
 

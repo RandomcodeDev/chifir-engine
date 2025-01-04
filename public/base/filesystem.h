@@ -11,14 +11,14 @@
 class IDirIter;
 
 /// Type of a file
-enum FileType_t
+enum class FileType_t : s32
 {
-	FileTypeNormal = 0,
-	FileTypeDirectory,
-	FileTypeSymlink,
-	FileTypeSystem,
-	FileTypeDevice,
-	FileTypeUnknown
+	Normal = 0,
+	Directory,
+	Symlink,
+	System,
+	Device,
+	Unknown
 };
 
 /// Represents a read-only filesystem

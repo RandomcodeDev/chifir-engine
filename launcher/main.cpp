@@ -7,6 +7,7 @@
 #include "isystem.h"
 #include "launcher.h"
 #include "utility/utility.h"
+#include "rendersystem/irendersystem.h"
 #include "videosystem/ivideosystem.h"
 
 #ifdef CH_STATIC
@@ -87,6 +88,7 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 
 	CVector<ISystem*> systems;
 	systems.Add(CreateVideoSystem());
+	systems.Add(CreateRenderSystem());
 
 	IApplication* app = CreateEngine();
 #else

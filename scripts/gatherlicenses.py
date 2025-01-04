@@ -25,8 +25,9 @@ def main(argc, argv):
         print(f"{dep}: {info}")
         with open(info["license"]) as f:
             license = f.read()
-        path = f"{dep}.txt"
-        data = f"Dependency: {info["name"]}\nAuthor: {info["author"]}\nPath: {info["path"]}\n\nLicense:\n{license}"
+        license_ext = os.path.splitext(info["license"])
+        path = f"{dep}{license_ext[1] if len(license_ext[1]) else ".txt"}"
+        data = f"Dependency: {info["name"]}\nAuthor: {info["author"]}\nUsed for: {info["use"]}\nPath: {info["path"]}\n\nLicense:\n{license}"
         if args.compress:
             output.writestr(path, data)
         else:

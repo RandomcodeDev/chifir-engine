@@ -51,7 +51,7 @@
 #define OPTIMIZE_ON _Pragma("optimize(\"\", on)")
 
 /// Get the return address of the current function
-#define GetReturnAddress() reinterpret_cast<uptr>(_ReturnAddress())
+#define Plat_GetReturnAddress() reinterpret_cast<uptr>(_ReturnAddress())
 
 #define BYTESWAP16(x) _byteswap_ushort(x)
 #define BYTESWAP32(x) _byteswap_ulong(x)
@@ -78,11 +78,11 @@ extern void RunGlobalDestructors();
 #define ASSUME(x)    __builtin_assume(x)
 #define DEFINE_INTRINSIC(x)
 
-#define OPTIMIZE_OFF _Pragma("clang optimize(\"\", off)")
-#define OPTIMIZE_ON _Pragma("clang optimize(\"\", on)")
+#define OPTIMIZE_OFF _Pragma("clang optimize off")
+#define OPTIMIZE_ON _Pragma("clang optimize on")
 
 /// Get the return address of the current function
-#define GetReturnAddress() reinterpret_cast<uptr>(__builtin_return_address(0))
+#define Plat_GetReturnAddress() reinterpret_cast<uptr>(__builtin_return_address(0))
 
 #define BYTESWAP16(x) __builtin_bswap16(x)
 #define BYTESWAP32(x) __builtin_bswap32(x)

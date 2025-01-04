@@ -25,7 +25,7 @@ class CEngine : public IEngine
 
 	void Quit()
 	{
-		m_state = EngineStateShutdown;
+		m_state = EngineState_t::Shutdown;
 	}
 
   private:

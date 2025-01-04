@@ -39,6 +39,11 @@
 				.UnityOutputPath = '$ObjectDir$/$ProjectPath$/'
 				.UnityOutputPattern = '$ProjectName$_Unity*.cpp'
 			}
+			
+			.CompilerInputFiles =
+			{
+				'$ProjectPath$/../../external/volk/volk.cpp'
+			}
 
 			If (.StaticBuild)
 			{
@@ -46,10 +51,6 @@
 				Library('$ProjectName$-DLL-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
 				{
 					.CompilerInputUnity = '$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
-					.CompilerInputFiles =
-					{
-						'$ProjectPath$/../../external/glad/vulkan.c'
-					}
 					.CompilerOutputPath = '$ObjectDir$/$ProjectPath$/'
 					.LibrarianOutput = '$OutputDir$/$ProjectName$$LibExtension$'
 				}
@@ -60,10 +61,6 @@
 				ObjectList('$ProjectName$-Objs-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$')
 				{
 					.CompilerInputUnity = '$ProjectName$-Unity-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$'
-					.CompilerInputFiles =
-					{
-						'$ProjectPath$/../../external/glad/vulkan.cpp'
-					}
 					.CompilerOutputPath = '$ObjectDir$/$ProjectPath$/'
 				}
 

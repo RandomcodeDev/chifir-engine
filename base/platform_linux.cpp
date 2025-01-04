@@ -49,6 +49,25 @@ BASEAPI void Plat_Shutdown()
 {
 }
 
+s32 s_argc;
+char** s_argv;
+
+BASEAPI void Base_Internal_SetArgs(s32 argc, char* argv[])
+{
+	s_argc = argc;
+	s_argv = argv;
+}
+
+BASEAPI void Plat_GetArgs(CVector<CString>& args)
+{
+	args.Resize(s_argc);
+	// have to add one at a time to construct strings
+	for (s32 i = 0; i < s_argc; i++)
+	{
+		args[i] = s_argv[i];
+	}
+}
+
 // TODO: copy code from Purpl
 BASEAPI cstr Plat_GetSystemDescription()
 {
