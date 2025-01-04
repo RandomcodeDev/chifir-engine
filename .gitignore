@@ -18,6 +18,7 @@ compile_commands.json
 /.vscode/settings.json
 /.vscode/c_cpp_properties.json
 *cache*
+*.zip
 
 
 # Added by cargo
