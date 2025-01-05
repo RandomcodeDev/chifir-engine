@@ -40,6 +40,7 @@ extern "C"
 		__security_init_cookie();
 
 		RunGlobalConstructors();
+		RunThreadConstructors();
 		LauncherMain();
 		RunGlobalDestructors();
 

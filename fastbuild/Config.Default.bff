@@ -3,6 +3,10 @@
 #once
 
 .GameName = 'FalseKing'
+.GameDisplayName = 'False King'
+
+// make this the name of the folder you cloned the repo in, this saves space in log messages
+.RepoName = 'chifir-engine'
 
 .NintendoSDKRoot = 'C:\Nintendo\NintendoSDK'
 .SwitchTitleID = '0100694203488000'
@@ -12,7 +16,7 @@
 .VSBasePath = 'C:\Program Files\Microsoft Visual Studio\2022\Community'
 .VSToolset = 'v143'
 .VSSolutionVersion = '16'
-.MSVCVersion = '14.41.34120'
+.MSVCVersion = '14.42.34433'
 .WindowsSDKBasePath = 'C:\Program Files (x86)\Windows Kits\10'
 .WindowsSDKVersion = '10.0.22621.0'
 .WindowsLibPath = '$WindowsSDKBasePath$\Lib\$WindowsSDKVersion$\um'

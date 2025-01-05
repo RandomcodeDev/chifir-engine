@@ -65,6 +65,9 @@ extern void RunGlobalConstructors();
 
 /// Call global destructors, local to the current DLL/EXE
 extern void RunGlobalDestructors();
+
+/// Call thread constructors
+extern void RunThreadConstructors();
 #else
 #ifdef CH_X86
 #include <cpuid.h>

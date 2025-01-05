@@ -18,7 +18,7 @@ CWin32Filesystem::CWin32Filesystem(cstr root) : CBaseRawFilesystem(root)
 	dwstr fullRoot = Base_Alloc<wchar_t>(rootLength);
 	if (!fullRoot)
 	{
-		Base_Quit("Failed to allocate %zu wchars for path %s!", rootLength, m_root);
+		Base_Quit("Failed to allocate %u wchars for path %s!", rootLength, m_root);
 	}
 
 	RtlGetFullPathName_U(unicodeRoot.Buffer, rootLength - 4 * sizeof(wchar_t), fullRoot + 4, nullptr);
@@ -102,7 +102,7 @@ bool CWin32Filesystem::Read(cstr path, CVector<u8>& buffer, ssize count, ssize o
 	NtClose(file);
 	if (!NT_SUCCESS(status))
 	{
-		Log_Error("Failed to read %zu bytes from offset 0x%X in %s/%s: NTSTATUS 0x%08X", size, offset, m_root, path, status);
+		Log_Error("Failed to read %zd bytes from offset 0x%X in %s/%s: NTSTATUS 0x%08X", size, offset, m_root, path, status);
 		buffer.Empty();
 		return false;
 	}
@@ -122,27 +122,27 @@ FileType_t CWin32Filesystem::GetFileType(cstr path)
 	if (!NT_SUCCESS(status))
 	{
 		Log_Error("Failed to get attributes of %s/%s: NTSTATUS 0x%08X", m_root, path, status);
-		return FileTypeUnknown;
+		return FileType_t::Unknown;
 	}
 
-	FileType_t type = FileTypeNormal;
+	FileType_t type = FileType_t::Normal;
 	if (info.FileAttributes & FILE_ATTRIBUTE_DEVICE)
 	{
-		type = FileTypeDevice;
+		type = FileType_t::Device;
 	}
 	else if (info.FileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 	{
-		type = FileTypeDirectory;
+		type = FileType_t::Directory;
 	}
 #ifndef CH_XBOX360
 	else if (info.FileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
 	{
-		type = FileTypeSymlink;
+		type = FileType_t::Symlink;
 	}
 #endif
 	else if (info.FileAttributes & FILE_ATTRIBUTE_SYSTEM)
 	{
-		type = FileTypeSystem;
+		type = FileType_t::System;
 	}
 
 	return type;
@@ -199,7 +199,7 @@ ssize CWin32Filesystem::Write(cstr path, const void* data, ssize count, bool app
 	{
 		m_safe = false;
 		Log_Error(
-			"Failed to write %zu bytes to %s/%s at offset 0x%X: NTSTATUS 0x%08X", count, m_root, path, largeOffset.QuadPart,
+			"Failed to write %zd bytes to %s/%s at offset 0x%X: NTSTATUS 0x%08X", count, m_root, path, largeOffset.QuadPart,
 			status);
 		m_safe = true;
 		NtClose(file);

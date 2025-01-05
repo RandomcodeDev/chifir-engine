@@ -122,6 +122,7 @@ void volkInitializeCustom(PFN_vkVoidFunction (*handler)(void*, const char*), voi
 
 	//loadedModule = data;
 	volkGenLoadLoader(data, handler);
+	vkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(handler(data, "vkGetInstanceProcAddr"));
 }
 
 void volkFinalize(void)

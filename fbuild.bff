@@ -2,6 +2,7 @@
 
 #include "fastbuild/Util.bff"
 
+.Defines = { 'GAME_NAME=\"$GameName$\"', 'GAME_DISPLAY_NAME=\"$GameDisplayName$\"', 'REPO_NAME=\"$RepoName$\"' }
 .IncludeDirs = { 'public', 'private', 'private/public', 'public/xbox' }
 .ExternalIncludeDirs = { 'external', 'external/volk', 'external/vulkan', 'external/phnt' }
 

@@ -2,6 +2,15 @@
 #include "base/log.h"
 #include "base/string.h"
 
+void CTestApp::Setup(const CVector<CString>& args)
+{
+	Log_Info("Got %zd arguments:", args.Size());
+	for (ssize i = 0; i < args.Size(); i++)
+	{
+		Log_Info("\t%s\n", args[i].Data());
+	}
+}
+
 void CTestApp::GetRequiredSystems(CVector<SystemDependency_t>& dependencies)
 {
 	(void)dependencies;

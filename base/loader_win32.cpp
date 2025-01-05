@@ -51,9 +51,11 @@ MAKE_STUB(NtReadFile, __stdcall, @36)
 MAKE_STUB(NtTerminateProcess, __stdcall, @8)
 MAKE_STUB(NtWriteFile, __stdcall, @36)
 MAKE_STUB(RtlAnsiStringToUnicodeString, __stdcall, @12)
-MAKE_STUB(RtlFreeUnicodeString, __stdcall, @4)
+MAKE_STUB(RtlFreeAnsiString, __stdcall, @4)
 MAKE_STUB(RtlFreeHeap, __stdcall, @12)
+MAKE_STUB(RtlFreeUnicodeString, __stdcall, @4)
 MAKE_STUB(RtlGetFullPathName_U, __stdcall, @16)
+MAKE_STUB(RtlUnicodeStringToAnsiString, __stdcall, @12)
 
 // Console stuff is all CSR calls I shouldn't rewrite
 MAKE_STUB(AllocConsole, __stdcall, @0)
@@ -204,9 +206,11 @@ bool Base_InitLoader()
 	GET_FUNCTION(&ntDll, NtQuerySystemInformation)
 	GET_FUNCTION(&ntDll, NtReadFile)
 	GET_FUNCTION(&ntDll, NtWriteFile)
+	GET_FUNCTION(&ntDll, RtlFreeAnsiString)
 	GET_FUNCTION(&ntDll, RtlFreeHeap)
 	GET_FUNCTION(&ntDll, RtlGetFullPathName_U)
 	GET_FUNCTION(&ntDll, RtlTimeToTimeFields)
+	GET_FUNCTION(&ntDll, RtlUnicodeStringToAnsiString)
 
 	// So unloading it when ntDll goes out of scope doesn't mess anything up, cause the loader wasn't used to "load" it
 	LdrAddRefDll(0, s_ntDllBase);

@@ -12,14 +12,16 @@ class IApplication
   public:
 	virtual ~IApplication() DEFAULT;
 
+	/// Prepare the application to run
+	virtual void Setup(const CVector<CString>& args) = 0;
+
 	/// Get the application's required systems
 	virtual void GetRequiredSystems(CVector<SystemDependency_t>& dependencies) = 0;
 
 	/// Run the application
 	/// systems is in the same order as the list from GetRequiredSystems, with nullptrs for optional systems that couldn't be
 	/// loaded
-	/// TODO: command line parsing
-	virtual s32 Run(const CVector<ISystem*>& systems /* TODO: , CCommandLine cmdLine */) = 0;
+	virtual s32 Run(const CVector<ISystem*>& systems) = 0;
 };
 
 /// Exported by DLLs that contain an application as "CreateInterface"

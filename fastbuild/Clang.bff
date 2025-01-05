@@ -37,7 +37,10 @@
 					 + ' -Wno-unused-function' // I don't care, that's the linker's problem
 					 + ' -Wno-unknown-attributes'
 
-					 + ' -DGAME_NAME=\"$GameName$\"'
+	ForEach(.Define in .Defines)
+	{
+		^CompilerOptions + ' -D"$Define$"'
+	}
 
 	ForEach(.IncludeDir in .IncludeDirs)
 	{

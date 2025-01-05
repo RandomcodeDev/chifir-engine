@@ -4,23 +4,36 @@
 #include "rendersystem/irendersystem.h"
 #include "videosystem/ivideosystem.h"
 
-CEngine::CEngine() : m_state(EngineState_t::Uninitialized), m_videoSystem(nullptr)
+CEngine::CEngine() : m_state(EngineState_t::Uninitialized), m_headless(false), m_renderSystem(nullptr), m_videoSystem(nullptr)
 {
 }
 
 CEngine::~CEngine()
 {
-	delete m_saveFilesystem;
+}
+
+void CEngine::Setup(const CVector<CString>& args)
+{
+	for (ssize i = 0; i < args.Size(); i++)
+	{
+		if (args[i] == "-headless")
+		{
+			m_headless = true;
+		}
+	}
 }
 
 void CEngine::GetRequiredSystems(CVector<SystemDependency_t>& dependencies)
 {
-	static const SystemDependency_t deps[] = {
-		{"VideoSystem", IVideoSystem::VERSION, true, false},
-		{"RenderSystem", IRenderSystem::VERSION, true, false}
+	static const SystemDependency_t CLIENT_DEPS[] = {
+		{ "VideoSystem",  IVideoSystem::VERSION, true, false},
+        {"RenderSystem", IRenderSystem::VERSION, true, false}
     };
 
-	dependencies.Add(deps, ARRAY_SIZE(deps));
+	if (!m_headless)
+	{
+		dependencies.Add(CLIENT_DEPS, ARRAY_SIZE(CLIENT_DEPS));
+	}
 }
 
 s32 CEngine::Run(const CVector<ISystem*>& systems)
@@ -36,10 +49,17 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	AddLogWriters();
 
 	Log_Info("Engine compiled by " COMPILER " running on %s on %s", Plat_GetSystemDescription(), Plat_GetHardwareDescription());
+	if (m_headless)
+	{
+		Log_Info("Running in headless mode");
+	}
 
 	// same order as GetRequiredSystems
-	m_videoSystem = reinterpret_cast<IVideoSystem*>(systems[0]);
-	m_renderSystem = reinterpret_cast<IRenderSystem*>(systems[1]);
+	if (!m_headless)
+	{
+		m_videoSystem = reinterpret_cast<IVideoSystem*>(systems[0]);
+		m_renderSystem = reinterpret_cast<IRenderSystem*>(systems[1]);
+	}
 
 	if (!InitializeSystems())
 	{
@@ -88,16 +108,20 @@ void CEngine::AddLogWriters()
 bool CEngine::InitializeSystems()
 {
 	Log_Debug("Initializing systems");
-	if (!m_videoSystem->Initialize())
-	{
-		Log_FatalError("Video system initialization failed!");
-		return false;
-	}
 
-	if (!m_renderSystem->Initialize(m_videoSystem))
+	if (!m_headless)
 	{
-		Log_FatalError("Render system initialization failed!");
-		return false;
+		if (!m_videoSystem->Initialize())
+		{
+			Log_FatalError("Video system initialization failed!");
+			return false;
+		}
+
+		if (!m_renderSystem->Initialize(m_videoSystem))
+		{
+			Log_FatalError("Render system initialization failed!");
+			return false;
+		}
 	}
 
 	return true;
@@ -105,12 +129,15 @@ bool CEngine::InitializeSystems()
 
 void CEngine::PreFrame()
 {
-	if (!m_videoSystem->Update())
+	if (!m_headless)
 	{
-		m_state = EngineState_t::Shutdown;
-	}
+		if (!m_videoSystem->Update())
+		{
+			m_state = EngineState_t::Shutdown;
+		}
 
-	m_renderSystem->BeginFrame();
+		m_renderSystem->BeginFrame();
+	}
 
 	m_inFrame = true;
 }
@@ -121,7 +148,10 @@ void CEngine::Update()
 
 void CEngine::PostFrame()
 {
-	m_renderSystem->EndFrame();
+	if (!m_headless)
+	{
+		m_renderSystem->EndFrame();
+	}
 
 	m_inFrame = false;
 }
@@ -129,27 +159,33 @@ void CEngine::PostFrame()
 void CEngine::ShutdownSystems()
 {
 	Log_Debug("Shutting down systems");
-	m_renderSystem->Shutdown();
-	m_videoSystem->Shutdown();
+	if (!m_headless)
+	{
+		m_renderSystem->Shutdown();
+		m_videoSystem->Shutdown();
+	}
 }
 
 void CEngine::CheckState()
 {
 	// TODO: lock engine state here
 
-	if (m_state == EngineState_t::Running)
+	if (!m_headless)
 	{
-		if (!m_videoSystem->Focused())
+		if (m_state == EngineState_t::Running)
 		{
-			m_state = EngineState_t::Inactive;
+			if (!m_videoSystem->Focused())
+			{
+				m_state = EngineState_t::Inactive;
+			}
 		}
-	}
 
-	if (m_state == EngineState_t::Inactive)
-	{
-		if (m_videoSystem->Focused())
+		if (m_state == EngineState_t::Inactive)
 		{
-			m_state = EngineState_t::Running;
+			if (m_videoSystem->Focused())
+			{
+				m_state = EngineState_t::Running;
+			}
 		}
 	}
 

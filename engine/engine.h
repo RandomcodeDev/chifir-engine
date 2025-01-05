@@ -15,8 +15,14 @@ class CEngine : public IEngine
 	CEngine();
 	~CEngine();
 
+	void Setup(const CVector<CString>& args);
 	void GetRequiredSystems(CVector<SystemDependency_t>& dependencies);
 	s32 Run(const CVector<ISystem*>& systems /* TODO: , CCommandLine cmdLine */);
+
+	bool Headless()
+	{
+		return m_headless;
+	}
 
 	EngineState_t GetState()
 	{
@@ -30,6 +36,7 @@ class CEngine : public IEngine
 
   private:
 	EngineState_t m_state;
+	bool m_headless;
 	bool m_inFrame;
 
 	//IFilesystem* m_mainFilesystem;

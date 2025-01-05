@@ -49,10 +49,12 @@ MAKE_STUB NtReadFile
 MAKE_STUB NtTerminateProcess
 MAKE_STUB NtWriteFile
 MAKE_STUB RtlAnsiStringToUnicodeString
+MAKE_STUB RtlFreeAnsiString
 MAKE_STUB RtlFreeHeap
 MAKE_STUB RtlFreeUnicodeString
 MAKE_STUB RtlGetFullPathName_U
 MAKE_STUB RtlTimeToTimeFields
+MAKE_STUB RtlUnicodeStringToAnsiString
 
 ; kernel32 stubs
 MAKE_STUB AllocConsole

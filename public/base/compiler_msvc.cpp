@@ -14,31 +14,31 @@ typedef void (*_PVFI)(int);
 
 extern "C"
 {
-	/// C initializers
-#pragma section(".CRT$XIA", long, read)
-	__declspec(allocate(".CRT$XIA")) _PIFV __xi_a[] = {0};
-#pragma section(".CRT$XIZ", long, read)
-	__declspec(allocate(".CRT$XIZ")) _PIFV __xi_z[] = {0};
-
-	/// C++ constructors
-#pragma section(".CRT$XCA", long, read)
-	__declspec(allocate(".CRT$XCA")) _PVFV __xc_a[] = {0};
-#pragma section(".CRT$XCZ", long, read)
-	__declspec(allocate(".CRT$XCZ")) _PVFV __xc_z[] = {0};
-
-	/// C pre-terminators
-#pragma section(".CRT$XPA", long, read)
-	__declspec(allocate(".CRT$XPA")) _PVFV __xp_a[] = {0};
-#pragma section(".CRT$XPZ", long, read)
-	__declspec(allocate(".CRT$XPZ")) _PVFV __xp_z[] = {0};
-
-	/// C terminators
-#pragma section(".CRT$XTA", long, read)
-	__declspec(allocate(".CRT$XTA")) _PVFV __xt_a[] = {0};
-#pragma section(".CRT$XTZ", long, read)
-	__declspec(allocate(".CRT$XTZ")) _PVFV __xt_z[] = {0};
-
 #pragma comment(linker, "/merge:.CRT=.rdata")
+
+	// C initializers
+#pragma section(".CRT$XIA", long, read)
+	ATTRIBUTE(allocate(".CRT$XIA")) _PIFV __xi_a[] = {0};
+#pragma section(".CRT$XIZ", long, read)
+	ATTRIBUTE(allocate(".CRT$XIZ")) _PIFV __xi_z[] = {0};
+
+	// C++ constructors
+#pragma section(".CRT$XCA", long, read)
+	ATTRIBUTE(allocate(".CRT$XCA")) _PVFV __xc_a[] = {0};
+#pragma section(".CRT$XCZ", long, read)
+	ATTRIBUTE(allocate(".CRT$XCZ")) _PVFV __xc_z[] = {0};
+
+	// C pre-terminators
+#pragma section(".CRT$XPA", long, read)
+	ATTRIBUTE(allocate(".CRT$XPA")) _PVFV __xp_a[] = {0};
+#pragma section(".CRT$XPZ", long, read)
+	ATTRIBUTE(allocate(".CRT$XPZ")) _PVFV __xp_z[] = {0};
+
+	// C terminators
+#pragma section(".CRT$XTA", long, read)
+	ATTRIBUTE(allocate(".CRT$XTA")) _PVFV __xt_a[] = {0};
+#pragma section(".CRT$XTZ", long, read)
+	ATTRIBUTE(allocate(".CRT$XTZ")) _PVFV __xt_z[] = {0};
 
 #if defined CH_AMD64 || defined CH_ARM64
 	ATTRIBUTE(align(64)) uptr __security_cookie = 0x6942069420694206;
@@ -116,7 +116,83 @@ extern "C"
 	{
 		(void)func;
 		return 0;
-	}
+ 	}
+
+// 	ATTRIBUTE(thread) s32 _tls_index = 0;
+
+// #pragma data_seg(".tls")
+// #ifndef CH_I386
+// 	ATTRIBUTE(allocate(".tls"))
+// #endif
+// 	u8 _tls_start = 0;
+// #pragma data_seg(".tls$ZZZ")
+// #ifndef CH_I386
+// 	ATTRIBUTE(allocate(".tls$ZZZ"))
+// #endif
+// 	u8 _tls_end = 0;
+// #pragma data_seg()
+
+// 	// tls initializers
+// #pragma section(".CRT$XLA", long, read)
+// 	ATTRIBUTE(allocate(".CRT$XLA")) PIMAGE_TLS_CALLBACK __xl_a = nullptr;
+// #pragma section(".CRT$XLZ", long, read)
+// 	ATTRIBUTE(allocate(".CRT$XLZ")) PIMAGE_TLS_CALLBACK __xl_z = nullptr;
+
+// #pragma section(".CRT$XLC")
+// 	ATTRIBUTE(allocate(".CRT$XLZ"))
+// 	PIMAGE_TLS_CALLBACK __xl_c = [](void*, DWORD reason, void*) {
+// 		if (reason == DLL_THREAD_ATTACH)
+// 		{
+// 			RunThreadConstructors();
+// 		}
+// 	};
+
+// 	// other tls initializers?
+// #pragma section(".CRT$XDA", long, read)
+// 	ATTRIBUTE(allocate(".CRT$XDA")) _PVFV __xd_a = nullptr;
+// #pragma section(".CRT$XDZ", long, read)
+// 	ATTRIBUTE(allocate(".CRT$XDZ")) _PVFV __xd_z = nullptr;
+
+// #pragma data_seg(".rdata$T")
+// #ifdef CH_I386
+// 	ATTRIBUTE(allocate(".rdata$T"))
+// 	extern const IMAGE_TLS_DIRECTORY _tls_used = {
+// 		(u32)(uptr)&_tls_start,   // start of tls data
+// 		(u32)(uptr)&_tls_end,     // end of tls data
+// 		(u32)(uptr)&_tls_index,   // address of tls_index
+// 		(u32)(uptr)(&__xl_a + 1), // pointer to call back array
+// 		(u32)0,                   // size of tls zero fill
+// 		(u32)0                    // characteristics
+// 	};
+// #else
+// 	ATTRIBUTE(allocate(".rdata$T"))
+// 	extern const IMAGE_TLS_DIRECTORY64 _tls_used = {
+// 		(u64)&_tls_start,   // start of tls data
+// 		(u64)&_tls_end,     // end of tls data
+// 		(u64)&_tls_index,   // address of tls_index
+// 		(u64)(&__xl_a + 1), // pointer to call back array
+// 		(u32)0,             // size of tls zero fill
+// 		(u32)0              // characteristics
+// 	};
+// #endif
+// #pragma data_seg()
+
+// 	ATTRIBUTE(thread) s32 _Init_thread_epoch = INT32_MIN;
+
+// 	// TODO: implement these properly once threads are implemented
+// 	// they have to be aliased cause the compiler complains otherwise
+
+// 	void __cdecl _Init_thread_header_impl(const s32* once) noexcept
+// 	{
+// 		(void)once;
+// 	}
+// 	ALIAS(_Init_thread_header_impl, _Init_thread_header)
+
+// 	void __cdecl _Init_thread_footer_impl(const s32* once) noexcept
+// 	{
+// 		(void)once;
+// 	}
+// 	ALIAS(_Init_thread_footer_impl, _Init_thread_footer)
 }
 
 static void CallXtors(_PVFV* begin, _PVFV* end)
@@ -162,6 +238,11 @@ void RunGlobalDestructors()
 {
 	CallXtors(__xp_a, __xp_z);
 	CallXtors(__xt_a, __xt_z);
+}
+
+void __stdcall RunThreadConstructors()
+{
+	//CallXtors(&__xd_a + 1, &__xd_z);
 }
 
 /// Ensures the vtable for type_info is generated

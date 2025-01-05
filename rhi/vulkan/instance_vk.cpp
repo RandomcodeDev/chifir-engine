@@ -80,7 +80,7 @@ bool CVulkanRhiInstance::Initialize()
 	volkInitializeCustom(VolkLoadFunction, m_vulkanLib);
 
 	VkApplicationInfo appInfo = {};
-	appInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	appInfo.pApplicationName = GAME_NAME;
 	appInfo.applicationVersion = 0;
 	appInfo.pEngineName = "Чифир Engine";
@@ -107,6 +107,7 @@ bool CVulkanRhiInstance::Initialize()
 		Log_Debug("\t%s", instanceCreateInfo.ppEnabledLayerNames[i]);
 	}
 
+#ifdef VULKAN_DEBUG
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
 	debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 	debugCreateInfo.messageSeverity =
@@ -116,7 +117,6 @@ bool CVulkanRhiInstance::Initialize()
 								  VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
 	debugCreateInfo.pfnUserCallback = VkDebugCallback;
 
-#ifdef VULKAN_DEBUG
 	VkLayerSettingsCreateInfoEXT layerSettingsCreateInfo = {};
 	layerSettingsCreateInfo.sType = VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT;
 	layerSettingsCreateInfo.pSettings = LAYER_SETTINGS;
@@ -129,7 +129,7 @@ bool CVulkanRhiInstance::Initialize()
 	VkResult result = vkCreateInstance(&instanceCreateInfo, &g_vkAllocationCallbacks, &m_instance);
 	if (result == VK_ERROR_LAYER_NOT_PRESENT)
 	{
-		Log_Debug("Validation layer(s) missing, retrying");
+		Log_Debug("Validation layer(s) missing, retrying without them");
 		instanceCreateInfo.enabledLayerCount = 0;
 		result = vkCreateInstance(&instanceCreateInfo, &g_vkAllocationCallbacks, &m_instance);
 	}
@@ -146,7 +146,7 @@ bool CVulkanRhiInstance::Initialize()
 
 #ifdef VULKAN_DEBUG
 	Log_Debug("Creating real debug messenger");
-	vkCreateDebugUtilsMessengerEXT(m_instance, &debugMessengerCreateInfo, &g_vkAllocationCallbacks, &m_debugMessenger);
+	vkCreateDebugUtilsMessengerEXT(m_instance, &debugCreateInfo, &g_vkAllocationCallbacks, &m_debugMessenger);
 #endif
 
 	return true;

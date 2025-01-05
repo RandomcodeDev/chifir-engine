@@ -28,7 +28,10 @@
 					 + ' /wd4163' // 'x': not available as an intrinsic function
 					 + ' /wd4125' // decimal digit terminates octal escape sequence
 
-					 + ' /DGAME_NAME=\"$GameName$\"'
+	ForEach(.Define in .Defines)
+	{
+		^CompilerOptions + ' /D"$Define$"'
+	}
 
 	// Global include dirs
 	ForEach(.IncludeDir in .IncludeDirs)
@@ -70,6 +73,7 @@
 	.CompilerOptions = ' /Zf' // Faster PDB generation
 					 + ' /utf-8' // Treat sources as UTF-8
 					 + ' /Zc:__cplusplus' // Ensure old compilers that actually support C++03 are detected properly
+					 + ' /Zc:threadSafeInit-'
 ]
 
 .MSVC_Debug = 

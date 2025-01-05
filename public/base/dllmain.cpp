@@ -11,6 +11,9 @@ extern "C" BOOL __stdcall _DllMainCRTStartup(HANDLE hDllHandle, DWORD dwReason, 
 		__security_init_cookie();
 		RunGlobalConstructors();
 		break;
+	case DLL_THREAD_ATTACH:
+		RunThreadConstructors();
+		break;
 	case DLL_PROCESS_DETACH:
 		RunGlobalDestructors();
 		break;

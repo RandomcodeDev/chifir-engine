@@ -13,7 +13,7 @@
 #ifdef CH_STATIC
 extern IApplication* CreateEngine();
 #else
-static IApplication* GetApplication(ILibrary* library, CVector<SystemDependency_t>& dependencies)
+static IApplication* GetApplication(ILibrary* library)
 {
 	CreateApplicationInterface_t CreateInterface = library->GetSymbol<CreateApplicationInterface_t>("CreateInterface");
 	if (!CreateInterface)
@@ -28,8 +28,6 @@ static IApplication* GetApplication(ILibrary* library, CVector<SystemDependency_
 		Log_Error("Failed to create application from library %s", library->GetName());
 		return nullptr;
 	}
-
-	app->GetRequiredSystems(dependencies);
 
 	return app;
 }
@@ -92,7 +90,7 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 
 	IApplication* app = CreateEngine();
 #else
-	cstr appName = "Engine"; // TODO: make this better
+	cstr appName = "Engine"; /// TODO: make this better
 	if (args.Size() > 1)
 	{
 		appName = args[1].Data();
@@ -106,12 +104,16 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	}
 
 	Log_Info("Initializing application %s", appName);
-	CVector<SystemDependency_t> appDependencies;
-	IApplication* app = GetApplication(appLib, appDependencies);
+	IApplication* app = GetApplication(appLib);
 	if (!app)
 	{
 		Base_Quit("Failed to initialize application %s!", appName);
 	}
+
+	app->Setup(args);
+
+	CVector<SystemDependency_t> appDependencies;
+	app->GetRequiredSystems(appDependencies);
 
 	Log_Info("Loading systems for application %s", appName);
 	CVector<ILibrary*> libs;

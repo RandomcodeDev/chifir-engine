@@ -128,7 +128,7 @@ template <typename T> class CVector : public IContainer<T, ssize>
 
 		Base_MemCopy(m_buffer + index, objects, count * sizeof(T));
 
-		return index - count - 1;
+		return index;
 	}
 
 	/// Add the contents of another vector

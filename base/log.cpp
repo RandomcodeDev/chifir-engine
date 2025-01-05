@@ -83,7 +83,7 @@ BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr fil
 	DateTime_t time;
 	LogMessage_t messageData = {
 		Clamp(level, LogLevel_t::Trace, LogLevel_t::FatalError), time, location, isAddress, file, function, formatted};
-	ssize pos = Base_StrFind(file, "chifir-engine", true);
+	ssize pos = Base_StrFind(file, REPO_NAME, true);
 	if (pos >= 0)
 	{
 		// chifir-engine[\/] is 14 characters, and there's always gonna be a slash
