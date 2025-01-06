@@ -16,6 +16,7 @@
 		{
 			.UnityInputFiles =
 			{
+				'$ProjectPath$/../public/base/libc.cpp',
 				'$ProjectPath$/../public/base/memoverride.cpp'
 			}
 

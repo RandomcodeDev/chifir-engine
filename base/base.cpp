@@ -288,7 +288,7 @@ template <typename T> void Set(void* dest, u8 value, ssize offset, ssize& remain
 static void X86RepStosb(void* dest, u8 value, ssize size)
 {
 #ifdef __clang__
-	__asm__("rep movsb": "+D"(dest), "+c"(size) : "a"(value) : "memory");
+	__asm__("rep stosb": "+D"(dest), "+c"(size) : "a"(value) : "memory");
 #else
 	__stosb(static_cast<u8*>(dest), value, static_cast<usize>(size));
 #endif

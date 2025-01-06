@@ -34,9 +34,6 @@ SYSTEM_PERFORMANCE_INFORMATION g_systemPerfInfo;
 static char* s_systemDescription;
 static char* s_hardwareDescription;
 
-static char** s_cmdLineArgs;
-static u32 s_cmdLineArgCount;
-
 BASEAPI bool Plat_ConsoleHasColor()
 {
 #ifdef CH_XBOX360

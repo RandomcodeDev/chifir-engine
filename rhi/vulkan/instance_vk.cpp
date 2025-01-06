@@ -29,10 +29,10 @@ cstr REQUIRED_LAYERS[] = {
 cstr LAYER_NAME = "VK_LAYER_KHRONOS_validation";
 
 const VkBool32 SETTING_VALIDATE_CORE = VK_TRUE;
-const VkBool32 SETTING_VALIDATE_SYNC = VK_TRUE;
+//const VkBool32 SETTING_VALIDATE_SYNC = VK_TRUE;
 const VkBool32 SETTING_THREAD_SAFETY = VK_TRUE;
 const char* SETTING_DEBUG_ACTION[] = {"VK_DBG_LAYER_ACTION_BREAK"};
-const char* SETTING_REPORT_FLAGS[] = {"info", "warn", "perf", "error", "debug"};
+const char* SETTING_REPORT_FLAGS[] = {"info", "warn", "perf", "error"};
 const VkBool32 SETTING_ENABLE_MESSAGE_LIMIT = VK_TRUE;
 const int32_t SETTING_DUPLICATE_MESSAGE_LIMIT = 3;
 const char* SETTING_ENABLES[] = {
@@ -121,8 +121,8 @@ bool CVulkanRhiInstance::Initialize()
 	layerSettingsCreateInfo.sType = VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT;
 	layerSettingsCreateInfo.pSettings = LAYER_SETTINGS;
 	layerSettingsCreateInfo.settingCount = ARRAY_SIZE(LAYER_SETTINGS);
-	layerSettingsCreateInfo.pNext = &debugCreateInfo;
-	instanceCreateInfo.pNext = &layerSettingsCreateInfo;
+	//debugCreateInfo.pNext = &layerSettingsCreateInfo;
+	instanceCreateInfo.pNext = &debugCreateInfo;
 #endif
 
 	Log_Debug("Creating VkInstance");
@@ -157,15 +157,18 @@ void CVulkanRhiInstance::Destroy()
 	if (m_debugMessenger)
 	{
 		vkDestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, &g_vkAllocationCallbacks);
+		m_debugMessenger = VK_NULL_HANDLE;
 	}
 
 	if (m_instance)
 	{
 		vkDestroyInstance(m_instance, &g_vkAllocationCallbacks);
+		m_instance = VK_NULL_HANDLE;
 	}
 
 	if (m_vulkanLib)
 	{
 		delete m_vulkanLib;
+		m_vulkanLib = nullptr;
 	}
 }

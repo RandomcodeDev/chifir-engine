@@ -30,12 +30,14 @@
 					 + ' -Werror' // Warnings as errors
 					 + ' -D__clang__' // For IntelliSense
 					 + ' -fno-rtti' // RTTI doesn't work under Clang on Windows without vcruntime
+					 + ' -fno-threadsafe-statics'
 
 					 + ' -Wno-#pragma-messages'
 					 + ' -Wno-nonportable-include-path' // None of this is on non-Windows code I control
 					 + ' -Wno-macro-redefined' // This is avoided in any scenario where it matters
 					 + ' -Wno-unused-function' // I don't care, that's the linker's problem
 					 + ' -Wno-unknown-attributes'
+					 + ' -Wno-ignored-pragma-intrinsic'
 
 	ForEach(.Define in .Defines)
 	{

@@ -108,7 +108,7 @@ VkBool32 VKAPI_CALL VkDebugCallback(
 	VkDebugUtilsMessageSeverityFlagBitsEXT severity, VkDebugUtilsMessageTypeFlagsEXT types,
 	const VkDebugUtilsMessengerCallbackDataEXT* callbackData, void* userData)
 {
-	char typeStr[128];
+	char typeStr[64];
 	LogLevel_t level;
 
 	(void)userData;
