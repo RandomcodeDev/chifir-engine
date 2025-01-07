@@ -1,3 +1,4 @@
+#include "rhi/irhidevice.h"
 #include "rhi/irhiinstance.h"
 #include "videosystem/ivideosystem.h"
 
@@ -17,6 +18,9 @@ bool CRenderSystem::Initialize(IVideoSystem* videoSystem)
 	{
 		return false;
 	}
+
+	CVector<RhiDeviceInfo_t> deviceInfo;
+	m_instance->GetDeviceInfo(deviceInfo);
 
 	return true;
 }

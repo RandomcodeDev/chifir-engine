@@ -1,6 +1,9 @@
 #include "instance_vk.h"
 #include "base/loader.h"
 #include "base/log.h"
+#include "base/vector.h"
+#include "rhi/irhidevice.h"
+#include <vulkan/vulkan_core.h>
 
 cstr REQUIRED_EXTENSIONS[] = {
 	VK_KHR_SURFACE_EXTENSION_NAME,
@@ -29,7 +32,7 @@ cstr REQUIRED_LAYERS[] = {
 cstr LAYER_NAME = "VK_LAYER_KHRONOS_validation";
 
 const VkBool32 SETTING_VALIDATE_CORE = VK_TRUE;
-//const VkBool32 SETTING_VALIDATE_SYNC = VK_TRUE;
+// const VkBool32 SETTING_VALIDATE_SYNC = VK_TRUE;
 const VkBool32 SETTING_THREAD_SAFETY = VK_TRUE;
 const char* SETTING_DEBUG_ACTION[] = {"VK_DBG_LAYER_ACTION_BREAK"};
 const char* SETTING_REPORT_FLAGS[] = {"info", "warn", "perf", "error"};
@@ -121,7 +124,7 @@ bool CVulkanRhiInstance::Initialize()
 	layerSettingsCreateInfo.sType = VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT;
 	layerSettingsCreateInfo.pSettings = LAYER_SETTINGS;
 	layerSettingsCreateInfo.settingCount = ARRAY_SIZE(LAYER_SETTINGS);
-	//debugCreateInfo.pNext = &layerSettingsCreateInfo;
+	debugCreateInfo.pNext = &layerSettingsCreateInfo;
 	instanceCreateInfo.pNext = &debugCreateInfo;
 #endif
 
@@ -170,5 +173,62 @@ void CVulkanRhiInstance::Destroy()
 	{
 		delete m_vulkanLib;
 		m_vulkanLib = nullptr;
+	}
+}
+
+static void ConvertDeviceInfo(
+	RhiDeviceInfo_t& info, const VkPhysicalDeviceProperties& properties, const VkPhysicalDeviceMemoryProperties& memoryProperties)
+{
+	static const RhiDeviceType_t DEVICE_TYPES[] = {RhiDeviceType_t::Other, RhiDeviceType_t::Integrated, RhiDeviceType_t::Discrete, RhiDeviceType_t::Other, RhiDeviceType_t::Software};
+
+	info.name = properties.deviceName;
+
+	info.deviceType = DEVICE_TYPES[properties.deviceType];
+
+	info.vendorId = properties.vendorID;
+	info.deviceId = properties.deviceID;
+
+	info.maxTextureSize = properties.limits.maxImageDimension2D;
+	info.totalMemory = memoryProperties.memoryHeaps[0].size;
+}
+
+void CVulkanRhiInstance::GetDeviceInfo(CVector<RhiDeviceInfo_t>& info)
+{
+	Log_Debug("Getting physical devices");
+
+	u32 deviceCount = 0;
+	VkResult result = vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr);
+	if (result != VK_SUCCESS || deviceCount < 1)
+	{
+		Log_Error("Failed to enumerate physical devices (or none are available): %s", GetVkResultString(result));
+		return;
+	}
+
+	CVector<VkPhysicalDevice> devices;
+	devices.Resize(deviceCount);
+	result = vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.Data());
+	if (result != VK_SUCCESS)
+	{
+		Log_Error("Failed to get physical devices: %s", GetVkResultString(result));
+		return;
+	}
+
+	info.Empty();
+	info.Reserve(devices.Size());
+
+	for (ssize i = 0; i < devices.Size(); i++)
+	{
+		Log_Debug("Getting information for device %zd");
+
+		VkPhysicalDeviceProperties properties = {};
+		vkGetPhysicalDeviceProperties(devices[i], &properties);
+
+		VkPhysicalDeviceMemoryProperties memoryProperties = {};
+		vkGetPhysicalDeviceMemoryProperties(devices[i], &memoryProperties);
+
+		// only add if the device is usable
+		RhiDeviceInfo_t currentInfo = {};
+		ConvertDeviceInfo(currentInfo, properties, memoryProperties);
+		info.Add(currentInfo);
 	}
 }

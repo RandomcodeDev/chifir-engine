@@ -29,6 +29,7 @@ enum class RhiDeviceType_t
 {
 	Integrated,
 	Discrete,
+	Software,
 	Other
 };
 
@@ -41,10 +42,10 @@ struct RhiDeviceInfo_t
 	u32 vendorId;
 	u32 deviceId;
 
-	s64 deviceMemory;
-	s64 otherMemory;
 	s64 totalMemory;
 	s32 maxTextureSize;
+
+	u64 handle;
 };
 
 class RHIAPI IRhiDevice

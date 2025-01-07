@@ -24,7 +24,7 @@ class RHIAPI IRhiInstance
 	virtual void Destroy() = 0;
 
 	/// Get information about the graphics devices present
-	virtual CVector<RhiDeviceInfo_t> GetDeviceInfo() = 0;
+	virtual void GetDeviceInfo(CVector<RhiDeviceInfo_t>& info) = 0;
 
 	/// Create a graphics device
 	virtual IRhiDevice* CreateDevice(s32 index = 0) = 0;

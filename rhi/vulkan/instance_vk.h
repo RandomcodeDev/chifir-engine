@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rhi/irhidevice.h"
 #include "rhi/irhiinstance.h"
 #include "vulkan.h"
 
@@ -16,10 +17,7 @@ class RHIAPI CVulkanRhiInstance : public IRhiInstance
     bool Initialize();
     void Destroy();
 
-	CVector<RhiDeviceInfo_t> GetDeviceInfo()
-    {
-        return CVector<RhiDeviceInfo_t>();
-    }
+	void GetDeviceInfo(CVector<RhiDeviceInfo_t>& info);
 
 	IRhiDevice* CreateDevice(s32 index)
     {
