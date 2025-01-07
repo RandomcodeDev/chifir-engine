@@ -7,12 +7,14 @@
 .ExternalIncludeDirs = { 'external', 'external/volk', 'external/vulkan', 'external/phnt' }
 
 // TODO: remove entirely or come up with a way to make this work
+#if HAVE_MSVC_XBOX360
 #undef HAVE_MSVC_XBOX360
+#endif
 
 #include "fastbuild/MSVC.bff"
 #include "fastbuild/Clang.bff"
 #include "fastbuild/Windows.bff"
-#include "fastbuild/Linux.bff"
+#include "fastbuild/Unix.bff"
 #if file_exists("private/fastbuild/Switch.bff")
 #include "private/fastbuild/Switch.bff"
 #endif
@@ -75,6 +77,9 @@
 	.Linux_Clang_AMD64Debug,
 	.Linux_Clang_AMD64Release,
 	.Linux_Clang_AMD64Retail,
+	//.FreeBSD_Clang_AMD64Debug,
+	//.FreeBSD_Clang_AMD64Release,
+	//.FreeBSD_Clang_AMD64Retail,
 #endif
 }
 

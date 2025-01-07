@@ -55,12 +55,12 @@
 				}
 			}
 
-			If (.PlatformName == 'Linux')
+			If (.PlatformName in .UnixLike)
 			{
 				^UnityInputFiles +
 				{
-					'$ProjectPath$/filesystem_linux.cpp',
-					'$ProjectPath$/platform_linux.cpp',
+					'$ProjectPath$/filesystem_unix.cpp',
+					'$ProjectPath$/platform_unix.cpp',
 				}
 			}
 
@@ -199,7 +199,7 @@
 					}
 				}
 
-				If (.PlatformName == 'Linux')
+				If (.PlatformName in .UnixLike)
 				{
 					^LinkerOptions + ' -shared'
 				}

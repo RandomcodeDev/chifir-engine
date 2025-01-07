@@ -1,0 +1,63 @@
+.Linux =
+[
+    .PlatformName = 'Linux'
+    .StaticBuild = false
+    .ExeExtension = ''
+    .LibExtension = '.a'
+    .DLLExtension = '.so'
+
+    .Linker = '$LLVMDir$/bin/clang++'
+
+    .CompilerOptions = '-DCH_LINUX'
+                     + ' -DCH_LITTLE_ENDIAN'
+                     + ' -fPIC'
+                   + ' -ffreestanding'
+    .LinkerOptions = ' -o "%2"'
+                   + ' "%1"'
+                   + ' -fuse-ld=lld'
+                   + ' -Wl,-export-dynamic'
+                   + ' -rdynamic'
+]
+
+.Linux_Clang_AMD64 =
+[
+	.CompilerOptions = ' -target x86_64-none-linux'
+	.LinkerOptions = ' -target x86_64-none-linux'
+]
+
+.Linux_Clang_AMD64Debug = .Linux + .Clang_AMD64Debug + .Linux_Clang_AMD64
+.Linux_Clang_AMD64Release = .Linux + .Clang_AMD64Release + .Linux_Clang_AMD64
+.Linux_Clang_AMD64Retail = .Linux + .Clang_AMD64Retail + .Linux_Clang_AMD64
+
+.FreeBSD =
+[
+    .PlatformName = 'FreeBSD'
+    .StaticBuild = false
+    .ExeExtension = ''
+    .LibExtension = '.a'
+    .DLLExtension = '.so'
+
+    .Linker = '$LLVMDir$/bin/clang++'
+
+    .CompilerOptions = '-DCH_FREEBSD'
+                     + ' -DCH_LITTLE_ENDIAN'
+                     + ' -fPIC'
+                   + ' -ffreestanding'
+    .LinkerOptions = ' -o "%2"'
+                   + ' "%1"'
+                   + ' -fuse-ld=lld'
+                   + ' -Wl,-export-dynamic'
+                   + ' -rdynamic'
+]
+
+.FreeBSD_Clang_AMD64 =
+[
+	.CompilerOptions = ' -target x86_64-none-freebsd'
+	.LinkerOptions = ' -target x86_64-none-freebsd'
+]
+
+.FreeBSD_Clang_AMD64Debug = .FreeBSD + .Clang_AMD64Debug + .FreeBSD_Clang_AMD64
+.FreeBSD_Clang_AMD64Release = .FreeBSD + .Clang_AMD64Release + .FreeBSD_Clang_AMD64
+.FreeBSD_Clang_AMD64Retail = .FreeBSD + .Clang_AMD64Retail + .FreeBSD_Clang_AMD64
+
+.UnixLike = {'Linux', 'FreeBSD'}

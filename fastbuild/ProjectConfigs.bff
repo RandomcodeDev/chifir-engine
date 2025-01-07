@@ -45,6 +45,9 @@
 .Project_Clang_Linux_AMD64_Debug = []
 .Project_Clang_Linux_AMD64_Release = []
 .Project_Clang_Linux_AMD64_Retail = []
+.Project_Clang_FreeBSD_AMD64_Debug = []
+.Project_Clang_FreeBSD_AMD64_Release = []
+.Project_Clang_FreeBSD_AMD64_Retail = []
 
 .Targets_MSVC_Windows_x86_Debug = {}
 .Targets_MSVC_Windows_x86_Release = {}
@@ -79,3 +82,6 @@
 .Targets_Clang_Linux_AMD64_Debug = {}
 .Targets_Clang_Linux_AMD64_Release = {}
 .Targets_Clang_Linux_AMD64_Retail = {}
+.Targets_Clang_FreeBSD_AMD64_Debug = {}
+.Targets_Clang_FreeBSD_AMD64_Release = {}
+.Targets_Clang_FreeBSD_AMD64_Retail = {}
