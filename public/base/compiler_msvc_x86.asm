@@ -44,15 +44,15 @@ Fail:
 	call Base_AbortSafe
 @__security_check_cookie@4 ENDP
 
-PUBLIC _memset
-_memset PROC
-	jmp Base_MemSet
-_memset ENDP
+;PUBLIC _memset
+;_memset PROC
+;	jmp Base_MemSet
+;_memset ENDP
 
-PUBLIC _memcpy
-_memcpy PROC
-	jmp Base_MemCopy
-_memcpy ENDP
+;PUBLIC _memcpy
+;_memcpy PROC
+;	jmp Base_MemCopy
+;_memcpy ENDP
 
 PUBLIC __GSHandlerCheck
 __GSHandlerCheck PROC

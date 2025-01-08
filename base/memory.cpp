@@ -18,7 +18,7 @@ static const u64 ALLOC_SIGNATURE = 0x434F4C4C41464843;
 struct AllocInfo_t
 {
 	ssize size; // Includes the size of the AllocNode_t header
-	u64 alignment;
+	ssize alignment;
 	LinkedNode_t<SystemAllocation_t>* systemAllocation;
 	u64 signature; // Must equal ALLOC_SIGNATURE
 };
@@ -83,7 +83,7 @@ static ssize EffectiveSize(AllocNode_t* node)
 static ssize VisibleSize(AllocNode_t* node)
 {
 	uptr nodeAddr = reinterpret_cast<uptr>(node);
-	return EffectiveSize(node) - (ALIGN(nodeAddr, node->data.alignment) - nodeAddr);
+	return static_cast<ssize>(EffectiveSize(node) - (ALIGN(nodeAddr, node->data.alignment) - nodeAddr));
 }
 
 static void* VisibleStart(AllocNode_t* node)

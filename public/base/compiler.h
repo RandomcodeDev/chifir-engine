@@ -67,7 +67,7 @@ extern void RunGlobalConstructors();
 extern void RunGlobalDestructors();
 
 /// Call thread constructors
-extern void RunThreadConstructors();
+extern void __stdcall RunThreadConstructors();
 #else
 #ifdef CH_X86
 #include <cpuid.h>
