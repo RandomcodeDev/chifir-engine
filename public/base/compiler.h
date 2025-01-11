@@ -12,9 +12,9 @@
 #ifdef __clang__
 #define COMPILER "Clang " __clang_version__
 #elif defined _MSC_VER
-#define MSVC_STRING_VER(ver) #ver
+#define MSVC_STRING_VER(ver)  #ver
 #define MSVC_STRING_VER2(ver) MSVC_STRING_VER(ver)
-#define COMPILER "MSVC " MSVC_STRING_VER2(_MSC_FULL_VER)
+#define COMPILER              "MSVC " MSVC_STRING_VER2(_MSC_FULL_VER)
 #endif
 
 #ifdef CH_ARM64
@@ -48,7 +48,7 @@
 #define DEFINE_INTRINSIC(x) __pragma(function(x))
 
 #define OPTIMIZE_OFF _Pragma("optimize(\"\", off)")
-#define OPTIMIZE_ON _Pragma("optimize(\"\", on)")
+#define OPTIMIZE_ON  _Pragma("optimize(\"\", on)")
 
 /// Get the return address of the current function
 #define Plat_GetReturnAddress() reinterpret_cast<uptr>(_ReturnAddress())
@@ -81,8 +81,8 @@ extern void __stdcall RunThreadConstructors();
 #define ASSUME(x)    __builtin_assume(x)
 #define DEFINE_INTRINSIC(x)
 
-#define OPTIMIZE_OFF _Pragma("clang optimize off")
-#define OPTIMIZE_ON _Pragma("clang optimize on")
+#define OPTIMIZE_OFF            _Pragma("clang optimize off")
+#define OPTIMIZE_ON             _Pragma("clang optimize on")
 
 /// Get the return address of the current function
 #define Plat_GetReturnAddress() reinterpret_cast<uptr>(__builtin_return_address(0))

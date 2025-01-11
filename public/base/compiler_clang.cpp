@@ -20,7 +20,6 @@ extern "C"
 #ifndef CH_SWITCH
 	void __cxa_atexit()
 	{
-		
 	}
 #endif
 }

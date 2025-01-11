@@ -183,7 +183,7 @@ class BASEAPI CString
 		offset = Min(offset, m_size - 1);
 		return Base_StrFind(m_buffer + offset, str, reverse, m_size - offset - 1);
 	}
-	
+
 	/// Get a substring
 	CString SubString(ssize start = 0, ssize count = -1) const
 	{

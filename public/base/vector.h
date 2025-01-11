@@ -8,7 +8,7 @@
 #include "container.h"
 #include "types.h"
 
-template <typename T> class CVector : public IContainer<T, ssize>
+template <typename T> class CVector: public IContainer<T, ssize>
 {
   public:
 	CVector() : m_buffer(nullptr), m_size(0), m_capacity(0), m_sorted(false)

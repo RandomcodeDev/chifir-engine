@@ -1,7 +1,7 @@
 /// This is a basic general allocator that can serve as a basis for more specialized things like bump allocators. It's implemented
-/// on top of Base_GetSystemMemory, and uses a free list with the nodes as headers to chunks of memory. It still needs to be tested
-/// more thoroughly, and is missing error logging, statistics, and thread safety. It also can't handle individual allocations
-/// larger than 64MB.
+/// on top of Base_GetSystemMemory, and uses a free list with the nodes as headers to chunks of memory. It still needs to be
+/// tested more thoroughly, and is missing error logging, statistics, and thread safety. It also can't handle individual
+/// allocations larger than 64MB.
 
 #include "base.h"
 #include "base/base.h"
@@ -276,7 +276,7 @@ BASEAPI void Base_Free(void* block)
 	CoalesceAllocations();
 }
 
-BASEAPI ssize Base_GetAllocSize(void *block)
+BASEAPI ssize Base_GetAllocSize(void* block)
 {
 	if (block)
 	{

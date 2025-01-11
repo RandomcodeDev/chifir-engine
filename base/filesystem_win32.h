@@ -11,7 +11,7 @@
 #include "base/vector.h"
 #include "filesystem_raw.h"
 
-class CWin32Filesystem : public CBaseRawFilesystem
+class CWin32Filesystem: public CBaseRawFilesystem
 {
   public:
 	CWin32Filesystem(cstr root);

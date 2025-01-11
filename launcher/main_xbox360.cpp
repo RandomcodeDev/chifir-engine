@@ -18,7 +18,7 @@ int main()
 		return HRESULT_FROM_WIN32(GetLastError());
 	}
 
-	int (*LauncherMain)() = reinterpret_cast<int(*)()>(launcherMainAddr);
+	int (*LauncherMain)() = reinterpret_cast<int (*)()>(launcherMainAddr);
 	int result = LauncherMain();
 
 	return result;

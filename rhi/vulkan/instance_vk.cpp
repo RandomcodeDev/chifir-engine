@@ -179,7 +179,9 @@ void CVulkanRhiInstance::Destroy()
 static void ConvertDeviceInfo(
 	RhiDeviceInfo_t& info, const VkPhysicalDeviceProperties& properties, const VkPhysicalDeviceMemoryProperties& memoryProperties)
 {
-	static const RhiDeviceType_t DEVICE_TYPES[] = {RhiDeviceType_t::Other, RhiDeviceType_t::Integrated, RhiDeviceType_t::Discrete, RhiDeviceType_t::Other, RhiDeviceType_t::Software};
+	static const RhiDeviceType_t DEVICE_TYPES[] = {
+		RhiDeviceType_t::Other, RhiDeviceType_t::Integrated, RhiDeviceType_t::Discrete, RhiDeviceType_t::Other,
+		RhiDeviceType_t::Software};
 
 	info.name = properties.deviceName;
 

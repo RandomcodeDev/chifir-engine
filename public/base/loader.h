@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "types.h"
 #include "platform.h"
+#include "types.h"
 
 class ILibrary
 {

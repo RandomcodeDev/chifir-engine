@@ -9,7 +9,7 @@
 
 /// The video system is responsible for creating a window or setting the mode of a console's screen, and allowing graphics APIs to
 /// interface with it
-class IVideoSystem : public ISystem
+class IVideoSystem: public ISystem
 {
   public:
 	virtual ~IVideoSystem() DEFAULT;

@@ -9,7 +9,7 @@ class IWritableFilesystem;
 class IRenderSystem;
 class IVideoSystem;
 
-class CEngine : public IEngine
+class CEngine: public IEngine
 {
   public:
 	CEngine();
@@ -39,7 +39,7 @@ class CEngine : public IEngine
 	bool m_headless;
 	bool m_inFrame;
 
-	//IFilesystem* m_mainFilesystem;
+	// IFilesystem* m_mainFilesystem;
 	IWritableFilesystem* m_saveFilesystem;
 
 	IRenderSystem* m_renderSystem;

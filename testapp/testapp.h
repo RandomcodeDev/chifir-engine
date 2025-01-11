@@ -2,7 +2,7 @@
 
 #include "iapplication.h"
 
-class CTestApp : public IApplication
+class CTestApp: public IApplication
 {
   public:
 	CTestApp() DEFAULT;

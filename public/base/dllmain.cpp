@@ -2,8 +2,8 @@
 
 extern "C" BOOL __stdcall _DllMainCRTStartup(HANDLE hDllHandle, DWORD dwReason, LPVOID lpreserved)
 {
-    (void)hDllHandle;
-    (void)lpreserved;
+	(void)hDllHandle;
+	(void)lpreserved;
 
 	switch (dwReason)
 	{
@@ -19,5 +19,5 @@ extern "C" BOOL __stdcall _DllMainCRTStartup(HANDLE hDllHandle, DWORD dwReason, 
 		break;
 	}
 
-    return TRUE;
+	return TRUE;
 }

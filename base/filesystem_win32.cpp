@@ -4,7 +4,9 @@
 CWin32Filesystem::CWin32Filesystem(cstr root) : CBaseRawFilesystem(root)
 {
 #ifdef CH_XBOX360
-	m_rootHandle = CreateFileA(m_root, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0, FILE_OPEN_IF, FILE_ATTRIBUTE_DIRECTORY, nullptr);
+	m_rootHandle = CreateFileA(
+		m_root, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0, FILE_OPEN_IF,
+		FILE_ATTRIBUTE_DIRECTORY, nullptr);
 	if (!m_rootHandle)
 	{
 		Base_Quit("Failed to open directory %s: NTSTATUS 0x%08X", m_root, LastNtStatus());
@@ -193,8 +195,7 @@ ssize CWin32Filesystem::Write(cstr path, const void* data, ssize count, bool app
 
 	// NtWriteFile better not modify the buffer
 	NTSTATUS status = NtWriteFile(
-		file, nullptr, nullptr, nullptr, &ioStatus, CONST_CAST(void*, data),
-		static_cast<u32>(count), &largeOffset, nullptr);
+		file, nullptr, nullptr, nullptr, &ioStatus, CONST_CAST(void*, data), static_cast<u32>(count), &largeOffset, nullptr);
 	if (!NT_SUCCESS(status))
 	{
 		m_safe = false;

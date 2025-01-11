@@ -6,7 +6,7 @@
 #include "base/types.h"
 #include "videosystem/ivideosystem.h"
 
-class CNullVideoSystem : public IVideoSystem
+class CNullVideoSystem: public IVideoSystem
 {
   public:
 	bool Initialize();

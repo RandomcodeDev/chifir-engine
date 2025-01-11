@@ -15,7 +15,7 @@
 #define STUB_NAME(x)        STUB_NAME_2(x)
 /// x86 is the only name mangled architecture
 #ifdef CH_IA32
-#define MAKE_STUB(x, callingConv, ...)                                                                                     \
+#define MAKE_STUB(x, callingConv, ...)                                                                                           \
 	extern "C" uptr (*STUB_NAME(x))(...);                                                                                        \
 	extern "C" BASEAPI bool STUB_AVAILABLE(x)();                                                                                 \
 	EXPORT_RAW("_" STRINGIZE(x) "_Available");                                                                                   \
@@ -38,7 +38,7 @@ extern bool Base_InitLoader();
 
 extern bool g_loaderInitialized;
 
-class CWindowsLibrary : public ILibrary
+class CWindowsLibrary: public ILibrary
 {
   public:
 	CWindowsLibrary(cstr name, void* base);

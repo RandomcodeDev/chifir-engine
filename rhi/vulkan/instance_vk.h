@@ -6,7 +6,7 @@
 
 class ILibrary;
 
-class RHIAPI CVulkanRhiInstance : public IRhiInstance
+class RHIAPI CVulkanRhiInstance: public IRhiInstance
 {
   public:
 	CVulkanRhiInstance() : m_instance(VK_NULL_HANDLE)
@@ -14,24 +14,24 @@ class RHIAPI CVulkanRhiInstance : public IRhiInstance
 	}
 	~CVulkanRhiInstance() DEFAULT;
 
-    bool Initialize();
-    void Destroy();
+	bool Initialize();
+	void Destroy();
 
 	void GetDeviceInfo(CVector<RhiDeviceInfo_t>& info);
 
 	IRhiDevice* CreateDevice(s32 index)
-    {
-        (void)index;
-        return nullptr;
-    }
+	{
+		(void)index;
+		return nullptr;
+	}
 
 	IRhiSwapChain* CreateSwapChain()
-    {
-        return nullptr;
-    }
+	{
+		return nullptr;
+	}
 
   private:
-    ILibrary* m_vulkanLib;
+	ILibrary* m_vulkanLib;
 	VkInstance m_instance;
-    VkDebugUtilsMessengerEXT m_debugMessenger;
+	VkDebugUtilsMessengerEXT m_debugMessenger;
 };

@@ -7,8 +7,8 @@
 class CCommandLine
 {
   public:
-    CCommandLine();
-    CCommandLine(const CString& cmdline);
-    CCommandLine(s32 argc, cstr* argv);
-    CCommandLine(const CVector<CString>& args);
+	CCommandLine();
+	CCommandLine(const CString& cmdline);
+	CCommandLine(s32 argc, cstr* argv);
+	CCommandLine(const CVector<CString>& args);
 };

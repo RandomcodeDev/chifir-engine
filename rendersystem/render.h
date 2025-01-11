@@ -5,7 +5,7 @@
 class IRhiInstance;
 class IVideoSystem;
 
-class CRenderSystem : public IRenderSystem
+class CRenderSystem: public IRenderSystem
 {
   public:
 	CRenderSystem()

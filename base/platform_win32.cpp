@@ -10,7 +10,6 @@
 #include "base/vector.h"
 #include "platform_win32.h"
 
-
 DECLARE_AVAILABLE(DbgPrint);
 DECLARE_AVAILABLE(NtAllocateVirtualMemory);
 DECLARE_AVAILABLE(RtlTimeToTimeFields);

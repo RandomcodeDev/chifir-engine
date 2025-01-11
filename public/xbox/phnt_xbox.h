@@ -1112,7 +1112,7 @@ typedef struct DECLSPEC_ALIGN(8) MEM_EXTENDED_PARAMETER
 
 	struct
 	{
-		DWORD64 Type : MEM_EXTENDED_PARAMETER_TYPE_BITS;
+		DWORD64 Type: MEM_EXTENDED_PARAMETER_TYPE_BITS;
 		DWORD64 Reserved : 64 - MEM_EXTENDED_PARAMETER_TYPE_BITS;
 	} DUMMYSTRUCTNAME;
 
@@ -1756,8 +1756,8 @@ typedef GUID* PGUID;
 
 // Note: The CONTAINING_RECORD macro doesn't support UBSan and generates false positives,
 // we redefine the macro with FIELD_OFFSET as a workaround until the WinSDK is fixed (dmex)
-//#undef CONTAINING_RECORD
-//#define CONTAINING_RECORD(address, type, field) ((type*)((ULONG_PTR)(address)-UFIELD_OFFSET(type, field)))
+// #undef CONTAINING_RECORD
+// #define CONTAINING_RECORD(address, type, field) ((type*)((ULONG_PTR)(address)-UFIELD_OFFSET(type, field)))
 
 #ifndef __PCGUID_DEFINED__
 #define __PCGUID_DEFINED__

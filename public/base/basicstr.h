@@ -29,13 +29,13 @@ extern BASEAPI dstr Base_StrClone(cstr str, ssize maxSize = SSIZE_MAX);
 /// Make a character uppercase
 FORCEINLINE char Base_ToUpper(char c)
 {
-    return c & 0b1011111;
+	return c & 0b1011111;
 }
 
 /// Make a character lowercase
 FORCEINLINE char Base_ToLower(char c)
 {
-    return c & 0b0100000;
+	return c & 0b0100000;
 }
 
 /// TODO: Is* functions can probably at least use masks for stuff
@@ -43,21 +43,21 @@ FORCEINLINE char Base_ToLower(char c)
 /// Check if whitespace
 FORCEINLINE bool Base_IsWhitespace(char c)
 {
-    /// All whitespace characters are in (NUL, space]
-    return c > '\0' && c <= ' ';
+	/// All whitespace characters are in (NUL, space]
+	return c > '\0' && c <= ' ';
 }
 
 /// Check if decimal digit
 FORCEINLINE bool Base_IsDecDigit(char c)
 {
-    return c >= '0' && c <= '9';
+	return c >= '0' && c <= '9';
 }
 
 /// Check if hexadecimal digit
 FORCEINLINE bool Base_IsHexDigit(char c)
 {
-    char upper = Base_ToUpper(c);
-    return Base_IsDecDigit(upper) || (upper >= 'A' && upper <= 'F');
+	char upper = Base_ToUpper(c);
+	return Base_IsDecDigit(upper) || (upper >= 'A' && upper <= 'F');
 }
 
 /// Count trailing whitespace

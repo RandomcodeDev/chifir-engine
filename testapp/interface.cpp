@@ -1,6 +1,6 @@
-#include "testapp.h"
 #include "iapplication.h"
 #include "isystem.h"
+#include "testapp.h"
 
 #ifdef CH_STATIC
 IApplication* CreateTestApp()

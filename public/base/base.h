@@ -23,17 +23,17 @@ typedef struct DateTime
 {
 	u32 year;
 	u32 month; /// 1-12
-	u32 day; /// 1-31
+	u32 day;   /// 1-31
 
-	u32 hour; /// 0-23
-	u32 minute; /// 0-59
-	u32 second; /// 0-59
+	u32 hour;        /// 0-23
+	u32 minute;      /// 0-59
+	u32 second;      /// 0-59
 	u32 millisecond; /// not guaranteed, 0-999
-	u32 weekDay; /// 0-6, sunday to saturday
-	
-    DateTime()
+	u32 weekDay;     /// 0-6, sunday to saturday
+
+	DateTime()
 	{
-        extern BASEAPI void Plat_GetDateTime(DateTime&, bool = false);
+		extern BASEAPI void Plat_GetDateTime(DateTime&, bool = false);
 		Plat_GetDateTime(*this);
 	}
 } DateTime_t;
@@ -48,7 +48,8 @@ extern BASEAPI void Base_Shutdown();
 
 /// Exit the process and optionally display an error.
 /// For platform specific code, error can be an NTSTATUS or POSIX errno value.
-/// Otherwise, use 0 for normal exit, ABORT_RELEVANT_ERROR for a possibly relevant platform-specific error code (such as NtLastError()).
+/// Otherwise, use 0 for normal exit, ABORT_RELEVANT_ERROR for a possibly relevant platform-specific error code (such as
+/// NtLastError()).
 extern BASEAPI NORETURN void Base_Abort(s32 error, cstr msg, ...);
 
 /// This is for when Base_Abort might have side effects that could lead to recursion, such as calling Base_VFormat
@@ -100,7 +101,8 @@ extern BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size);
 extern BASEAPI ssize Base_MemFind(const void* data, ssize size, u8 value, bool reverse = false);
 
 /// Find a sequence of bytes in a block of memory
-extern BASEAPI ssize Base_MemFind(const void* RESTRICT data, ssize size, const void* RESTRICT sequence, ssize sequenceSize, bool reverse = false);
+extern BASEAPI ssize
+Base_MemFind(const void* RESTRICT data, ssize size, const void* RESTRICT sequence, ssize sequenceSize, bool reverse = false);
 
 /// Allocate aligned memory
 extern BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment = 8);

@@ -5,7 +5,7 @@
 #include "base/types.h"
 #include "iapplication.h"
 
-class IEngine : public IApplication
+class IEngine: public IApplication
 {
   public:
 	virtual ~IEngine() DEFAULT;

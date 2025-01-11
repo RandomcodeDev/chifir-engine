@@ -5,8 +5,7 @@
 #include "types.h"
 
 /// Shared interface in all containers
-template <typename T, typename I>
-class IContainer
+template <typename T, typename I> class IContainer
 {
   public:
 	static const I BAD_INDEX = (I)-1;

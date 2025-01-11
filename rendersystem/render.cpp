@@ -36,10 +36,8 @@ void CRenderSystem::Shutdown()
 
 void CRenderSystem::BeginFrame()
 {
-
 }
 
 void CRenderSystem::EndFrame()
 {
-    
 }

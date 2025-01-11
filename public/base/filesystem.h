@@ -63,7 +63,7 @@ class IDirIter
 };
 
 /// Represents a read-write filesystem
-class IWritableFilesystem : public IFilesystem
+class IWritableFilesystem: public IFilesystem
 {
   public:
 	virtual ~IWritableFilesystem() DEFAULT;

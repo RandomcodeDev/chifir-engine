@@ -8,4 +8,6 @@ ReflowComments: true
 AlignAfterOpenBracket: AlwaysBreak
 AlignArrayOfStructures: Right
 AlignConsecutiveMacros: true
-
+SpaceBeforeInheritanceColon: false
+AllowShortBlocksOnASingleLine: true
+AllowAllArgumentsOnNextLine: true

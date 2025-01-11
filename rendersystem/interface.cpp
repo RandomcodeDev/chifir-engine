@@ -9,5 +9,5 @@ ISystem* CreateRenderSystem()
 extern "C" DLLEXPORT ISystem* CreateInterface()
 #endif
 {
-    return new CRenderSystem();
+	return new CRenderSystem();
 }

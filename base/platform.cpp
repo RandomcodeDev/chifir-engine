@@ -9,7 +9,6 @@ BASEAPI NORETURN void Base_Abort(s32 error, cstr msg, ...)
 	// Used if Base_VFormat fails;
 	char buffer[1024];
 
-
 	va_list args;
 	va_start(args, msg);
 	dstr formattedMsg = Base_VStrFormat(msg, args);

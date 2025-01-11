@@ -1,7 +1,7 @@
+#include "video_null.h"
 #include "base/base.h"
 #include "base/basicstr.h"
 #include "base/log.h"
-#include "video_null.h"
 
 bool CNullVideoSystem::Initialize()
 {
@@ -21,7 +21,7 @@ bool CNullVideoSystem::Initialize()
 	m_focused = true;
 	m_closed = false;
 	m_dpi = 1.0;
-	
+
 	return true;
 }
 

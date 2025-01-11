@@ -9,9 +9,9 @@
 /// Describes a system an application wants loaded for it
 struct SystemDependency_t
 {
-	const char* name; /// The name of the DLL where the system can be found
-	u32 minimumVersion; /// The minimum version of the system
-	bool required; /// Whether the system is required
+	const char* name;         /// The name of the DLL where the system can be found
+	u32 minimumVersion;       /// The minimum version of the system
+	bool required;            /// Whether the system is required
 	bool requireExactVersion; /// Whether the version of the system can exceed the minimum
 };
 

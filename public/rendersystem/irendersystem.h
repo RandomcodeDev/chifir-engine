@@ -9,7 +9,7 @@
 
 class IVideoSystem;
 
-class IRenderSystem : public ISystem
+class IRenderSystem: public ISystem
 {
   public:
 	virtual ~IRenderSystem() DEFAULT;

@@ -7,7 +7,7 @@
 #include "base/vector.h"
 
 // Raw filesystem that operates on normal files
-class CBaseRawFilesystem : public IWritableFilesystem
+class CBaseRawFilesystem: public IWritableFilesystem
 {
   public:
 	CBaseRawFilesystem(cstr root);
@@ -18,7 +18,7 @@ class CBaseRawFilesystem : public IWritableFilesystem
 	virtual FileType_t GetFileType(cstr path) = 0;
 	virtual bool Exists(cstr path) = 0;
 	virtual IDirIter* ReadDirectory(cstr path) = 0;
-	
+
 	virtual cstr GetRoot()
 	{
 		return m_root;

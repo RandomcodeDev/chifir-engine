@@ -6,7 +6,7 @@
 #include "base/types.h"
 #include "videosystem/ivideosystem.h"
 
-class CWindowsVideoSystem : public IVideoSystem
+class CWindowsVideoSystem: public IVideoSystem
 {
   public:
 	CWindowsVideoSystem()

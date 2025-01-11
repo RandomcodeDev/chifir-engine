@@ -48,7 +48,7 @@ class BASEAPI ILogWriter
 class IWritableFilesystem;
 
 /// Filesystem log writer
-class BASEAPI CFileLogWriter : public ILogWriter
+class BASEAPI CFileLogWriter: public ILogWriter
 {
   public:
 	CFileLogWriter(IWritableFilesystem* filesystem, cstr logName, bool addDate = true);
@@ -63,14 +63,14 @@ class BASEAPI CFileLogWriter : public ILogWriter
 
 #ifdef CH_WIN32
 /// DbgPrint log writer
-class BASEAPI CDbgPrintLogWriter : public ILogWriter
+class BASEAPI CDbgPrintLogWriter: public ILogWriter
 {
   public:
 	void Write(const LogMessage_t& message);
 };
 #endif
 
-class BASEAPI CConsoleLogWriter : public ILogWriter
+class BASEAPI CConsoleLogWriter: public ILogWriter
 {
   public:
 	void Write(const LogMessage_t& message);
@@ -95,5 +95,5 @@ extern BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, c
 
 #define LOG_FORMAT(color, msg)                                                                                                   \
 	(msg).isAddress ? "[%s] [%s] [%s!0x%llX %s] %s\n" : "[%s] [%s] [%s:%u %s] %s\n",                                             \
-		(color) ? LEVEL_COLORED_NAMES[s32((msg).level)] : LEVEL_NAMES[s32((msg).level)], Base_FormatDateTime((msg).time).Data(),           \
+		(color) ? LEVEL_COLORED_NAMES[s32((msg).level)] : LEVEL_NAMES[s32((msg).level)], Base_FormatDateTime((msg).time).Data(), \
 		(msg).file, (msg).location, (msg).function, (msg).message

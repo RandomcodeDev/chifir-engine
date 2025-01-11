@@ -257,9 +257,9 @@ bool Base_InitLoader()
 	GET_FUNCTION(user32, UnregisterClassA)
 
 	// can't do this cause the dlls would unload and stuff
-	//delete kernel32;
-	//delete shell32;
-	//delete user32;
+	// delete kernel32;
+	// delete shell32;
+	// delete user32;
 #endif
 
 	g_loaderInitialized = true;

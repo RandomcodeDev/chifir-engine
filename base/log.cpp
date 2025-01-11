@@ -23,9 +23,7 @@ BASEAPI CFileLogWriter::CFileLogWriter(IWritableFilesystem* filesystem, cstr log
 	{
 		// TODO
 	}
-	else
-	{
-	}
+	else {}
 	m_filename = Base_StrClone(logName);
 }
 

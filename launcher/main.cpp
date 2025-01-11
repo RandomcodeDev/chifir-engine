@@ -6,8 +6,8 @@
 #include "iapplication.h"
 #include "isystem.h"
 #include "launcher.h"
-#include "utility/utility.h"
 #include "rendersystem/irendersystem.h"
+#include "utility/utility.h"
 #include "videosystem/ivideosystem.h"
 
 #ifdef CH_STATIC
@@ -150,9 +150,7 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 				{
 					Base_Quit("Failed to get interface for %s, or it's the wrong version!", appDependencies[i].name);
 				}
-				else
-				{
-				}
+				else {}
 			}
 			systems.Add(system);
 		}
