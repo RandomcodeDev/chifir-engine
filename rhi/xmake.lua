@@ -8,7 +8,7 @@ target("Rhi")
         "interface.cpp"
     )
 
-    add_deps("Base", "CommonFiles")
+    add_deps("Base", "CommonFiles", "DllSupport")
     if vulkan then
         add_defines("RHI_VULKAN")
         add_deps("RhiVulkan")

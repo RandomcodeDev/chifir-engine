@@ -160,3 +160,8 @@ includes("rhi")
 includes("rendersystem")
 includes("videosystem")
 includes("launcher")
+
+target("public")
+	set_kind("headeronly")
+
+	add_headerfiles("external/**", "public/**", "private/public/**")

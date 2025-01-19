@@ -10,5 +10,5 @@ target("RhiVulkan")
         "../../external/volk/volk.cpp"
     )
 
-    add_deps("Base", "CommonFiles")
+    add_deps("Base", "CommonFiles", "DllSupport")
 target_end()

@@ -2,7 +2,7 @@ target("Launcher")
     set_kind("binary")
     set_basename(game_name)
 
-    add_headerfiles("**.h")
+    add_headerfiles("**.h", "../public/launcher/**.h")
     add_files("main.cpp")
 
     add_private_launcher_settings()

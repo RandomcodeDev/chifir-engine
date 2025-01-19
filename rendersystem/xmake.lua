@@ -7,5 +7,5 @@ target("RenderSystem")
         "render.cpp"
     )
 
-    add_deps("Base", "CommonFiles", "Rhi")
+    add_deps("Base", "CommonFiles", "DllSupport", "Rhi")
 target_end()

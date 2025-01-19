@@ -13,5 +13,5 @@ target("VideoSystem")
         add_files("../private/videosystem/video_switch.cpp")
     end
 
-    add_deps("Base", "CommonFiles")
+    add_deps("Base", "CommonFiles", "DllSupport")
 target_end()

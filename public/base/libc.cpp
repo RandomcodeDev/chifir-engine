@@ -32,13 +32,13 @@ extern "C"
 		return Base_MemSet(dest, value, size);
 	}
 
-	DEFINE_INTRINSIC(strcmp)
+	//DEFINE_INTRINSIC(strcmp)
 	s32 strcmp(cstr RESTRICT a, cstr RESTRICT b)
 	{
 		return Base_StrCompare(a, b);
 	}
 
-	DEFINE_INTRINSIC(strlen)
+	//DEFINE_INTRINSIC(strlen)
 	usize strlen(cstr str)
 	{
 		return Base_StrLength(str);
