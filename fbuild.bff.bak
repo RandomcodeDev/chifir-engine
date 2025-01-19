@@ -1,0 +1,336 @@
+#include "fastbuild/Config.bff"
+
+#include "fastbuild/Util.bff"
+
+.Defines = { 'GAME_NAME=\"$GameName$\"', 'GAME_DISPLAY_NAME=\"$GameDisplayName$\"', 'REPO_NAME=\"$RepoName$\"' }
+.IncludeDirs = { 'public', 'private', 'private/public', 'public/xbox' }
+.ExternalIncludeDirs = { 'external', 'external/volk', 'external/vulkan', 'external/phnt' }
+
+// TODO: remove entirely or come up with a way to make this work
+#if HAVE_MSVC_XBOX360
+#undef HAVE_MSVC_XBOX360
+#endif
+
+#include "fastbuild/MSVC.bff"
+#include "fastbuild/Clang.bff"
+#include "fastbuild/Windows.bff"
+#include "fastbuild/Unix.bff"
+#if file_exists("private/fastbuild/Switch.bff")
+#include "private/fastbuild/Switch.bff"
+#endif
+
+.BuildConfigs =
+{
+#if __WINDOWS__
+#if HAVE_MSVC_AMD64
+	.GDK_MSVC_AMD64Debug,
+	.GDK_MSVC_AMD64Release,
+	.GDK_MSVC_AMD64Retail,
+#if HAVE_GDKX
+	.GDKX_MSVC_AMD64Debug,
+	.GDKX_MSVC_AMD64Release,
+	.GDKX_MSVC_AMD64Retail,
+#endif
+#if HAVE_MSVC_ARM64
+	.Windows_MSVC_ARM64Debug,
+	.Windows_MSVC_ARM64Release,
+	.Windows_MSVC_ARM64Retail,
+#endif
+#if HAVE_MSVC_X86
+	.Windows_MSVC_x86Debug,
+	.Windows_MSVC_x86Release,
+	.Windows_MSVC_x86Retail,
+#endif
+#if HAVE_MSVC_XBOX360
+	.Xbox360_MSVC_Debug,
+	.Xbox360_MSVC_Release,
+	.Xbox360_MSVC_Retail,
+#endif
+
+#if HAVE_CLANG
+	.GDK_Clang_AMD64Debug,
+	.GDK_Clang_AMD64Release,
+	.GDK_Clang_AMD64Retail,
+#if HAVE_GDKX
+	.GDKX_Clang_AMD64Debug,
+	.GDKX_Clang_AMD64Release,
+	.GDKX_Clang_AMD64Retail,
+#endif
+	.Windows_Clang_ARM64Debug,
+	.Windows_Clang_ARM64Release,
+	.Windows_Clang_ARM64Retail,
+	
+	.Windows_Clang_x86Debug,
+	.Windows_Clang_x86Release,
+	.Windows_Clang_x86Retail,
+#endif
+#endif
+
+#if HAVE_SWITCH
+	.Switch_Clang_NX64Debug,
+	.Switch_Clang_NX64Release,
+	.Switch_Clang_NX64Retail,
+#endif
+#endif
+
+#if __LINUX__
+	.Linux_Clang_AMD64Debug,
+	.Linux_Clang_AMD64Release,
+	.Linux_Clang_AMD64Retail,
+	//.FreeBSD_Clang_AMD64Debug,
+	//.FreeBSD_Clang_AMD64Release,
+	//.FreeBSD_Clang_AMD64Retail,
+#endif
+}
+
+#include "fastbuild/ProjectConfigs.bff"
+
+.VulkanPlatforms = {'Windows', 'GDK', 'Switch', 'Linux'}
+
+#include "base/CommonFiles.bff"
+#include "base/Base.bff"
+//#include "utility/Utility.bff"
+#include "engine/Engine.bff"
+#include "testapp/TestApp.bff"
+#include "rhi/Rhi.bff"
+#include "rendersystem/RenderSystem.bff"
+#include "videosystem/VideoSystem.bff"
+#include "launcher/Launcher.bff"
+#if HAVE_MSVC_XBOX360
+#include "launcher/LauncherXbox360.bff"
+#endif
+#if HAVE_SWITCH
+#include "private/launcher/LauncherSwitch.bff"
+#endif
+
+// All for specific target and config
+ForEach(.BuildConfig in .BuildConfigs)
+{
+	Using(.BuildConfig)
+
+	Alias('All-$CompilerName$-$PlatformName$-$ArchName$-$ConfigName$') {.Targets = .'Targets_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$'}
+}
+
+// All configs for target and compiler
+.Compilers =
+{
+#if HAVE_MSVC
+	'MSVC',
+#endif
+#if HAVE_CLANG
+	'Clang'
+#endif
+}
+
+.Configs =
+{
+	'Debug',
+	'Release',
+	'Retail'
+}
+
+.CompilerPlatforms_MSVC = {
+#if HAVE_MSVC_AMD64
+	'GDK-AMD64',
+#if HAVE_GDKX
+	'GDKX-AMD64',
+#endif
+#endif
+#if HAVE_MSVC_X86
+	'Windows-x86',
+#endif
+#if HAVE_MSVC_ARM64
+	'Windows-ARM64',
+#endif
+#if HAVE_MSVC_XBOX360
+	'Xbox360-PPC64'
+#endif
+}
+.CompilerPlatforms_Clang = {
+#if __WINDOWS__
+#if HAVE_CLANG
+	'GDK-AMD64',
+#if HAVE_GDKX
+	'GDKX-AMD64',
+#endif
+	'Windows-x86',
+	//'Windows-ARM64', // Clang can't do the intrinsics
+#if HAVE_SWITCH
+	'Switch-NX64'
+#endif
+#endif
+#endif
+#if __LINUX__
+	'Linux-AMD64'
+#endif
+}
+
+ForEach(.Compiler in .Compilers)
+{
+	.Targets = {}
+	ForEach(.Platform in .'CompilerPlatforms_$Compiler$')
+	{
+		Alias('All-$Compiler$-$Platform$')
+		{
+			.Targets = {}
+			ForEach(.Config in .Configs)
+			{
+				^Targets + {'All-$Compiler$-$Platform$-$Config$'}
+			}
+		}
+
+		^Targets + {'All-$Compiler$-$Platform$'}
+	}
+
+	Alias('All-$Compiler$')
+	{
+		.Targets = .Targets
+	}
+}
+
+Alias('All')
+{
+	.Targets = {
+#if HAVE_MSVC
+		'All-MSVC',
+#endif
+#if HAVE_CLANG
+		'All-Clang'
+#endif
+	}
+}
+
+// VS solution
+#if __WINDOWS__
+{
+	.ExtraOptions = [.ProjectInputPaths = {}]
+	.ProjectConfigs = {}
+	ForEach(.BuildConfig in .BuildConfigs)
+	{
+		Using(.BuildConfig)
+		.ProjectConfig = [Using(.'Project_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$')]
+		^ProjectConfigs + .ProjectConfig
+	}
+	CreateVcxProject('All', '/', .ProjectConfigs, .ExtraOptions)
+}
+{
+	.ExtraOptions = [.ProjectAllowedFileExtensions = '*.bff']
+	.ProjectConfigs = {}
+	ForEach(.BuildConfig in .BuildConfigs)
+	{
+		Using(.BuildConfig)
+		.ProjectConfig = [Using(.'Project_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$')]
+		^ProjectConfigs + .ProjectConfig
+	}
+
+	CreateVcxProject('FASTBuild', 'fastbuild/', .ProjectConfigs, .ExtraOptions)
+}
+{
+	.ExtraOptions = [.ProjectAllowedFileExtensions = '*.py']
+	.ProjectConfigs = {}
+	ForEach(.BuildConfig in .BuildConfigs)
+	{
+		Using(.BuildConfig)
+		.ProjectConfig = [Using(.'Project_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$')]
+		^ProjectConfigs + .ProjectConfig
+	}
+
+	CreateVcxProject('Scripts', 'scripts/', .ProjectConfigs, .ExtraOptions)
+}
+{
+	.ExtraOptions = [.ProjectAllowedFileExtensions = '*']
+	.ProjectConfigs = {}
+	ForEach(.BuildConfig in .BuildConfigs)
+	{
+		Using(.BuildConfig)
+		.ProjectConfig = [Using(.'Project_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$')]
+		^ProjectConfigs + .ProjectConfig
+	}
+
+	CreateVcxProject('Public', 'public/', .ProjectConfigs, .ExtraOptions)
+}
+{
+	.ExtraOptions = []
+	.ProjectConfigs = {}
+	ForEach(.BuildConfig in .BuildConfigs)
+	{
+		Using(.BuildConfig)
+		.ProjectConfig = [Using(.'Project_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$')]
+		^ProjectConfigs + .ProjectConfig
+	}
+
+	CreateVcxProject('External', 'external/', .ProjectConfigs, .ExtraOptions)
+}
+{
+	.ExtraOptions = [.ProjectInputPaths = {}]
+	.ProjectConfigs = {}
+	ForEach(.BuildConfig in .BuildConfigs)
+	{
+		Using(.BuildConfig)
+		.ProjectConfig =
+		[
+			Using(.'Project_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$')
+			.ProjectBuildCommand = 'cd ^$(SolutionDir)..\..\ & $_FASTBUILD_EXE_PATH_$ solution -vs'
+			.ProjectRebuildCommand = 'cd ^$(SolutionDir)..\..\ & $_FASTBUILD_EXE_PATH_$ solution -vs -clean'
+		]
+		^ProjectConfigs + .ProjectConfig
+	}
+
+	CreateVcxProject('UpdateSolution', '/', .ProjectConfigs, .ExtraOptions)
+}
+
+VSSolution('solution')
+{
+	.SolutionOutput = 'projects/VisualStudio/Чифир.sln'
+	.SolutionBuildProject = 'All-proj'
+	.SolutionConfigs = {}
+	ForEach(.BuildConfig in .BuildConfigs)
+	{
+		Using(.BuildConfig)
+		.SolutionConfig = [Using(.'Project_$CompilerName$_$PlatformName$_$ArchName$_$ConfigName$')]
+		^SolutionConfigs + .SolutionConfig
+	}
+
+	.SolutionVisualStudioVersion = '$VSSolutionVersion$'
+
+	.Deps_Launcher =
+	[
+		.Projects = {'Launcher-proj'}
+		.Dependencies = {'All-proj'}
+	]
+	.Deps_All =
+	[
+		.Projects = {'All-proj'}
+		.Dependencies = {'UpdateSolution-proj'}
+	]
+	.SolutionDependencies = {.Deps_Launcher, .Deps_All}
+
+	.Folder_Meta =
+	[
+		.Path = 'Meta'
+		.Items = {'fbuild.bff', 'README.md'}
+		.Projects = {'All-proj', 'FASTBuild-proj', 'Scripts-proj', 'UpdateSolution-proj'}
+	]
+
+	.Folder_Support =
+	[
+		.Path = 'Support'
+		.Projects = {'Base-proj', 'CommonFiles-proj', 'External-proj', 'Public-proj'}
+	]
+
+	.Folder_Systems =
+	[
+		.Path = 'Systems'
+		.Projects = {'RenderSystem-proj', 'VideoSystem-proj'}
+	]
+
+	.Folder_Tests =
+	[
+		.Path = 'Tests'
+		.Projects = {'TestApp-proj'}
+	]
+
+	.SolutionFolders = {.Folder_Meta, .Folder_Support, .Folder_Systems, .Folder_Tests}
+	.SolutionProjects = {'Launcher-proj', 'Engine-proj'}
+}
+#endif
