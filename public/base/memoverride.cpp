@@ -11,42 +11,42 @@
 
 extern "C"
 {
-	RESTRICT_FUNC void* __cdecl malloc(usize size)
+	DLLEXPORT RESTRICT_FUNC void* __cdecl malloc(usize size)
 	{
 		return Base_Alloc(static_cast<ssize>(size & SSIZE_MAX));
 	}
 
-	void __cdecl free(void* block)
+	DLLEXPORT void __cdecl free(void* block)
 	{
 		Base_Free(block);
 	}
 
-	RESTRICT_FUNC void* __cdecl calloc(usize count, usize size)
+	DLLEXPORT RESTRICT_FUNC void* __cdecl calloc(usize count, usize size)
 	{
 		return Base_Alloc(static_cast<ssize>(count * size));
 	}
 
-	RESTRICT_FUNC void* __cdecl realloc(void* block, usize newSize)
+	DLLEXPORT RESTRICT_FUNC void* __cdecl realloc(void* block, usize newSize)
 	{
 		return Base_Realloc(block, static_cast<ssize>(static_cast<usize>(newSize) & SSIZE_MAX));
 	}
 
-	void* __cdecl aligned_alloc(usize alignment, usize size)
+	DLLEXPORT void* __cdecl aligned_alloc(usize alignment, usize size)
 	{
 		return Base_Alloc(static_cast<ssize>(size & SSIZE_MAX), static_cast<ssize>(alignment));
 	}
 
-	usize __cdecl malloc_usable_size(void* block)
+	DLLEXPORT usize __cdecl malloc_usable_size(void* block)
 	{
 		return static_cast<usize>(Base_GetAllocSize(block));
 	}
 
-	void* memalign(usize alignment, usize size)
+	DLLEXPORT void* memalign(usize alignment, usize size)
 	{
 		return aligned_alloc(alignment, size);
 	}
 
-	int posix_memalign(void** memptr, usize alignment, usize size)
+	DLLEXPORT int posix_memalign(void** memptr, usize alignment, usize size)
 	{
 		*memptr = memalign(alignment, size);
 		if (!*memptr)

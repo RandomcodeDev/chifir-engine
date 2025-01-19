@@ -1,6 +1,4 @@
 
-#pragma once
-
 #include "base/string.h"
 #include "base/basicstr.h"
 #include "base/vector.h"

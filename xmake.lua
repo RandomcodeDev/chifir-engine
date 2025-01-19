@@ -2,9 +2,9 @@ add_rules(
     "mode.debug",
     "mode.releasedbg",
     "mode.release",
-    "plugin.vsxmake.autoupdate",
-    "c.unity_build",
-    "c++.unity_build"
+    "plugin.vsxmake.autoupdate"
+    --"c.unity_build",
+    --"c++.unity_build"
 )
 
 set_project("chifir-engine")
@@ -133,7 +133,13 @@ if is_plat("windows", "gdkx") then
         "/wd5248", -- section 'x' is reserved for C++ dynamic initialization. Variables manually put into the section may be optimized out and their order relative to compiler generated dynamic initializers is unspecified
         "/wd4820", -- 'x' bytes padding added after data member 'y'
         "/wd5045", -- Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
-    {})
+    {force = true})
+
+    if is_arch("x86") then
+        add_cxflags(
+            "/arch:IA32"
+        )
+    end
 
     add_ldflags(
         "/nodefaultlib", -- further prevent C runtime
@@ -142,6 +148,7 @@ elseif is_plat("linux", "switch") then
     add_cxflags(
         "-fms-extensions",
         "-fno-threadsafe-statics",
+        "-working-directory=$(scriptdir)", -- to fix __FILE__
 
         "-Wno-#pragma-messages",
         "-Wno-nonportable-include-path", -- None of this is on non-Windows code I control
@@ -149,8 +156,8 @@ elseif is_plat("linux", "switch") then
         "-Wno-unused-function", -- I don't care, that's the linker's problem
         "-Wno-unknown-attributes",
         "-Wno-ignored-pragma-intrinsic",
-        "-Wno-ignored-attributes"
-    )
+        "-Wno-ignored-attributes",
+    {force = true})
 end
 
 includes("base")
