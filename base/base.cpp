@@ -439,7 +439,7 @@ static bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 #elif defined CH_ARM64
 static FORCEINLINE bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 {
-	uint8x16_t cmp = vceqq_u8(a, b);
+	uint8x16_t cmp = vceqq_u8(*reinterpret_cast<uint8x16_t*>(&a), *reinterpret_cast<uint8x16_t*>(&b));
 	uint64x2_t cmp64 = vreinterpretq_u64_u8(cmp);
 	uint32x2_t cmp32 = vreinterpret_u32_u64(vadd_u64(vget_low_u64(cmp64), vget_high_u64(cmp64)));
 	u64 cmp64_res = vget_lane_u32(cmp32, 0);

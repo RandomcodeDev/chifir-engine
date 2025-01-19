@@ -15,9 +15,15 @@ CString::CString(cstr data, ssize size) : m_buffer(nullptr), m_size(0), m_capaci
 
 CString::CString(const CString& other) : m_buffer(nullptr), m_size(0), m_capacity(0)
 {
+	*this = other;
+}
+
+CString& CString::operator=(const CString& other)
+{
 	Resize(other.Length());
 	Base_MemCopy(m_buffer, other.Data(), m_size - 1);
 	Terminate();
+	return *this;
 }
 
 CString::~CString()

@@ -20,6 +20,7 @@ compile_commands.json
 *cache*
 *.zip
 
+/config.lua
 
 # Added by cargo
 

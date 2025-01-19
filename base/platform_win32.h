@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "base/platform.h"
 #include "base/loader.h"
 #include "base/types.h"
 

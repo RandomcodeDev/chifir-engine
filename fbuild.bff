@@ -321,7 +321,7 @@ VSSolution('solution')
 	.Folder_Systems =
 	[
 		.Path = 'Systems'
-		.Projects = {'VideoSystem-proj'}
+		.Projects = {'RenderSystem-proj', 'VideoSystem-proj'}
 	]
 
 	.Folder_Tests =

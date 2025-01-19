@@ -69,6 +69,9 @@ class BASEAPI CString
 		Resize(0);
 	}
 
+	/// Avoid this, it's expensive
+	CString& operator=(const CString& other);
+
 	/// Get the given element
 	char operator[](const ssize& index) const
 	{

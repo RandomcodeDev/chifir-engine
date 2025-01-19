@@ -80,7 +80,7 @@ BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr fil
 	// strip repo path from log messages, to make them shorter
 	DateTime_t time;
 	LogMessage_t messageData = {
-		Clamp(level, LogLevel_t::Trace, LogLevel_t::FatalError), time, location, isAddress, file, function, formatted};
+		Clamp(level, LogLevel_t::Trace, LogLevel_t::FatalError), location, isAddress, file, function, formatted, time};
 	ssize pos = Base_StrFind(file, REPO_NAME, true);
 	if (pos >= 0)
 	{

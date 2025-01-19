@@ -57,8 +57,8 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	// same order as GetRequiredSystems
 	if (!m_headless)
 	{
-		m_videoSystem = reinterpret_cast<IVideoSystem*>(systems[0]);
-		m_renderSystem = reinterpret_cast<IRenderSystem*>(systems[1]);
+		m_videoSystem = static_cast<IVideoSystem*>(systems[0]);
+		m_renderSystem = static_cast<IRenderSystem*>(systems[1]);
 	}
 
 	if (!InitializeSystems())

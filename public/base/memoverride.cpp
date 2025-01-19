@@ -13,7 +13,7 @@ extern "C"
 {
 	RESTRICT_FUNC void* __cdecl malloc(usize size)
 	{
-		return Base_Alloc(static_cast<ssize>(static_cast<usize>(size) & SSIZE_MAX));
+		return Base_Alloc(static_cast<ssize>(size & SSIZE_MAX));
 	}
 
 	void __cdecl free(void* block)
@@ -23,7 +23,7 @@ extern "C"
 
 	RESTRICT_FUNC void* __cdecl calloc(usize count, usize size)
 	{
-		return Base_Alloc(count * size);
+		return Base_Alloc(static_cast<ssize>(count * size));
 	}
 
 	RESTRICT_FUNC void* __cdecl realloc(void* block, usize newSize)
@@ -33,12 +33,12 @@ extern "C"
 
 	void* __cdecl aligned_alloc(usize alignment, usize size)
 	{
-		return Base_Alloc(static_cast<ssize>(static_cast<usize>(size) & SSIZE_MAX), alignment);
+		return Base_Alloc(static_cast<ssize>(size & SSIZE_MAX), static_cast<ssize>(alignment));
 	}
 
 	usize __cdecl malloc_usable_size(void* block)
 	{
-		return Base_GetAllocSize(block);
+		return static_cast<usize>(Base_GetAllocSize(block));
 	}
 
 	void* memalign(usize alignment, usize size)
@@ -68,26 +68,26 @@ void* __cdecl operator new(usize size)
 
 void* __cdecl operator new[](usize size)
 {
-	return operator new(static_cast<ssize>(static_cast<usize>(size) & SSIZE_MAX));
+	return operator new(static_cast<usize>(size) & SSIZE_MAX);
 }
 
-void __cdecl operator delete(void* block)
+void __cdecl operator delete(void* block) noexcept
 {
 	Base_Free(block);
 }
 
-void __cdecl operator delete(void* block, usize size)
+void __cdecl operator delete(void* block, usize size) noexcept
 {
 	(void)size;
 	operator delete(block);
 }
 
-void __cdecl operator delete[](void* block)
+void __cdecl operator delete[](void* block) noexcept
 {
 	operator delete(block);
 }
 
-void __cdecl operator delete[](void* block, usize size)
+void __cdecl operator delete[](void* block, usize size) noexcept
 {
 	(void)size;
 	operator delete[](block);

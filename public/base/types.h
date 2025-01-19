@@ -48,8 +48,8 @@ typedef __m256 v256;
 #elif defined CH_XBOX360
 typedef __vector4 v128;
 #elif defined CH_ARM64
-typedef __n128 v128;
-typedef __n128x2 v256;
+typedef float32x2_t v128;
+typedef float32x4_t v256;
 #endif
 
 typedef char* dstr;

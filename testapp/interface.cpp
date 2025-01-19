@@ -8,5 +8,5 @@ IApplication* CreateTestApp()
 extern "C" DLLEXPORT IApplication* CreateInterface()
 #endif
 {
-	return reinterpret_cast<IApplication*>(new CTestApp());
+	return static_cast<IApplication*>(new CTestApp());
 }

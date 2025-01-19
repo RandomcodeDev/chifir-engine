@@ -17,6 +17,7 @@
 #include "base/basicstr.h"
 #include "base/compiler.h"
 #include "base/loader.h"
+#include "base/log.h"
 #include "platform_win32.h"
 
 static PIMAGE_DOS_HEADER s_ntDllBase;
@@ -152,7 +153,7 @@ static bool FindLdrGetProcedureAddress()
 #endif
 
 #define GET_FUNCTION_OPTIONAL(lib, name)                                                                                         \
-	STUB_NAME(name) = reinterpret_cast<ILibrary*>(lib)->GetSymbol<uptr (*)(...)>(STRINGIZE(name));
+	STUB_NAME(name) = static_cast<ILibrary*>(lib)->GetSymbol<uptr (*)(...)>(STRINGIZE(name));
 #define GET_FUNCTION(lib, name)                                                                                                  \
 	{                                                                                                                            \
 		GET_FUNCTION_OPTIONAL(lib, name)                                                                                         \

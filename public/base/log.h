@@ -22,12 +22,12 @@ enum class LogLevel_t : s32
 struct LogMessage_t
 {
 	LogLevel_t level;
-	DateTime_t time;
 	uptr location;
 	bool isAddress; /// Whether location should be displayed in hex
 	cstr file;
 	cstr function;
 	cstr message;
+	DateTime_t time;
 };
 
 /// Log writer interface
@@ -93,6 +93,7 @@ extern BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, c
 #define Log_Error(...)          Log_Message(Error, __VA_ARGS__)
 #define Log_FatalError(...)     Log_Message(FatalError, __VA_ARGS__)
 
+/// Produces printf arguments for the given log message. `color` decides whether ANSI escapes are used.
 #define LOG_FORMAT(color, msg)                                                                                                   \
 	(msg).isAddress ? "[%s] [%s] [%s!0x%llX %s] %s\n" : "[%s] [%s] [%s:%u %s] %s\n",                                             \
 		(color) ? LEVEL_COLORED_NAMES[s32((msg).level)] : LEVEL_NAMES[s32((msg).level)], Base_FormatDateTime((msg).time).Data(), \

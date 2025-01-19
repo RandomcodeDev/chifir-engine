@@ -5,15 +5,17 @@ function CreateVcxProject(.Name, .Path, .Configs, .Options)
 	{
 		Using(.Options)
 
+		Print('VCXProject $Name$-proj .Path=$Path$')
 		.ProjectConfigs = .Configs
 		.ProjectOutput = 'projects/VisualStudio/$Name$.vcxproj'
+		
 		.ProjectInputPaths = {'$Path$/', 'public/$Path$/', 'private/$Path$/'}
 		.ProjectBasePath = {'$Path$/', 'public/$Path$/', 'private/$Path$/'}
 
 		.IntelliSenseImport =
 		[
 			.Condition = "true"
-			.Project = '..\..\public\IntelliSense.props'
+			.Project = '^$(SolutionDir)..\..\public\IntelliSense.props'
 		]
 		.ProjectProjectImports = {.IntelliSenseImport}
 	}
