@@ -53,7 +53,7 @@ add_defines("REPO_NAME=\"" .. repo_name .. "\"")
 
 vulkan = is_plat("windows", "linux", "switch")
 
-static_build = is_plat("switch")
+static_build = false -- is_plat("switch")
 if static_build then
     add_defines("CH_STATIC")
     set_kind("static")
@@ -77,7 +77,7 @@ end
 if is_arch("x64") then
     add_defines("CH_AMD64", "CH_X86")
 elseif is_arch("x86") then
-    add_defines("CH_I386", "CH_X86")
+    add_defines("CH_IA32", "CH_X86")
 elseif is_arch("arm64") then
     add_defines("CH_ARM64")
 end
@@ -115,6 +115,7 @@ if is_plat("windows", "gdkx") then
 
     add_cxflags(
         "/Zl", -- prevent C runtime from being linked
+        "/GS-",
         "/Zc:__cplusplus",
         "/Zc:threadSafeInit-",
 
@@ -135,10 +136,15 @@ if is_plat("windows", "gdkx") then
         "/wd5045", -- Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
     {force = true})
 
-    if is_arch("x86") then
+    if is_arch("x64") then
+        add_linkdirs("public/win32/x64")
+    elseif is_arch("x86") then
         add_cxflags(
             "/arch:IA32"
         )
+        add_linkdirs("public/win32/x86")
+    elseif is_arch("arm64") then
+        add_linkdirs("public/win32/arm64")
     end
 
     add_ldflags(

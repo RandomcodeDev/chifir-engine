@@ -83,7 +83,7 @@ static ssize EffectiveSize(AllocNode_t* node)
 static ssize VisibleSize(AllocNode_t* node)
 {
 	uptr nodeAddr = reinterpret_cast<uptr>(node);
-	return static_cast<ssize>(EffectiveSize(node) - (ALIGN(nodeAddr, node->data.alignment) - nodeAddr));
+	return static_cast<ssize>(EffectiveSize(node) - (AlignUp(nodeAddr, node->data.alignment) - nodeAddr));
 }
 
 static void* VisibleStart(AllocNode_t* node)
@@ -191,7 +191,7 @@ static ssize FixAlignment(ssize alignment)
 BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment)
 {
 	ssize realAlignment = FixAlignment(alignment);
-	ssize realSize = ALIGN(SIZEOF(AllocNode_t) + size, realAlignment);
+	ssize realSize = AlignUp(SIZEOF(AllocNode_t) + size, realAlignment);
 
 	ASSERT_MSG_SAFE(realAlignment % 2 == 0, "alignment must be a power of 2");
 	ASSERT_MSG_SAFE(realSize <= SYSTEM_ALLOC_SIZE - SIZEOF(AllocNode_t), "size must be less than or equal to 67108832");

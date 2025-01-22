@@ -1,3 +1,4 @@
+#include "base/filesystem.h"
 #include "base/loader.h"
 #include "base/log.h"
 #include "base/platform.h"
@@ -96,11 +97,22 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 		appName = args[1].Data();
 	}
 
-	Log_Info("Loading application %s", appName);
-	ILibrary* appLib = Base_LoadLibrary(appName);
+	// first, try bin folder. if that fails (such as when running from the build directory), try same as exe.
+	CString prefix = CString::FormatStr("%s/bin", Plat_GetEngineDir());
+	CString appLibName = CString::FormatStr("%s/%s", prefix.Data(), appName);
+
+	Log_Info("Loading application %s (%s)", appName, appLibName.Data());
+	ILibrary* appLib = Base_LoadLibrary(appLibName.Data());
 	if (!appLib)
 	{
-		Base_Quit("Failed to load application %s!", appName);
+		prefix = Plat_GetEngineDir();
+		appLibName = CString::FormatStr("%s/%s", prefix.Data(), appName);
+		Log_Info("Loading application %s (%s)", appName, appLibName.Data());
+		appLib = Base_LoadLibrary(appLibName.Data());
+		if (!appLib)
+		{
+			Base_Quit("Failed to load application %s!", appName);
+		}
 	}
 
 	Log_Info("Initializing application %s", appName);
@@ -123,7 +135,8 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 		Log_Info(
 			"Loading %s, %sversion %u (%s)", appDependencies[i].name, appDependencies[i].requireExactVersion ? "" : "minimum ",
 			appDependencies[i].minimumVersion, appDependencies[i].required ? "required" : "optional");
-		ILibrary* lib = Base_LoadLibrary(appDependencies[i].name);
+		CString libName = CString::FormatStr("%s/%s", prefix.Data(), appDependencies[i].name);
+		ILibrary* lib = Base_LoadLibrary(libName.Data());
 		if (!lib)
 		{
 			if (appDependencies[i].required)

@@ -133,7 +133,7 @@ VkBool32 VKAPI_CALL VkDebugCallback(
 	}
 
 	Base_StrFormat(
-		typeStr, ARRAY_SIZE(typeStr), "%s%s%smessage", (types & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT) ? "general " : "",
+		typeStr, ArraySize(typeStr), "%s%s%smessage", (types & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT) ? "general " : "",
 		(types & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT) ? "performance " : "",
 		(types & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT) ? "validation " : "");
 	typeStr[0] = Base_ToUpper(typeStr[0]);

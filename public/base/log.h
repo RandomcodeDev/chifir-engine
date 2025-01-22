@@ -41,8 +41,14 @@ class BASEAPI ILogWriter
 
   protected:
 	/// Indexable with any LogLevel_t value
-	static const cstr LEVEL_NAMES[];
-	static const cstr LEVEL_COLORED_NAMES[];
+	static constexpr cstr LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
+	static constexpr cstr LEVEL_COLORED_NAMES[] = {
+		"\x1b[38;5;126mT\x1b[38;5;161mR\x1b[38;5;231mA\x1b[38;5;208mC\x1b[38;5;196mE\x1b[0m",
+		"\x1b[38;5;123mD\x1b[38;5;213mE\x1b[38;5;231mB\x1b[38;5;213mU\x1b[38;5;123mG\x1b[0m",
+		"\x1b[38;5;118mINFO\x1b[0m",
+		"\x1b[38;5;214mWARN\x1b[0m",
+		"\x1b[38;5;196mERROR\x1b[0m",
+		"\x1b[30m\x1b[48;5;124mFATAL\x1b[0m"};
 };
 
 class IWritableFilesystem;

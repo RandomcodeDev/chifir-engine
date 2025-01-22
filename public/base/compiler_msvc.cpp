@@ -229,7 +229,8 @@ void RunGlobalConstructors()
 	s32 ret = CallXtors(__xi_a, __xi_z);
 	if (ret != 0)
 	{
-		Base_AbortSafe(ret, "A global constructor failed");
+		NtTerminateProcess(NtCurrentProcess(), STATUS_FATAL_APP_EXIT);
+		//Base_AbortSafe(ret, "A global constructor failed");
 	}
 	CallXtors(__xc_a, __xc_z);
 }

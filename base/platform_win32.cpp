@@ -450,10 +450,10 @@ bool Base_GetSystemMemory(ssize size)
 	}
 
 	// Maximize available space by rounding up to page size directly
-	size = ALIGN(size, g_systemInfo.PageSize);
+	size = AlignUp(size, g_systemInfo.PageSize);
 
 	ASSERT_MSG(
-		g_memInfo.allocations.Size() < ARRAY_SIZE(memoryNodes),
+		g_memInfo.allocations.Size() < ArraySize(memoryNodes),
 		"OS allocation nodes exhausted, increase the size of the memory nodes array");
 
 	LinkedNode_t<SystemAllocation_t>* node = &memoryNodes[g_memInfo.allocations.Size()];
@@ -563,11 +563,39 @@ BASEAPI cstr Plat_GetSaveLocation()
 	if (!Base_StrLength(s_directory))
 	{
 		SHGetFolderPathA(nullptr, CSIDL_APPDATA | CSIDL_FLAG_CREATE, nullptr, SHGFP_TYPE_CURRENT, s_directory);
-		s_directory[Min(ARRAY_SIZE(s_directory) - 1, Base_StrLength(s_directory))] = '/';
+		s_directory[Min(ArraySize(s_directory) - 1, Base_StrLength(s_directory))] = '/';
 		Base_StrCopy(
 			s_directory + Base_StrLength(s_directory), GAME_NAME,
-			Min(ARRAY_SIZE(s_directory) - Base_StrLength(s_directory), ARRAY_SIZE(GAME_NAME)));
+			Min(ArraySize(s_directory) - Base_StrLength(s_directory), ArraySize(GAME_NAME)));
 	}
 
 	return s_directory;
+}
+
+BASEAPI cstr Plat_GetEngineDir()
+{
+	static char s_directory[MAX_PATH + 1] = {0};
+
+	if (!Base_StrLength(s_directory))
+	{
+		PUNICODE_STRING unicodeImagePath = &NtCurrentPeb()->ProcessParameters->ImagePathName;
+		ANSI_STRING imagePath = {};
+		RtlUnicodeStringToAnsiString(&imagePath, unicodeImagePath, true);
+		ssize index = Base_StrFind(imagePath.Buffer, '\\', true, imagePath.Length - 1);
+		if (index < 0)
+		{
+			Base_StrCopy(s_directory, "./", ArraySize(s_directory));
+			return s_directory;
+		}
+
+		Base_StrCopy(s_directory, imagePath.Buffer, Min(index, ArraySize(s_directory)));
+		RtlFreeAnsiString(&imagePath);
+	}
+
+	return s_directory;
+}
+
+BASEAPI cstr Plat_GetEnvironment(cstr name)
+{
+	return nullptr;
 }

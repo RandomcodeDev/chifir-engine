@@ -10,11 +10,11 @@ def generate_def_file(dll_path, def_path, name):
 		return
 
 	with open(def_path, 'wb') as def_file:
-		def_file.write("LIBRARY " + name + "\n")
-		def_file.write("EXPORTS\n")
+		def_file.write(bytes("LIBRARY " + name + "\n", encoding="utf-8"))
+		def_file.write(b"EXPORTS\n")
 
 		for exp in pe.DIRECTORY_ENTRY_EXPORT.symbols:
-			def_file.write(f"\t{exp.name.decode('utf-8') if exp.name else 'ord%d' % exp.ordinal} @{exp.ordinal}\n")
+			def_file.write(bytes(f"\t{exp.name.decode('utf-8') if exp.name else 'ord%d' % exp.ordinal} @{exp.ordinal}\n", encoding="utf-8"))
 
 	print(f"DEF file {def_path} generated for {name} from {dll_path}")
 

@@ -15,7 +15,7 @@ BASEAPI NORETURN void Base_Abort(s32 error, cstr msg, ...)
 	if (!formattedMsg)
 	{
 		formattedMsg = buffer;
-		Base_VStrFormat(buffer, ARRAY_SIZE(buffer), msg, args);
+		Base_VStrFormat(buffer, ArraySize(buffer), msg, args);
 	}
 	va_end(args);
 	Base_AbortSafe(error, formattedMsg);

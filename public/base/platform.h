@@ -59,5 +59,8 @@ extern BASEAPI void Plat_GetDateTime(DateTime_t& time, bool utc = false);
 /// Get the location for saving stuff
 extern BASEAPI cstr Plat_GetSaveLocation();
 
+/// Get the location the engine is running from
+extern BASEAPI cstr Plat_GetEngineDir();
+
 /// Get an environment variable
 extern BASEAPI cstr Plat_GetEnvironment(cstr name);

@@ -31,7 +31,7 @@ BASEAPI void Plat_Init()
 {
 	char exePath[1024];
 
-	Base_SysCall(__NR_readlink, reinterpret_cast<uptr>("/proc/self/exe"), reinterpret_cast<uptr>(exePath), ARRAY_SIZE(exePath));
+	Base_SysCall(__NR_readlink, reinterpret_cast<uptr>("/proc/self/exe"), reinterpret_cast<uptr>(exePath), ArraySize(exePath));
 
 	ssize index = Base_StrFind(exePath, '/', true);
 	g_exeDir = Base_StrClone(exePath, index);
@@ -121,10 +121,10 @@ bool Base_GetSystemMemory(ssize size)
 	static LinkedNode_t<SystemAllocation_t> memoryNodes[64];
 
 	// Maximize available space by rounding up to page size directly
-	size = ALIGN(size, PAGE_SIZE);
+	size = AlignUp(size, PAGE_SIZE);
 
 	ASSERT_MSG(
-		g_memInfo.allocations.Size() < ARRAY_SIZE(memoryNodes),
+		g_memInfo.allocations.Size() < ArraySize(memoryNodes),
 		"OS allocation nodes exhausted, increase the size of the memory nodes array");
 
 	LinkedNode_t<SystemAllocation_t>* node = &memoryNodes[g_memInfo.allocations.Size()];
@@ -202,16 +202,16 @@ BASEAPI cstr Plat_GetSaveLocation()
 	{
 		if (Plat_GetEnvironment("XDG_USER_DATA_HOME") && Base_StrLength(Plat_GetEnvironment("XDG_USER_DATA_HOME")))
 		{
-			Base_StrFormat(s_saveDir, ARRAY_SIZE(s_saveDir), "%s" GAME_NAME "/", Plat_GetEnvironment("XDG_USER_DATA_HOME"));
+			Base_StrFormat(s_saveDir, ArraySize(s_saveDir), "%s" GAME_NAME "/", Plat_GetEnvironment("XDG_USER_DATA_HOME"));
 		}
 		else if (Plat_GetEnvironment("HOME") && Base_StrLength(Plat_GetEnvironment("HOME")))
 		{
-			Base_StrFormat(s_saveDir, ARRAY_SIZE(s_saveDir), "%s/.local/share/" GAME_NAME "/", Plat_GetEnvironment("HOME"));
+			Base_StrFormat(s_saveDir, ArraySize(s_saveDir), "%s/.local/share/" GAME_NAME "/", Plat_GetEnvironment("HOME"));
 		}
 		else
 		{
 			// good enough
-			Base_StrCopy(s_saveDir, "/tmp/" GAME_NAME "/", ARRAY_SIZE(s_saveDir));
+			Base_StrCopy(s_saveDir, "/tmp/" GAME_NAME "/", ArraySize(s_saveDir));
 		}
 	}
 

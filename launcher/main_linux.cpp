@@ -1,16 +1,19 @@
 #include <asm/unistd.h>
 #include <asm/unistd_64.h>
+#include <dlfcn.h>
 
 #include "base/platform.h"
 #include "base/types.h"
 #include "launcher.h"
 
-extern BASEAPI void Base_Internal_SetArgs(s32 argc, char* argv[]);
+void (*Base_Internal_SetArgs)(s32 argc, char* argv[]);
 
 void Startup(s32 argc, char* argv[], void (*DynamicAtExit)())
 {
 	char** envp = argv + argc + 1;
 	(void)envp;
+
+	// TODO: dlopen everything
 
 	Base_Internal_SetArgs(argc, argv);
 	s32 code = LauncherMain();

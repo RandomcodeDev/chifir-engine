@@ -15,7 +15,7 @@ OPTIMIZE_OFF
 #include "stb/stb_sprintf.h"
 OPTIMIZE_ON
 
-BASEAPI u32 Base_VStrFormat(dstr dest, u32 destSize, cstr format, va_list args)
+BASEAPI u32 Base_VStrFormat(dstr dest, ssize destSize, cstr format, va_list args)
 {
 	va_list newArgs;
 	va_copy(newArgs, args);
@@ -31,7 +31,7 @@ BASEAPI u32 Base_VStrFormat(dstr dest, u32 destSize, cstr format, va_list args)
 	return static_cast<u32>(count);
 }
 
-BASEAPI u32 Base_StrFormat(dstr dest, u32 destSize, cstr format, ...)
+BASEAPI u32 Base_StrFormat(dstr dest, ssize destSize, cstr format, ...)
 {
 	va_list args;
 	va_start(args, format);

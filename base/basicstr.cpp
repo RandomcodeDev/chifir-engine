@@ -136,7 +136,7 @@ BASEAPI CString Base_FormatSize(u64 size)
 	}
 
 	// TODO: handle 69, 420, and pi
-	return CString::FormatStr("%lf %s", value, SUFFIXES[Min(suffix, ARRAY_SIZE(SUFFIXES) - 1)]);
+	return CString::FormatStr("%lf %s", value, SUFFIXES[Min(suffix, ArraySize(SUFFIXES) - 1)]);
 }
 
 BASEAPI CString Base_FormatDateTime(const DateTime_t& time)

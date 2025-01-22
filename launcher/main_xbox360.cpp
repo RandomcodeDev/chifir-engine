@@ -2,7 +2,7 @@
 
 int main()
 {
-	HMODULE launcher = LoadLibraryA(GAME_NAME ".xex");
+	HMODULE launcher = LoadLibraryA("bin\\" GAME_NAME ".xex");
 	if (!launcher)
 	{
 		// TODO: figure out how to display an error

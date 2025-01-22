@@ -17,15 +17,6 @@
 /// Quit if a condition isn't true
 #define ASSERT(cond) ASSERT_IMPL(cond, Base_AbortSafe(ABORT_RELEVANT_ERROR, "Assertion " #cond " failed"))
 
-/// Round val up to a multiple of align (align must be a power of two)
-#define ALIGN(val, align) (((val) + (align) - 1) & ~((align) - 1))
-
-/// Round val down to a multiple of align (align must be a power of two)
-#define ALIGN_DOWN(val, align) ((val) & ~((align) - 1))
-
-/// Get the number of elements in a stack/static array
-#define ARRAY_SIZE(arr) (SIZEOF(arr) / SIZEOF((arr)[0]))
-
 /// Stringize something
 #define STRINGIZE(x) #x
 
@@ -36,7 +27,7 @@
 #define CONTAINING_STRUCTURE(type, member, ptr) (reinterpret_cast<type*>(reinterpret_cast<uptr>(ptr) - offsetof(type, member)))
 
 /// Cast away const/function pointer
-#define CONST_CAST(T, ptr) reinterpret_cast<T>(reinterpret_cast<uptr>(ptr))
+#define CONST_CAST(T, ptr) const_cast<T>(ptr)
 
 /// Get the offset of a field in a struct with a stable layout
 #define OFFSETOF(T, m) (reinterpret_cast<uptr>(&static_cast<T*>(nullptr)->m))

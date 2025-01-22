@@ -23,5 +23,5 @@ class ILibrary
 	virtual cstr GetName() = 0;
 };
 
-/// Load a library by its base name (no path, no extension, i.e. to load Base.dll you just pass "Base")
+/// Load a library (do not put an extension on the path)
 BASEAPI ILibrary* Base_LoadLibrary(cstr name);

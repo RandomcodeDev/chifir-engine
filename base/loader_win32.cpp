@@ -91,8 +91,7 @@ MAKE_STUB(TranslateMessage, __stdcall, @4)
 MAKE_STUB(UnregisterClassA, __stdcall, @8)
 #endif
 
-#ifdef CH_XBOX360
-#else
+#ifndef CH_XBOX360
 static bool FindNtDll(PPEB_LDR_DATA ldrData)
 {
 	// On desktop NTDLL is always the first image initialized, no matter what (there is no logical reason this would change)
@@ -110,7 +109,7 @@ static bool FindNtDll(PPEB_LDR_DATA ldrData)
 static bool CheckWoW64()
 {
 #ifdef CH_I386
-	PIMAGE_NT_HEADERS ntDllNtHdrs = reinterpret_cast<PIMAGE_NT_HEADERS>(RVA_TO_VA(ntDllBase, ntDllBase->e_lfanew));
+	PIMAGE_NT_HEADERS ntDllNtHdrs = reinterpret_cast<PIMAGE_NT_HEADERS>(RVA_TO_VA(s_ntDllBase, s_ntDllBase->e_lfanew));
 	return ntDllNtHdrs->FileHeader.Machine == IMAGE_FILE_MACHINE_AMD64;
 #else
 	return false;
@@ -294,9 +293,7 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 			return nullptr;
 		}
 
-		CWindowsLibrary* library = new CWindowsLibrary(fileName, handle);
-
-		return library;
+		return new CWindowsLibrary(fileName, handle);
 	}
 #else
 	if (STUB_NAME(RtlAnsiStringToUnicodeString) && STUB_NAME(LdrLoadDll) && g_allocUsable)
@@ -332,9 +329,7 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 
 		RtlFreeUnicodeString(&nameUStr);
 
-		CWindowsLibrary* library = new CWindowsLibrary(fileName, handle);
-
-		return library;
+		return new CWindowsLibrary(fileName, handle);
 	}
 #endif
 

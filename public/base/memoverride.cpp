@@ -11,25 +11,29 @@
 
 extern "C"
 {
-	DLLEXPORT RESTRICT_FUNC void* __cdecl malloc(usize size)
+	DLLEXPORT RESTRICT_FUNC void* __cdecl _malloc(usize size)
 	{
 		return Base_Alloc(static_cast<ssize>(size & SSIZE_MAX));
 	}
+	ALIAS(_malloc, malloc)
 
-	DLLEXPORT void __cdecl free(void* block)
+	DLLEXPORT void __cdecl _free(void* block)
 	{
 		Base_Free(block);
 	}
+	ALIAS(_free, free)
 
-	DLLEXPORT RESTRICT_FUNC void* __cdecl calloc(usize count, usize size)
+	DLLEXPORT RESTRICT_FUNC void* __cdecl _calloc(usize count, usize size)
 	{
 		return Base_Alloc(static_cast<ssize>(count * size));
 	}
+	ALIAS(_calloc, calloc)
 
-	DLLEXPORT RESTRICT_FUNC void* __cdecl realloc(void* block, usize newSize)
+	DLLEXPORT RESTRICT_FUNC void* __cdecl _realloc(void* block, usize newSize)
 	{
 		return Base_Realloc(block, static_cast<ssize>(static_cast<usize>(newSize) & SSIZE_MAX));
 	}
+	ALIAS(_realloc, realloc)
 
 	DLLEXPORT void* __cdecl aligned_alloc(usize alignment, usize size)
 	{

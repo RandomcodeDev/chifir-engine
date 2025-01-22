@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "base/platform.h"
 #include "base/loader.h"
+#include "base/platform.h"
 #include "base/types.h"
+
 
 /// Export a function but also define it so it can be used like it was imported from NTDLL within Base.dll
 /// The way the forwarder is written is kinda iffy, but the code generated should be (and has been thus far) valid
@@ -19,7 +20,7 @@
 #define MAKE_STUB(x, callingConv, ...)                                                                                           \
 	extern "C" uptr (*STUB_NAME(x))(...);                                                                                        \
 	extern "C" BASEAPI bool STUB_AVAILABLE(x)();                                                                                 \
-	EXPORT_RAW("_" STRINGIZE(x) "_Available");                                                                                   \
+	EXPORT_RAW("_" STRINGIZE(x) "_Available");                                                                                 \
 	EXPORT_AS_RAW(STRINGIZE(x) "_Forwarder", "_" STRINGIZE(x) #__VA_ARGS__);
 #elif defined CH_XBOX360
 #define MAKE_STUB(x, ...)                                                                                                        \

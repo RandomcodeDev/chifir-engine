@@ -1,8 +1,13 @@
-#include "base/platform.h"
-#include "base/string.h"
-#include "base/types.h"
-#include "base/vector.h"
-#include "launcher.h"
+// Hacky code to load Launcher.dll from the bin directory next to the executable.
+// It can only use ntdll.dll
+
+#define wcsrchr _wcsrchr
+#define wcsncpy _wcsncpy
+#define wcslen _wcslen
+#include "phnt_wrapper.h"
+#undef wcsrchr
+#undef wcsncpy
+#undef wcslen
 
 #ifndef CH_DEBUG
 // hinting the nvidia driver to use the dedicated graphics card in an optimus
@@ -28,23 +33,73 @@ ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #pragma comment(linker, "/SUBSYSTEM:" SUBSYSTEM ",5.02")
 #endif
 
-extern "C"
+extern "C" __declspec(dllimport) int _snwprintf(wchar_t *Buffer, size_t BufferCount, const wchar_t *Format, ...);
+extern "C" __declspec(dllimport) const wchar_t* wcsrchr(const wchar_t *str, wchar_t c);
+extern "C" __declspec(dllimport) wchar_t* wcsncpy(wchar_t* Destination, const wchar_t* Source, size_t Count);
+extern "C" __declspec(dllimport) size_t wcslen(const wchar_t* Buffer);
+
+static PCWSTR GetEngineDir()
 {
+	static wchar_t s_directory[MAX_PATH + 1] = {0};
+
+	if (!wcslen(s_directory))
+	{
+		PUNICODE_STRING imagePath = &NtCurrentPeb()->ProcessParameters->ImagePathName;
+		PCWSTR imageName = wcsrchr(imagePath->Buffer, L'\\');
+		wcsncpy(s_directory, imagePath->Buffer, imageName - imagePath->Buffer);
+	}
+
+	return s_directory;
+}
+
+extern "C"
 #ifndef CH_XBOX360
 #ifndef CH_RETAIL
-	void mainCRTStartup()
+	void
+	mainCRTStartup()
 #else
 	void __stdcall WinMainCRTStartup()
 #endif
+{
+	PCWSTR engineDir = GetEngineDir();
+	wchar_t launcherDll[MAX_PATH + 1];
+	_snwprintf(launcherDll, ARRAYSIZE(launcherDll), L"%s\\bin\\Launcher.dll", engineDir);
+	void* launcher = nullptr;
+	bool triedSameDir = false;
+Load:
+	UNICODE_STRING launcherDllPath = {};
+	launcherDllPath.Buffer = launcherDll;
+	launcherDllPath.Length = static_cast<USHORT>(wcslen(launcherDll) * sizeof(WCHAR));
+	launcherDllPath.MaximumLength = launcherDllPath.Length + sizeof(WCHAR);
+	NTSTATUS status = LdrLoadDll(nullptr, nullptr, &launcherDllPath, &launcher);
+	if (!NT_SUCCESS(status))
 	{
-		__security_init_cookie();
-
-		RunGlobalConstructors();
-		RunThreadConstructors();
-		LauncherMain();
-		RunGlobalDestructors();
-
-		NtTerminateProcess(NtCurrentProcess(), STATUS_SUCCESS);
+		// TODO: figure out how to display an error
+		if (triedSameDir)
+		{
+			NtTerminateProcess(NtCurrentProcess(), status);
+		}
+		else
+		{
+			triedSameDir = true;
+			_snwprintf(launcherDll, ARRAYSIZE(launcherDll), L"%s\\Launcher.dll", engineDir);
+			goto Load;
+		}
 	}
-#endif
+
+	// By ordinal
+	void* launcherMainAddr = nullptr;
+	char launcherMainName[] = "LauncherMain";
+	ANSI_STRING launcherMainString = RTL_CONSTANT_STRING(launcherMainName);
+	status = LdrGetProcedureAddress(launcher, &launcherMainString, 0, &launcherMainAddr);
+	if (!NT_SUCCESS(status))
+	{
+		NtTerminateProcess(NtCurrentProcess(), status);
+	}
+
+	int (*LauncherMain)() = reinterpret_cast<int (*)()>(launcherMainAddr);
+	int result = LauncherMain();
+
+	NtTerminateProcess(NtCurrentProcess(), result);
 }
+#endif

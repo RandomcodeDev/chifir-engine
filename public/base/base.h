@@ -59,7 +59,7 @@ extern BASEAPI NORETURN void Base_AbortSafe(s32 error, cstr msg);
 extern BASEAPI NORETURN void Base_Quit(cstr msg, ...);
 
 /// Swap
-template <typename T> constexpr void Swap(T& left, T& right)
+template <typename T> constexpr void Swap(T& left, T& right) noexcept
 {
 	T swap = left;
 	left = right;
@@ -67,21 +67,39 @@ template <typename T> constexpr void Swap(T& left, T& right)
 }
 
 /// Maximum of two values
-template <typename T> constexpr T Max(const T& left, const T& right)
+template <typename T> constexpr T Max(const T& left, const T& right) noexcept
 {
 	return left > right ? left : right;
 }
 
 /// Minimum of two values
-template <typename T> constexpr T Min(const T& left, const T& right)
+template <typename T> constexpr T Min(const T& left, const T& right) noexcept
 {
 	return left < right ? left : right;
 }
 
 /// Clamp a value within range
-template <typename T> constexpr T Clamp(const T& value, const T& min, const T& max)
+template <typename T> constexpr T Clamp(const T& value, const T& min, const T& max) noexcept
 {
 	return Max(min, Min(value, max));
+}
+
+/// Round val up to a multiple of align (align must be a power of two)
+template <typename T> constexpr T AlignUp(const T& value, ssize align) noexcept
+{
+	return ((value) + (align) - 1) & ~((align) - 1);
+}
+
+/// Round val down to a multiple of align (align must be a power of two)
+template <typename T> constexpr T AlignDown(const T& value, const T& align) noexcept
+{
+	return (value) & ~((align) - 1);
+}
+
+/// Get the number of elements in a stack/static array
+template <typename S = ssize, typename T, ssize N> constexpr S ArraySize(const T (&array)[N]) noexcept
+{
+	return static_cast<S>(N);
 }
 
 /// FNV-1a hash

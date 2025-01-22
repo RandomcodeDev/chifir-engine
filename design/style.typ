@@ -1,11 +1,12 @@
 = Engine coding style
-The engine is written in C++03 with no STL and no C runtime. This comes with some advantages, but plenty of disadvantages
+The engine is written in C++14 with no STL and no C runtime. This comes with some advantages, but plenty of disadvantages
 as well.
 #table(
   columns: 2,
   [*Pros*], [*Cons*],
   [Full control over nearly everything], [Have to implement everything],
-  [_Very_ portable, everything that can possibly run the engine has a C++03 compiler], [Missing really nice things like `constexpr` and range-based for loops, and almost no libraries support C89/C++03],
+  [_Very_ portable, almost everything that can possibly run the engine has a C++14 compiler],
+    [The Xbox 360 is a platform I'd really like to support, but it only has a C++03 TR1/C89 compiler],
   [Only the exact functionality needed is implemented], [Features not built on existing support code take longer],
 )
 

@@ -215,8 +215,8 @@ BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize 
 
 	// Can only realign if they're misaligned the same amount (they should be, usually pointers are aligned on a reasonable
 	// amount unless it's some arbitrary offset into an array of bytes)
-	ssize srcMisalignment = ALIGN(reinterpret_cast<uptr>(src), alignment) - reinterpret_cast<uptr>(src);
-	ssize destMisalignment = ALIGN(reinterpret_cast<uptr>(dest), alignment) - reinterpret_cast<uptr>(dest);
+	ssize srcMisalignment = AlignUp(reinterpret_cast<uptr>(src), alignment) - reinterpret_cast<uptr>(src);
+	ssize destMisalignment = AlignUp(reinterpret_cast<uptr>(dest), alignment) - reinterpret_cast<uptr>(dest);
 	if (srcMisalignment == destMisalignment)
 	{
 		if (srcMisalignment > remaining)
@@ -328,7 +328,7 @@ BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size)
 	}
 
 	// Realign
-	ssize misalignment = ALIGN(reinterpret_cast<uptr>(dest), alignment) - reinterpret_cast<uptr>(dest);
+	ssize misalignment = AlignUp(reinterpret_cast<uptr>(dest), alignment) - reinterpret_cast<uptr>(dest);
 	if (misalignment > remaining)
 	{
 		misalignment = remaining;
@@ -511,8 +511,8 @@ BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssiz
 
 	// Can only realign if they're misaligned the same amount (they should be, usually pointers are aligned on a reasonable
 	// amount unless it's some arbitrary offset into an array of bytes)
-	ssize aMisalignment = ALIGN(reinterpret_cast<uptr>(a), alignment) - reinterpret_cast<uptr>(a);
-	ssize bMisalignment = ALIGN(reinterpret_cast<uptr>(b), alignment) - reinterpret_cast<uptr>(b);
+	ssize aMisalignment = AlignUp(reinterpret_cast<uptr>(a), alignment) - reinterpret_cast<uptr>(a);
+	ssize bMisalignment = AlignUp(reinterpret_cast<uptr>(b), alignment) - reinterpret_cast<uptr>(b);
 	s32 comparison;
 	if (aMisalignment == bMisalignment)
 	{

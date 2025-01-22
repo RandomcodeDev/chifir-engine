@@ -52,8 +52,14 @@ typedef float32x2_t v128;
 typedef float32x4_t v256;
 #endif
 
+// dynamic string
 typedef char* dstr;
+
+// constant string
 typedef const char* cstr;
 
+// dynamic wide string
 typedef wchar_t* dwstr;
+
+// constant wide string
 typedef const wchar_t* cwstr;

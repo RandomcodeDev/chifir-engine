@@ -32,7 +32,7 @@ void CEngine::GetRequiredSystems(CVector<SystemDependency_t>& dependencies)
 
 	if (!m_headless)
 	{
-		dependencies.Add(CLIENT_DEPS, ARRAY_SIZE(CLIENT_DEPS));
+		dependencies.Add(CLIENT_DEPS, ArraySize(CLIENT_DEPS));
 	}
 }
 
