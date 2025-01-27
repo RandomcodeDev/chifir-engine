@@ -2,9 +2,8 @@
 
 #pragma once
 
+#include "base/dll.h"
 #include "base/types.h"
 
-#define LAUNCHERAPI DLLEXPORT
-
 /// Cross-platform entry point
-extern "C" LAUNCHERAPI s32 LauncherMain();
+extern "C" DLLEXPORT s32 LauncherMain();

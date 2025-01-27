@@ -62,16 +62,13 @@ extern "C"
 #endif
 {
 	PCWSTR engineDir = GetEngineDir();
-	wchar_t launcherDll[MAX_PATH + 1];
-	_snwprintf(launcherDll, ARRAYSIZE(launcherDll), L"%s\\bin\\Launcher.dll", engineDir);
+	wchar_t binDir[MAX_PATH + 1];
+	_snwprintf(binDir, ARRAYSIZE(binDir), L"%s\\bin", engineDir);
 	void* launcher = nullptr;
 	bool triedSameDir = false;
 Load:
-	UNICODE_STRING launcherDllPath = {};
-	launcherDllPath.Buffer = launcherDll;
-	launcherDllPath.Length = static_cast<USHORT>(wcslen(launcherDll) * sizeof(WCHAR));
-	launcherDllPath.MaximumLength = launcherDllPath.Length + sizeof(WCHAR);
-	NTSTATUS status = LdrLoadDll(nullptr, nullptr, &launcherDllPath, &launcher);
+	UNICODE_STRING launcherDll = RTL_CONSTANT_STRING(L"Launcher.dll");
+	NTSTATUS status = LdrLoadDll(binDir, nullptr, &launcherDll, &launcher);
 	if (!NT_SUCCESS(status))
 	{
 		// TODO: figure out how to display an error
@@ -82,7 +79,7 @@ Load:
 		else
 		{
 			triedSameDir = true;
-			_snwprintf(launcherDll, ARRAYSIZE(launcherDll), L"%s\\Launcher.dll", engineDir);
+			_snwprintf(binDir, ARRAYSIZE(binDir), L"%s", engineDir);
 			goto Load;
 		}
 	}

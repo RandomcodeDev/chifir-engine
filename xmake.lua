@@ -53,7 +53,7 @@ add_defines("REPO_NAME=\"" .. repo_name .. "\"")
 
 vulkan = is_plat("windows", "linux", "switch")
 
-static_build = false -- is_plat("switch")
+static_build = is_plat("switch")
 if static_build then
     add_defines("CH_STATIC")
     set_kind("static")

@@ -18,7 +18,7 @@
 #define VK_USE_64_BIT_PTR_DEFINES 0
 #include "volk/volk.h"
 
-extern VkAllocationCallbacks g_vkAllocationCallbacks;
+extern const VkAllocationCallbacks* GetVkAllocationCallbacks();
 
 extern cstr GetVkResultString(VkResult result);
 

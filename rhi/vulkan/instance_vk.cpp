@@ -129,12 +129,12 @@ bool CVulkanRhiInstance::Initialize()
 #endif
 
 	Log_Debug("Creating VkInstance");
-	VkResult result = vkCreateInstance(&instanceCreateInfo, &g_vkAllocationCallbacks, &m_instance);
+	VkResult result = vkCreateInstance(&instanceCreateInfo, GetVkAllocationCallbacks(), &m_instance);
 	if (result == VK_ERROR_LAYER_NOT_PRESENT)
 	{
 		Log_Debug("Validation layer(s) missing, retrying without them");
 		instanceCreateInfo.enabledLayerCount = 0;
-		result = vkCreateInstance(&instanceCreateInfo, &g_vkAllocationCallbacks, &m_instance);
+		result = vkCreateInstance(&instanceCreateInfo, GetVkAllocationCallbacks(), &m_instance);
 	}
 
 	if (result != VK_SUCCESS)
@@ -149,7 +149,7 @@ bool CVulkanRhiInstance::Initialize()
 
 #ifdef VULKAN_DEBUG
 	Log_Debug("Creating real debug messenger");
-	vkCreateDebugUtilsMessengerEXT(m_instance, &debugCreateInfo, &g_vkAllocationCallbacks, &m_debugMessenger);
+	vkCreateDebugUtilsMessengerEXT(m_instance, &debugCreateInfo, GetVkAllocationCallbacks(), &m_debugMessenger);
 #endif
 
 	return true;
@@ -159,13 +159,13 @@ void CVulkanRhiInstance::Destroy()
 {
 	if (m_debugMessenger)
 	{
-		vkDestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, &g_vkAllocationCallbacks);
+		vkDestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, GetVkAllocationCallbacks());
 		m_debugMessenger = VK_NULL_HANDLE;
 	}
 
 	if (m_instance)
 	{
-		vkDestroyInstance(m_instance, &g_vkAllocationCallbacks);
+		vkDestroyInstance(m_instance, GetVkAllocationCallbacks());
 		m_instance = VK_NULL_HANDLE;
 	}
 

@@ -69,7 +69,7 @@ static ISystem* GetSystem(ILibrary* library, u32 minVersion, bool exactRequired)
 }
 #endif
 
-extern "C" LAUNCHERAPI s32 LauncherMain()
+extern "C" DLLEXPORT s32 LauncherMain()
 {
 	Base_Init();
 	Plat_Init();
@@ -101,13 +101,14 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	CString prefix = CString::FormatStr("%s/bin", Plat_GetEngineDir());
 	CString appLibName = CString::FormatStr("%s/%s", prefix.Data(), appName);
 
-	Log_Info("Loading application %s (%s)", appName, appLibName.Data());
+	Log_Info("Loading application %s from %s", appName, appLibName.Data());
 	ILibrary* appLib = Base_LoadLibrary(appLibName.Data());
 	if (!appLib)
 	{
+		Log_Error("Failed to load from %s, retrying", appLibName.Data());
 		prefix = Plat_GetEngineDir();
 		appLibName = CString::FormatStr("%s/%s", prefix.Data(), appName);
-		Log_Info("Loading application %s (%s)", appName, appLibName.Data());
+		Log_Info("Loading application %s from %s", appName, appLibName.Data());
 		appLib = Base_LoadLibrary(appLibName.Data());
 		if (!appLib)
 		{
@@ -132,10 +133,11 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	CVector<ISystem*> systems;
 	for (ssize i = 0; i < appDependencies.Size(); i++)
 	{
-		Log_Info(
-			"Loading %s, %sversion %u (%s)", appDependencies[i].name, appDependencies[i].requireExactVersion ? "" : "minimum ",
-			appDependencies[i].minimumVersion, appDependencies[i].required ? "required" : "optional");
 		CString libName = CString::FormatStr("%s/%s", prefix.Data(), appDependencies[i].name);
+		Log_Info(
+			"Loading %s, %sversion %u (%s) from %s", appDependencies[i].name,
+			appDependencies[i].requireExactVersion ? "" : "minimum ", appDependencies[i].minimumVersion,
+			appDependencies[i].required ? "required" : "optional", libName.Data());
 		ILibrary* lib = Base_LoadLibrary(libName.Data());
 		if (!lib)
 		{

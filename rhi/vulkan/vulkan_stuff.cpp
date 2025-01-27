@@ -34,14 +34,23 @@ static void* VKAPI_CALL VkAlloc(void* pUserData, usize size, usize alignment, Vk
 static void VKAPI_CALL VkFree(void* pUserData, void* pMemory)
 {
 	(void)pUserData;
-	// silly ahh drivers got free(nullptr)
+	// silly ahh drivers got free(nullptr) in them
 	if (pMemory)
 	{
 		Base_Free(pMemory);
 	}
 }
 
-VkAllocationCallbacks g_vkAllocationCallbacks = {nullptr, VkAlloc, VkRealloc, VkFree, VkAllocNotification, VkFreeNotification};
+const VkAllocationCallbacks* GetVkAllocationCallbacks()
+{
+#ifdef CH_SWITCH
+	// allocations are already overridden globally
+	return nullptr;
+#else
+	static VkAllocationCallbacks s_vkAllocationCallbacks = {nullptr, VkAlloc, VkRealloc, VkFree, VkAllocNotification, VkFreeNotification};
+	return &s_vkAllocationCallbacks;
+#endif
+}
 
 cstr GetVkResultString(VkResult result)
 {
