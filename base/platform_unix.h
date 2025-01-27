@@ -31,7 +31,8 @@ class CUnixLibrary: public ILibrary
 extern uptr g_errno;
 
 /// Make a system call
-extern uptr Base_SysCall(uptr number, uptr arg1 = 0, uptr arg2 = 0, uptr arg3 = 0, uptr arg4 = 0, uptr arg5 = 0, uptr arg6 = 0);
+template <class T1 = uptr, class T2 = uptr, class T3 = uptr, class T4 = uptr, class T5 = uptr, class T6 = uptr>
+ATTRIBUTE(naked) uptr Base_SysCall(uptr number, T1 arg1 = 0, T2 arg2 = 0, T3 arg3 = 0, T4 arg4 = 0, T5 arg5 = 0, T6 arg6 = 0);
 
 extern s64 g_timeZoneOffset;
 

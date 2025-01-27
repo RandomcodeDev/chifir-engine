@@ -8,7 +8,7 @@ target("LauncherMain")
         add_files("main_win32.cpp")
         add_links("ntdll_full.lib")
     elseif is_plat("linux") then
-        add_files("main_linux.cpp")
+        add_files("main_unix.cpp")
     elseif is_plat("switch") then
         add_files("../private/launcher/main_switch.cpp")
     end

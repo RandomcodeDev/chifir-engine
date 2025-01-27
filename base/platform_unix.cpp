@@ -6,6 +6,10 @@
 #include <asm/fcntl.h>
 #include <asm/unistd.h>
 
+#ifdef CH_LINUX
+#include <linux/limits.h>
+#endif
+
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -19,6 +23,7 @@
 #include "base/platform.h"
 #include "base/string.h"
 #include "base/types.h"
+#include "base/vector.h"
 #include "platform_unix.h"
 
 dstr g_exeDir;
@@ -31,7 +36,7 @@ BASEAPI void Plat_Init()
 {
 	char exePath[1024];
 
-	Base_SysCall(__NR_readlink, reinterpret_cast<uptr>("/proc/self/exe"), reinterpret_cast<uptr>(exePath), ArraySize(exePath));
+	Base_SysCall(__NR_readlink, "/proc/self/exe", exePath, ArraySize<usize>(exePath));
 
 	ssize index = Base_StrFind(exePath, '/', true);
 	g_exeDir = Base_StrClone(exePath, index);
@@ -52,7 +57,7 @@ BASEAPI void Plat_Shutdown()
 s32 s_argc;
 char** s_argv;
 
-BASEAPI void Base_Internal_SetArgs(s32 argc, char* argv[])
+extern "C" BASEAPI void Base_Internal_SetArgs(s32 argc, char* argv[])
 {
 	s_argc = argc;
 	s_argv = argv;
@@ -80,7 +85,8 @@ BASEAPI cstr Plat_GetHardwareDescription()
 	return "unknown hardware";
 }
 
-ATTRIBUTE(naked) uptr Base_SysCall(uptr number, uptr arg1, uptr arg2, uptr arg3, uptr arg4, uptr arg5, uptr arg6)
+template <class T1, class T2, class T3, class T4, class T5, class T6>
+ATTRIBUTE(naked) uptr Base_SysCall(uptr number, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
 {
 #ifdef CH_AMD64
 	__asm__ volatile("pushq %rbp\n"
@@ -131,7 +137,7 @@ bool Base_GetSystemMemory(ssize size)
 	node->data.size = size;
 
 	node->data.memory = reinterpret_cast<void*>(Base_SysCall(
-		__NR_mmap, reinterpret_cast<uptr>(nullptr), node->data.size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+		__NR_mmap, nullptr, node->data.size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
 	if (node->data.memory == MAP_FAILED)
 	{
 		return false;
@@ -217,6 +223,21 @@ BASEAPI cstr Plat_GetSaveLocation()
 
 	return s_saveDir;
 }
+
+BASEAPI cstr Plat_GetEngineDir()
+{
+	static char s_directory[PATH_MAX + 1] = {0};
+
+	if (!Base_StrLength(s_directory))
+	{
+		Base_SysCall(__NR_readlink, "/proc/self/exe", s_directory, ArraySize<usize>(s_directory));
+		ssize exeName = Base_StrFind(s_directory, '/', true); // chances that this fails are 0
+		s_directory[exeName] = 0;
+	}
+
+	return s_directory;
+}
+
 
 BASEAPI cstr Plat_GetEnvironment(cstr name)
 {

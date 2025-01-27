@@ -87,7 +87,6 @@ Load:
 		}
 	}
 
-	// By ordinal
 	void* launcherMainAddr = nullptr;
 	char launcherMainName[] = "LauncherMain";
 	ANSI_STRING launcherMainString = RTL_CONSTANT_STRING(launcherMainName);
