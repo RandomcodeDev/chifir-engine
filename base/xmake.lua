@@ -37,8 +37,8 @@ target("Base")
         end
     elseif is_plat("linux") then
         add_files(
-            "filesystem_linux.cpp",
-            "platform_linux.cpp"
+            "filesystem_unix.cpp",
+            "platform_unix.cpp"
         )
     elseif is_plat("switch") then
         add_files(
