@@ -17,10 +17,21 @@ SIMD if the current CPU supports it (on x86, it's all dynamically enabled based 
 time). I also wrote my own allocator that works pretty well, but I think there are still issues with its bookkeeping, and
 I'm sure I'll have to optimize it eventually.
 
+## Build requirements
+
+For Windows, you need Visual Studio or Clang. You also (will, in the future) need the GDK to build the x64 version. For Xbox
+360, you need the SDK, it's on Internet Archive. For Switch, you need version 15.3.2 of the SDK (also on Internet Archive),
+the private repo, and my private fork of xmake. For Linux, you need Clang and glibc (other `libc`s might work, but this is
+untested).
+
+There are Rust bindings in progress, you need the `nightly` toolchain.
+
 ## Build instructions
 
 You'll need xmake. First, you should copy `config.default.lua` to `config.lua`, and change any important stuff.
 Then, just run `xmake config -m debug`, followed by `xmake build`.
+
+For the Rust stuff, build the engine, then do `cargo build`.
 
 ## Supported platforms
 
@@ -28,9 +39,3 @@ Then, just run `xmake config -m debug`, followed by `xmake build`.
 |-------|---------------|-------------|---------------|----------|-----------------|-------|
 | Clang | yes           | yes         | no            | no       | yes             | kinda |
 | MSVC  | yes           | yes         | yes           | no       | no              | no    |
-
-## Build requirements
-
-For Windows, you need Visual Studio or Clang. You also need the GDK to build the x64 version. For Xbox 360, you need the
-SDK, it's on Internet Archive. For Switch, you need version 15.3.2 of the SDK (also on Internet Archive), the private repo,
-and my private fork of xmake. For Linux, you need Clang and glibc (other `libc`s might work, but this is untested).

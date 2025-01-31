@@ -26,6 +26,8 @@
 #include "base/vector.h"
 #include "platform_unix.h"
 
+bool g_platInitialized;
+
 dstr g_exeDir;
 
 uptr g_errno;
@@ -34,20 +36,23 @@ s64 g_timeZoneOffset;
 
 BASEAPI void Plat_Init()
 {
-	char exePath[1024];
-
-	Base_SysCall(__NR_readlink, "/proc/self/exe", exePath, ArraySize<usize>(exePath));
-
-	ssize index = Base_StrFind(exePath, '/', true);
-	g_exeDir = Base_StrClone(exePath, index);
-	if (!g_exeDir)
+	if (!g_platInitialized)
 	{
-		Base_AbortSafe(ABORT_RELEVANT_ERROR, "Failed to get executable directory!");
-	}
+		char exePath[1024];
 
-	s64 now = Plat_GetMilliseconds() / 1000;
-	struct tm* local = localtime(&now);
-	g_timeZoneOffset = local->tm_gmtoff;
+		Base_SysCall(__NR_readlink, "/proc/self/exe", exePath, ArraySize<usize>(exePath));
+
+		ssize index = Base_StrFind(exePath, '/', true);
+		g_exeDir = Base_StrClone(exePath, index);
+		if (!g_exeDir)
+		{
+			Base_AbortSafe(ABORT_RELEVANT_ERROR, "Failed to get executable directory!");
+		}
+
+		s64 now = Plat_GetMilliseconds() / 1000;
+		struct tm* local = localtime(&now);
+		g_timeZoneOffset = local->tm_gmtoff;
+	}
 }
 
 BASEAPI void Plat_Shutdown()
@@ -86,7 +91,8 @@ BASEAPI cstr Plat_GetHardwareDescription()
 }
 
 template <class T1, class T2, class T3, class T4, class T5, class T6>
-ATTRIBUTE(naked) uptr Base_SysCall(uptr number, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
+ATTRIBUTE(naked)
+uptr Base_SysCall(uptr number, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
 {
 #ifdef CH_AMD64
 	__asm__ volatile("pushq %rbp\n"
@@ -136,8 +142,8 @@ bool Base_GetSystemMemory(ssize size)
 	LinkedNode_t<SystemAllocation_t>* node = &memoryNodes[g_memInfo.allocations.Size()];
 	node->data.size = size;
 
-	node->data.memory = reinterpret_cast<void*>(Base_SysCall(
-		__NR_mmap, nullptr, node->data.size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+	node->data.memory = reinterpret_cast<void*>(
+		Base_SysCall(__NR_mmap, nullptr, node->data.size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
 	if (node->data.memory == MAP_FAILED)
 	{
 		return false;
@@ -237,7 +243,6 @@ BASEAPI cstr Plat_GetEngineDir()
 
 	return s_directory;
 }
-
 
 BASEAPI cstr Plat_GetEnvironment(cstr name)
 {

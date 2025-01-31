@@ -169,8 +169,8 @@ end
 includes("base")
 includes("engine")
 includes("testapp")
-includes("rhi")
 includes("rendersystem")
+includes("rhi")
 includes("videosystem")
 includes("launcher")
 

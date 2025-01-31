@@ -38,22 +38,22 @@ constexpr cstr SETTING_DEBUG_ACTION[] = {"VK_DBG_LAYER_ACTION_BREAK"};
 constexpr cstr SETTING_REPORT_FLAGS[] = {"info", "warn", "perf", "error"};
 constexpr VkBool32 SETTING_ENABLE_MESSAGE_LIMIT = VK_TRUE;
 constexpr int32_t SETTING_DUPLICATE_MESSAGE_LIMIT = 3;
-//constexpr cstr SETTING_ENABLES[] = {
+// constexpr cstr SETTING_ENABLES[] = {
 //	"VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT", "VALIDATION_CHECK_ENABLE_VENDOR_SPECIFIC_ALL"};
 constexpr VkBool32 SETTING_PRINTF_TO_STDOUT = VK_FALSE;
 
 constexpr VkLayerSettingEXT LAYER_SETTINGS[] = {
-	{LAYER_NAME,           "validate_core", VK_LAYER_SETTING_TYPE_BOOL32_EXT,                               1,           &SETTING_VALIDATE_CORE},
+	{LAYER_NAME,           "validate_core", VK_LAYER_SETTING_TYPE_BOOL32_EXT,                                    1,           &SETTING_VALIDATE_CORE},
 	// TODO: fix the WRITE_AFTER_WRITE hazard that shows up when this is enabled
 	//{LAYER_NAME,           "validate_sync", VK_LAYER_SETTING_TYPE_BOOL32_EXT,                                1,
 	//&SETTING_VALIDATE_SYNC},
-	{LAYER_NAME,           "thread_safety", VK_LAYER_SETTING_TYPE_BOOL32_EXT,                               1,           &SETTING_THREAD_SAFETY},
-	{LAYER_NAME,            "debug_action", VK_LAYER_SETTING_TYPE_STRING_EXT,                               1,             SETTING_DEBUG_ACTION},
+	{LAYER_NAME,           "thread_safety", VK_LAYER_SETTING_TYPE_BOOL32_EXT,                                    1,           &SETTING_THREAD_SAFETY},
+	{LAYER_NAME,            "debug_action", VK_LAYER_SETTING_TYPE_STRING_EXT,                                    1,             SETTING_DEBUG_ACTION},
 	{LAYER_NAME,            "report_flags", VK_LAYER_SETTING_TYPE_STRING_EXT, ArraySize<u32>(SETTING_REPORT_FLAGS),             SETTING_REPORT_FLAGS},
-	{LAYER_NAME,    "enable_message_limit", VK_LAYER_SETTING_TYPE_BOOL32_EXT,                               1,    &SETTING_ENABLE_MESSAGE_LIMIT},
-	{LAYER_NAME, "duplicate_message_limit",  VK_LAYER_SETTING_TYPE_INT32_EXT,                               1, &SETTING_DUPLICATE_MESSAGE_LIMIT},
+	{LAYER_NAME,    "enable_message_limit", VK_LAYER_SETTING_TYPE_BOOL32_EXT,                                    1,    &SETTING_ENABLE_MESSAGE_LIMIT},
+	{LAYER_NAME, "duplicate_message_limit",  VK_LAYER_SETTING_TYPE_INT32_EXT,                                    1, &SETTING_DUPLICATE_MESSAGE_LIMIT},
 	//{LAYER_NAME,				 "enables", VK_LAYER_SETTING_TYPE_STRING_EXT,      ArraySize(SETTING_ENABLES), SETTING_ENABLES},
-	{LAYER_NAME,        "printf_to_stdout", VK_LAYER_SETTING_TYPE_BOOL32_EXT,                               1,        &SETTING_PRINTF_TO_STDOUT}
+	{LAYER_NAME,        "printf_to_stdout", VK_LAYER_SETTING_TYPE_BOOL32_EXT,                                    1,        &SETTING_PRINTF_TO_STDOUT}
 };
 #endif
 
@@ -176,33 +176,6 @@ void CVulkanRhiInstance::Destroy()
 	}
 }
 
-static VulkanDeviceInfo_t* ConvertDeviceInfo(
-	RhiDeviceInfo_t& info, VkPhysicalDevice device, const VkPhysicalDeviceProperties& properties,
-	const VkPhysicalDeviceMemoryProperties& memoryProperties)
-{
-	static const RhiDeviceType_t DEVICE_TYPES[] = {
-		RhiDeviceType_t::Other, RhiDeviceType_t::Integrated, RhiDeviceType_t::Discrete, RhiDeviceType_t::Other,
-		RhiDeviceType_t::Software};
-
-	info.name = properties.deviceName;
-
-	info.deviceType = DEVICE_TYPES[properties.deviceType];
-
-	info.vendorId = properties.vendorID;
-	info.deviceId = properties.deviceID;
-
-	info.maxTextureSize = properties.limits.maxImageDimension2D;
-	info.totalMemory = memoryProperties.memoryHeaps[0].size;
-
-	VulkanDeviceInfo_t* vkInfo = Base_Alloc<VulkanDeviceInfo_t>(1);
-	vkInfo->device = device;
-	vkInfo->properties = properties;
-	vkInfo->memoryProperties = memoryProperties;
-	info.handle = reinterpret_cast<u64>(vkInfo);
-
-	return vkInfo;
-}
-
 void CVulkanRhiInstance::GetDeviceInfo(CVector<RhiDeviceInfo_t>& info)
 {
 	Log_Debug("Getting physical devices");
@@ -229,36 +202,11 @@ void CVulkanRhiInstance::GetDeviceInfo(CVector<RhiDeviceInfo_t>& info)
 
 	for (ssize i = 0; i < devices.Size(); i++)
 	{
-		Log_Debug("Getting information for device %zd");
-
-		VkPhysicalDeviceProperties properties = {};
-		vkGetPhysicalDeviceProperties(devices[i], &properties);
-
-		VkPhysicalDeviceMemoryProperties memoryProperties = {};
-		vkGetPhysicalDeviceMemoryProperties(devices[i], &memoryProperties);
-
-		CVector<VkExtensionProperties> extensionProperties = {};
-		u32 extensionCount = 0;
-		result = vkEnumerateDeviceExtensionProperties(devices[i], nullptr, &extensionCount, nullptr);
-		if (result != VK_SUCCESS)
+		RhiDeviceInfo_t currentInfo;
+		if (CVulkanRhiDevice::GetDeviceInfo(currentInfo, devices[i]))
 		{
-			Log_Error("Failed to get device extension properties for device %zd: %s", i, GetVkResultString(result));
-			continue;
+			// only add if the device is usable
+			info.Add(currentInfo);
 		}
-
-		extensionProperties.Resize(extensionCount);
-
-		result = vkEnumerateDeviceExtensionProperties(devices[i], nullptr, &extensionCount, extensionProperties.Data());
-		if (result != VK_SUCCESS)
-		{
-			Log_Error("Failed to get device extension properties for device %zd: %s", i, GetVkResultString(result));
-			continue;
-		}
-
-		// only add if the device is usable
-		RhiDeviceInfo_t currentInfo = {};
-		VulkanDeviceInfo_t* deviceInfo = ConvertDeviceInfo(currentInfo, devices[i], properties, memoryProperties);
-		deviceInfo->extensionProperties = extensionProperties;
-		info.Add(currentInfo);
 	}
 }

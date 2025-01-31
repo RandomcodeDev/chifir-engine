@@ -30,5 +30,7 @@ class CVulkanRhiDevice: public IRhiDevice
   private:
     friend class CVulkanRhiInstance;
 
+    static bool GetDeviceInfo(RhiDeviceInfo_t& info, VkPhysicalDevice device, ssize i = -1);
+
     static constexpr cstr REQUIRED_EXTENSIONS[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 };

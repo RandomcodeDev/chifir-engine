@@ -59,72 +59,76 @@ BASEAPI void Plat_WriteConsole(cstr text)
 
 BASEAPI void Plat_Init()
 {
-	// This is to allow the loader to use memory allocation for library names
-#ifdef CH_XBOX360
-	// 64K pages are the default
-	g_systemInfo.PageSize = 0x10000;
-#else
-	// Every other supported architecture uses 4K pages
-	g_systemInfo.PageSize = 0x1000;
-#endif
-	g_allocUsable = true;
-
-	if (!Base_InitLoader())
+	if (!g_platInitialized)
 	{
-		Base_AbortSafe(LastNtStatus(), "Failed to initialize dynamic loader");
-	}
+		// This is to allow the loader to use memory allocation for library names
+#ifdef CH_XBOX360
+		// 64K pages are the default
+		g_systemInfo.PageSize = 0x10000;
+#else
+		// Every other supported architecture uses 4K pages
+		g_systemInfo.PageSize = 0x1000;
+#endif
+		g_allocUsable = true;
+
+		if (!Base_InitLoader())
+		{
+			Base_AbortSafe(LastNtStatus(), "Failed to initialize dynamic loader");
+		}
 
 #ifndef CH_XBOX360
-	// Properly determine the page size just in case, and get other info
-	NTSTATUS status = NtQuerySystemInformation(SystemBasicInformation, &g_systemInfo, SIZEOF(SYSTEM_BASIC_INFORMATION), nullptr);
-	if (!NT_SUCCESS(status))
-	{
-		Base_Abort(status, "Failed to get basic system information: NTSTATUS 0x%08X", status);
-	}
+		// Properly determine the page size just in case, and get other info
+		NTSTATUS status =
+			NtQuerySystemInformation(SystemBasicInformation, &g_systemInfo, SIZEOF(SYSTEM_BASIC_INFORMATION), nullptr);
+		if (!NT_SUCCESS(status))
+		{
+			Base_Abort(status, "Failed to get basic system information: NTSTATUS 0x%08X", status);
+		}
 
-	// Need this for RAM available
-	status = NtQuerySystemInformation(
-		SystemPerformanceInformation, &g_systemPerfInfo, SIZEOF(SYSTEM_PERFORMANCE_INFORMATION), nullptr);
-	if (!NT_SUCCESS(status))
-	{
-		Base_Abort(status, "Failed to get system performance information: NTSTATUS 0x%08X", status);
-	}
+		// Need this for RAM available
+		status = NtQuerySystemInformation(
+			SystemPerformanceInformation, &g_systemPerfInfo, SIZEOF(SYSTEM_PERFORMANCE_INFORMATION), nullptr);
+		if (!NT_SUCCESS(status))
+		{
+			Base_Abort(status, "Failed to get system performance information: NTSTATUS 0x%08X", status);
+		}
 #endif
 
-	// Initialize these in advance
-	(void)Plat_GetSystemDescription();
-	(void)Plat_GetHardwareDescription();
+		// Initialize these in advance
+		(void)Plat_GetSystemDescription();
+		(void)Plat_GetHardwareDescription();
 
 #ifndef CH_XBOX360
 #ifdef CH_WIN32
-	// Get a console
-	bool haveConsole = false;
-	if (AttachConsole_Available())
-	{
-		haveConsole = AttachConsole(ATTACH_PARENT_PROCESS);
-		if (haveConsole)
+		// Get a console
+		bool haveConsole = false;
+		if (AttachConsole_Available())
 		{
-			Plat_WriteConsole("\n");
-		}
-		else if (AllocConsole_Available())
-		{
+			haveConsole = AttachConsole(ATTACH_PARENT_PROCESS);
+			if (haveConsole)
+			{
+				Plat_WriteConsole("\n");
+			}
+			else if (AllocConsole_Available())
+			{
 #ifndef CH_RETAIL
-			AllocConsole();
-			haveConsole = true;
+				AllocConsole();
+				haveConsole = true;
 #endif
+			}
 		}
-	}
 #endif
 
-	if (haveConsole && Plat_ConsoleHasColor() && GetConsoleMode_Available() && SetConsoleMode_Available())
-	{
-		DWORD mode = 0;
-		GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), &mode);
-		SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
-	}
+		if (haveConsole && Plat_ConsoleHasColor() && GetConsoleMode_Available() && SetConsoleMode_Available())
+		{
+			DWORD mode = 0;
+			GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), &mode);
+			SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+		}
 #endif
 
-	g_platInitialized = true;
+		g_platInitialized = true;
+	}
 }
 
 BASEAPI void Plat_Shutdown()

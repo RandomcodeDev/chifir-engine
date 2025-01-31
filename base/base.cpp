@@ -3,6 +3,7 @@
 #include "base/basicstr.h"
 #include "base/compiler.h"
 #include "base/log.h"
+#include "base/platform.h"
 
 bool g_baseInitialized;
 bool g_platInitialized;
@@ -88,13 +89,24 @@ static void InitCpuData()
 
 BASEAPI void Base_Init()
 {
-	InitCpuData();
+	if (!g_baseInitialized)
+	{
+		InitCpuData();
 
-	g_baseInitialized = true;
+		Plat_Init();
+
+#ifdef CH_WIN32
+		Log_AddWriter(new CDbgPrintLogWriter());
+#endif
+		Log_AddWriter(new CConsoleLogWriter());
+
+		g_baseInitialized = true;
+	}
 }
 
 BASEAPI void Base_Shutdown()
 {
+	Plat_Shutdown();
 }
 
 BASEAPI NORETURN void Base_Quit(cstr message, ...)

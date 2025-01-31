@@ -87,13 +87,13 @@ template <typename T> constexpr T Clamp(const T& value, const T& min, const T& m
 /// Round val up to a multiple of align (align must be a power of two)
 template <typename T> constexpr T AlignUp(const T& value, ssize align) noexcept
 {
-	return ((value) + (align) - 1) & ~((align) - 1);
+	return ((value) + (align)-1) & ~((align)-1);
 }
 
 /// Round val down to a multiple of align (align must be a power of two)
 template <typename T> constexpr T AlignDown(const T& value, const T& align) noexcept
 {
-	return (value) & ~((align) - 1);
+	return (value) & ~((align)-1);
 }
 
 /// Get the number of elements in a stack/static array
@@ -127,7 +127,7 @@ extern BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment = 8);
 
 /// Allocate an array of T with count elements, needs to be initialized with placement new
 /// if constructors matter.
-template <typename T> constexpr T* Base_Alloc(ssize count)
+template <typename T> constexpr T* Base_Alloc(ssize count = 1)
 {
 	return reinterpret_cast<T*>(Base_Alloc(count * SIZEOF(T), ALIGNOF(T)));
 }

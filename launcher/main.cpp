@@ -71,16 +71,8 @@ static ISystem* GetSystem(ILibrary* library, u32 minVersion, bool exactRequired)
 
 extern "C" DLLEXPORT s32 LauncherMain()
 {
-	Base_Init();
-	Plat_Init();
-
 	CVector<CString> args;
 	Plat_GetArgs(args);
-
-#ifdef CH_WIN32
-	Log_AddWriter(new CDbgPrintLogWriter());
-#endif
-	Log_AddWriter(new CConsoleLogWriter());
 
 #ifdef CH_STATIC
 	cstr appName = "Engine";
