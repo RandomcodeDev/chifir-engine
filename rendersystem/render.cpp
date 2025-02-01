@@ -6,15 +6,13 @@
 
 bool CRenderSystem::Initialize(IVideoSystem* videoSystem)
 {
-	(void)videoSystem;
-
 	m_instance = Rhi_CreateInstance();
 	if (!m_instance)
 	{
 		return false;
 	}
 
-	if (!m_instance->Initialize())
+	if (!m_instance->Initialize(videoSystem))
 	{
 		return false;
 	}

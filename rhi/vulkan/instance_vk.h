@@ -5,6 +5,7 @@
 #include "vulkan.h"
 
 class ILibrary;
+class IVideoSystem;
 
 class RHIAPI CVulkanRhiInstance: public IRhiInstance
 {
@@ -14,7 +15,7 @@ class RHIAPI CVulkanRhiInstance: public IRhiInstance
 	}
 	~CVulkanRhiInstance() DEFAULT;
 
-	bool Initialize();
+	bool Initialize(IVideoSystem* videoSystem);
 	void Destroy();
 
 	void GetDeviceInfo(CVector<RhiDeviceInfo_t>& info);
@@ -34,4 +35,5 @@ class RHIAPI CVulkanRhiInstance: public IRhiInstance
 	ILibrary* m_vulkanLib;
 	VkInstance m_instance;
 	VkDebugUtilsMessengerEXT m_debugMessenger;
+	VkSurfaceKHR m_surface;
 };

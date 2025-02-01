@@ -1,9 +1,10 @@
+#include "device_vk.h"
 #include "instance_vk.h"
 #include "base/loader.h"
 #include "base/log.h"
 #include "base/vector.h"
-#include "device_vk.h"
 #include "rhi/irhidevice.h"
+#include "videosystem/ivideosystem.h"
 
 constexpr cstr REQUIRED_EXTENSIONS[] = {
 	VK_KHR_SURFACE_EXTENSION_NAME,
@@ -68,7 +69,7 @@ PFN_vkVoidFunction VolkLoadFunction(void* userData, cstr name)
 	return symbol;
 }
 
-bool CVulkanRhiInstance::Initialize()
+bool CVulkanRhiInstance::Initialize(IVideoSystem* videoSystem)
 {
 	Log_Debug("Initializing Vulkan instance");
 
@@ -152,6 +153,15 @@ bool CVulkanRhiInstance::Initialize()
 	vkCreateDebugUtilsMessengerEXT(m_instance, &debugCreateInfo, GetVkAllocationCallbacks(), &m_debugMessenger);
 #endif
 
+	Log_Debug("Creating surface");
+	m_surface = videoSystem->CreateVulkanSurface(reinterpret_cast<u64>(m_instance), GetVkAllocationCallbacks());
+	if (!m_surface)
+	{
+		// CreateVulkanSurface does its own logging
+		Destroy();
+		return false;
+	}
+
 	return true;
 }
 
@@ -203,7 +213,7 @@ void CVulkanRhiInstance::GetDeviceInfo(CVector<RhiDeviceInfo_t>& info)
 	for (ssize i = 0; i < devices.Size(); i++)
 	{
 		RhiDeviceInfo_t currentInfo;
-		if (CVulkanRhiDevice::GetDeviceInfo(currentInfo, devices[i]))
+		if (CVulkanRhiDevice::GetDeviceInfo(currentInfo, devices[i], m_surface, i))
 		{
 			// only add if the device is usable
 			info.Add(currentInfo);

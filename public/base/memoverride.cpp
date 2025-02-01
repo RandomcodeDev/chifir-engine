@@ -9,48 +9,50 @@
 #define RESTRICT_FUNC
 #endif
 
+#ifdef CH_UNIX
+#define VISIBLE DLLEXPORT
+#else
+#define VISIBLE
+#endif
+
 extern "C"
 {
-	DLLEXPORT RESTRICT_FUNC void* __cdecl _malloc(usize size)
+	VISIBLE RESTRICT_FUNC void* __cdecl malloc(usize size)
 	{
 		return Base_Alloc(static_cast<ssize>(size & SSIZE_MAX));
 	}
-	ALIAS(_malloc, malloc)
 
-	DLLEXPORT void __cdecl _free(void* block)
+	VISIBLE void __cdecl free(void* block)
 	{
 		Base_Free(block);
 	}
-	ALIAS(_free, free)
 
-	DLLEXPORT RESTRICT_FUNC void* __cdecl _calloc(usize count, usize size)
+	VISIBLE RESTRICT_FUNC void* __cdecl calloc(usize count, usize size)
 	{
 		return Base_Alloc(static_cast<ssize>(count * size));
 	}
-	ALIAS(_calloc, calloc)
 
-	DLLEXPORT RESTRICT_FUNC void* __cdecl _realloc(void* block, usize newSize)
+	VISIBLE RESTRICT_FUNC void* __cdecl realloc(void* block, usize newSize)
 	{
 		return Base_Realloc(block, static_cast<ssize>(static_cast<usize>(newSize) & SSIZE_MAX));
 	}
-	ALIAS(_realloc, realloc)
 
-	DLLEXPORT void* __cdecl aligned_alloc(usize alignment, usize size)
+	VISIBLE void* __cdecl aligned_alloc(usize alignment, usize size)
 	{
 		return Base_Alloc(static_cast<ssize>(size & SSIZE_MAX), static_cast<ssize>(alignment));
 	}
 
-	DLLEXPORT usize __cdecl malloc_usable_size(void* block)
+	VISIBLE usize __cdecl malloc_usable_size(void* block)
 	{
 		return static_cast<usize>(Base_GetAllocSize(block));
 	}
 
-	DLLEXPORT void* memalign(usize alignment, usize size)
+	VISIBLE void* memalign(usize alignment, usize size)
 	{
 		return aligned_alloc(alignment, size);
 	}
 
-	DLLEXPORT int posix_memalign(void** memptr, usize alignment, usize size)
+	VISIBLE int posix_memalign(void** memptr, usize alignment, usize size)
 	{
 		*memptr = memalign(alignment, size);
 		if (!*memptr)

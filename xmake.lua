@@ -52,6 +52,9 @@ add_defines("GAME_DISPLAY_NAME=\"" .. game_display_name .. "\"")
 add_defines("REPO_NAME=\"" .. repo_name .. "\"")
 
 vulkan = is_plat("windows", "linux", "switch")
+if vulkan then
+    add_defines("CH_VULKAN")
+end
 
 static_build = is_plat("switch")
 if static_build then
@@ -164,6 +167,8 @@ elseif is_plat("linux", "switch") then
         "-Wno-ignored-pragma-intrinsic",
         "-Wno-ignored-attributes",
     {force = true})
+
+    set_prefixname("")
 end
 
 includes("base")

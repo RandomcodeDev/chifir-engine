@@ -19,7 +19,7 @@ class IVideoSystem: public ISystem
 
 #ifdef CH_VULKAN
 	/// Create a Vulkan surface
-	virtual u64 CreateVulkanSurface(u64 instance, void* allocCallbacks) = 0;
+	virtual u64 CreateVulkanSurface(u64 instance, const void* allocCallbacks) = 0;
 #endif
 
 	/// Process events, returns true if the video output hasn't been closed

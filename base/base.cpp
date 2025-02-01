@@ -106,7 +106,10 @@ BASEAPI void Base_Init()
 
 BASEAPI void Base_Shutdown()
 {
-	Plat_Shutdown();
+	if (g_baseInitialized)
+	{
+		Plat_Shutdown();
+	}
 }
 
 BASEAPI NORETURN void Base_Quit(cstr message, ...)

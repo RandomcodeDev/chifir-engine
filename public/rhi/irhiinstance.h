@@ -10,6 +10,7 @@
 #include "rhi.h"
 
 class IRhiSwapChain;
+class IVideoSystem;
 
 /// Represents a DXGI factory, a VkInstance, or whatever ungodly thing legacy APIs use (GL context, LPDIRECT3D9, etc)
 class RHIAPI IRhiInstance
@@ -18,7 +19,7 @@ class RHIAPI IRhiInstance
 	virtual ~IRhiInstance() DEFAULT;
 
 	/// Initializes the instance, must be called before the instance is used
-	virtual bool Initialize() = 0;
+	virtual bool Initialize(IVideoSystem* videoSystem) = 0;
 
 	/// Destroys the instance, all objects created off of it must be destroyed before this
 	virtual void Destroy() = 0;
