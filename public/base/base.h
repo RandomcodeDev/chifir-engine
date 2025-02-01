@@ -126,7 +126,7 @@ Base_MemFind(const void* RESTRICT data, ssize size, const void* RESTRICT sequenc
 extern BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment = 8);
 
 /// Allocate an array of T with count elements, needs to be initialized with placement new
-/// if constructors matter.
+/// if constructors matter. Use new for non-trivial types.
 template <typename T> constexpr T* Base_Alloc(ssize count = 1)
 {
 	return reinterpret_cast<T*>(Base_Alloc(count * SIZEOF(T), ALIGNOF(T)));

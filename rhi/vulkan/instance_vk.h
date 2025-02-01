@@ -1,13 +1,15 @@
 #pragma once
 
+#include "base/vector.h"
 #include "rhi/irhidevice.h"
 #include "rhi/irhiinstance.h"
+#include "device_vk.h"
 #include "vulkan.h"
 
 class ILibrary;
 class IVideoSystem;
 
-class RHIAPI CVulkanRhiInstance: public IRhiInstance
+class CVulkanRhiInstance: public IRhiInstance
 {
   public:
 	CVulkanRhiInstance() : m_instance(VK_NULL_HANDLE)
@@ -36,4 +38,8 @@ class RHIAPI CVulkanRhiInstance: public IRhiInstance
 	VkInstance m_instance;
 	VkDebugUtilsMessengerEXT m_debugMessenger;
 	VkSurfaceKHR m_surface;
+
+	CVector<VulkanDeviceInfo_t> m_devices;
 };
+
+extern RHIAPI IRhiInstance* Vulkan_CreateInstance();

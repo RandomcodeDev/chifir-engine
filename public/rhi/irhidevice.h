@@ -46,22 +46,9 @@ struct RhiDeviceInfo_t
 	s32 maxTextureSize;
 
 	u64 handle;
-
-	~RhiDeviceInfo_t()
-	{
-		if (freeHandle && handle)
-		{
-			Base_Free(reinterpret_cast<void*>(handle));
-		}
-	}
-
-private:
-	friend class CVulkanRhiDevice;
-
-	bool freeHandle;
 };
 
-class RHIAPI IRhiDevice
+class IRhiDevice
 {
   public:
 	virtual ~IRhiDevice() DEFAULT;

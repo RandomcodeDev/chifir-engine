@@ -208,6 +208,9 @@ class BASEAPI CString
 
 	void Terminate()
 	{
-		m_buffer[m_size - 1] = 0;
+		if (m_size > 0)
+		{
+			m_buffer[m_size - 1] = 0;
+		}
 	}
 };

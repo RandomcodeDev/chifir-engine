@@ -1,8 +1,8 @@
 #include "device_vk.h"
 #include "base/log.h"
 
-static VulkanDeviceInfo_t* ConvertDeviceInfo(
-	RhiDeviceInfo_t& info, VkPhysicalDevice device, const VkPhysicalDeviceProperties& properties,
+static void ConvertDeviceInfo(
+	RhiDeviceInfo_t& info, ssize index, const VkPhysicalDeviceProperties& properties,
 	const VkPhysicalDeviceMemoryProperties& memoryProperties)
 {
 	static const RhiDeviceType_t DEVICE_TYPES[] = {
@@ -19,16 +19,10 @@ static VulkanDeviceInfo_t* ConvertDeviceInfo(
 	info.maxTextureSize = properties.limits.maxImageDimension2D;
 	info.totalMemory = memoryProperties.memoryHeaps[0].size;
 
-	VulkanDeviceInfo_t* vkInfo = new VulkanDeviceInfo_t;
-	vkInfo->device = device;
-	vkInfo->properties = properties;
-	vkInfo->memoryProperties = memoryProperties;
-	info.handle = reinterpret_cast<u64>(vkInfo);
-
-	return vkInfo;
+	info.handle = index;
 }
 
-bool CVulkanRhiDevice::GetDeviceInfo(RhiDeviceInfo_t& info, VkPhysicalDevice device, VkSurfaceKHR surface, ssize i)
+bool CVulkanRhiDevice::GetDeviceInfo(RhiDeviceInfo_t& rhiInfo, VulkanDeviceInfo_t& info, VkPhysicalDevice device, VkSurfaceKHR surface, ssize i)
 {
 	Log_Debug("Getting information for device %zd", i);
 
@@ -38,10 +32,8 @@ bool CVulkanRhiDevice::GetDeviceInfo(RhiDeviceInfo_t& info, VkPhysicalDevice dev
 	VkPhysicalDeviceMemoryProperties memoryProperties = {};
 	vkGetPhysicalDeviceMemoryProperties(device, &memoryProperties);
 
-	RhiDeviceInfo_t currentInfo = {};
-	VulkanDeviceInfo_t* deviceInfo = ConvertDeviceInfo(currentInfo, device, properties, memoryProperties);
-	deviceInfo->device = device;
-	currentInfo.freeHandle = true;
+	ConvertDeviceInfo(rhiInfo, i, properties, memoryProperties);
+	info.device = device;
 
 	u32 queueCount = 0;
 	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueCount, nullptr);
@@ -51,14 +43,14 @@ bool CVulkanRhiDevice::GetDeviceInfo(RhiDeviceInfo_t& info, VkPhysicalDevice dev
 		return false;
 	}
 
-	deviceInfo->queueFamilyProperties.Resize(queueCount);
-	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueCount, deviceInfo->queueFamilyProperties.Data());
+	info.queueFamilyProperties.Resize(queueCount);
+	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueCount, info.queueFamilyProperties.Data());
 
-	deviceInfo->graphicsFamilyIndex = UINT32_MAX;
-	deviceInfo->presentFamilyIndex = UINT32_MAX;
-	for (ssize j = 0; j < deviceInfo->queueFamilyProperties.Size(); j++)
+	info.graphicsFamilyIndex = UINT32_MAX;
+	info.presentFamilyIndex = UINT32_MAX;
+	for (ssize j = 0; j < info.queueFamilyProperties.Size(); j++)
 	{
-		VkQueueFamilyProperties* properties = &deviceInfo->queueFamilyProperties[j];
+		VkQueueFamilyProperties* properties = &info.queueFamilyProperties[j];
 		if (properties->queueCount < 1)
 		{
 			continue;
@@ -66,13 +58,20 @@ bool CVulkanRhiDevice::GetDeviceInfo(RhiDeviceInfo_t& info, VkPhysicalDevice dev
 
 		if (properties->queueFlags & VK_QUEUE_GRAPHICS_BIT)
 		{
-			deviceInfo->graphicsFamilyIndex = static_cast<u32>(j);
+			info.graphicsFamilyIndex = static_cast<u32>(j);
 		}
 
-		Log_Trace("Checking surface support for queue family %zd", j);
 		VkBool32 presentSupported = false;
 		vkGetPhysicalDeviceSurfaceSupportKHR(device, static_cast<u32>(j), surface, &presentSupported);
+		if (presentSupported)
+		{
+			info.presentFamilyIndex = static_cast<u32>(j);
+		}
 
+		if (info.graphicsFamilyIndex < UINT32_MAX && info.presentFamilyIndex < UINT32_MAX)
+		{
+			break;
+		}
 	}
 
 	u32 extensionCount = 0;
@@ -89,9 +88,9 @@ bool CVulkanRhiDevice::GetDeviceInfo(RhiDeviceInfo_t& info, VkPhysicalDevice dev
 		return false;
 	}
 
-	deviceInfo->extensionProperties.Resize(extensionCount);
+	info.extensionProperties.Resize(extensionCount);
 
-	result = vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, deviceInfo->extensionProperties.Data());
+	result = vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, info.extensionProperties.Data());
 	if (result != VK_SUCCESS)
 	{
 		Log_Error("Failed to get device extension properties for device %zd: %s", i, GetVkResultString(result));

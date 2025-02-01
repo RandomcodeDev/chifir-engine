@@ -212,11 +212,20 @@ void CVulkanRhiInstance::GetDeviceInfo(CVector<RhiDeviceInfo_t>& info)
 
 	for (ssize i = 0; i < devices.Size(); i++)
 	{
-		RhiDeviceInfo_t currentInfo;
-		if (CVulkanRhiDevice::GetDeviceInfo(currentInfo, devices[i], m_surface, i))
+		RhiDeviceInfo_t rhiInfo;
+		VulkanDeviceInfo_t vkInfo;
+		if (CVulkanRhiDevice::GetDeviceInfo(rhiInfo, vkInfo, devices[i], m_surface, i))
 		{
 			// only add if the device is usable
-			info.Add(currentInfo);
+			info.Add(rhiInfo);
 		}
+
+		// RHI info includes index into all devices
+		m_devices.Add(vkInfo);
 	}
+}
+
+RHIAPI IRhiInstance* Vulkan_CreateInstance()
+{
+	return new CVulkanRhiInstance();
 }

@@ -14,8 +14,7 @@ RHIAPI IRhiInstance* Rhi_CreateInstance(RhiBackendType_t type)
 	{
 	case RhiBackendType_t::Vulkan: {
 #ifdef RHI_VULKAN
-		CVulkanRhiInstance* instance = new CVulkanRhiInstance();
-		return instance;
+		return Vulkan_CreateInstance();
 #else
 		Log_Error("Vulkan support not in available in this build!");
 #endif
