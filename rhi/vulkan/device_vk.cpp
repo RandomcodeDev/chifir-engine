@@ -22,7 +22,8 @@ static void ConvertDeviceInfo(
 	info.handle = index;
 }
 
-bool CVulkanRhiDevice::GetDeviceInfo(RhiDeviceInfo_t& rhiInfo, VulkanDeviceInfo_t& info, VkPhysicalDevice device, VkSurfaceKHR surface, ssize i)
+bool CVulkanRhiDevice::GetDeviceInfo(
+	RhiDeviceInfo_t& rhiInfo, VulkanDeviceInfo_t& info, VkPhysicalDevice device, VkSurfaceKHR surface, ssize i)
 {
 	Log_Debug("Getting information for device %zd", i);
 
@@ -74,6 +75,14 @@ bool CVulkanRhiDevice::GetDeviceInfo(RhiDeviceInfo_t& rhiInfo, VulkanDeviceInfo_
 		}
 	}
 
+	if (info.graphicsFamilyIndex == UINT32_MAX || info.presentFamilyIndex == UINT32_MAX)
+	{
+		Log_Error(
+			"Device %zd is unusable, couldn't find required queue families (graphics %u, present %u)", device,
+			info.graphicsFamilyIndex, info.presentFamilyIndex);
+		return false;
+	}
+
 	u32 extensionCount = 0;
 	VkResult result = vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 	if (result != VK_SUCCESS)
@@ -84,18 +93,57 @@ bool CVulkanRhiDevice::GetDeviceInfo(RhiDeviceInfo_t& rhiInfo, VulkanDeviceInfo_
 
 	if (extensionCount < ArraySize(REQUIRED_EXTENSIONS))
 	{
-		Log_Warning("Device %zd is unusable, it has %u extensions when there are %u required", i, extensionCount, ArraySize<u32>(REQUIRED_EXTENSIONS));
+		Log_Warning(
+			"Device %zd is unusable, it has %u extensions when there are %u required", i, extensionCount,
+			ArraySize<u32>(REQUIRED_EXTENSIONS));
 		return false;
 	}
 
 	info.extensionProperties.Resize(extensionCount);
-
 	result = vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, info.extensionProperties.Data());
 	if (result != VK_SUCCESS)
 	{
 		Log_Error("Failed to get device extension properties for device %zd: %s", i, GetVkResultString(result));
 		return false;
 	}
+
+	result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &info.surfaceCapabilities);
+	if (result != VK_SUCCESS)
+	{
+		Log_Error("Failed to get surface capabilities for device %zd: %s", i, GetVkResultString(result));
+		return false;
+	}
+
+	u32 formatCount = 0;
+	result = vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+	if (result != VK_SUCCESS)
+	{
+		Log_Error("Failed to get surface formats for device %zd: %s", i, GetVkResultString(result));
+		return false;
+	}
+	if (formatCount < 1)
+	{
+		Log_Error("Device %zd doesn't have any surface formats", i);
+		return false;
+	}
+
+	info.surfaceFormats.Resize(formatCount);
+	result = vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, info.surfaceFormats.Data());
+	if (result != VK_SUCCESS)
+	{
+		Log_Error("Failed to get surface formats for device %zd: %s", i, GetVkResultString(result));
+		return false;
+	}
+
+	u32 modeCount = 0;
+	result = vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &modeCount, 0);
+	if (result != VK_SUCCESS)
+	{
+		Log_Error("Failed to get presetn modes for device %zd: %s", i, GetVkResultString(result));
+		return false;
+	}
+
+
 
 	return true;
 }

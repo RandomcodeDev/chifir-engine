@@ -53,6 +53,11 @@ class CWindowsLibrary: public ILibrary
 		return m_name;
 	}
 
+	uptr GetBase()
+	{
+		return reinterpret_cast<uptr>(m_base);
+	}
+
   private:
 	dstr m_name;
 	void* m_base;

@@ -167,20 +167,30 @@ bool CVulkanRhiInstance::Initialize(IVideoSystem* videoSystem)
 
 void CVulkanRhiInstance::Destroy()
 {
+	if (m_surface)
+	{
+		Log_Debug("Destroying VkSurfaceKHR 0x%016X", m_surface);
+		vkDestroySurfaceKHR(m_instance, m_surface, GetVkAllocationCallbacks());
+		m_surface = VK_NULL_HANDLE;
+	}
+
 	if (m_debugMessenger)
 	{
+		Log_Debug("Destroying VkDebugUtilsMessengerEXT 0x%016X", m_debugMessenger);
 		vkDestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, GetVkAllocationCallbacks());
 		m_debugMessenger = VK_NULL_HANDLE;
 	}
 
 	if (m_instance)
 	{
+		Log_Debug("Destroying VkInstance 0x%016X", m_instance);
 		vkDestroyInstance(m_instance, GetVkAllocationCallbacks());
 		m_instance = VK_NULL_HANDLE;
 	}
 
 	if (m_vulkanLib)
 	{
+		Log_Debug("Unloading Vulkan library %s!0x%016X", m_vulkanLib->GetName(), m_vulkanLib->GetBase());
 		delete m_vulkanLib;
 		m_vulkanLib = nullptr;
 	}

@@ -21,6 +21,9 @@ class ILibrary
 
 	/// Get a library's name
 	virtual cstr GetName() = 0;
+
+	/// Get the library's base address
+	virtual uptr GetBase() = 0;
 };
 
 /// Load a library (do not put an extension on the path)

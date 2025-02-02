@@ -4,6 +4,7 @@ author = "Rich Felker, et al."
 use = "Some time code borrowed"
 path = "https://git.musl-libc.org/cgit/musl"
 license = "external/musl.txt"
+url = "https://git.musl-libc.org/cgit/musl"
 
 [phnt]
 name = "phnt"
@@ -11,13 +12,15 @@ author = "Winsider Seminars & Solutions, Inc."
 use = "Accessing internal Windows APIs"
 path = "external/phnt"
 license = "external/phnt/LICENSE"
+url = "https://github.com/winsiderss/phnt"
 
 [stb]
 name = "stb"
-author = "Sean Barrett"
+author = "Sean Barrett (nothings)"
 use = "Mainly sprintf"
 path = "external/stb"
 license = "external/stb/LICENSE"
+url = "https://github.com/nothings/stb"
 
 [volk]
 name = "volk"
@@ -25,6 +28,7 @@ author = "Arseny Kapoulkine (zeux)"
 use = "Vulkan loading"
 path = "external/volk"
 license = "external/volk/LICENSE.md"
+url = "https://github.com/zeux/volk"
 
 [vulkan]
 name = "Vulkan Headers"
@@ -32,3 +36,4 @@ author = "Khronos Group"
 use = "Vulkan declarations"
 path = "external/vulkan"
 license = "external/vulkan/LICENSE.md"
+url = "https://github.com/Khronos-Group/Vulkan-Headers"

@@ -1,5 +1,7 @@
 # Чифир Engine
 
+<img src="chifir.png" width="200" />
+
 This is my new game engine. The main reason for this is that the renderer in the last one wasn't designed well from the
 start, and other elements such as the build system became cumbersome. In this new engine, I'm hoping to avoid this.
 
