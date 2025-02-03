@@ -7,11 +7,7 @@
 
 BASEAPI ssize Base_StrLength(cstr str, ssize maxSize)
 {
-	ssize size;
-	for (size = 0; size < maxSize && str[size] != '\0'; size++)
-		;
-
-	return size;
+	return Base_MemFind(str, maxSize < 0 ? SSIZE_MAX : maxSize, '\0', false);
 }
 
 BASEAPI s32 Base_StrCompare(cstr RESTRICT a, cstr RESTRICT b, ssize maxCount, bool caseSensitive)

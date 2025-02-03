@@ -4,6 +4,7 @@
 #define wcsrchr _wcsrchr
 #define wcsncpy _wcsncpy
 #define wcslen _wcslen
+#include "base/compiler.h"
 #include "phnt_wrapper.h"
 #undef wcsrchr
 #undef wcsncpy

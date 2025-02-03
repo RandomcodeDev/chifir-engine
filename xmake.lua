@@ -131,6 +131,7 @@ if is_plat("windows", "gdkx") then
         "/wd4229", -- modifiers on data are ignored
         "/wd4319", -- zero extending 'x' to 'y' of greater type
         "/wd4163", -- 'x': not available as an intrinsic function
+		"/wd4164", -- 'x': intrinsic function not declared
         "/wd4125", -- decimal digit terminates octal escape sequence
         "/wd4464", -- relative include path contains '..'
         "/wd5247", -- section 'x' is reserved for C++ dynamic initialization. Manually creating the section will interfere with C++ dynamic initialization and may lead to undefined behavior
