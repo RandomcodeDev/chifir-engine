@@ -5,6 +5,7 @@
 #include "rhi/irhiinstance.h"
 #include "device_vk.h"
 #include "vulkan.h"
+#include <vulkan/vulkan_core.h>
 
 class ILibrary;
 class IVideoSystem;
@@ -12,23 +13,19 @@ class IVideoSystem;
 class CVulkanRhiInstance: public IRhiInstance
 {
   public:
-	CVulkanRhiInstance() : m_instance(VK_NULL_HANDLE)
+	CVulkanRhiInstance() : m_vulkanLib(nullptr), m_instance(VK_NULL_HANDLE), m_debugMessenger(VK_NULL_HANDLE), m_surface(VK_NULL_HANDLE)
 	{
 	}
 	~CVulkanRhiInstance() DEFAULT;
 
-	bool Initialize(IVideoSystem* videoSystem);
-	void Destroy();
+	virtual bool Initialize(IVideoSystem* videoSystem);
+	virtual void Destroy();
 
-	void GetDeviceInfo(CVector<RhiDeviceInfo_t>& info);
+	virtual void GetDeviceInfo(CVector<RhiDeviceInfo_t>& info);
 
-	IRhiDevice* CreateDevice(s32 index)
-	{
-		(void)index;
-		return nullptr;
-	}
+	virtual IRhiDevice* CreateDevice(const RhiDeviceInfo_t& info);
 
-	IRhiSwapChain* CreateSwapChain()
+	virtual IRhiSwapChain* CreateSwapChain()
 	{
 		return nullptr;
 	}

@@ -105,10 +105,13 @@ bool CVulkanRhiInstance::Initialize(IVideoSystem* videoSystem)
 
 	instanceCreateInfo.ppEnabledLayerNames = REQUIRED_LAYERS;
 	instanceCreateInfo.enabledLayerCount = ArraySize<u32>(REQUIRED_LAYERS) - 1;
-	Log_Debug("Required layers:");
-	for (u32 i = 0; i < instanceCreateInfo.enabledLayerCount; i++)
+	if (instanceCreateInfo.enabledLayerCount)
 	{
-		Log_Debug("\t%s", instanceCreateInfo.ppEnabledLayerNames[i]);
+		Log_Debug("Required layers:");
+		for (u32 i = 0; i < instanceCreateInfo.enabledLayerCount; i++)
+		{
+			Log_Debug("\t%s", instanceCreateInfo.ppEnabledLayerNames[i]);
+		}
 	}
 
 #ifdef VULKAN_DEBUG
@@ -228,11 +231,24 @@ void CVulkanRhiInstance::GetDeviceInfo(CVector<RhiDeviceInfo_t>& info)
 		{
 			// only add if the device is usable
 			info.Add(rhiInfo);
+			Log_Debug("Device %s [%04x:%04x] is usable", rhiInfo.name.Data(), rhiInfo.vendorId, rhiInfo.deviceId);
 		}
 
 		// RHI info includes index into all devices
 		m_devices.Add(vkInfo);
 	}
+}
+
+IRhiDevice* CVulkanRhiInstance::CreateDevice(const RhiDeviceInfo_t& info)
+{
+	ssize index = info.handle;
+	if (index >= m_devices.Size())
+	{
+		Log_Error("Device %s has invalid handle %zd", info.name.Data(), index);
+		return nullptr;
+	}
+
+	return nullptr; //new CVulkanRhiDevice(m_devices[index]);
 }
 
 RHIAPI IRhiInstance* Vulkan_CreateInstance()

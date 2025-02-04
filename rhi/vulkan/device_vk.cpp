@@ -1,5 +1,17 @@
 #include "device_vk.h"
 #include "base/log.h"
+#include "vulkan.h"
+
+CVulkanRhiDevice::CVulkanRhiDevice(const VulkanDeviceInfo_t& info) : m_info(info)
+{
+}
+
+bool CVulkanRhiDevice::Initialize()
+{
+	
+
+	return true;
+}
 
 static void ConvertDeviceInfo(
 	RhiDeviceInfo_t& info, ssize index, const VkPhysicalDeviceProperties& properties,
@@ -139,11 +151,22 @@ bool CVulkanRhiDevice::GetDeviceInfo(
 	result = vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &modeCount, 0);
 	if (result != VK_SUCCESS)
 	{
-		Log_Error("Failed to get presetn modes for device %zd: %s", i, GetVkResultString(result));
+		Log_Error("Failed to get present modes for device %zd: %s", i, GetVkResultString(result));
+		return false;
+	}
+	if (modeCount < 1)
+	{
+		Log_Error("Device %zd doesn't have any present modes", i);
 		return false;
 	}
 
-
+	info.presentModes.Resize(modeCount);
+	result = vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &modeCount, info.presentModes.Data());
+	if (result != VK_SUCCESS)
+	{
+		Log_Error("Failed to get present modes for device %zd: %s", i, GetVkResultString(result));
+		return false;
+	}
 
 	return true;
 }

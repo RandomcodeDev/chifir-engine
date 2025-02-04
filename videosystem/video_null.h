@@ -9,63 +9,63 @@
 class CNullVideoSystem: public IVideoSystem
 {
   public:
-	bool Initialize();
-	bool Update();
-	void Shutdown();
+	virtual bool Initialize();
+	virtual bool Update();
+	virtual void Shutdown();
 
-	cstr GetName() const
+	virtual cstr GetName() const
 	{
 		return "Null Video";
 	}
 
-	u32 GetVersion() const
+	virtual u32 GetVersion() const
 	{
 		return VERSION;
 	}
 
-	cstr GetTitle() const
+	virtual cstr GetTitle() const
 	{
 		return m_title;
 	}
 
-	void SetTitle(cstr newTitle);
+	virtual void SetTitle(cstr newTitle);
 
-	u32 GetWidth() const
+	virtual u32 GetWidth() const
 	{
 		return m_width;
 	}
 
-	u32 GetHeight() const
+	virtual u32 GetHeight() const
 	{
 		return m_height;
 	}
 
-	u32 GetX() const
+	virtual u32 GetX() const
 	{
 		return m_x;
 	}
 
-	u32 GetY() const
+	virtual u32 GetY() const
 	{
 		return m_y;
 	}
 
-	bool Resized() const
+	virtual bool Resized() const
 	{
 		return m_resized;
 	}
 
-	bool Focused() const
+	virtual bool Focused() const
 	{
 		return m_focused;
 	}
 
-	float GetDpi() const
+	virtual float GetDpi() const
 	{
 		return m_dpi;
 	}
 
-	u64 GetHandle() const
+	virtual u64 GetHandle() const
 	{
 		return 0;
 	}

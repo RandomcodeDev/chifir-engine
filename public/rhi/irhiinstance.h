@@ -8,6 +8,7 @@
 
 #include "irhidevice.h"
 #include "rhi.h"
+#include "rhi/irhidevice.h"
 
 class IRhiSwapChain;
 class IVideoSystem;
@@ -27,8 +28,8 @@ class IRhiInstance
 	/// Get information about the graphics devices present
 	virtual void GetDeviceInfo(CVector<RhiDeviceInfo_t>& info) = 0;
 
-	/// Create a graphics device
-	virtual IRhiDevice* CreateDevice(s32 index = 0) = 0;
+	/// Create a graphics device, the info must be from a successful call to GetDeviceInfo
+	virtual IRhiDevice* CreateDevice(const RhiDeviceInfo_t& info) = 0;
 
 	/// Create a swap chain
 	virtual IRhiSwapChain* CreateSwapChain() = 0;
