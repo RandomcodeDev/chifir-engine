@@ -14,7 +14,4 @@ target("VideoSystem")
     end
 
     add_deps("Base", "CommonFiles", "DllSupport")
-    if vulkan then
-        add_deps("RhiVulkan")
-    end
 target_end()

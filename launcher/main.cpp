@@ -90,22 +90,12 @@ extern "C" DLLEXPORT s32 LauncherMain()
 	}
 
 	// first, try bin folder. if that fails (such as when running from the build directory), try same as exe.
-	CString prefix = CString::FormatStr("%s/bin", Plat_GetEngineDir());
-	CString appLibName = CString::FormatStr("%s/%s", prefix.Data(), appName);
 
-	Log_Info("Loading application %s from %s", appName, appLibName.Data());
-	ILibrary* appLib = Base_LoadLibrary(appLibName.Data());
+	Log_Info("Loading application %s", appName);
+	ILibrary* appLib = Base_LoadEngineLibrary(appName);
 	if (!appLib)
 	{
-		Log_Error("Failed to load from %s, retrying", appLibName.Data());
-		prefix = Plat_GetEngineDir();
-		appLibName = CString::FormatStr("%s/%s", prefix.Data(), appName);
-		Log_Info("Loading application %s from %s", appName, appLibName.Data());
-		appLib = Base_LoadLibrary(appLibName.Data());
-		if (!appLib)
-		{
-			Base_Quit("Failed to load application %s!", appName);
-		}
+		Base_Quit("Failed to load application %s!", appName);
 	}
 
 	Log_Info("Initializing application %s", appName);
@@ -117,29 +107,51 @@ extern "C" DLLEXPORT s32 LauncherMain()
 
 	app->Setup(args);
 
-	CVector<SystemDependency_t> appDependencies;
-	app->GetRequiredSystems(appDependencies);
+	CVector<SystemDependency_t> appSystems;
+	CVector<LibDependency_t> appLibs;
+	app->GetDependencies(appSystems, appLibs);
 
-	Log_Info("Loading systems for application %s", appName);
+	Log_Info("Loading libraries for application %s", appName);
 	CVector<ILibrary*> libs;
-	CVector<ISystem*> systems;
-	for (ssize i = 0; i < appDependencies.Size(); i++)
+	for (ssize i = 0; i < appLibs.Size(); i++)
 	{
-		CString libName = CString::FormatStr("%s/%s", prefix.Data(), appDependencies[i].name);
-		Log_Info(
-			"Loading %s, %sversion %u (%s) from %s", appDependencies[i].name,
-			appDependencies[i].requireExactVersion ? "" : "minimum ", appDependencies[i].minimumVersion,
-			appDependencies[i].required ? "required" : "optional", libName.Data());
-		ILibrary* lib = Base_LoadLibrary(libName.Data());
+		Log_Info("Loading %s", appLibs[i].name);
+		ILibrary* lib = Base_LoadEngineLibrary(appLibs[i].name);
 		if (!lib)
 		{
-			if (appDependencies[i].required)
+			if (appLibs[i].required)
 			{
-				Base_Quit("Failed to load required system %s!", appDependencies[i].name);
+				Base_Quit("Failed to load required library %s!", appLibs[i].name);
 			}
 			else
 			{
-				Log_Error("Failed to load system %s", appDependencies[i].name);
+				Log_Error("Failed to load library %s", appLibs[i].name);
+			}
+		}
+		else
+		{
+			libs.Add(lib);
+		}
+	}
+
+	Log_Info("Loading systems for application %s", appName);
+	CVector<ISystem*> systems;
+	for (ssize i = 0; i < appSystems.Size(); i++)
+	{
+		Log_Info(
+			"Loading %s, %sversion %u (%s)", appSystems[i].name,
+			appSystems[i].requireExactVersion ? "" : "minimum ", appSystems[i].minimumVersion,
+			appSystems[i].required ? "required" : "optional");
+		ILibrary* lib = Base_LoadEngineLibrary(appSystems[i].name);
+		if (!lib)
+		{
+			if (appSystems[i].required)
+			{
+				Base_Quit("Failed to load required system %s!", appSystems[i].name);
+			}
+			else
+			{
+				Log_Error("Failed to load system %s", appSystems[i].name);
 			}
 		}
 		else
@@ -149,13 +161,13 @@ extern "C" DLLEXPORT s32 LauncherMain()
 
 		if (lib)
 		{
-			Log_Info("Getting interface for %s", appDependencies[i].name);
-			ISystem* system = GetSystem(lib, appDependencies[i].minimumVersion, appDependencies[i].requireExactVersion);
+			Log_Info("Getting interface for %s", appSystems[i].name);
+			ISystem* system = GetSystem(lib, appSystems[i].minimumVersion, appSystems[i].requireExactVersion);
 			if (!system)
 			{
-				if (appDependencies[i].required)
+				if (appSystems[i].required)
 				{
-					Base_Quit("Failed to get interface for %s, or it's the wrong version!", appDependencies[i].name);
+					Base_Quit("Failed to get interface for %s, or it's the wrong version!", appSystems[i].name);
 				}
 				else {}
 			}

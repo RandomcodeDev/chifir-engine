@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "base/loader.h"
 #include "base/types.h"
 #include "iapplication.h"
 
@@ -11,7 +12,7 @@ class IEngine: public IApplication
 	virtual ~IEngine() DEFAULT;
 
 	virtual void Setup(const CVector<CString>& args) = 0;
-	virtual void GetRequiredSystems(CVector<SystemDependency_t>& dependencies) = 0;
+	virtual void GetDependencies(CVector<SystemDependency_t>& systems, CVector<LibDependency_t>& libs) = 0;
 	virtual s32 Run(const CVector<ISystem*>& systems /* TODO: , CCommandLine cmdLine */) = 0;
 
 	enum class EngineState_t : s32

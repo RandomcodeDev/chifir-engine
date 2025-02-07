@@ -15,9 +15,9 @@ class CEngine: public IEngine
 	CEngine();
 	~CEngine();
 
-	void Setup(const CVector<CString>& args);
-	void GetRequiredSystems(CVector<SystemDependency_t>& dependencies);
-	s32 Run(const CVector<ISystem*>& systems /* TODO: , CCommandLine cmdLine */);
+	virtual void Setup(const CVector<CString>& args);
+	virtual void GetDependencies(CVector<SystemDependency_t>& systems, CVector<LibDependency_t>& libs);
+	virtual s32 Run(const CVector<ISystem*>& systems /* TODO: , CCommandLine cmdLine */);
 
 	bool Headless()
 	{

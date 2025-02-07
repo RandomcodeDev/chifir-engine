@@ -1,8 +1,13 @@
-use chifir::Info;
+use chifir::*;
 
 #[global_allocator]
-static ALLOCATOR: chifir::Base::Allocator = chifir::Base::Allocator;
+static ALLOCATOR: chifir::sys::Base::Allocator = chifir::sys::Base::Allocator;
 
 fn main() {
+	FatalError!("test");
+	Error!("test");
+	Warning!("test");
     Info!("test");
+	Debug!("test");
+	Trace!("test");
 }

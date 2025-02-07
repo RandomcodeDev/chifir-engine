@@ -1,4 +1,3 @@
-#include "../rhi/vulkan/vulkan.h"
 #include "video_win32.h"
 #include "base/base.h"
 #include "base/basicstr.h"
@@ -29,26 +28,6 @@ bool CWindowsVideoSystem::Initialize()
 	ShowWindow(m_window, SW_NORMAL);
 
 	return true;
-}
-
-u64 CWindowsVideoSystem::CreateVulkanSurface(u64 instance, const void* allocCallbacks)
-{
-	VkWin32SurfaceCreateInfoKHR createInfo = {};
-	createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-	createInfo.hinstance = m_hinstance;
-	createInfo.hwnd = m_window;
-
-	Log_Debug("Creating Win32 Vulkan surface");
-
-	VkSurfaceKHR surface = VK_NULL_HANDLE;
-	VkResult result = vkCreateWin32SurfaceKHR(reinterpret_cast<VkInstance>(instance), &createInfo, static_cast<const VkAllocationCallbacks*>(allocCallbacks), &surface);
-	if (result != VK_SUCCESS)
-	{
-		Log_Error("Failed to create surface: %s", GetVkResultString(result));
-		return 0;
-	}
-
-	return surface;
 }
 
 bool CWindowsVideoSystem::Update()

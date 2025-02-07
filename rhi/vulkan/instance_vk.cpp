@@ -1,8 +1,8 @@
-#include "device_vk.h"
 #include "instance_vk.h"
 #include "base/loader.h"
 #include "base/log.h"
 #include "base/vector.h"
+#include "device_vk.h"
 #include "rhi/irhidevice.h"
 #include "videosystem/ivideosystem.h"
 
@@ -69,12 +69,52 @@ PFN_vkVoidFunction VolkLoadFunction(void* userData, cstr name)
 	return symbol;
 }
 
+bool CVulkanRhiInstance::CreateSurface(u64 handle)
+{
+#ifdef CH_WIN32
+	VkWin32SurfaceCreateInfoKHR createInfo = {};
+	createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+	createInfo.hwnd = reinterpret_cast<HWND>(handle);
+
+	wchar_t dllName[] =
+#ifdef CH_STATIC
+		WIDEN(GAME_NAME) L".exe";
+#else
+		L"VideoSystem.dll";
+#endif
+	UNICODE_STRING dllNameStr = RTL_CONSTANT_STRING(dllName);
+	LdrGetDllHandleByName(&dllNameStr, nullptr, reinterpret_cast<void**>(&createInfo.hinstance));
+	ASSERT_MSG(createInfo.hinstance != nullptr, "Failed to get module handle for VideoSystem!");
+
+	Log_Debug("Creating Win32 Vulkan surface");
+
+	VkResult result =
+		vkCreateWin32SurfaceKHR(m_instance, &createInfo, GetVkAllocationCallbacks(), &m_surface);
+	if (result != VK_SUCCESS)
+	{
+		Log_Error("Failed to create surface: %s", GetVkResultString(result));
+		return false;
+	}
+
+	return true;
+#else
+	Log_Error("Unknown Vulkan platform for surface creation!");
+	return false;
+#endif
+}
+
 bool CVulkanRhiInstance::Initialize(IVideoSystem* videoSystem)
 {
 	Log_Debug("Initializing Vulkan instance");
 
 	Log_Debug("Loading Vulkan runtime");
-	m_vulkanLib = Base_LoadLibrary("vulkan-1");
+	m_vulkanLib = Base_LoadLibrary(
+#ifdef CH_WIN32
+		"vulkan-1"
+#else
+		"vulkan"
+#endif
+	);
 	if (!m_vulkanLib)
 	{
 		Log_Error("Failed to load Vulkan runtime!");
@@ -157,7 +197,7 @@ bool CVulkanRhiInstance::Initialize(IVideoSystem* videoSystem)
 #endif
 
 	Log_Debug("Creating surface");
-	m_surface = videoSystem->CreateVulkanSurface(reinterpret_cast<u64>(m_instance), GetVkAllocationCallbacks());
+	m_surface = CreateSurface(videoSystem->GetHandle());
 	if (!m_surface)
 	{
 		// CreateVulkanSurface does its own logging
@@ -248,10 +288,14 @@ IRhiDevice* CVulkanRhiInstance::CreateDevice(const RhiDeviceInfo_t& info)
 		return nullptr;
 	}
 
-	return nullptr; //new CVulkanRhiDevice(m_devices[index]);
+	return nullptr; // new CVulkanRhiDevice(m_devices[index]);
 }
 
-RHIAPI IRhiInstance* Vulkan_CreateInstance()
+#ifdef CH_STATIC
+IRhiInstance* CreateVulkanRhiInstance()
+#else
+extern "C" RHIAPI IRhiInstance* CreateInstance()
+#endif
 {
 	return new CVulkanRhiInstance();
 }

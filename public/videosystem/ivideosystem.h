@@ -17,11 +17,6 @@ class IVideoSystem: public ISystem
 	/// Set up an output for rendering
 	virtual bool Initialize() = 0;
 
-#ifdef CH_VULKAN
-	/// Create a Vulkan surface
-	virtual u64 CreateVulkanSurface(u64 instance, const void* allocCallbacks) = 0;
-#endif
-
 	/// Process events, returns true if the video output hasn't been closed
 	virtual bool Update() = 0;
 

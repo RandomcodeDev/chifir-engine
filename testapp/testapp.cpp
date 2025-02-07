@@ -11,7 +11,7 @@ void CTestApp::Setup(const CVector<CString>& args)
 	}
 }
 
-void CTestApp::GetRequiredSystems(CVector<SystemDependency_t>& dependencies)
+void CTestApp::GetDependencies(CVector<SystemDependency_t>& dependencies)
 {
 	(void)dependencies;
 }

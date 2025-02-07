@@ -40,6 +40,7 @@ MAKE_STUB(RtlTimeToTimeFields, __stdcall, @8)
 // ntdll
 MAKE_STUB(LdrAddDllDirectory, __stdcall, @8)
 MAKE_STUB(LdrAddRefDll, __stdcall, @8)
+MAKE_STUB(LdrGetDllHandleByName, __stdcall, @12)
 MAKE_STUB(LdrGetProcedureAddress, __stdcall, @16)
 MAKE_STUB(LdrLoadDll, __stdcall, @16)
 MAKE_STUB(LdrUnloadDll, __stdcall, @4)
@@ -198,6 +199,7 @@ bool Base_InitLoader()
 
 	// ntdll
 	GET_FUNCTION(&ntDll, LdrAddRefDll)
+	GET_FUNCTION(&ntDll, LdrGetDllHandleByName)
 	GET_FUNCTION(&ntDll, LdrLoadDll)
 	GET_FUNCTION(&ntDll, LdrUnloadDll)
 	GET_FUNCTION(&ntDll, NtClose)
@@ -211,9 +213,6 @@ bool Base_InitLoader()
 	GET_FUNCTION(&ntDll, RtlGetFullPathName_U)
 	GET_FUNCTION(&ntDll, RtlTimeToTimeFields)
 	GET_FUNCTION(&ntDll, RtlUnicodeStringToAnsiString)
-
-	// So unloading it when ntDll goes out of scope doesn't mess anything up, cause the loader wasn't used to "load" it
-	LdrAddRefDll(0, s_ntDllBase);
 
 	ILibrary* kernel32 = Base_LoadLibrary("kernel32");
 	ASSERT(kernel32 != nullptr);
@@ -256,10 +255,9 @@ bool Base_InitLoader()
 	GET_FUNCTION(user32, TranslateMessage)
 	GET_FUNCTION(user32, UnregisterClassA)
 
-	// can't do this cause the dlls would unload and stuff
-	// delete kernel32;
-	// delete shell32;
-	// delete user32;
+	delete kernel32;
+	delete shell32;
+	delete user32;
 #endif
 
 	g_loaderInitialized = true;
@@ -347,14 +345,7 @@ CWindowsLibrary::CWindowsLibrary(cstr name, void* base) : m_name(nullptr), m_bas
 
 CWindowsLibrary::~CWindowsLibrary()
 {
-#ifdef CH_XBOX360
-	FreeLibrary(reinterpret_cast<HMODULE>(m_base));
-#else
-	if (LdrLoadDll_Available() && m_base)
-	{
-		LdrUnloadDll(m_base);
-	}
-#endif
+	// unloading the library doesn't serve much purpose
 
 	if (m_name)
 	{

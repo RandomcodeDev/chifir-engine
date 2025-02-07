@@ -7,6 +7,7 @@ target("Base")
         "basicstr.cpp",
         "filesystem.cpp",
         "filesystem_raw.cpp",
+        "loader.cpp",
         "log.cpp",
         "memory.cpp",
         "platform.cpp",
@@ -72,7 +73,7 @@ target("CommonFiles")
 target_end()
 
 target("DllSupport")
-    set_kind("object")
+    set_kind("static")
 
     if is_plat("windows", "gdkx") then
         add_files("../public/base/dllmain.cpp")

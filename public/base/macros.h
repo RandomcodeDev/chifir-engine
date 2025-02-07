@@ -20,6 +20,9 @@
 /// Stringize something
 #define STRINGIZE(x) #x
 
+/// Make a string literal wchar_t's
+#define WIDEN(x) L#x
+
 /// Stringize something, and expand macros one level
 #define STRINGIZE_EXPAND(x) STRINGIZE(x)
 

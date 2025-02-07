@@ -34,6 +34,7 @@ ENDM
 MAKE_STUB DbgPrint
 MAKE_STUB LdrAddRefDll
 MAKE_STUB LdrAddDllDirectory
+MAKE_STUB LdrGetDllHandleByName
 MAKE_STUB LdrGetProcedureAddress
 MAKE_STUB LdrLoadDll
 MAKE_STUB LdrUnloadDll

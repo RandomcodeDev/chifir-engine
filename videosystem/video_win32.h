@@ -17,7 +17,6 @@ class CWindowsVideoSystem: public IVideoSystem
 	~CWindowsVideoSystem() DEFAULT;
 
 	virtual bool Initialize();
-	virtual u64 CreateVulkanSurface(u64 instance, const void* allocCallbacks);
 	virtual bool Update();
 	virtual void Shutdown();
 

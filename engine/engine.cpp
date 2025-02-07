@@ -1,5 +1,6 @@
 #include "engine.h"
 #include "base/filesystem.h"
+#include "base/loader.h"
 #include "base/log.h"
 #include "rendersystem/irendersystem.h"
 #include "videosystem/ivideosystem.h"
@@ -23,16 +24,20 @@ void CEngine::Setup(const CVector<CString>& args)
 	}
 }
 
-void CEngine::GetRequiredSystems(CVector<SystemDependency_t>& dependencies)
+void CEngine::GetDependencies(CVector<SystemDependency_t>& systems, CVector<LibDependency_t>& libs)
 {
-	static const SystemDependency_t CLIENT_DEPS[] = {
+	static const LibDependency_t CLIENT_LIBS[] = {
+		{"Rhi", true}
+	};
+	static const SystemDependency_t CLIENT_SYSTEMS[] = {
 		{ "VideoSystem",  IVideoSystem::VERSION, true, false},
         {"RenderSystem", IRenderSystem::VERSION, true, false}
     };
 
 	if (!m_headless)
 	{
-		dependencies.Add(CLIENT_DEPS, ArraySize(CLIENT_DEPS));
+		libs.Add(CLIENT_LIBS, ArraySize(CLIENT_LIBS));
+		systems.Add(CLIENT_SYSTEMS, ArraySize(CLIENT_SYSTEMS));
 	}
 }
 

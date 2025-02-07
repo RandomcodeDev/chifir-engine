@@ -31,7 +31,7 @@ mod log_impl {
             #[macro_export]
             macro_rules! $level {
                 ($$($$args:tt)*) => {
-                    $crate::Log::WriteSafe($crate::Log::Level::$level, line!(), false, file!(), $crate::function!(), format!($$($$args)*).as_str())
+                    $crate::sys::Log::WriteSafe($crate::sys::Log::Level::$level, line!(), false, file!(), $crate::function!(), format!($$($$args)*).as_str())
                 };
             }
             pub(crate) use $level;
@@ -46,6 +46,4 @@ mod log_impl {
     make_log_function! {FatalError}
 }
 
-pub mod Base;
-pub mod Log;
-pub mod Plat;
+pub mod sys;

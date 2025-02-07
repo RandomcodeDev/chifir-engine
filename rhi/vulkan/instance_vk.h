@@ -37,6 +37,6 @@ class CVulkanRhiInstance: public IRhiInstance
 	VkSurfaceKHR m_surface;
 
 	CVector<VulkanDeviceInfo_t> m_devices;
-};
 
-extern RHIAPI IRhiInstance* Vulkan_CreateInstance();
+	bool CreateSurface(u64 handle);
+};

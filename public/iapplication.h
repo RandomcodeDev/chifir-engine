@@ -4,6 +4,7 @@
 #pragma once
 
 #include "base/compiler.h"
+#include "base/loader.h"
 #include "base/vector.h"
 #include "isystem.h"
 
@@ -15,8 +16,8 @@ class IApplication
 	/// Prepare the application to run
 	virtual void Setup(const CVector<CString>& args) = 0;
 
-	/// Get the application's required systems
-	virtual void GetRequiredSystems(CVector<SystemDependency_t>& dependencies) = 0;
+	/// Get the application's required systems and libraries
+	virtual void GetDependencies(CVector<SystemDependency_t>& systems, CVector<LibDependency_t>& libs) = 0;
 
 	/// Run the application
 	/// systems is in the same order as the list from GetRequiredSystems, with nullptrs for optional systems that couldn't be
