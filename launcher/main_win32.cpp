@@ -34,10 +34,10 @@ ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #pragma comment(linker, "/SUBSYSTEM:" SUBSYSTEM ",5.02")
 #endif
 
-extern "C" __declspec(dllimport) int _snwprintf(wchar_t *Buffer, size_t BufferCount, const wchar_t *Format, ...);
-extern "C" __declspec(dllimport) const wchar_t* wcsrchr(const wchar_t *str, wchar_t c);
-extern "C" __declspec(dllimport) wchar_t* wcsncpy(wchar_t* Destination, const wchar_t* Source, size_t Count);
+extern "C" __declspec(dllimport) int _snwprintf(wchar_t* Buffer, size_t BufferCount, const wchar_t* Format, ...);
 extern "C" __declspec(dllimport) size_t wcslen(const wchar_t* Buffer);
+extern "C" __declspec(dllimport) wchar_t* wcsncpy(wchar_t* Destination, const wchar_t* Source, size_t Count);
+extern "C" __declspec(dllimport) const wchar_t* wcsrchr(const wchar_t *str, wchar_t c);
 
 static PCWSTR GetEngineDir()
 {

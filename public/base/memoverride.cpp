@@ -72,12 +72,12 @@ extern "C"
 }
 
 #ifdef IN_BASE
-EXPORT(malloc)
-EXPORT(free)
-EXPORT(calloc)
-EXPORT(realloc)
-EXPORT(aligned_alloc)
-EXPORT(_aligned_malloc)
+EXPORT_CDECL(malloc)
+EXPORT_CDECL(free)
+EXPORT_CDECL(calloc)
+EXPORT_CDECL(realloc)
+EXPORT_CDECL(aligned_alloc)
+EXPORT_CDECL(_aligned_malloc)
 #endif
 
 void* __cdecl operator new(usize size)

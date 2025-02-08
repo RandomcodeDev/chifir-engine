@@ -103,7 +103,7 @@ bool CVulkanRhiDevice::GetDeviceInfo(
 		return false;
 	}
 
-	if (extensionCount < ArraySize(REQUIRED_EXTENSIONS))
+	if (extensionCount < ArraySize<u32>(REQUIRED_EXTENSIONS))
 	{
 		Log_Warning(
 			"Device %zd is unusable, it has %u extensions when there are %u required", i, extensionCount,

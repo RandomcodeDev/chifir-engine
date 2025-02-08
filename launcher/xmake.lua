@@ -6,7 +6,7 @@ target("LauncherMain")
 
     if is_plat("windows", "gdkx") then
         add_files("main_win32.cpp")
-        add_links("ntdll_full.lib")
+        add_links("ntdll.lib", "ntdll_libc.lib")
     elseif is_plat("linux") then
         add_files("main_unix.cpp")
     elseif is_plat("switch") then

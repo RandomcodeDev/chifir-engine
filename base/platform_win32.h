@@ -37,6 +37,7 @@
 /// Get the address of NTDLL, find LdrGetProcedureAddress manually, find LdrLoadDll properly, load any other system DLLs/functions
 /// using those
 extern bool Base_InitLoader();
+extern bool Base_CheckWoW64();
 
 extern bool g_loaderInitialized;
 

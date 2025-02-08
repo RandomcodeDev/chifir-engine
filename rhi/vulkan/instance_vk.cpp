@@ -281,7 +281,7 @@ void CVulkanRhiInstance::GetDeviceInfo(CVector<RhiDeviceInfo_t>& info)
 
 IRhiDevice* CVulkanRhiInstance::CreateDevice(const RhiDeviceInfo_t& info)
 {
-	ssize index = info.handle;
+	ssize index = static_cast<ssize>(info.handle);
 	if (index >= m_devices.Size())
 	{
 		Log_Error("Device %s has invalid handle %zd", info.name.Data(), index);

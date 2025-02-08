@@ -370,10 +370,11 @@ BASEAPI cstr Plat_GetSystemDescription()
 			XboxKrnlVersion[2] << 16 | XboxKrnlVersion[3], XboxKrnlVersion[4] << 16 | XboxKrnlVersion[5], XboxKrnlVersion[6],
 			XboxKrnlVersion[7]);
 #else
+
 		s_systemDescription = Base_StrFormat(
-			"Windows %u.%u.%u (reported as %u.%u.%u)", USER_SHARED_DATA->NtMajorVersion, USER_SHARED_DATA->NtMinorVersion,
+			"Windows %u.%u.%u (reported as %u.%u.%u)%s", USER_SHARED_DATA->NtMajorVersion, USER_SHARED_DATA->NtMinorVersion,
 			USER_SHARED_DATA->NtBuildNumber, NtCurrentPeb()->OSMajorVersion, NtCurrentPeb()->OSMinorVersion,
-			NtCurrentPeb()->OSBuildNumber);
+			NtCurrentPeb()->OSBuildNumber, Base_CheckWoW64() ? " WoW64" : "");
 #endif
 	}
 

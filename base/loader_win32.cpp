@@ -1,11 +1,11 @@
 // This file is the reason Base.dll doesn't have an import table. It first locates the base address of ntdll.dll using the
 // PEB_LDR_DATA structure, then it parses it and finds the address of LdrGetProcedureAddress by searching the export table for a
 // name that matches its hash. Then, it uses LdrGetProcedureAddress to fill in other stubs of system functions, which are
-// function pointers that use names the linker expects from an import library, allowing phnt's correct declarations to be used
+// function pointers that use names the linker expects from an import library, allowing phnt's correct declarations to be used everywhere
 // without issue. These are basically the same as the import table, but I get to do my own logic for filling them in, so that if
-// some function is missing from one version and not another, it isn't a fatal error that can't be avoided, allowing for
-// better portability. There are also forwarder functions that are re-exported under the original names so the launcher and video
-// system can import the functions.
+// some function is missing from one version and not another, it isn't a fatal startup error that can't be avoided, allowing for
+// better portability. There are also forwarder functions that are re-exported under the original names so anything else can use them.
+// In other words, this file just does ntdll's job early in runtime instead of before the engine runs.
 
 // On Xbox 360, things are different. xboxkrnl.exe and xam.xex export all the important functions exclusively by ordinal,
 // and are in the XEX format. The reason them only using ordinals isn't an issue is because they don't change between kernel
@@ -60,6 +60,7 @@ MAKE_STUB(RtlFreeUnicodeString, __stdcall, @4)
 MAKE_STUB(RtlGetFullPathName_U, __stdcall, @16)
 MAKE_STUB(RtlUnicodeStringToAnsiString, __stdcall, @12)
 
+// kernel32
 // Console stuff is all CSR calls I shouldn't rewrite
 MAKE_STUB(AllocConsole, __stdcall, @0)
 MAKE_STUB(AttachConsole, __stdcall, @4)
@@ -68,9 +69,11 @@ MAKE_STUB(GetStdHandle, __stdcall, @4)
 MAKE_STUB(SetConsoleMode, __stdcall, @8)
 
 // shell32
+// Shell stuff is evil
 MAKE_STUB(SHGetFolderPathA, __stdcall, @20)
 
 // user32
+// user32 does some black magic in its startup that win32u/win32k require for the syscalls to work
 MAKE_STUB(AdjustWindowRect, __stdcall, @12)
 MAKE_STUB(ClientToScreen, __stdcall, @8)
 MAKE_STUB(CreateWindowExA, __stdcall, @48)
@@ -97,7 +100,7 @@ MAKE_STUB(UnregisterClassA, __stdcall, @8)
 static bool FindNtDll(PPEB_LDR_DATA ldrData)
 {
 	// On desktop NTDLL is always the first image initialized, no matter what (there is no logical reason this would change)
-	// On WoW64, this _does_ get the 32-bit NTDLL, which is the right one
+	// On WoW64, this _does_ get the 32-bit NTDLL, which is the right one for this
 	PLIST_ENTRY ntDllLink = ldrData->InInitializationOrderModuleList.Flink;
 	PLDR_DATA_TABLE_ENTRY entry = CONTAINING_STRUCTURE(LDR_DATA_TABLE_ENTRY, InInitializationOrderLinks, ntDllLink);
 	s_ntDllBase = static_cast<PIMAGE_DOS_HEADER>(entry->DllBase);
@@ -108,14 +111,29 @@ static bool FindNtDll(PPEB_LDR_DATA ldrData)
 // Somehow the Rtl function for this isn't inline in phnt, I guess it does that thing with the last section or whatever
 #define RVA_TO_VA(base, rva) (reinterpret_cast<u8*>(base) + (rva))
 
-static bool CheckWoW64()
+static u16 GetArchitecture()
 {
-#ifdef CH_I386
-	PIMAGE_NT_HEADERS ntDllNtHdrs = reinterpret_cast<PIMAGE_NT_HEADERS>(RVA_TO_VA(s_ntDllBase, s_ntDllBase->e_lfanew));
-	return ntDllNtHdrs->FileHeader.Machine == IMAGE_FILE_MACHINE_AMD64;
-#else
-	return false;
-#endif
+	switch (USER_SHARED_DATA->NativeProcessorArchitecture)
+	{
+	case PROCESSOR_ARCHITECTURE_AMD64:
+		return IMAGE_FILE_MACHINE_AMD64;
+	case PROCESSOR_ARCHITECTURE_ARM:
+		return IMAGE_FILE_MACHINE_ARM;
+	case PROCESSOR_ARCHITECTURE_ARM64:
+		return IMAGE_FILE_MACHINE_ARM64;
+	case PROCESSOR_ARCHITECTURE_IA64:
+		return IMAGE_FILE_MACHINE_IA64;
+	case PROCESSOR_ARCHITECTURE_INTEL:
+		return IMAGE_FILE_MACHINE_I386;
+	default:
+		break;
+	}
+	return 0;
+}
+
+bool Base_CheckWoW64()
+{
+	return GetArchitecture() != ((PIMAGE_NT_HEADERS)RVA_TO_VA(&__ImageBase, __ImageBase.e_lfanew))->FileHeader.Machine;
 }
 
 static bool FindLdrGetProcedureAddress()

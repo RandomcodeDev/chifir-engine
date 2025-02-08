@@ -38,6 +38,11 @@
 #define ATTRIBUTE(x)                  __declspec(x)
 #define EXPORT_RAW(x)                 __pragma(comment(linker, "/export:" x))
 #define EXPORT(x)                     EXPORT_RAW(#x)
+#ifdef CH_IA32
+#define EXPORT_CDECL(x) EXPORT_RAW("_" #x)
+#else
+#define EXPORT_CDECL(x)
+#endif
 #define EXPORT_AS_RAW(orig, alt)      EXPORT_RAW(alt "=" orig)
 #define EXPORT_CURRENT_FUNCTION_AS(x) EXPORT_AS_RAW(__FUNCTION__, x)
 #define EXPORT_AS(a, b)               EXPORT_AS_RAW(#a, #b)
@@ -51,7 +56,7 @@
 #define OPTIMIZE_OFF _Pragma("optimize(\"\", off)")
 #define OPTIMIZE_ON  _Pragma("optimize(\"\", on)")
 
-extern "C" ATTRIBUTE(dllimport) unsigned short RtlCaptureStackBackTrace(
+extern "C" ATTRIBUTE(dllimport) unsigned short __stdcall RtlCaptureStackBackTrace(
 	unsigned long skip, unsigned long count, void** frames, unsigned long* hash);
 
 extern "C"

@@ -1,0 +1,6 @@
+LIBRARY ntdll
+EXPORTS
+	_snwprintf @2294
+	wcslen @2431
+	wcsncpy @2435
+	wcsrchr @2439
