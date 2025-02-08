@@ -168,8 +168,9 @@ bool CVulkanRhiInstance::Initialize(IVideoSystem* videoSystem)
 	layerSettingsCreateInfo.sType = VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT;
 	layerSettingsCreateInfo.pSettings = LAYER_SETTINGS;
 	layerSettingsCreateInfo.settingCount = ArraySize<u32>(LAYER_SETTINGS);
-	debugCreateInfo.pNext = &layerSettingsCreateInfo;
-	instanceCreateInfo.pNext = &debugCreateInfo;
+
+	layerSettingsCreateInfo.pNext = &debugCreateInfo;
+	instanceCreateInfo.pNext = &layerSettingsCreateInfo;
 #endif
 
 	Log_Debug("Creating VkInstance");
@@ -197,10 +198,9 @@ bool CVulkanRhiInstance::Initialize(IVideoSystem* videoSystem)
 #endif
 
 	Log_Debug("Creating surface");
-	m_surface = CreateSurface(videoSystem->GetHandle());
-	if (!m_surface)
+	if (!CreateSurface(videoSystem->GetHandle()))
 	{
-		// CreateVulkanSurface does its own logging
+		// CreateSurface does its own logging
 		Destroy();
 		return false;
 	}

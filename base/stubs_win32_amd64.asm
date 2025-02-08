@@ -50,6 +50,7 @@ MAKE_STUB NtReadFile
 MAKE_STUB NtTerminateProcess
 MAKE_STUB NtWriteFile
 MAKE_STUB RtlAnsiStringToUnicodeString
+MAKE_STUB RtlCaptureStackBackTrace
 MAKE_STUB RtlFreeAnsiString
 MAKE_STUB RtlFreeHeap
 MAKE_STUB RtlFreeUnicodeString

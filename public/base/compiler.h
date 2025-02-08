@@ -21,7 +21,8 @@
 #include <arm_neon.h>
 #endif
 
-#ifdef _MSC_VER
+// Clang works either way
+#if defined _MSC_VER && defined CH_WIN32
 #ifdef CH_XBOX360
 #include <VectorIntrinsics.h>
 #endif
@@ -50,8 +51,34 @@
 #define OPTIMIZE_OFF _Pragma("optimize(\"\", off)")
 #define OPTIMIZE_ON  _Pragma("optimize(\"\", on)")
 
-/// Get the return address of the current function
-#define Plat_GetReturnAddress() reinterpret_cast<uptr>(_ReturnAddress())
+extern "C" ATTRIBUTE(dllimport) unsigned short RtlCaptureStackBackTrace(
+	unsigned long skip, unsigned long count, void** frames, unsigned long* hash);
+
+extern "C"
+#ifdef IN_BASE
+	ATTRIBUTE(dllexport)
+#else
+	ATTRIBUTE(dllimport)
+#endif
+		bool RtlCaptureStackBackTrace_Available();
+
+__forceinline void* MSVC_GetReturnAddress(unsigned long frames)
+{
+	if (RtlCaptureStackBackTrace_Available())
+	{
+		void* address = nullptr;
+		RtlCaptureStackBackTrace(frames + 1, 1, &address, nullptr);
+		return address;
+	}
+	else
+	{
+		// best that can be done
+		return _ReturnAddress();
+	}
+}
+
+/// Get the return address
+#define Plat_GetReturnAddress(...) reinterpret_cast<uptr>(MSVC_GetReturnAddress(__VA_ARGS__ + 0))
 
 #define BYTESWAP16(x) _byteswap_ushort(x)
 #define BYTESWAP32(x) _byteswap_ulong(x)
@@ -81,11 +108,11 @@ extern void __stdcall RunThreadConstructors();
 #define ASSUME(x)    __builtin_assume(x)
 #define DEFINE_INTRINSIC(x)
 
-#define OPTIMIZE_OFF            _Pragma("clang optimize off")
-#define OPTIMIZE_ON             _Pragma("clang optimize on")
+#define OPTIMIZE_OFF               _Pragma("clang optimize off")
+#define OPTIMIZE_ON                _Pragma("clang optimize on")
 
-/// Get the return address of the current function
-#define Plat_GetReturnAddress() reinterpret_cast<uptr>(__builtin_return_address(0))
+/// Get the return address
+#define Plat_GetReturnAddress(...) reinterpret_cast<uptr>(__builtin_return_address(__VA_ARGS__ + 0))
 
 #define BYTESWAP16(x) __builtin_bswap16(x)
 #define BYTESWAP32(x) __builtin_bswap32(x)

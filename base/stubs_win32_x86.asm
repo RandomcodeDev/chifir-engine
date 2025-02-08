@@ -34,7 +34,7 @@ Avail:
 ENDM
 
 ; ntdll stubs
-MAKE_STUB DbgPrint, 
+MAKE_STUB DbgPrint,
 MAKE_STUB LdrAddRefDll, @8
 MAKE_STUB LdrAddDllDirectory, @8
 MAKE_STUB LdrGetDllHandleByName, @12
@@ -53,6 +53,7 @@ MAKE_STUB NtReadFile, @36
 MAKE_STUB NtTerminateProcess, @8
 MAKE_STUB NtWriteFile, @36
 MAKE_STUB RtlAnsiStringToUnicodeString, @12
+MAKE_STUB RtlCaptureStackBackTrace, @16
 MAKE_STUB RtlFreeAnsiString, @4
 MAKE_STUB RtlFreeHeap, @12
 MAKE_STUB RtlFreeUnicodeString, @4

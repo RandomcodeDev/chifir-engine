@@ -42,6 +42,13 @@ extern "C"
 		return Base_Alloc(static_cast<ssize>(size & SSIZE_MAX), static_cast<ssize>(alignment));
 	}
 
+#ifdef _MSC_VER
+	RESTRICT_FUNC ATTRIBUTE(noalias) void* __cdecl _aligned_malloc(usize size, usize alignment)
+	{
+		return aligned_alloc(alignment, size);
+	}
+#endif
+
 	VISIBLE usize __cdecl malloc_usable_size(void* block)
 	{
 		return static_cast<usize>(Base_GetAllocSize(block));
@@ -63,6 +70,15 @@ extern "C"
 		return 0;
 	}
 }
+
+#ifdef IN_BASE
+EXPORT(malloc)
+EXPORT(free)
+EXPORT(calloc)
+EXPORT(realloc)
+EXPORT(aligned_alloc)
+EXPORT(_aligned_malloc)
+#endif
 
 void* __cdecl operator new(usize size)
 {

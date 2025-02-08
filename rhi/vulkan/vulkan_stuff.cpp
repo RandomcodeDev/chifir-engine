@@ -47,7 +47,8 @@ const VkAllocationCallbacks* GetVkAllocationCallbacks()
 	// allocations are already overridden globally
 	return nullptr;
 #else
-	static VkAllocationCallbacks s_vkAllocationCallbacks = {nullptr, VkAlloc, VkRealloc, VkFree, VkAllocNotification, VkFreeNotification};
+	static VkAllocationCallbacks s_vkAllocationCallbacks = {nullptr,           VkAlloc, VkRealloc, VkFree, VkAllocNotification,
+															VkFreeNotification};
 	return &s_vkAllocationCallbacks;
 #endif
 }
@@ -86,7 +87,14 @@ VkBool32 VKAPI_CALL VkDebugCallback(
 		(types & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT) ? "validation " : "");
 	typeStr[0] = Base_ToUpper(typeStr[0]);
 	// TODO: symbol name getting?
-	Log_Write(level, Plat_GetReturnAddress(), true, "Vulkan", typeStr, callbackData->pMessage);
+	// TODO: make sure it's consistently 3 frames up
+	// stack looks like this based on the loader's source code:
+	//
+	// <this function>           0
+	// util_DebugReportMessage   1
+	// loader_log                2
+	// <real source of message>  3
+	Log_Write(level, Plat_GetReturnAddress(3), true, "Vulkan", typeStr, callbackData->pMessage);
 
 	return true;
 }
