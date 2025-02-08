@@ -34,7 +34,7 @@ ENDM
 MAKE_STUB DbgPrint
 MAKE_STUB LdrAddRefDll
 MAKE_STUB LdrAddDllDirectory
-MAKE_STUB LdrGetDllHandleByName
+MAKE_STUB LdrGetDllHandle
 MAKE_STUB LdrGetProcedureAddress
 MAKE_STUB LdrLoadDll
 MAKE_STUB LdrUnloadDll
@@ -64,6 +64,7 @@ MAKE_STUB AttachConsole
 MAKE_STUB GetConsoleMode
 MAKE_STUB GetStdHandle
 MAKE_STUB SetConsoleMode
+MAKE_STUB WriteConsoleA
 
 ; shell32 stubs
 MAKE_STUB SHGetFolderPathA

@@ -40,7 +40,7 @@ MAKE_STUB(RtlTimeToTimeFields, __stdcall, @8)
 // ntdll
 MAKE_STUB(LdrAddDllDirectory, __stdcall, @8)
 MAKE_STUB(LdrAddRefDll, __stdcall, @8)
-MAKE_STUB(LdrGetDllHandleByName, __stdcall, @12)
+MAKE_STUB(LdrGetDllHandle, __stdcall, @16)
 MAKE_STUB(LdrGetProcedureAddress, __stdcall, @16)
 MAKE_STUB(LdrLoadDll, __stdcall, @16)
 MAKE_STUB(LdrUnloadDll, __stdcall, @4)
@@ -67,6 +67,7 @@ MAKE_STUB(AttachConsole, __stdcall, @4)
 MAKE_STUB(GetConsoleMode, __stdcall, @8)
 MAKE_STUB(GetStdHandle, __stdcall, @4)
 MAKE_STUB(SetConsoleMode, __stdcall, @8)
+MAKE_STUB(WriteConsoleA, __stdcall, @20)
 
 // shell32
 // Shell stuff is evil
@@ -218,7 +219,7 @@ bool Base_InitLoader()
 
 	// ntdll
 	GET_FUNCTION(&ntDll, LdrAddRefDll)
-	GET_FUNCTION(&ntDll, LdrGetDllHandleByName)
+	GET_FUNCTION(&ntDll, LdrGetDllHandle)
 	GET_FUNCTION(&ntDll, LdrLoadDll)
 	GET_FUNCTION(&ntDll, LdrUnloadDll)
 	GET_FUNCTION(&ntDll, NtClose)
@@ -243,6 +244,7 @@ bool Base_InitLoader()
 	GET_FUNCTION(kernel32, GetConsoleMode)
 	GET_FUNCTION(kernel32, GetStdHandle)
 	GET_FUNCTION(kernel32, SetConsoleMode)
+	GET_FUNCTION(kernel32, WriteConsoleA)
 
 	ILibrary* shell32 = Base_LoadLibrary("shell32");
 	ASSERT(shell32 != nullptr);

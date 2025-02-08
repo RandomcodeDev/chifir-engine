@@ -37,7 +37,7 @@ ENDM
 MAKE_STUB DbgPrint,
 MAKE_STUB LdrAddRefDll, @8
 MAKE_STUB LdrAddDllDirectory, @8
-MAKE_STUB LdrGetDllHandleByName, @12
+MAKE_STUB LdrGetDllHandle, @16
 MAKE_STUB LdrGetProcedureAddress, @16
 MAKE_STUB LdrLoadDll, @16
 MAKE_STUB LdrUnloadDll, @4
@@ -48,7 +48,7 @@ MAKE_STUB NtFreeVirtualMemory, @16
 MAKE_STUB NtQueryFullAttributesFile, @8
 MAKE_STUB NtQueryInformationFile, @20
 MAKE_STUB NtQuerySystemInformation, @16
-MAKE_STUB NtRaiseHardError, @0
+MAKE_STUB NtRaiseHardError, @24
 MAKE_STUB NtReadFile, @36
 MAKE_STUB NtTerminateProcess, @8
 MAKE_STUB NtWriteFile, @36
@@ -67,6 +67,7 @@ MAKE_STUB AttachConsole, @4
 MAKE_STUB GetConsoleMode, @8
 MAKE_STUB GetStdHandle, @4
 MAKE_STUB SetConsoleMode, @8
+MAKE_STUB WriteConsoleA, @20
 
 ; shell32 stubs
 MAKE_STUB SHGetFolderPathA, @20

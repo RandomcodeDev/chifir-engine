@@ -101,6 +101,6 @@ extern BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, c
 
 /// Produces printf arguments for the given log message. `color` decides whether ANSI escapes are used.
 #define LOG_FORMAT(color, msg)                                                                                                   \
-	(msg).isAddress ? "[%s] [%s] [%s!0x%llX %s] %s\n" : "[%s] [%s] [%s:%u %s] %s\n",                                             \
+	(msg).isAddress ? "[%s] [%s] [%s!0x%llX %s] %s\r\n" : "[%s] [%s] [%s:%u %s] %s\r\n",                                         \
 		(color) ? LEVEL_COLORED_NAMES[s32((msg).level)] : LEVEL_NAMES[s32((msg).level)], Base_FormatDateTime((msg).time).Data(), \
 		(msg).file, (msg).location, (msg).function, (msg).message

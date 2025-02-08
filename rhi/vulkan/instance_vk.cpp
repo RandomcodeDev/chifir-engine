@@ -83,13 +83,12 @@ bool CVulkanRhiInstance::CreateSurface(u64 handle)
 		L"VideoSystem.dll";
 #endif
 	UNICODE_STRING dllNameStr = RTL_CONSTANT_STRING(dllName);
-	LdrGetDllHandleByName(&dllNameStr, nullptr, reinterpret_cast<void**>(&createInfo.hinstance));
+	LdrGetDllHandle(nullptr, nullptr, &dllNameStr, reinterpret_cast<void**>(&createInfo.hinstance));
 	ASSERT_MSG(createInfo.hinstance != nullptr, "Failed to get module handle for VideoSystem!");
 
 	Log_Debug("Creating Win32 Vulkan surface");
 
-	VkResult result =
-		vkCreateWin32SurfaceKHR(m_instance, &createInfo, GetVkAllocationCallbacks(), &m_surface);
+	VkResult result = vkCreateWin32SurfaceKHR(m_instance, &createInfo, GetVkAllocationCallbacks(), &m_surface);
 	if (result != VK_SUCCESS)
 	{
 		Log_Error("Failed to create surface: %s", GetVkResultString(result));

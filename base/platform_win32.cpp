@@ -18,12 +18,14 @@ extern "C" DLLIMPORT void __stdcall XamTerminateTitle();
 extern "C" DLLIMPORT u8* XboxKrnlVersion;
 extern "C" DLLIMPORT u32* XboxHardwareInfo;
 #else
+DECLARE_AVAILABLE(NtRaiseHardError);
+DECLARE_AVAILABLE(RtlAnsiStringToUnicodeString);
 DECLARE_AVAILABLE(NtTerminateProcess);
 DECLARE_AVAILABLE(AllocConsole);
 DECLARE_AVAILABLE(AttachConsole);
 DECLARE_AVAILABLE(GetConsoleMode);
 DECLARE_AVAILABLE(GetStdHandle);
-DECLARE_AVAILABLE(NtWriteFile);
+DECLARE_AVAILABLE(WriteConsoleA);
 DECLARE_AVAILABLE(SetConsoleMode);
 #endif
 
@@ -50,9 +52,9 @@ BASEAPI void Plat_WriteConsole(cstr text)
 #else
 	u32 length = static_cast<u32>(Base_StrLength(text));
 	IO_STATUS_BLOCK ioStatus = {};
-	if (NtWriteFile_Available() && GetStdHandle_Available())
+	if (WriteConsoleA_Available() && GetStdHandle_Available())
 	{
-		NtWriteFile(GetStdHandle(STD_OUTPUT_HANDLE), nullptr, nullptr, nullptr, &ioStatus, (dstr)text, length, nullptr, nullptr);
+		WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), text, length, nullptr, nullptr);
 	}
 #endif
 }
@@ -429,9 +431,29 @@ BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)
 		DbgPrint("Fatal error: %s\n", msg);
 	}
 
-	// TODO: use NtRaiseHardError
+	if (NtRaiseHardError_Available() && RtlAnsiStringToUnicodeString_Available())
+	{
+		UNICODE_STRING messageUStr = {};
+		ANSI_STRING messageStr = {};
+		messageStr.Buffer = CONST_CAST(dstr, msg);
+		messageStr.Length = Base_StrLength(msg);
+		messageStr.MaximumLength = messageStr.Length + 1;
+		RtlAnsiStringToUnicodeString(&messageUStr, &messageStr, true);
 
-	BREAKPOINT();
+		wchar_t title[] = L"Fatal error!";
+		UNICODE_STRING titleStr = RTL_CONSTANT_STRING(title);
+		ULONG_PTR params[] = {
+			reinterpret_cast<ULONG_PTR>(&messageUStr), reinterpret_cast<ULONG_PTR>(&titleStr),
+			OptionAbortRetryIgnore | MB_ICONERROR, INFINITE};
+		ULONG response = 0;
+		NtRaiseHardError(
+			static_cast<NTSTATUS>(code), ArraySize<u32>(params), 0b1100, params, ResponseAbort | ResponseRetry, &response);
+		if (response == ResponseRetry)
+		{
+			BREAKPOINT();
+		}
+	}
+
 #ifdef CH_XBOX360
 	XamTerminateTitle();
 #else
