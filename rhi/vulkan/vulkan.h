@@ -5,6 +5,8 @@
 #define VULKAN_DEBUG
 #endif
 
+#define VOLK_VULKAN_H_PATH "vulkan/vulkan.h"
+
 #ifdef CH_WIN32
 #define VK_USE_PLATFORM_WIN32_KHR
 #elif defined CH_SWITCH

@@ -3087,15 +3087,15 @@ PFN_vkGetVideoSessionMemoryRequirementsKHR vkGetVideoSessionMemoryRequirementsKH
 PFN_vkUpdateVideoSessionParametersKHR vkUpdateVideoSessionParametersKHR;
 #endif /* defined(VK_KHR_video_queue) */
 #if defined(VK_KHR_wayland_surface)
-VOLKAPI PFN_vkCreateWaylandSurfaceKHR vkCreateWaylandSurfaceKHR;
+PFN_vkCreateWaylandSurfaceKHR vkCreateWaylandSurfaceKHR;
 PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR vkGetPhysicalDeviceWaylandPresentationSupportKHR;
 #endif /* defined(VK_KHR_wayland_surface) */
 #if defined(VK_KHR_win32_surface)
-VOLKAPI PFN_vkCreateWin32SurfaceKHR vkCreateWin32SurfaceKHR;
+PFN_vkCreateWin32SurfaceKHR vkCreateWin32SurfaceKHR;
 PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR vkGetPhysicalDeviceWin32PresentationSupportKHR;
 #endif /* defined(VK_KHR_win32_surface) */
 #if defined(VK_KHR_xcb_surface)
-VOLKAPI PFN_vkCreateXcbSurfaceKHR vkCreateXcbSurfaceKHR;
+PFN_vkCreateXcbSurfaceKHR vkCreateXcbSurfaceKHR;
 PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR vkGetPhysicalDeviceXcbPresentationSupportKHR;
 #endif /* defined(VK_KHR_xcb_surface) */
 #if defined(VK_KHR_xlib_surface)
@@ -3109,7 +3109,7 @@ PFN_vkCreateIOSSurfaceMVK vkCreateIOSSurfaceMVK;
 PFN_vkCreateMacOSSurfaceMVK vkCreateMacOSSurfaceMVK;
 #endif /* defined(VK_MVK_macos_surface) */
 #if defined(VK_NN_vi_surface)
-VOLKAPI PFN_vkCreateViSurfaceNN vkCreateViSurfaceNN;
+PFN_vkCreateViSurfaceNN vkCreateViSurfaceNN;
 #endif /* defined(VK_NN_vi_surface) */
 #if defined(VK_NVX_binary_import)
 PFN_vkCmdCuLaunchKernelNVX vkCmdCuLaunchKernelNVX;

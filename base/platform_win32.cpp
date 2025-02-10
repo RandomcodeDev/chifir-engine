@@ -385,25 +385,22 @@ BASEAPI cstr Plat_GetSystemDescription()
 
 BASEAPI cstr Plat_GetHardwareDescription()
 {
-	if (!s_hardwareDescription)
-	{
 #ifdef CH_XBOX360
-		s_hardwareDescription = Base_StrFormat("XboxHardwareInfo 0x%X%X", XboxHardwareInfo[0], XboxHardwareInfo[1]);
+	s_hardwareDescription = Base_StrFormat("XboxHardwareInfo 0x%X%X", XboxHardwareInfo[0], XboxHardwareInfo[1]);
 #else
 #ifdef CH_X86
-		s64 freeMemory = g_systemPerfInfo.AvailablePages * static_cast<s64>(g_systemInfo.PageSize);
-		s64 physicalMemory = g_systemInfo.NumberOfPhysicalPages * static_cast<s64>(g_systemInfo.PageSize);
+	s64 freeMemory = g_systemPerfInfo.AvailablePages * static_cast<s64>(g_systemInfo.PageSize);
+	s64 physicalMemory = g_systemInfo.NumberOfPhysicalPages * static_cast<s64>(g_systemInfo.PageSize);
 
-		// TODO: do stuff with the funny numbers instead of relying on the name being given directly
-		s_hardwareDescription = Base_StrFormat(
-			"%s %s with %s of RAM (%s free)", g_cpuData.brand, g_cpuData.haveName ? g_cpuData.name : "Unknown",
-			Base_FormatSize(physicalMemory).Data(), Base_FormatSize(freeMemory).Data());
+	// TODO: do stuff with the funny numbers instead of relying on the CPU name being given directly
+	s_hardwareDescription = Base_StrFormat(
+		"%s %s with %s of RAM (%s free)", g_cpuData.brand, g_cpuData.haveName ? g_cpuData.name : "Unknown",
+		Base_FormatSize(physicalMemory).Data(), Base_FormatSize(freeMemory).Data());
 #else
-		// TODO: ARM?
-		s_hardwareDescription = Base_StrClone("<unknown>");
+	// TODO: ARM?
+	s_hardwareDescription = Base_StrClone("<unknown>");
 #endif
 #endif
-	}
 
 	return s_hardwareDescription;
 }
@@ -436,7 +433,7 @@ BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)
 		UNICODE_STRING messageUStr = {};
 		ANSI_STRING messageStr = {};
 		messageStr.Buffer = CONST_CAST(dstr, msg);
-		messageStr.Length = Base_StrLength(msg);
+		messageStr.Length = static_cast<u16>(Base_StrLength(msg));
 		messageStr.MaximumLength = messageStr.Length + 1;
 		RtlAnsiStringToUnicodeString(&messageUStr, &messageStr, true);
 

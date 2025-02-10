@@ -55,14 +55,6 @@
 extern "C" {
 #endif
 
-#include "base/dll.h"
-
-#ifdef IN_RHI_VULKAN
-#define VOLKAPI DLLEXPORT
-#else
-#define VOLKAPI DLLIMPORT
-#endif
-
 struct VolkDeviceTable;
 
 /**
@@ -1874,15 +1866,15 @@ extern PFN_vkGetVideoSessionMemoryRequirementsKHR vkGetVideoSessionMemoryRequire
 extern PFN_vkUpdateVideoSessionParametersKHR vkUpdateVideoSessionParametersKHR;
 #endif /* defined(VK_KHR_video_queue) */
 #if defined(VK_KHR_wayland_surface)
-extern VOLKAPI PFN_vkCreateWaylandSurfaceKHR vkCreateWaylandSurfaceKHR;
+extern PFN_vkCreateWaylandSurfaceKHR vkCreateWaylandSurfaceKHR;
 extern PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR vkGetPhysicalDeviceWaylandPresentationSupportKHR;
 #endif /* defined(VK_KHR_wayland_surface) */
 #if defined(VK_KHR_win32_surface)
-extern VOLKAPI PFN_vkCreateWin32SurfaceKHR vkCreateWin32SurfaceKHR;
+extern PFN_vkCreateWin32SurfaceKHR vkCreateWin32SurfaceKHR;
 extern PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR vkGetPhysicalDeviceWin32PresentationSupportKHR;
 #endif /* defined(VK_KHR_win32_surface) */
 #if defined(VK_KHR_xcb_surface)
-extern VOLKAPI PFN_vkCreateXcbSurfaceKHR vkCreateXcbSurfaceKHR;
+extern PFN_vkCreateXcbSurfaceKHR vkCreateXcbSurfaceKHR;
 extern PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR vkGetPhysicalDeviceXcbPresentationSupportKHR;
 #endif /* defined(VK_KHR_xcb_surface) */
 #if defined(VK_KHR_xlib_surface)
@@ -1896,7 +1888,7 @@ extern PFN_vkCreateIOSSurfaceMVK vkCreateIOSSurfaceMVK;
 extern PFN_vkCreateMacOSSurfaceMVK vkCreateMacOSSurfaceMVK;
 #endif /* defined(VK_MVK_macos_surface) */
 #if defined(VK_NN_vi_surface)
-extern VOLKAPI PFN_vkCreateViSurfaceNN vkCreateViSurfaceNN;
+extern PFN_vkCreateViSurfaceNN vkCreateViSurfaceNN;
 #endif /* defined(VK_NN_vi_surface) */
 #if defined(VK_NVX_binary_import)
 extern PFN_vkCmdCuLaunchKernelNVX vkCmdCuLaunchKernelNVX;
