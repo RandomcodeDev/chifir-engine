@@ -48,3 +48,7 @@
 #undef RtlLeaveCriticalSection
 #undef ExitProcess
 #endif
+
+// normal one has an unnecessary (PWCH) cast
+#undef RTL_CONSTANT_STRING
+#define RTL_CONSTANT_STRING(s) { sizeof((s)) - sizeof((s)[0]), sizeof((s)), (s) }

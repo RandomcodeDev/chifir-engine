@@ -110,7 +110,7 @@ static bool FindNtDll(PPEB_LDR_DATA ldrData)
 }
 
 // Somehow the Rtl function for this isn't inline in phnt, I guess it does that thing with the last section or whatever
-#define RVA_TO_VA(base, rva) (reinterpret_cast<u8*>(base) + (rva))
+#define RVA_TO_VA(base, rva) (reinterpret_cast<const u8*>(base) + (rva))
 
 static u16 GetArchitecture()
 {

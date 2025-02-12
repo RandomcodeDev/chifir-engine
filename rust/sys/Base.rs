@@ -39,7 +39,7 @@ unsafe extern "C" {
     pub fn Free(block: *const ());
     #[cfg_attr(target_os = "windows", link_name = "?Base_AbortSafe@@YAXHPEBD@Z")]
     #[cfg_attr(target_os = "linux", link_name = "_Z14Base_AbortSafeiPKc")]
-    pub fn AbortSafe(code: u32, msg: *const i8) -> !;
+    pub fn AbortSafe(code: i32, msg: *const i8) -> !;
 }
 
 // Better to just reimplement this, rather than wrap it
@@ -47,13 +47,11 @@ pub fn Quit(msg: &str) -> ! {
     FatalError!("{msg}");
     let rawMsg = CString::new(msg).unwrap();
     unsafe {
-        AbortSafe(1, rawMsg.as_ptr());
+        AbortSafe(i32::MAX, rawMsg.as_ptr());
     }
 }
 
 pub struct Allocator;
-
-
 
 unsafe impl alloc::GlobalAlloc for Allocator {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {

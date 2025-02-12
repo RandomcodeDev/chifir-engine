@@ -7,7 +7,7 @@ extern "C" bool SetProcessDPIAware_Available();
 
 bool CWindowsVideoSystem::Initialize()
 {
-	m_hinstance = static_cast<HINSTANCE>(NtCurrentImageBase());
+	m_hinstance = reinterpret_cast<HINSTANCE>(NtCurrentImageBase());
 
 	Log_Info("Initializing Windows video system");
 
@@ -81,7 +81,7 @@ bool CWindowsVideoSystem::RegisterWindowClass()
 	wndClass.lpszClassName = WINDOW_CLASS;
 	wndClass.hInstance = m_hinstance;
 	wndClass.lpfnWndProc = WindowProc;
-	wndClass.hCursor = LoadCursorA(nullptr, IDC_ARROW);
+	wndClass.hCursor = LoadCursorA(nullptr, (cstr)IDC_ARROW);
 	if (!RegisterClassExA(&wndClass))
 	{
 		Log_Error("Failed to register window class: Win32 error %d (0x%X)", LastNtError(), LastNtError());

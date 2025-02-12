@@ -20,18 +20,18 @@
 #define MAKE_STUB(x, callingConv, ...)                                                                                           \
 	extern "C" uptr (*STUB_NAME(x))(...);                                                                                        \
 	extern "C" BASEAPI bool STUB_AVAILABLE(x)();                                                                                 \
-	EXPORT_RAW("_" STRINGIZE(x) "_Available");                                                                                 \
-	EXPORT_AS_RAW(STRINGIZE(x) "_Forwarder", "_" STRINGIZE(x) #__VA_ARGS__);
+	EXPORT_RAW("_" STRINGIZE(x) "_Available")                                                                                  \
+	EXPORT_AS_RAW(STRINGIZE(x) "_Forwarder", "_" STRINGIZE(x) #__VA_ARGS__) 
 #elif defined CH_XBOX360
 #define MAKE_STUB(x, ...)                                                                                                        \
-	extern "C" BASEAPI bool STUB_AVAILABLE(x)();                                                                                 \
-	EXPORT_RAW(STRINGIZE(x) "_Available");
+	extern "C" BASEAPI bool STUB_AVAILABLE(x)()                                                                                  \
+	EXPORT_RAW(STRINGIZE(x) "_Available") 
 #else
 #define MAKE_STUB(x, ...)                                                                                                        \
 	extern "C" uptr (*STUB_NAME(x))(...);                                                                                        \
 	extern "C" BASEAPI bool STUB_AVAILABLE(x)();                                                                                 \
-	EXPORT_RAW(STRINGIZE(x) "_Available");                                                                                       \
-	EXPORT_AS(x##_Forwarder, x);
+	EXPORT_RAW(STRINGIZE(x) "_Available")                                                                                        \
+	EXPORT_AS(x##_Forwarder, x)
 #endif
 
 /// Get the address of NTDLL, find LdrGetProcedureAddress manually, find LdrLoadDll properly, load any other system DLLs/functions
