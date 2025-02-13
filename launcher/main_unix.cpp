@@ -41,6 +41,7 @@ s32 Startup(s32 argc, dstr argv[], void (*DynamicAtExit)())
 		snprintf(libPath, ArraySize<s32>(libPath), "%s/bin/:%s/%s%s", GetEngineDir(), GetEngineDir(), envLibPath ? ":" : "", envLibPath ? envLibPath : "");
 		setenv("LD_LIBRARY_PATH", libPath, true);
 		setenv("LIBPATH_UPDATED", "1", true);
+		printf("Restarting with LD_LIBRARY_PATH=\"%s\"\n", libPath);
 		execve(argv[0], argv, environ);
 	}
 

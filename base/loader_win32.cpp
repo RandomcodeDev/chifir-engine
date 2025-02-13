@@ -325,6 +325,8 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 			return nullptr;
 		}
 
+		Log_Debug("Loading library %s", fileName);
+
 		ANSI_STRING nameStr = {};
 		nameStr.Buffer = fileName;
 		nameStr.Length = (u16)Base_StrLength(fileName);
@@ -342,6 +344,7 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 		status = LdrLoadDll(nullptr, nullptr, &nameUStr, &handle);
 		if (!NT_SUCCESS(status))
 		{
+			Log_Error("Failed to load library %s: NTSTATUS 0x%08X", fileName, status);
 			LastNtStatus() = status;
 			RtlFreeUnicodeString(&nameUStr);
 			return nullptr;

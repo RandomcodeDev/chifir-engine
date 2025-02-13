@@ -286,7 +286,7 @@ IRhiDevice* CVulkanRhiInstance::CreateDevice(const RhiDeviceInfo_t& info)
 		return nullptr;
 	}
 
-	return nullptr; // new CVulkanRhiDevice(m_devices[index]);
+	return new CVulkanRhiDevice(m_devices[index]);
 }
 
 #ifdef CH_STATIC

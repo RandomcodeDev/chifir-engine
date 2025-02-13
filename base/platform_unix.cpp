@@ -1,15 +1,16 @@
+#include <cerrno>
 #include <cstdlib>
 #include <ctime>
 #include <dlfcn.h>
 
-#include <asm/errno.h>
-#include <asm/fcntl.h>
-#include <asm/unistd.h>
 
 #ifdef CH_LINUX
 #include <linux/limits.h>
 #endif
 
+#include <fcntl.h>
+#include <unistd.h>
+#include <asm/unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -27,8 +28,6 @@
 #include "platform_unix.h"
 
 dstr g_exeDir;
-
-uptr g_errno;
 
 s64 g_timeZoneOffset;
 
@@ -119,7 +118,7 @@ BASEAPI NORETURN void Base_AbortSafe(s32 error, cstr msg)
 	Plat_WriteConsole("\n");
 	if (error == ABORT_RELEVANT_ERROR)
 	{
-		error = g_errno;
+		error = errno;
 	}
 	Base_SysCall(__NR_exit_group, error);
 	__builtin_unreachable();
@@ -167,6 +166,7 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 	void* base = dlopen(fullName.Data(), RTLD_GLOBAL | RTLD_LAZY);
 	if (!base)
 	{
+		Log_Error("Failed to load library %s: %s", fullName.Data(), dlerror());
 		return nullptr;
 	}
 
