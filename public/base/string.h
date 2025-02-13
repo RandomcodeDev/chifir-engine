@@ -12,6 +12,8 @@ template <typename T> class CVector;
 class BASEAPI CString
 {
   public:
+	static const ssize BAD_INDEX = -1;
+
 	CString() : m_buffer(nullptr), m_size(0), m_capacity(0)
 	{
 	}
@@ -203,8 +205,6 @@ class BASEAPI CString
 	dstr m_buffer;
 	ssize m_size; /// Includes the NUL at the end
 	ssize m_capacity;
-
-	static const ssize BAD_INDEX = -1;
 
 	void Terminate()
 	{

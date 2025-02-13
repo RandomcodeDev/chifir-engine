@@ -2,6 +2,10 @@
 
 #pragma once
 
+#ifndef CH_UNIX
+#error "This header is Unix only"
+#endif
+
 #include "base/base.h"
 #include "base/loader.h"
 #include "base/types.h"
@@ -17,6 +21,11 @@ class CUnixLibrary: public ILibrary
 	cstr GetName()
 	{
 		return m_name;
+	}
+
+	uptr GetBase()
+	{
+		return reinterpret_cast<uptr>(m_base);
 	}
 
   private:

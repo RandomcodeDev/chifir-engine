@@ -26,8 +26,6 @@
 #include "base/vector.h"
 #include "platform_unix.h"
 
-bool g_platInitialized;
-
 dstr g_exeDir;
 
 uptr g_errno;
@@ -157,18 +155,16 @@ bool Base_GetSystemMemory(ssize size)
 
 BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 {
+	static const cstr DLL_PREFIX = "lib";
 	static const cstr DLL_EXT = ".so";
 
-	Log_Debug("Loading library %s%s%s", g_exeDir, name, DLL_EXT);
+	CString fullName = name;
+	ssize index = fullName.Find('/', true);
+	fullName.Add(DLL_PREFIX, index == CString::BAD_INDEX ? 0 : index);
+	fullName.Add(DLL_EXT);
+	Log_Debug("Loading library %s", fullName.Data());
 
-	dstr filename = Base_StrFormat("%s%s%s", g_exeDir, name, DLL_EXT);
-	if (!filename)
-	{
-		return nullptr;
-	}
-
-	void* base = dlopen(filename, RTLD_GLOBAL | RTLD_LAZY);
-	Base_Free(filename);
+	void* base = dlopen(fullName.Data(), RTLD_GLOBAL | RTLD_LAZY);
 	if (!base)
 	{
 		return nullptr;

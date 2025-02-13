@@ -71,7 +71,7 @@ extern "C"
 	}
 }
 
-#ifdef IN_BASE
+#if defined _MSC_VER && defined IN_BASE
 EXPORT_CDECL(malloc)
 EXPORT_CDECL(free)
 EXPORT_CDECL(calloc)

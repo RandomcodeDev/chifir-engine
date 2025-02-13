@@ -167,9 +167,8 @@ elseif is_plat("linux", "switch") then
         "-Wno-unknown-attributes",
         "-Wno-ignored-pragma-intrinsic",
         "-Wno-ignored-attributes",
+        "-Wno-frame-address",
     {force = true})
-
-    set_prefixname("")
 end
 
 includes("base")

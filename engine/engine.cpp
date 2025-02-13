@@ -28,7 +28,7 @@ void CEngine::GetDependencies(CVector<SystemDependency_t>& systems, CVector<LibD
 {
 	static const LibDependency_t CLIENT_LIBS[] = {
 		{"Rhi", true}
-	};
+    };
 	static const SystemDependency_t CLIENT_SYSTEMS[] = {
 		{ "VideoSystem",  IVideoSystem::VERSION, true, false},
         {"RenderSystem", IRenderSystem::VERSION, true, false}

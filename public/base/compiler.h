@@ -41,7 +41,7 @@
 #ifdef CH_IA32
 #define EXPORT_CDECL(x) EXPORT_RAW("_" #x)
 #else
-#define EXPORT_CDECL(x)
+#define EXPORT_CDECL(x) EXPORT(x)
 #endif
 #define EXPORT_AS_RAW(orig, alt)      EXPORT_RAW(alt "=" orig)
 #define EXPORT_CURRENT_FUNCTION_AS(x) EXPORT_AS_RAW(__FUNCTION__, x)

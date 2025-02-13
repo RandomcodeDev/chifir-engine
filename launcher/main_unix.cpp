@@ -1,5 +1,7 @@
+#include <cassert>
 #include <cerrno>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 #include <unistd.h>
@@ -16,7 +18,7 @@ static cstr GetEngineDir()
 
 	if (!strlen(s_directory))
 	{
-		readlink("/proc/self/exe", s_directory, ArraySize<usize>(s_directory));
+		assert(readlink("/proc/self/exe", s_directory, ArraySize<usize>(s_directory)) > 0);
 		dstr exeName = strrchr(s_directory, '/');
 		*exeName = 0;
 	}
@@ -42,7 +44,7 @@ s32 Startup(s32 argc, dstr argv[], void (*DynamicAtExit)())
 		execve(argv[0], argv, environ);
 	}
 
-	void* launcher = dlopen("Launcher.so", RTLD_NOW);
+	void* launcher = dlopen("libLauncher.so", RTLD_NOW);
 	if (!launcher)
 	{
 		printf("Failed to load libLauncher.so with LD_LIBRARY_PATH=%s: %s\n", getenv("LD_LIBRARY_PATH"), dlerror());
@@ -50,7 +52,7 @@ s32 Startup(s32 argc, dstr argv[], void (*DynamicAtExit)())
 	}
 
 	// Base.so should be loaded by Launcher.so
-	void* base = dlopen("Base.so", RTLD_NOW);
+	void* base = dlopen("libBase.so", RTLD_NOW);
 	if (!base)
 	{
 		printf("Failed to get libBase.so handle: %s\n", dlerror());

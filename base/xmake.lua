@@ -14,6 +14,7 @@ target("Base")
         "stb.cpp",
         "string.cpp",
 
+        "../public/base/dllmain.cpp",
         "../public/base/memoverride.cpp",
         "../public/base/libc.cpp"
     )
@@ -28,8 +29,7 @@ target("Base")
             "filesystem_win32.cpp",
             "loader_win32.cpp",
             "platform_win32.cpp",
-            "../public/base/compiler_msvc.cpp",
-            "../public/base/dllmain.cpp"
+            "../public/base/compiler_msvc.cpp"
         )
 
         if is_arch("x64") then
@@ -78,9 +78,5 @@ target_end()
 target("DllSupport")
     set_kind("static")
 
-    if is_plat("windows", "gdkx") then
-        add_files("../public/base/dllmain.cpp")
-    else
-        add_files("../public/dummy.cpp")
-    end
+    add_files("../public/base/dllmain.cpp")
 target_end()

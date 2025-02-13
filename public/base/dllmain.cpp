@@ -1,5 +1,6 @@
 #include "base/platform.h"
 
+#ifdef CH_WIN32
 extern "C" BOOL __stdcall _DllMainCRTStartup(HANDLE hDllHandle, DWORD dwReason, LPVOID lpreserved)
 {
 	(void)hDllHandle;
@@ -27,3 +28,18 @@ extern "C" BOOL __stdcall _DllMainCRTStartup(HANDLE hDllHandle, DWORD dwReason, 
 
 	return TRUE;
 }
+#elif defined CH_UNIX
+ATTRIBUTE(constructor) void DllStartup()
+{
+#ifdef IN_BASE
+	Base_Init();
+#endif
+}
+
+ATTRIBUTE(destructor) void DllShutdown()
+{
+#ifdef IN_BASE
+	Base_Shutdown();
+#endif
+}
+#endif

@@ -196,7 +196,6 @@ bool CVulkanRhiInstance::Initialize(IVideoSystem* videoSystem)
 	vkCreateDebugUtilsMessengerEXT(m_instance, &debugCreateInfo, GetVkAllocationCallbacks(), &m_debugMessenger);
 #endif
 
-	Log_Debug("Creating surface");
 	if (!CreateSurface(videoSystem->GetHandle()))
 	{
 		// CreateSurface does its own logging
