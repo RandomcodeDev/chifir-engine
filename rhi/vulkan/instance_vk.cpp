@@ -111,7 +111,7 @@ bool CVulkanRhiInstance::Initialize(IVideoSystem* videoSystem)
 #ifdef CH_WIN32
 		"vulkan-1"
 #else
-		"vulkan"
+		"vulkan.so.1"
 #endif
 	);
 	if (!m_vulkanLib)
@@ -263,8 +263,8 @@ void CVulkanRhiInstance::GetDeviceInfo(CVector<RhiDeviceInfo_t>& info)
 
 	for (ssize i = 0; i < devices.Size(); i++)
 	{
-		RhiDeviceInfo_t rhiInfo;
-		VulkanDeviceInfo_t vkInfo;
+		RhiDeviceInfo_t rhiInfo = {};
+		VulkanDeviceInfo_t vkInfo = {};
 		if (CVulkanRhiDevice::GetDeviceInfo(rhiInfo, vkInfo, devices[i], m_surface, i))
 		{
 			// only add if the device is usable
@@ -286,7 +286,14 @@ IRhiDevice* CVulkanRhiInstance::CreateDevice(const RhiDeviceInfo_t& info)
 		return nullptr;
 	}
 
-	return new CVulkanRhiDevice(m_devices[index]);
+	CVulkanRhiDevice* device = new CVulkanRhiDevice(m_devices[index]);
+	if (!device->Initialize())
+	{
+		delete device;
+		return nullptr;
+	}
+
+	return device;
 }
 
 #ifdef CH_STATIC

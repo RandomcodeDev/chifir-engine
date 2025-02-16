@@ -154,13 +154,16 @@ bool Base_GetSystemMemory(ssize size)
 
 BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 {
-	static const cstr DLL_PREFIX = "lib";
-	static const cstr DLL_EXT = ".so";
+	static const char DLL_PREFIX[] = "lib";
+	static const char DLL_EXT[] = ".so";
 
 	CString fullName = name;
 	ssize index = fullName.Find('/', true);
 	fullName.Add(DLL_PREFIX, index == CString::BAD_INDEX ? 0 : index);
-	fullName.Add(DLL_EXT);
+	if (fullName.Find(DLL_EXT) == CString::BAD_INDEX)
+	{
+		fullName.Add(DLL_EXT);
+	}
 	Log_Debug("Loading library %s", fullName.Data());
 
 	void* base = dlopen(fullName.Data(), RTLD_GLOBAL | RTLD_LAZY);

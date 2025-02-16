@@ -100,7 +100,7 @@ void __cdecl operator delete(void* block) noexcept
 
 void __cdecl operator delete(void* block, usize size) noexcept
 {
-	(void)size;
+	UNUSED(size);
 	operator delete(block);
 }
 
@@ -111,6 +111,6 @@ void __cdecl operator delete[](void* block) noexcept
 
 void __cdecl operator delete[](void* block, usize size) noexcept
 {
-	(void)size;
+	UNUSED(size);
 	operator delete[](block);
 }

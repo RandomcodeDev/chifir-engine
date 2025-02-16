@@ -34,3 +34,6 @@
 
 /// Get the offset of a field in a struct with a stable layout
 #define OFFSETOF(T, m) (reinterpret_cast<uptr>(&static_cast<T*>(nullptr)->m))
+
+/// Mark a variable as unused
+#define UNUSED(x) ((void)(x))

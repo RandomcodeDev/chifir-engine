@@ -82,7 +82,7 @@ extern "C"
 
 	void __chkstk(uptr addr)
 	{
-		(void)addr;
+		UNUSED(addr);
 	}
 
 #if !defined __clang__ && _MSC_VER >= 1700

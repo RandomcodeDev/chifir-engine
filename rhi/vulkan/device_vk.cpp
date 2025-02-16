@@ -2,15 +2,70 @@
 #include "base/log.h"
 #include "vulkan.h"
 
+/// Required device extensions
+constexpr cstr REQUIRED_EXTENSIONS[] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+
 CVulkanRhiDevice::CVulkanRhiDevice(const VulkanDeviceInfo_t& info) : m_info(info)
 {
 }
 
 bool CVulkanRhiDevice::Initialize()
 {
-	
+	VkDeviceCreateInfo deviceCreateInfo = {};
+	VkDeviceQueueCreateInfo queueCreateInfos[2] = {};
+	f32 queuePriority = 1.0f;
+
+	Log_Debug("Creating VkDevice");
+
+	queueCreateInfos[0].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	queueCreateInfos[0].queueFamilyIndex = m_info.graphicsFamilyIndex;
+	queueCreateInfos[0].pQueuePriorities = &queuePriority;
+	queueCreateInfos[0].queueCount = 1;
+	deviceCreateInfo.queueCreateInfoCount = 1;
+	if (m_info.graphicsFamilyIndex != m_info.presentFamilyIndex)
+	{
+		queueCreateInfos[1].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		queueCreateInfos[1].queueFamilyIndex = m_info.presentFamilyIndex;
+		queueCreateInfos[1].pQueuePriorities = &queuePriority;
+		queueCreateInfos[1].queueCount = 1;
+		deviceCreateInfo.queueCreateInfoCount = 2;
+	}
+
+	VkPhysicalDeviceFeatures deviceFeatures = {};
+	deviceFeatures.samplerAnisotropy = true;
+
+	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	deviceCreateInfo.pQueueCreateInfos = queueCreateInfos;
+	deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
+	deviceCreateInfo.ppEnabledExtensionNames = REQUIRED_EXTENSIONS;
+	deviceCreateInfo.enabledExtensionCount = ArraySize<u32>(REQUIRED_EXTENSIONS);
+
+	VkResult result = vkCreateDevice(m_info.device, &deviceCreateInfo, GetVkAllocationCallbacks(), &m_handle);
+	if (result != VK_SUCCESS)
+	{
+		Log_Error("Failed to create VkDevice: %s", GetVkResultString(result));
+		return false;
+	}
+
+	Log_Debug("Getting queues");
+	vkGetDeviceQueue(m_handle, m_info.graphicsFamilyIndex, 0, &m_graphicsQueue);
+	NameVkObject(m_handle, m_graphicsQueue, VK_OBJECT_TYPE_QUEUE, "Graphics queue");
+	vkGetDeviceQueue(m_handle, m_info.presentFamilyIndex, 0, &m_presentQueue);
+	NameVkObject(m_handle, m_graphicsQueue, VK_OBJECT_TYPE_QUEUE, "Present queue");
+
+	volkLoadDevice(m_handle);
 
 	return true;
+}
+
+void CVulkanRhiDevice::Destroy()
+{
+	if (m_handle)
+	{
+		Log_Debug("Destroying VkDevice 0x%016X", m_handle);
+		vkDestroyDevice(m_handle, GetVkAllocationCallbacks());
+		m_handle = VK_NULL_HANDLE;
+	}
 }
 
 static void ConvertDeviceInfo(

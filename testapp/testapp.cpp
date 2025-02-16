@@ -13,12 +13,12 @@ void CTestApp::Setup(const CVector<CString>& args)
 
 void CTestApp::GetDependencies(CVector<SystemDependency_t>& dependencies)
 {
-	(void)dependencies;
+	UNUSED(dependencies);
 }
 
 s32 CTestApp::Run(const CVector<ISystem*>& systems)
 {
-	(void)systems;
+	UNUSED(systems);
 
 	Log_Info("Running test app");
 

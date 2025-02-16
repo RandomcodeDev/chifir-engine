@@ -23,7 +23,6 @@ BASEAPI ILibrary* Base_LoadEngineLibrary(cstr name)
     ILibrary* lib = Base_LoadLibrary(libName.Data());
 	if (!lib)
 	{
-		Log_Warning("Failed to load from %s, retrying", libName.Data());
 		libName.Format(SECOND_PATH);
 		Log_Debug("Attempting to load engine library %s from %s", name, libName.Data());
 		lib = Base_LoadLibrary(libName.Data());

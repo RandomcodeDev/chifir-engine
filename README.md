@@ -16,17 +16,21 @@ and also because it makes it easier to separate functionality that shouldn't get
 The engine doesn't use the CRT or STL at all (where possible, meaning not at all on Windows and barely on Linux/Switch),
 which does improve portability, especially between Windows versions. Some performance-critical functions are written to use
 SIMD if the current CPU supports it (on x86, it's all dynamically enabled based on `cpuid` instead of being done at compile
-time). I also wrote my own allocator that works pretty well, but I think there are still issues with its bookkeeping, and
-I'm sure I'll have to optimize it eventually.
+time). I also wrote my own allocator that works pretty well, but I'm sure I'll have to optimize it eventually. I have my own
+containers too.
 
 ## Build requirements
 
-For Windows, you need Visual Studio or Clang. You also (will, in the future) need the GDK to build the x64 version. For Xbox
-360, you need the SDK, it's on Internet Archive. For Switch, you need version 15.3.2 of the SDK (also on Internet Archive),
-the private repo, and my private fork of xmake. For Linux, you need Clang and glibc (other `libc`s might work, but this is
-untested).
+For every platform, you need [xmake](https://xmake.io).
 
-There are Rust bindings in progress, you need the `nightly` toolchain.
+- For Windows, you need Visual Studio 2022 (or any version with C++14 support). You can also build with Clang, but you still
+  need VS. You also (will, in the future) need the GDK to build the x64 version.
+- For Xbox 360, you need the SDK, it's on Internet Archive.
+- For Switch, you need version 15.3.2 of the SDK (also on Internet Archive), the private repo, and my private fork of xmake.
+- For Linux, you need Clang and glibc. GCC isn't supported and isn't a priority (maybe I'll add support for MinGW so I can
+  cross compile for Windows).
+
+There are Rust bindings in progress, you need the `nightly` toolchain for them.
 
 ## Build instructions
 

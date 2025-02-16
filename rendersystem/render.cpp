@@ -20,15 +20,29 @@ bool CRenderSystem::Initialize(IVideoSystem* videoSystem)
 	CVector<RhiDeviceInfo_t> deviceInfo;
 	m_instance->GetDeviceInfo(deviceInfo);
 
+	m_device = m_instance->CreateDevice(deviceInfo[0]);
+	if (!m_device)
+	{
+		return false;
+	}
+
 	return true;
 }
 
 void CRenderSystem::Shutdown()
 {
+	if (m_device)
+	{
+		m_device->Destroy();
+		delete m_device;
+		m_device = nullptr;
+	}
+
 	if (m_instance)
 	{
 		m_instance->Destroy();
 		delete m_instance;
+		m_instance = nullptr;
 	}
 }
 

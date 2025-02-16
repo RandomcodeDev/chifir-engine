@@ -105,12 +105,14 @@ template <typename T> class CVector: public IContainer<T, ssize>
 		/// Append by default
 		if (index == BAD_INDEX || index > m_size)
 		{
+		new (&m_buffer[m_size - 1]) T;
 			m_buffer[m_size - 1] = object;
 			return m_size - 1;
 		}
 		else
 		{
 			Base_MemCopy(m_buffer + index + 1, m_buffer + index, m_size - index - 1);
+			new (&m_buffer[index]) T;
 			m_buffer[index] = object;
 			return index;
 		}
@@ -179,14 +181,14 @@ template <typename T> class CVector: public IContainer<T, ssize>
 	/// Not implemented yet
 	ssize Find(s32 (*Compare)(const T& a, const T& b)) const
 	{
-		(void)Compare;
+		UNUSED(Compare);
 		return BAD_INDEX;
 	}
 
 	/// Not implemented yet
 	void Sort(s32 (*Compare)(const T& a, const T& b))
 	{
-		(void)Compare;
+		UNUSED(Compare);
 		m_sorted = false;
 	}
 

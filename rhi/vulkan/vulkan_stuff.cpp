@@ -4,36 +4,36 @@
 static void VKAPI_CALL
 VkAllocNotification(void* pUserData, usize size, VkInternalAllocationType allocationType, VkSystemAllocationScope allocationScope)
 {
-	(void)pUserData;
+	UNUSED(pUserData);
 	Log_Trace("Vulkan allocation: %zu bytes, type %u, scope %u", size, allocationType, allocationScope);
 }
 
 static void VKAPI_CALL
 VkFreeNotification(void* pUserData, usize size, VkInternalAllocationType allocationType, VkSystemAllocationScope allocationScope)
 {
-	(void)pUserData;
+	UNUSED(pUserData);
 	Log_Trace("Vulkan free: %zu bytes, type %u, scope %u", size, allocationType, allocationScope);
 }
 
 static void* VKAPI_CALL
 VkRealloc(void* pUserData, void* pOriginal, usize size, usize alignment, VkSystemAllocationScope allocationScope)
 {
-	(void)pUserData;
-	(void)allocationScope;
+	UNUSED(pUserData);
+	UNUSED(allocationScope);
 	ASSERT(Base_GetAllocAlignment(pOriginal) == static_cast<ssize>(alignment));
 	return Base_Realloc(pOriginal, size);
 }
 
 static void* VKAPI_CALL VkAlloc(void* pUserData, usize size, usize alignment, VkSystemAllocationScope allocationScope)
 {
-	(void)pUserData;
-	(void)allocationScope;
+	UNUSED(pUserData);
+	UNUSED(allocationScope);
 	return Base_Alloc(size, alignment);
 }
 
 static void VKAPI_CALL VkFree(void* pUserData, void* pMemory)
 {
-	(void)pUserData;
+	UNUSED(pUserData);
 	// silly ahh drivers got free(nullptr) in them
 	if (pMemory)
 	{
@@ -60,7 +60,7 @@ VkBool32 VKAPI_CALL VkDebugCallback(
 	char typeStr[64];
 	LogLevel_t level;
 
-	(void)userData;
+	UNUSED(userData);
 
 	switch (severity)
 	{
@@ -97,4 +97,23 @@ VkBool32 VKAPI_CALL VkDebugCallback(
 	Log_Write(level, Plat_GetReturnAddress(3), true, "Vulkan", typeStr, callbackData->pMessage);
 
 	return true;
+}
+
+void NameVkObject_Impl(VkDevice device, u64 object, VkObjectType type, cstr name, va_list realArgs)
+{
+	VkDebugUtilsObjectNameInfoEXT nameInfo = {};
+	nameInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT;
+	nameInfo.objectType = type;
+	nameInfo.objectHandle = object;
+
+	va_list args;
+	va_copy(args, realArgs);
+	nameInfo.pObjectName = Base_VStrFormat(name, args);
+	va_end(args);
+
+	Log_Trace("Setting name of type %u Vulkan object 0x%016X to %s", type, object, nameInfo.pObjectName);
+
+	vkSetDebugUtilsObjectNameEXT(device, &nameInfo);
+
+	Base_Free(const_cast<dstr>(nameInfo.pObjectName));
 }

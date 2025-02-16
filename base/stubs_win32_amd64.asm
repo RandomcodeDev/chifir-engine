@@ -2,7 +2,6 @@ TITLE AMD64 Windows function stubs
 
 OPTION PROLOGUE:NONE
 
-; I get that code had to be small back then, but fuck stdcall
 MAKE_STUB MACRO name
 	.DATA
 	PUBLIC @CatStr(__imp_, name)

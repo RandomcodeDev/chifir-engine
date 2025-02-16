@@ -53,6 +53,9 @@ class IRhiDevice
   public:
 	virtual ~IRhiDevice() DEFAULT;
 
+	/// Destroy the device
+	virtual void Destroy() = 0;
+
 	/// Create a command queue
 	virtual IRhiCommandQueue* CreateCommandQueue(RhiCommandQueueType_t type, RhiCommandQueueFlags_t flags) = 0;
 

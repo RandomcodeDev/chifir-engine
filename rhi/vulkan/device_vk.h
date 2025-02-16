@@ -23,51 +23,55 @@ struct VulkanDeviceInfo_t
 	u32 presentFamilyIndex;
 
 	CVector<VkExtensionProperties> extensionProperties;
+
+	VulkanDeviceInfo_t() DEFAULT;
 };
 
 class CVulkanRhiDevice: public IRhiDevice
 {
   public:
+	virtual void Destroy();
+
 	virtual IRhiCommandQueue* CreateCommandQueue(RhiCommandQueueType_t type, RhiCommandQueueFlags_t flags)
 	{
-		(void)type;
-		(void)flags;
+		UNUSED(type);
+		UNUSED(flags);
 		return nullptr;
 	}
 	virtual IRhiCommandList* CreateCommandList(IRhiCommandQueue* queue, RhiCommandListFlags_t flags)
 	{
-		(void)queue;
-		(void)flags;
+		UNUSED(queue);
+		UNUSED(flags);
 		return nullptr;
 	}
 	virtual IRhiFence* CreateFence(u64 initialValue = 0)
 	{
-		(void)initialValue;
+		UNUSED(initialValue);
 		return nullptr;
 	}
 	virtual IRhiBuffer* CreateBuffer(ssize size, RhiMemoryLocation_t location, RhiMemoryUsage_t usage, RhiBufferFlags_t flags)
 	{
-		(void)size;
-		(void)location;
-		(void)usage;
-		(void)flags;
+		UNUSED(size);
+		UNUSED(location);
+		UNUSED(usage);
+		UNUSED(flags);
 		return nullptr;
 	}
 	virtual IRhiImage* CreateImage(
 		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType_t type, RhiImageFormat_t format,
 		RhiImageFlags_t flags)
 	{
-		(void)width;
-		(void)height;
-		(void)location;
-		(void)type;
-		(void)format;
-		(void)flags;
+		UNUSED(width);
+		UNUSED(height);
+		UNUSED(location);
+		UNUSED(type);
+		UNUSED(format);
+		UNUSED(flags);
 		return nullptr;
 	}
 	virtual IRhiPipelineState* CreatePipelineState(const RhiPipelineStateDesc_t& desc)
 	{
-		(void)desc;
+		UNUSED(desc);
 		return nullptr;
 	}
 
@@ -76,6 +80,8 @@ class CVulkanRhiDevice: public IRhiDevice
 
 	VulkanDeviceInfo_t m_info;
 	VkDevice m_handle;
+	VkQueue m_graphicsQueue;
+	VkQueue m_presentQueue;
 
 	CVulkanRhiDevice(const VulkanDeviceInfo_t& info);
 	bool Initialize();
@@ -83,7 +89,4 @@ class CVulkanRhiDevice: public IRhiDevice
 	/// Get information about a device. Returns false if the device isn't usable.
 	static bool GetDeviceInfo(
 		RhiDeviceInfo_t& rhiInfo, VulkanDeviceInfo_t& info, VkPhysicalDevice device, VkSurfaceKHR surface, ssize i);
-
-	/// Required device extensions
-	static constexpr cstr REQUIRED_EXTENSIONS[] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 };

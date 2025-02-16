@@ -53,7 +53,8 @@ BASEAPI void Plat_WriteConsole(cstr text)
 	DbgPrint("%s", text);
 #else
 	u32 length = static_cast<u32>(Base_StrLength(text));
-	IO_STATUS_BLOCK ioStatus = {};
+	// WriteConsole is only necessary before Windows 7 or 8, in one of those they reworked the
+	// console to allow NtWriteFile to work. Before that, it was pure CSR calls.
 	if (WriteConsoleA_Available() && GetStdHandle_Available())
 	{
 		WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), text, length, nullptr, nullptr);

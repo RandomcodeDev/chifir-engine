@@ -3,8 +3,8 @@
 #ifdef CH_WIN32
 extern "C" BOOL __stdcall _DllMainCRTStartup(HANDLE hDllHandle, DWORD dwReason, LPVOID lpreserved)
 {
-	(void)hDllHandle;
-	(void)lpreserved;
+	UNUSED(hDllHandle);
+	UNUSED(lpreserved);
 
 	switch (dwReason)
 	{

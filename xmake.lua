@@ -46,7 +46,11 @@ function is_toolchain(...)
     return false
 end
 
-includes("config.lua")
+if os.exists("config.lua") then
+	includes("config.lua")
+else
+	includes("config.default.lua")
+end
 add_defines("GAME_NAME=\"" .. game_name .. "\"")
 add_defines("GAME_DISPLAY_NAME=\"" .. game_display_name .. "\"")
 add_defines("REPO_NAME=\"" .. repo_name .. "\"")

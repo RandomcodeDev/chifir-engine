@@ -53,7 +53,10 @@ BASEAPI void Log_Write(const LogMessage_t& message)
 {
 	for (ssize i = 0; i < s_writers.Size(); i++)
 	{
-		s_writers[i]->Write(message);
+		if (message.level >= s_writers[i]->m_minLevel)
+		{
+			s_writers[i]->Write(message);
+		}
 	}
 }
 

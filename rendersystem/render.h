@@ -3,6 +3,7 @@
 #include "rendersystem/irendersystem.h"
 
 class IRhiInstance;
+class IRhiDevice;
 class IVideoSystem;
 
 class CRenderSystem: public IRenderSystem
@@ -21,4 +22,5 @@ class CRenderSystem: public IRenderSystem
 
   private:
 	IRhiInstance* m_instance;
+	IRhiDevice* m_device;
 };
