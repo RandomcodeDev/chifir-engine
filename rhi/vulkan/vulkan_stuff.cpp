@@ -99,7 +99,7 @@ VkBool32 VKAPI_CALL VkDebugCallback(
 	return true;
 }
 
-void NameVkObject_Impl(VkDevice device, u64 object, VkObjectType type, cstr name, va_list realArgs)
+void NameVkObject(VkDevice device, u64 object, VkObjectType type, cstr name, va_list realArgs)
 {
 	VkDebugUtilsObjectNameInfoEXT nameInfo = {};
 	nameInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT;

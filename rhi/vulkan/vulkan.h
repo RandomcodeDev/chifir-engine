@@ -93,9 +93,9 @@ extern VkBool32 VKAPI_CALL VkDebugCallback(
 template <typename T>
 void NameVkObject(VkDevice device, T object, VkObjectType type, cstr name, ...)
 {
-	extern void NameVkObject_Impl(VkDevice device, u64 object, VkObjectType type, cstr name, va_list args);
+	extern void NameVkObject(VkDevice device, u64 object, VkObjectType type, cstr name, va_list args);
 	va_list args;
 	va_start(args, name);
-	NameVkObject_Impl(device, reinterpret_cast<u64>(object), type, name, args);
+	NameVkObject(device, reinterpret_cast<u64>(object), type, name, args);
 	va_end(args);
 }
