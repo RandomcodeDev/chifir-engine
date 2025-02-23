@@ -5,7 +5,6 @@
 #include "rhi/irhiinstance.h"
 #include "device_vk.h"
 #include "vulkan.h"
-#include <vulkan/vulkan_core.h>
 
 class ILibrary;
 class IVideoSystem;
@@ -24,11 +23,6 @@ class CVulkanRhiInstance: public IRhiInstance
 	virtual void GetDeviceInfo(CVector<RhiDeviceInfo_t>& info);
 
 	virtual IRhiDevice* CreateDevice(const RhiDeviceInfo_t& info);
-
-	virtual IRhiSwapChain* CreateSwapChain()
-	{
-		return nullptr;
-	}
 
   private:
 	ILibrary* m_vulkanLib;

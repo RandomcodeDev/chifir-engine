@@ -39,6 +39,18 @@
       "visualizerFile": "${workspaceFolder}/public/Chifir.natvis"
     },
     {
+      "name": "(WinXP) Launch",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/windows/x86/debug/FalseKing.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "console": "internalConsole",
+      "visualizerFile": "${workspaceFolder}/public/Chifir.natvis"
+    },
+    {
       "name": "(Rust test) Launch",
       "type": "cppvsdbg",
       "request": "launch",

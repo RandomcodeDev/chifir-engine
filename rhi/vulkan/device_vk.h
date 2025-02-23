@@ -32,15 +32,10 @@ class CVulkanRhiDevice: public IRhiDevice
   public:
 	virtual void Destroy();
 
-	virtual IRhiCommandQueue* CreateCommandQueue(RhiCommandQueueType_t type, RhiCommandQueueFlags_t flags)
+	virtual IRhiSwapChain* CreateSwapChain(CVector<IRhiImage*>& buffers);
+
+	virtual IRhiCommandList* CreateCommandList(RhiCommandListFlags_t flags)
 	{
-		UNUSED(type);
-		UNUSED(flags);
-		return nullptr;
-	}
-	virtual IRhiCommandList* CreateCommandList(IRhiCommandQueue* queue, RhiCommandListFlags_t flags)
-	{
-		UNUSED(queue);
 		UNUSED(flags);
 		return nullptr;
 	}
@@ -63,6 +58,7 @@ class CVulkanRhiDevice: public IRhiDevice
 	{
 		UNUSED(width);
 		UNUSED(height);
+		UNUSED(depth);
 		UNUSED(location);
 		UNUSED(type);
 		UNUSED(format);
@@ -78,12 +74,13 @@ class CVulkanRhiDevice: public IRhiDevice
   private:
 	friend class CVulkanRhiInstance;
 
+	CVulkanRhiInstance* m_instance;
 	VulkanDeviceInfo_t m_info;
 	VkDevice m_handle;
 	VkQueue m_graphicsQueue;
 	VkQueue m_presentQueue;
 
-	CVulkanRhiDevice(const VulkanDeviceInfo_t& info);
+	CVulkanRhiDevice(CVulkanRhiInstance* instance, const VulkanDeviceInfo_t& info);
 	bool Initialize();
 
 	/// Get information about a device. Returns false if the device isn't usable.

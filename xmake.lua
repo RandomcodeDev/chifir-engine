@@ -122,9 +122,9 @@ if is_plat("windows", "gdkx") then
 
     add_cxflags(
         "/Zl", -- prevent C runtime from being linked
-        "/GS-",
+        "/GS-", -- prevent buffer checks
         "/Zc:__cplusplus",
-        "/Zc:threadSafeInit-",
+        "/Zc:threadSafeInit-", -- idk how to support this
 
         "/wd4201", -- nameless struct
         "/wd4324", -- structure padded due to alignment specifier

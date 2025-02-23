@@ -5,12 +5,11 @@
 #include "base/compiler.h"
 #include "base/string.h"
 #include "base/types.h"
+#include "base/vector.h"
 
 #include "rhi.h"
 
-class IRhiCommandQueue;
-enum class RhiCommandQueueType_t;
-enum class RhiCommandQueueFlags_t;
+class IRhiSwapChain;
 class IRhiCommandList;
 enum class RhiCommandListFlags_t;
 class IRhiFence;
@@ -48,6 +47,7 @@ struct RhiDeviceInfo_t
 	u64 handle;
 };
 
+// VkDevice + VkQueue, ID3D12Device + ID3D12CommandQueue
 class IRhiDevice
 {
   public:
@@ -56,11 +56,11 @@ class IRhiDevice
 	/// Destroy the device
 	virtual void Destroy() = 0;
 
-	/// Create a command queue
-	virtual IRhiCommandQueue* CreateCommandQueue(RhiCommandQueueType_t type, RhiCommandQueueFlags_t flags) = 0;
+	/// Create a swap chain
+	virtual IRhiSwapChain* CreateSwapChain(CVector<IRhiImage*>& buffers) = 0;
 
 	/// Create a command list
-	virtual IRhiCommandList* CreateCommandList(IRhiCommandQueue* queue, RhiCommandListFlags_t flags) = 0;
+	virtual IRhiCommandList* CreateCommandList(RhiCommandListFlags_t flags) = 0;
 
 	/// Create a fence
 	virtual IRhiFence* CreateFence(u64 initialValue = 0) = 0;

@@ -286,7 +286,7 @@ IRhiDevice* CVulkanRhiInstance::CreateDevice(const RhiDeviceInfo_t& info)
 		return nullptr;
 	}
 
-	CVulkanRhiDevice* device = new CVulkanRhiDevice(m_devices[index]);
+	CVulkanRhiDevice* device = new CVulkanRhiDevice(this, m_devices[index]);
 	if (!device->Initialize())
 	{
 		delete device;

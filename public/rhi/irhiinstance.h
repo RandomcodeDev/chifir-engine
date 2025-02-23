@@ -10,7 +10,6 @@
 #include "rhi.h"
 #include "rhi/irhidevice.h"
 
-class IRhiSwapChain;
 class IVideoSystem;
 
 /// Represents a DXGI factory, a VkInstance, or whatever ungodly thing legacy APIs use (GL context, LPDIRECT3D9, etc)
@@ -30,9 +29,6 @@ class IRhiInstance
 
 	/// Create a graphics device, the info must be from a successful call to GetDeviceInfo
 	virtual IRhiDevice* CreateDevice(const RhiDeviceInfo_t& info) = 0;
-
-	/// Create a swap chain
-	virtual IRhiSwapChain* CreateSwapChain() = 0;
 };
 
 /// Create an IRhiInstance
