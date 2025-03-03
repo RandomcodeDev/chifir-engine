@@ -19,6 +19,10 @@ bool CRenderSystem::Initialize(IVideoSystem* videoSystem)
 
 	CVector<RhiDeviceInfo_t> deviceInfo;
 	m_instance->GetDeviceInfo(deviceInfo);
+	if (deviceInfo.Size() < 1)
+	{
+		return false;
+	}
 
 	m_device = m_instance->CreateDevice(deviceInfo[0]);
 	if (!m_device)

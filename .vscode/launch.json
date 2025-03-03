@@ -27,6 +27,31 @@
       "visualizerFile": "${workspaceFolder}/public/Chifir.natvis"
     },
     {
+      "name": "(Linux Static) Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/linux/x64/debug_static/FalseKing",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+          {
+              "description": "Enable pretty-printing for gdb",
+              "text": "-enable-pretty-printing",
+              "ignoreFailures": true
+          },
+          {
+              "description": "Set Disassembly Flavor to Intel",
+              "text": "-gdb-set disassembly-flavor intel",
+              "ignoreFailures": true
+          }
+      ],
+      "visualizerFile": "${workspaceFolder}/public/Chifir.natvis"
+    },
+    {
       "name": "(GDK) Launch",
       "type": "cppvsdbg",
       "request": "launch",
@@ -39,10 +64,34 @@
       "visualizerFile": "${workspaceFolder}/public/Chifir.natvis"
     },
     {
+      "name": "(GDK Static) Launch",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/windows/x64/debug_static/FalseKing.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "console": "internalConsole",
+      "visualizerFile": "${workspaceFolder}/public/Chifir.natvis"
+    },
+    {
       "name": "(WinXP) Launch",
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/windows/x86/debug/FalseKing.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "console": "internalConsole",
+      "visualizerFile": "${workspaceFolder}/public/Chifir.natvis"
+    },
+    {
+      "name": "(WinXP Static) Launch",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/windows/x86/debug_static/FalseKing.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",

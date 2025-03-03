@@ -22,7 +22,15 @@ class BASEAPI CString
 	CString(cstr data, ssize size = SSIZE_MAX);
 
 	/// Avoid this, it's expensive
-	CString(const CString& other);
+	CString(const CString& other) : m_buffer(nullptr), m_size(0), m_capacity(0)
+	{
+		*this = other;
+	}
+
+	/// Move another string into this one
+	CString(const CString&& other) : m_buffer(other.m_buffer), m_size(other.m_size), m_capacity(other.m_capacity)
+	{
+	}
 
 	~CString();
 

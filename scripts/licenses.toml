@@ -6,6 +6,14 @@ path = "https://git.musl-libc.org/cgit/musl"
 license = "external/musl.txt"
 url = "https://git.musl-libc.org/cgit/musl"
 
+[directx]
+name = "DirectX Headers"
+author = "Microsoft"
+use = "DirectX 12 interfaces"
+path = "external/directx12"
+license = "external/directx/LICENSE"
+url = "https://github.com/Microsoft/DirectX-Headers"
+
 [phnt]
 name = "phnt"
 author = "Winsider Seminars & Solutions, Inc."

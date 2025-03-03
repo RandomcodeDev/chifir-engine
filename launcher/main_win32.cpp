@@ -53,6 +53,11 @@ static PCWSTR GetEngineDir()
 	return s_directory;
 }
 
+#ifdef CH_STATIC
+extern void Base_Init();
+extern void Base_Shutdown();
+#endif
+
 extern "C"
 #ifndef CH_XBOX360
 #ifndef CH_RETAIL
@@ -62,6 +67,18 @@ extern "C"
 	void __stdcall WinMainCRTStartup()
 #endif
 {
+#ifdef CH_STATIC
+	extern int LauncherMain();
+
+	__security_init_cookie();
+	RunGlobalConstructors();
+	Base_Init();
+	int result = LauncherMain();
+	Base_Shutdown();
+	RunGlobalConstructors();
+
+	NtTerminateProcess(NtCurrentProcess(), result);
+#else
 	PCWSTR engineDir = GetEngineDir();
 	wchar_t binDir[MAX_PATH + 1];
 	_snwprintf(binDir, ARRAYSIZE(binDir), L"%s\\bin", engineDir);
@@ -98,5 +115,6 @@ Load:
 	int result = LauncherMain();
 
 	NtTerminateProcess(NtCurrentProcess(), result);
+#endif
 }
 #endif

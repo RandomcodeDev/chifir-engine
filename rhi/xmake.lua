@@ -1,4 +1,10 @@
-includes("vulkan")
+if directx then
+    includes("dx12")
+end
+
+if vulkan then
+    includes("vulkan")
+end
 
 target("Rhi")
     add_defines("IN_RHI")
@@ -9,4 +15,13 @@ target("Rhi")
     )
 
     add_deps("Base", "CommonFiles", "DllSupport")
+    if is_static then
+        if directx then
+            add_deps("RhiDirectX12")
+        end
+
+        if vulkan then
+            add_deps("RhiVulkan")
+        end
+    end
 target_end()

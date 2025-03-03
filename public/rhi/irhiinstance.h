@@ -8,7 +8,6 @@
 
 #include "irhidevice.h"
 #include "rhi.h"
-#include "rhi/irhidevice.h"
 
 class IVideoSystem;
 
@@ -32,7 +31,7 @@ class IRhiInstance
 };
 
 /// Create an IRhiInstance
-extern "C" RHIAPI IRhiInstance* Rhi_CreateInstance(RhiBackendType_t type = RhiBackendType_t::Vulkan);
+extern "C" RHIAPI IRhiInstance* Rhi_CreateInstance(RhiBackendType_t type = RhiBackendType_t::DirectX12);
 
 /// Exported by RHI backends as "CreateInstance"
 typedef IRhiInstance* (*CreateRhiInstance_t)();

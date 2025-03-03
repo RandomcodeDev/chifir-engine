@@ -1,5 +1,5 @@
 = Engine coding style
-The engine is written in C++14 with no STL and no C runtime. This comes with some advantages, but plenty of disadvantages
+The engine is written in C++14 with no STL and (almost) no C runtime. This comes with some advantages, but plenty of disadvantages
 as well.
 #table(
   columns: 2,
@@ -24,7 +24,7 @@ type can be unsigned, and for certain things like `operator new()` where using `
 Comments should explain what code does. At the top of a file that implements something complex, or the main header for a whole
 component, explain the overall design of the component, any important choices and the reasoning, and whatever limitations exist.
 Additionally, when functions are complex, add comments explaining what's happening/why it's happening. The memory manager in
-`base/memory.cpp` is the best example of commenting things so far.
+`base/memory.cpp` and the Windows loader in `base/loader_win32.cpp` are the best example of commenting things so far.
 
 == Naming
 Variables are camel case, prefixed with `m_` for private/protected members, `g_` for globals, and `s_` for static globals. Types are Pascal
@@ -36,10 +36,6 @@ easier to type.
 == Classes vs structs
 Classes do things, structs store data. That's the distinction so far.
 
-== Passing objects around
-Because of C++03 not having move semantics, don't return things that are expensive to copy, like CVector, by value. Instead, take a reference to one
-and fill it like that. This avoids wasteful deep copies.
-
 == Headers
 Public headers (ones visible to any component) should include as few headers as possible, and forward declare types where needed.
 In `.cpp` files, all headers for the things used should be included, not just ones that happen to include the right things. Private
@@ -49,15 +45,16 @@ headers are more free to include things, and have references to globals inside c
 Because the C runtime and STL aren't used, there are some replacements for the commonly used stuff, and there are also utility
 functions commonly implemented on top of these, like automatically allocating a buffer for snprintf.
 
-In terms of replacements for the CRT, `base.h` has `Base_Alloc`, `Base_MemSet`, `Base_MemCopy`, and `Base_MemCompare`, and
-`basicstr.h` has `Base_StrFormat`, `Base_StrCopy`, `Base_StrClone`, and `Base_StrCompare`. They work basically just like
+In terms of replacements for the CRT, `public/base/base.h` has `Base_Alloc`, `Base_MemSet`, `Base_MemCopy`, and `Base_MemCompare`, and
+`public/base/basicstr.h` has `Base_StrFormat`, `Base_StrCopy`, `Base_StrClone`, and `Base_StrCompare`. They work basically just like
 `malloc`, `memset`, `memcpy`/`memmove`, `memcmp`, `snprintf`, `strcopy`, `strdup`, and `strcmp`, but because this is still C++,
 they're overloaded and have behaviour controlled by parameters, which makes them more convenient to use. `Base_MemSet`,
 `Base_MemCopy`, and `Base_MemCompare` (and the string functions implemented on top of them) also make use of SIMD where possible.
 
-There's not many fancy containers yet, but `CVector<T>` defined in `vector.h` is a working implementation of a dynamic array.
-Additionally, there's `CLinkedList<T>`, which is used for the free list in the memory allocator, and offers significant user
-control over the nodes for exactly that reason.
+There's not many fancy containers yet, but `CVector<T>` defined in `public/base/vector.h` is a working implementation of a dynamic array.
+`public/base/string.h` defines `CString`, and it implements advanced features like splitting and multiplication. Additionally, there's
+`CLinkedList<T>`, which is used for the free list in the memory allocator, and offers significant user control over the nodes for exactly
+that reason.
 
 == Assertions and error handling
 Assertions are mainly for scenarios that shouldn't happen, and are disabled in retail builds because anything triggering them should be caught in
@@ -65,6 +62,6 @@ debug/release builds; don't use them for general error handling. For example, if
 where the standard technically requires that it not return `nullptr` (even though the standard isn't as relevant for the engine), or an index is
 outside the valid range, or a parameter is wrong in a way it shouldn't be, then you can use an assert. Normally, you can use the `ASSERT` macro.
 If a condition isn't the most indicative of why something is wrong, `ASSERT_MSG` lets you add a message. For functions which just succeed or fail,
-return `false`, `nullptr`, or some other documented value when an error happens. When an unrecoverable error happens, use `Util_Fatal` (or
-`Base_Quit`/`Base_QuitSafe` in functions where logging isn't available, such as inside of `Base`) to kill the engine and show the user an error message.
+return `false`, `nullptr`, or some other documented value when an error happens. When an unrecoverable error happens, use `Base_Quit` (or
+`Base_Abort`/`Base_AbortSafe` in functions where logging/allocation isn't available) to kill the engine and show the user an error message.
 

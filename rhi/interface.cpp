@@ -6,8 +6,17 @@
 #include "rhi/rhi.h"
 
 #ifdef CH_STATIC
-#ifdef RHI_VULKAN
+#ifdef CH_VULKAN
 extern IRhiInstance* CreateVulkanRhiInstance();
+#endif
+#ifdef CH_DIRECTX12
+extern IRhiInstance* CreateDx12RhiInstance();
+#endif
+#ifdef CH_DIRECTX9
+//extern IRhiInstance* CreateDx9Instance();
+#endif
+#ifdef CH_OPENGL
+//extern IRhiInstance* CreateOpenGlInstance();
 #endif
 #else
 static IRhiInstance* GetBackend(cstr name)
@@ -44,8 +53,33 @@ extern "C" RHIAPI IRhiInstance* Rhi_CreateInstance(RhiBackendType_t type)
 		return GetBackend("Vulkan");
 #endif
 	}
+	case RhiBackendType_t::DirectX12: {
+#ifdef CH_STATIC
+		return CreateDx12RhiInstance();
+#else
+		return GetBackend("DirectX12");
+#endif
+	}
+	case RhiBackendType_t::DirectX9: {
+#ifdef CH_STATIC
+		//return CreateDx9RhiInstance();
+#else
+		return GetBackend("DirectX9");
+#endif
+	}
+	case RhiBackendType_t::OpenGl: {
+#ifdef CH_STATIC
+		//return CreateOpenGlRhiInstance();
+#else
+		return GetBackend("OpenGl");
+#endif
+	}
+	case RhiBackendType_t::Unknown: {
+#ifndef CH_STATIC
+		return GetBackend("Custom");
+#endif
+	}
 	case RhiBackendType_t::None:
-	case RhiBackendType_t::Unknown:
 	default:
 		return nullptr;
 	}

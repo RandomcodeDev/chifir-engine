@@ -1,3 +1,6 @@
 [submodule "external/phnt"]
 	path = external/phnt
 	url = https://github.com/winsiderss/phnt
+[submodule "external/directx"]
+	path = external/directx
+	url = https://github.com/microsoft/directx-headers

@@ -1,6 +1,6 @@
 = Renderer architecture
 The renderer will be implemented in multiple layers, flexible enough to support drawing and post-processing fairly complex
-scenes, extensible with more techniques and passes, and simple to use.
+scenes, extensible with more techniques and passes, and simple to use for the rest of the engine.
 
 == Hardware interface
 The hardware interface is an abstraction of Vulkan/Direct3D/GNM/whatever other ungodly API I have to deal with. It's low

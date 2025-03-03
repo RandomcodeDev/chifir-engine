@@ -2,6 +2,15 @@
 
 #pragma once
 
+/// Stringize something
+#define STRINGIZE(x) #x
+
+/// Stringize something, and expand macros one level
+#define STRINGIZE_EXPAND(x) STRINGIZE(x)
+
+/// Make a string literal wchar_t's
+#define WIDEN(x) L#x
+
 #define ASSERT_IMPL(cond, action)                                                                                                \
 	if (!(cond))                                                                                                                 \
 	{                                                                                                                            \
@@ -9,22 +18,13 @@
 	}
 
 /// Quit if a condition isn't true, add a message
-#define ASSERT_MSG(cond, ...) ASSERT_IMPL(cond, Base_Abort(ABORT_RELEVANT_ERROR, "Assertion " #cond " failed: " __VA_ARGS__))
+#define ASSERT_MSG(cond, ...) ASSERT_IMPL(cond, Base_Abort(ABORT_RELEVANT_ERROR, "Assertion " #cond " at " __FILE__ ":" STRINGIZE_EXPAND(__LINE__) " failed: " __VA_ARGS__))
 
 /// Quit if a condition isn't true, add a message
 #define ASSERT_MSG_SAFE(cond, msg) ASSERT_IMPL(cond, Base_AbortSafe(ABORT_RELEVANT_ERROR, "Assertion " #cond " failed: " msg))
 
 /// Quit if a condition isn't true
-#define ASSERT(cond) ASSERT_IMPL(cond, Base_AbortSafe(ABORT_RELEVANT_ERROR, "Assertion " #cond " failed"))
-
-/// Stringize something
-#define STRINGIZE(x) #x
-
-/// Make a string literal wchar_t's
-#define WIDEN(x) L#x
-
-/// Stringize something, and expand macros one level
-#define STRINGIZE_EXPAND(x) STRINGIZE(x)
+#define ASSERT(cond) ASSERT_IMPL(cond, Base_AbortSafe(ABORT_RELEVANT_ERROR, "Assertion " #cond " at " __FILE__ ":" STRINGIZE_EXPAND(__LINE__) " failed!"))
 
 /// Get the address of a structure containing the given pointer
 #define CONTAINING_STRUCTURE(type, member, ptr) (reinterpret_cast<type*>(reinterpret_cast<uptr>(ptr) - offsetof(type, member)))

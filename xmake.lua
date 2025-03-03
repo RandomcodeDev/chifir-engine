@@ -1,7 +1,4 @@
 add_rules(
-    "mode.debug",
-    "mode.releasedbg",
-    "mode.release",
     "plugin.vsxmake.autoupdate"
     --"c.unity_build",
     --"c++.unity_build"
@@ -16,8 +13,24 @@ set_allowedplats(
     "switch"
 )
 
+static = is_plat("switch")
+if static then
+    set_allowedmodes(
+        "debug_static",
+        "release_static",
+        "retail_static"
+    )
+else
+    set_allowedmodes(
+        "debug", "debug_static",
+        "release", "release_static",
+        "retail", "retail_static"
+    )
+end
+
 add_sysincludedirs(
     "external",
+    "external/directx",
     "external/phnt",
     "external/stb",
     "external/volk",
@@ -60,8 +73,13 @@ if vulkan then
     add_defines("CH_VULKAN")
 end
 
-static_build = is_plat("switch")
-if static_build then
+directx = is_plat("windows", "gdkx")
+if directx then
+    add_defines("CH_DIRECTX", "CH_DIRECTX12")
+end
+
+is_static = is_mode("debug_static", "release_static", "retail_static")
+if is_static then
     add_defines("CH_STATIC")
     set_kind("static")
 else
@@ -89,12 +107,20 @@ elseif is_arch("arm64") then
     add_defines("CH_ARM64")
 end
 
-if is_mode("debug") then
+if is_mode("debug", "debug_static") then
     add_defines("CH_DEBUG")
-elseif is_mode("releasedbg") then
+    set_symbols("debug")
+    set_optimize("none")
+elseif is_mode("release", "release_static") then
     add_defines("CH_RELEASE")
-elseif is_mode("release") then
+    set_symbols("debug")
+    set_optimize("fastest")
+    set_strip("all")
+elseif is_mode("retail", "retail_static") then
     add_defines("CH_RETAIL", "CH_RELEASE")
+    set_symbols("none")
+    set_optimize("fastest")
+    set_strip("all")
 end
 
 if is_arch("x64", "x86", "arm64") then

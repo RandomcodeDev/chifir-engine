@@ -6,14 +6,16 @@ target("LauncherMain")
 
     if is_plat("windows", "gdkx") then
         add_files("main_win32.cpp")
-        add_links("ntdll.lib", "ntdll_libc.lib")
+        if not is_static then
+            add_links("ntdll.lib", "ntdll_libc.lib")
+        end
     elseif is_plat("linux") then
         add_files("main_unix.cpp")
     elseif is_plat("switch") then
         add_files("../private/launcher/main_switch.cpp")
     end
 
-    if static_build then
+    if is_static then
         add_deps("Launcher", "Engine", "RenderSystem", "VideoSystem")
     end
 target_end()
