@@ -1,5 +1,8 @@
+#include "base/log.h"
+
 #include "rhi/irhidevice.h"
 #include "rhi/irhiinstance.h"
+
 #include "videosystem/ivideosystem.h"
 
 #include "render.h"
@@ -21,6 +24,7 @@ bool CRenderSystem::Initialize(IVideoSystem* videoSystem)
 	m_instance->GetDeviceInfo(deviceInfo);
 	if (deviceInfo.Size() < 1)
 	{
+		Log_Error("No usable devices available!");
 		return false;
 	}
 

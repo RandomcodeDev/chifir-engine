@@ -2,6 +2,7 @@
 
 #include "base/loader.h"
 #include "base/log.h"
+
 #include "rhi/irhiinstance.h"
 #include "rhi/rhi.h"
 
@@ -48,28 +49,45 @@ extern "C" RHIAPI IRhiInstance* Rhi_CreateInstance(RhiBackendType_t type)
 	{
 	case RhiBackendType_t::Vulkan: {
 #ifdef CH_STATIC
+#ifdef CH_VULKAN
 		return CreateVulkanRhiInstance();
+#else
+		Log_Error("Vulkan support not available in this build!");
+#endif
+		return nullptr;
 #else
 		return GetBackend("Vulkan");
 #endif
 	}
 	case RhiBackendType_t::DirectX12: {
 #ifdef CH_STATIC
+#ifdef CH_DIRECTX12
 		return CreateDx12RhiInstance();
+#else
+		Log_Error("DirectX 12 support not available in this build!");
+#endif
 #else
 		return GetBackend("DirectX12");
 #endif
 	}
 	case RhiBackendType_t::DirectX9: {
 #ifdef CH_STATIC
-		//return CreateDx9RhiInstance();
+#ifdef CH_DIRECTX9
+		return CreateDx9RhiInstance();
+#else
+		Log_Error("DirectX 9 support not available in this build!");
+#endif
 #else
 		return GetBackend("DirectX9");
 #endif
 	}
 	case RhiBackendType_t::OpenGl: {
 #ifdef CH_STATIC
-		//return CreateOpenGlRhiInstance();
+#ifdef CH_OPENGL
+		return CreateOpenGlRhiInstance();
+#else
+		Log_Error("OpenGL support not available in this build!");
+#endif
 #else
 		return GetBackend("OpenGl");
 #endif

@@ -5,5 +5,11 @@
 #include "base/dll.h"
 #include "base/types.h"
 
+#ifdef CH_STATIC
+#define LAUNCHERAPI
+#else
+#define LAUNCHERAPI DLLEXPORT
+#endif
+
 /// Cross-platform entry point
-extern "C" DLLEXPORT s32 LauncherMain();
+extern "C" LAUNCHERAPI s32 LauncherMain();

@@ -1,18 +1,39 @@
+#include "base/loader.h"
 #include "base/log.h"
 
 #include "videosystem/ivideosystem.h"
 
+#include "device_dx12.h"
 #include "instance_dx12.h"
 
 bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
 {
+	Log_Debug("Loading DXGI");
+	m_dxgi = Base_LoadLibrary("dxgi");
+	if (!m_dxgi)
+	{
+		Log_Error("Failed to load DXGI");
+		Destroy();
+		return false;
+	}
+
+	Log_Debug("Getting address of CreateDXGIFactory2");
+	auto s_CreateDXGIFactory2 = m_dxgi->GetSymbol<HRESULT (*)(UINT, const IID& iid, void** factory)>("CreateDXGIFactory2");
+	if (!s_CreateDXGIFactory2)
+	{
+		Log_Error("Failed to get CreateDXGIFactory2");
+		Destroy();
+		return false;
+	}
+
 	m_hwnd = reinterpret_cast<HWND>(videoSystem->GetHandle());
 
 	Log_Debug("Creating IDXGIFactory6");
-	HRESULT result = CreateDXGIFactory2(0, IID_PPV_ARGS(&m_factory));
+	HRESULT result = s_CreateDXGIFactory2(0, IID_PPV_ARGS(&m_factory));
 	if (!HR_SUCCESS(result))
 	{
 		Log_Error("CreateDXGIFactory2 failed: HRESULT 0x%08X", result);
+		Destroy();
 		return false;
 	}
 
@@ -26,6 +47,10 @@ void CDx12RhiInstance::Destroy()
 		Log_Debug("Releasing IDXGIFactory6 0x%016X", reinterpret_cast<uptr>(m_factory));
 		m_factory->Release();
 		m_factory = nullptr;
+	}
+	if (m_dxgi)
+	{
+		delete m_dxgi;
 	}
 }
 

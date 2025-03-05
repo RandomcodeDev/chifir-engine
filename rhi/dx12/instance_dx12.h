@@ -13,7 +13,7 @@ class IVideoSystem;
 class CDx12RhiInstance: public IRhiInstance
 {
   public:
-	CDx12RhiInstance() : m_factory(nullptr), m_hwnd(nullptr)
+	CDx12RhiInstance() : m_dxgi(nullptr), m_factory(nullptr), m_hwnd(nullptr)
 	{
 	}
 	~CDx12RhiInstance() DEFAULT;
@@ -26,6 +26,7 @@ class CDx12RhiInstance: public IRhiInstance
 	virtual IRhiDevice* CreateDevice(const RhiDeviceInfo_t& info);
 
   private:
+	ILibrary* m_dxgi;
 	IDXGIFactory6* m_factory;
 	HWND m_hwnd;
 };

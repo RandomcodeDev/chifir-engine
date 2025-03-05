@@ -36,7 +36,11 @@
 #endif
 
 #define ATTRIBUTE(x)                  __declspec(x)
+#ifdef CH_STATIC
+#define EXPORT_RAW(x)
+#else
 #define EXPORT_RAW(x)                 __pragma(comment(linker, "/export:" x))
+#endif
 #define EXPORT(x)                     EXPORT_RAW(#x)
 #ifdef CH_IA32
 #define EXPORT_CDECL(x) EXPORT_RAW("_" #x)

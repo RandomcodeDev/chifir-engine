@@ -45,17 +45,15 @@ class CVulkanRhiDevice: public IRhiDevice
 		UNUSED(initialValue);
 		return nullptr;
 	}
-	virtual IRhiBuffer* CreateBuffer(ssize size, RhiMemoryLocation_t location, RhiMemoryUsage_t usage, RhiBufferFlags_t flags)
+	virtual IRhiBuffer* CreateBuffer(ssize size, RhiMemoryLocation_t location, RhiMemoryUsage_t usage)
 	{
 		UNUSED(size);
 		UNUSED(location);
 		UNUSED(usage);
-		UNUSED(flags);
 		return nullptr;
 	}
 	virtual IRhiImage* CreateImage(
-		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType_t type, RhiImageFormat_t format,
-		RhiImageFlags_t flags)
+		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType_t type, RhiImageFormat_t format)
 	{
 		UNUSED(width);
 		UNUSED(height);
@@ -63,7 +61,6 @@ class CVulkanRhiDevice: public IRhiDevice
 		UNUSED(location);
 		UNUSED(type);
 		UNUSED(format);
-		UNUSED(flags);
 		return nullptr;
 	}
 	virtual IRhiPipelineState* CreatePipelineState(const RhiPipelineStateDesc_t& desc)

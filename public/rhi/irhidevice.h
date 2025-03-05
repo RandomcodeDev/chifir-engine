@@ -7,20 +7,14 @@
 #include "base/types.h"
 #include "base/vector.h"
 
+#include "irhibuffer.h"
+#include "irhiimage.h"
+#include "irhiswapchain.h"
 #include "rhi.h"
 
-class IRhiSwapChain;
 class IRhiCommandList;
 enum class RhiCommandListFlags_t;
 class IRhiFence;
-enum class RhiMemoryLocation_t;
-enum class RhiMemoryUsage_t;
-class IRhiBuffer;
-enum class RhiBufferFlags_t;
-class IRhiImage;
-enum class RhiImageType_t;
-enum class RhiImageFormat_t;
-enum class RhiImageFlags_t;
 class IRhiPipelineState;
 struct RhiPipelineStateDesc_t;
 
@@ -47,7 +41,7 @@ struct RhiDeviceInfo_t
 	u64 handle;
 };
 
-// VkDevice + VkQueue, ID3D12Device + ID3D12CommandQueue
+/// Represents a VkDevice and a VkQueue, an ID3D12Device and an ID3D12CommandQueue, or similar
 class IRhiDevice
 {
   public:
@@ -67,12 +61,11 @@ class IRhiDevice
 
 	/// Create a buffer
 	virtual IRhiBuffer* CreateBuffer(
-		ssize size, RhiMemoryLocation_t location, RhiMemoryUsage_t usage, RhiBufferFlags_t flags) = 0;
+		ssize size, RhiMemoryLocation_t location, RhiMemoryUsage_t usage) = 0;
 
 	/// Create an image
 	virtual IRhiImage* CreateImage(
-		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType_t type, RhiImageFormat_t format,
-		RhiImageFlags_t flags) = 0;
+		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType_t type, RhiImageFormat_t format) = 0;
 
 	/// Create a pipeline state
 	virtual IRhiPipelineState* CreatePipelineState(const RhiPipelineStateDesc_t& desc) = 0;

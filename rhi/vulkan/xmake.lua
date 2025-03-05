@@ -5,6 +5,7 @@ target("RhiVulkan")
     add_files(
         "device_vk.cpp",
         "instance_vk.cpp",
+        "swapchain_vk.cpp",
         "vulkan_stuff.cpp",
 
         "../../external/volk/volk.cpp"

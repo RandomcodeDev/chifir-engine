@@ -4,12 +4,16 @@
 #include "base/platform.h"
 #include "base/types.h"
 #include "base/vector.h"
+
+#include "rendersystem/irendersystem.h"
+
+#include "utility/utility.h"
+
+#include "videosystem/ivideosystem.h"
+
 #include "iapplication.h"
 #include "isystem.h"
 #include "launcher.h"
-#include "rendersystem/irendersystem.h"
-#include "utility/utility.h"
-#include "videosystem/ivideosystem.h"
 
 #ifdef CH_STATIC
 extern IApplication* CreateEngine();
@@ -69,7 +73,7 @@ static ISystem* GetSystem(ILibrary* library, u32 minVersion, bool exactRequired)
 }
 #endif
 
-extern "C" DLLEXPORT s32 LauncherMain()
+extern "C" LAUNCHERAPI s32 LauncherMain()
 {
 	CVector<CString> args;
 	Plat_GetArgs(args);
@@ -139,9 +143,8 @@ extern "C" DLLEXPORT s32 LauncherMain()
 	for (ssize i = 0; i < appSystems.Size(); i++)
 	{
 		Log_Info(
-			"Loading %s, %sversion %u (%s)", appSystems[i].name,
-			appSystems[i].requireExactVersion ? "" : "minimum ", appSystems[i].minimumVersion,
-			appSystems[i].required ? "required" : "optional");
+			"Loading %s, %sversion %u (%s)", appSystems[i].name, appSystems[i].requireExactVersion ? "" : "minimum ",
+			appSystems[i].minimumVersion, appSystems[i].required ? "required" : "optional");
 		ILibrary* lib = Base_LoadEngineLibrary(appSystems[i].name);
 		if (!lib)
 		{

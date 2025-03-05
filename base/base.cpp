@@ -124,7 +124,7 @@ BASEAPI NORETURN void Base_Quit(cstr message, ...)
 		formatted = message;
 	}
 
-	Log_FatalError("%s", formatted);
+	Log_FatalError("%s\nCheck the log in %s/chifir.log", formatted, Plat_GetSaveLocation());
 	Base_AbortSafe(ABORT_RELEVANT_ERROR, formatted);
 }
 
