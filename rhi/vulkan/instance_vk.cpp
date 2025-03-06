@@ -78,7 +78,7 @@ bool CVulkanRhiInstance::CreateSurface(u64 handle)
 
 	wchar_t dllName[] =
 #ifdef CH_STATIC
-		WIDEN(GAME_NAME) L".exe";
+		WIDEN_EXPAND(GAME_NAME) L".exe";
 #else
 		L"VideoSystem.dll";
 #endif

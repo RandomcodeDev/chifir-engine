@@ -9,7 +9,10 @@
 #define STRINGIZE_EXPAND(x) STRINGIZE(x)
 
 /// Make a string literal wchar_t's
-#define WIDEN(x) L#x
+#define WIDEN(x) L##x
+
+/// Make a macro wchar_t's
+#define WIDEN_EXPAND(x) WIDEN(x)
 
 #define ASSERT_IMPL(cond, action)                                                                                                \
 	if (!(cond))                                                                                                                 \
