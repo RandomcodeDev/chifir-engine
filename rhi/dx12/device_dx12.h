@@ -18,7 +18,7 @@ class CDx12RhiDevice: public IRhiDevice
   public:
 	virtual void Destroy();
 
-	virtual IRhiSwapChain* CreateSwapChain(CVector<IRhiImage*>& buffers);
+	virtual IRhiSwapChain* CreateSwapChain(u32 bufferCount, CVector<IRhiImage*>& buffers);
 
 	virtual IRhiCommandList* CreateCommandList(RhiCommandListFlags_t flags)
 	{

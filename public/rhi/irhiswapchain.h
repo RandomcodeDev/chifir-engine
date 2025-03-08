@@ -21,5 +21,5 @@ class IRhiSwapChain
     virtual void ResizeBuffers(CVector<IRhiRenderTarget*>& buffers) = 0;
 
     /// Present, waiting for rendering to complete, returning the new current backbuffer index
-    virtual s32 Present(IRhiSemaphore* renderCompletedSemaphore) = 0;
+    virtual u32 Present(IRhiSemaphore* renderCompletedSemaphore) = 0;
 };

@@ -280,11 +280,13 @@ void CVulkanRhiInstance::GetDeviceInfo(CVector<RhiDeviceInfo_t>& info)
 IRhiDevice* CVulkanRhiInstance::CreateDevice(const RhiDeviceInfo_t& info)
 {
 	ssize index = static_cast<ssize>(info.handle);
-	if (index >= m_devices.Size())
+	if (index < 0 || index >= m_devices.Size())
 	{
 		Log_Error("Device %s has invalid handle %zd", info.name.Data(), index);
 		return nullptr;
 	}
+
+	Log_Debug("Creating Vulkan device for GPU %zd %s [%04x:%04x]", index, info.name, info.vendorId, info.deviceId);
 
 	CVulkanRhiDevice* device = new CVulkanRhiDevice(this, m_devices[index]);
 	if (!device->Initialize())

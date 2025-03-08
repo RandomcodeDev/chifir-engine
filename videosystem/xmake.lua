@@ -1,7 +1,7 @@
 target("VideoSystem")
     add_defines("IN_VIDEO")
 
-    add_headerfiles("**.h", "../public/videosystem/**.h")
+    add_headerfiles("**.h", "../private/videosystem/**.h", "../public/videosystem/**.h")
     add_files(
         "interface.cpp",
         "video_null.cpp"

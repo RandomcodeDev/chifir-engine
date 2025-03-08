@@ -1,25 +1,14 @@
-#include <xtl.h>
+#include "base/base.h"
+
+#include "launcher.h"
 
 int main()
 {
-	HMODULE launcher = LoadLibraryA("bin\\" GAME_NAME ".xex");
-	if (!launcher)
-	{
-		// TODO: figure out how to display an error
-		return HRESULT_FROM_WIN32(GetLastError());
-	}
+	extern int LauncherMain();
 
-	static const UINT16 LAUNCHERMAIN_ORDINAL = 1;
-
-	// By ordinal
-	FARPROC launcherMainAddr = GetProcAddress(launcher, (LPCSTR)LAUNCHERMAIN_ORDINAL);
-	if (!launcherMainAddr)
-	{
-		return HRESULT_FROM_WIN32(GetLastError());
-	}
-
-	int (*LauncherMain)() = reinterpret_cast<int (*)()>(launcherMainAddr);
+	Base_Init();
 	int result = LauncherMain();
+	Base_Shutdown();
 
 	return result;
 }

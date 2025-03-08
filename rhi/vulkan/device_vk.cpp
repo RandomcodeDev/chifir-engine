@@ -1,12 +1,16 @@
-#include "device_vk.h"
 #include "base/log.h"
+
 #include "rhi/irhidevice.h"
+
+#include "device_vk.h"
+#include "swapchain_vk.h"
 #include "vulkan.h"
 
 /// Required device extensions
 constexpr cstr REQUIRED_EXTENSIONS[] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
-CVulkanRhiDevice::CVulkanRhiDevice(CVulkanRhiInstance* instance, const VulkanDeviceInfo_t& info) : m_instance(instance), m_info(info)
+CVulkanRhiDevice::CVulkanRhiDevice(CVulkanRhiInstance* instance, const VulkanDeviceInfo_t& info)
+	: m_instance(instance), m_info(info)
 {
 }
 
@@ -69,10 +73,16 @@ void CVulkanRhiDevice::Destroy()
 	}
 }
 
-IRhiSwapChain* CVulkanRhiDevice::CreateSwapChain(CVector<IRhiImage*>& buffers)
+IRhiSwapChain* CVulkanRhiDevice::CreateSwapChain(u32 bufferCount, CVector<IRhiRenderTarget*>& buffers)
 {
-	UNUSED(buffers);
-	return nullptr;	
+	CVulkanRhiSwapChain* swapChain = new CVulkanRhiSwapChain(this);
+	if (!swapChain->Initialize())
+	{
+		delete swapChain;
+		return nullptr;
+	}
+
+	return swapChain;
 }
 
 static void ConvertDeviceInfo(

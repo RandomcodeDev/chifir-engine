@@ -1,7 +1,7 @@
 target("Base")
     add_defines("IN_BASE")
 
-    add_headerfiles("**.h", "../public/base/**.h")
+    add_headerfiles("**.h", "../private/base/**.h", "../public/base/**.h")
     add_files(
         "base.cpp",
         "basicstr.cpp",
@@ -19,7 +19,7 @@ target("Base")
         "../public/base/libc.cpp"
     )
 
-    if is_toolchain("clang", "nx-clang") then
+    if is_toolchain("clang", "nx-clang", "orbis-clang") then
         add_files("../public/base/compiler_clang.cpp")
     end
 
@@ -49,6 +49,11 @@ target("Base")
             "../private/base/filesystem_switch.cpp",
             "../private/base/platform_switch.cpp"
         )
+    elseif is_plat("orbis") then
+        add_files(
+            "../private/base/filesystem_orbis.cpp",
+            "../private/base/platform_orbis.cpp"
+        )
     end
 target_end()
 
@@ -60,7 +65,7 @@ target("CommonFiles")
         "../public/base/libc.cpp"
     )
 
-    if is_toolchain("clang", "nx-clang") then
+    if is_toolchain("clang", "nx-clang", "orbis-clang") then
         add_files("../public/base/compiler_clang.cpp")
     end
 

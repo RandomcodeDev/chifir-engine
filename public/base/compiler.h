@@ -149,6 +149,7 @@ extern void __stdcall RunThreadConstructors();
 #endif
 #define ALIGNOF(x)  __alignof(x)
 #define FORCEINLINE __forceinline
+#define UNREACHABLE() ASSUME(false)
 
 /// Decorated function name
 #if defined _MSC_VER

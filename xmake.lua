@@ -10,10 +10,11 @@ set_version("0.0.0", {build = "%Y%m%d%H%M%S"})
 set_allowedplats(
     "windows", "gdkx",
     "linux",
-    "switch"
+    "switch",
+	"orbis"
 )
 
-static = is_plat("switch")
+static = is_plat("switch", "orbis")
 if static then
     set_allowedmodes(
         "debug_static",
@@ -97,6 +98,8 @@ elseif is_plat("linux") then
     add_defines("CH_LINUX", "CH_UNIX")
 elseif is_plat("switch") then
     add_defines("CH_SWITCH")
+elseif is_plat("orbis") then
+    add_defines("CH_ORBIS")
 end
 
 if is_arch("x64") then
@@ -184,7 +187,7 @@ if is_plat("windows", "gdkx") then
     add_ldflags(
         "/nodefaultlib", -- further prevent C runtime
     {force = true})
-elseif is_plat("linux", "switch") then
+elseif is_plat("linux", "switch", "orbis") then
     add_cxflags(
         "-fms-extensions",
         "-fno-threadsafe-statics",
@@ -197,7 +200,6 @@ elseif is_plat("linux", "switch") then
         "-Wno-unknown-attributes",
         "-Wno-ignored-pragma-intrinsic",
         "-Wno-ignored-attributes",
-        "-Wno-frame-address",
     {force = true})
 end
 

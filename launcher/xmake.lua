@@ -13,6 +13,8 @@ target("LauncherMain")
         add_files("main_unix.cpp")
     elseif is_plat("switch") then
         add_files("../private/launcher/main_switch.cpp")
+	elseif is_plat("orbis") then
+		add_files("../private/launcher/main_orbis.cpp")
     end
 
     if is_static then
