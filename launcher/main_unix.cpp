@@ -28,6 +28,17 @@ static cstr GetEngineDir()
 
 s32 Startup(s32 argc, dstr argv[], void (*DynamicAtExit)())
 {
+#ifdef CH_STATIC
+	extern void Base_Internal_SetArgs(s32 argc, dstr argv[]);
+	extern s32 LauncherMain();
+
+	Base_Internal_SetArgs(argc, argv);
+	Base_Init();
+	s32 code = LauncherMain();
+	Base_Shutdown();
+
+	return code;
+#else
 	void (*Base_Internal_SetArgs)(s32 argc, dstr argv[]) = nullptr;
 	s32 (*LauncherMain)() = nullptr;
 
@@ -72,6 +83,7 @@ s32 Startup(s32 argc, dstr argv[], void (*DynamicAtExit)())
 	}
 
 	return code;
+#endif
 }
 
 extern "C" int main(int argc, char* argv[])

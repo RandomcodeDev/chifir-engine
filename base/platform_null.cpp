@@ -48,15 +48,15 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 {
 }
 
-COrbisLibrary::COrbisLibrary(cstr name, void* base) : m_name(Base_StrClone(name)), m_base(base)
+CNullLibrary::CNullLibrary(cstr name, void* base) : m_name(Base_StrClone(name)), m_base(base)
 {
 }
 
-COrbisLibrary::~COrbisLibrary()
+CNullLibrary::~CNullLibrary()
 {
 }
 
-void* COrbisLibrary::GetSymbol(cstr name)
+void* CNullLibrary::GetSymbol(cstr name)
 {
 }
 

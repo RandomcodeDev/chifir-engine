@@ -10,7 +10,15 @@ bool g_platInitialized;
 bool g_allocUsable;
 BaseCpuData_t g_cpuData;
 
-#ifdef CH_X86
+#ifdef CH_ORBIS
+static void InitCpuData()
+{
+	g_cpuData.haveSimd128 = true;
+	g_cpuData.haveIntSimd128 = true;
+	g_cpuData.haveSimd128Compare = true;
+	g_cpuData.haveSimd256 = true;
+}
+#elif defined CH_X86
 static void CpuId(u32& eax, u32& ebx, u32& ecx, u32& edx)
 {
 #ifdef _MSC_VER
@@ -124,7 +132,9 @@ BASEAPI NORETURN void Base_Quit(cstr message, ...)
 		formatted = message;
 	}
 
-	Log_FatalError("%s\nCheck the log in %s/chifir.log", formatted, Plat_GetSaveLocation());
+	Log_FatalError("%s", formatted);
+	// this is a guess, since this function has no knowledge of the engine's paths, just where it probably initialized it to
+	Log_FatalError("Check the log in (probably) %s/chifir.log", Plat_GetSaveLocation());
 	Base_AbortSafe(ABORT_RELEVANT_ERROR, formatted);
 }
 

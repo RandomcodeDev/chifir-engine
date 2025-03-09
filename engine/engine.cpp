@@ -15,8 +15,12 @@ CEngine::~CEngine()
 
 void CEngine::Setup(const CVector<CString>& args)
 {
+	Log_Debug("Got %zd command line arguments", args.Size());
+
 	for (ssize i = 0; i < args.Size(); i++)
 	{
+		Log_Debug("\t%s", args[i].Data());
+
 		if (args[i] == "-headless")
 		{
 			m_headless = true;
@@ -43,9 +47,12 @@ void CEngine::GetDependencies(CVector<SystemDependency_t>& systems, CVector<LibD
 
 s32 CEngine::Run(const CVector<ISystem*>& systems)
 {
+	Log_Info("Engine compiled by " COMPILER " running on %s on %s", Plat_GetSystemDescription(), Plat_GetHardwareDescription());
+
 	Log_Info("Initializing engine");
 	m_state = EngineState_t::Startup;
 
+	// TODO: make it so save filesystem is only open when necessary, it seems like console companies prefer that
 	if (!InitializeSaveFilesystem())
 	{
 		Base_Quit("Failed to initialize filesystem!");
@@ -53,20 +60,12 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 
 	AddLogWriters();
 
-	Log_Info("Engine compiled by " COMPILER " running on %s on %s", Plat_GetSystemDescription(), Plat_GetHardwareDescription());
 	if (m_headless)
 	{
 		Log_Info("Running in headless mode");
 	}
 
-	// same order as GetRequiredSystems
-	if (!m_headless)
-	{
-		m_videoSystem = static_cast<IVideoSystem*>(systems[0]);
-		m_renderSystem = static_cast<IRenderSystem*>(systems[1]);
-	}
-
-	if (!InitializeSystems())
+	if (!InitializeSystems(systems))
 	{
 		Base_Quit("Failed to initialize a system!");
 	}
@@ -107,21 +106,28 @@ bool CEngine::InitializeSaveFilesystem()
 
 void CEngine::AddLogWriters()
 {
+	// in general, it goes against
+#if defined CH_DEBUG || !defined CH_CONSOLE
 	Log_AddWriter(new CFileLogWriter(m_saveFilesystem, "chifir.log"));
+#endif
 }
 
-bool CEngine::InitializeSystems()
+bool CEngine::InitializeSystems(const CVector<ISystem*>& systems)
 {
 	Log_Debug("Initializing systems");
 
+	// order has to match GetRequiredSystems
+
 	if (!m_headless)
 	{
+		m_videoSystem = reinterpret_cast<IVideoSystem*>(systems[0]);
 		if (!m_videoSystem->Initialize())
 		{
 			Log_FatalError("Video system initialization failed!");
 			return false;
 		}
 
+		m_renderSystem = reinterpret_cast<IRenderSystem*>(systems[0]);
 		if (!m_renderSystem->Initialize(m_videoSystem))
 		{
 			Log_FatalError("Render system initialization failed!");

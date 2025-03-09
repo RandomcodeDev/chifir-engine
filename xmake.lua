@@ -93,13 +93,13 @@ if is_plat("windows") then
         add_defines("CH_GDK")
     end
 elseif is_plat("gdkx") then
-    add_defines("CH_GDKX", "CH_GDK", "CH_WIN32")
+    add_defines("CH_GDKX", "CH_GDK", "CH_WIN32", "CH_CONSOLE")
 elseif is_plat("linux") then
     add_defines("CH_LINUX", "CH_UNIX")
 elseif is_plat("switch") then
-    add_defines("CH_SWITCH")
+    add_defines("CH_SWITCH", "CH_CONSOLE")
 elseif is_plat("orbis") then
-    add_defines("CH_ORBIS")
+    add_defines("CH_ORBIS", "CH_CONSOLE")
 end
 
 if is_arch("x64") then

@@ -52,7 +52,7 @@ class CEngine: public IEngine
 	void AddLogWriters();
 
 	/// Initializes the engine's systems in the right order
-	bool InitializeSystems();
+	bool InitializeSystems(const CVector<ISystem*>& systems);
 
 	/// Pre frame stuff
 	void PreFrame();

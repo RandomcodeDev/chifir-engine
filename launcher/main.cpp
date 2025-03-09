@@ -86,6 +86,8 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	systems.Add(CreateRenderSystem());
 
 	IApplication* app = CreateEngine();
+
+	app->Setup(args);
 #else
 	cstr appName = "Engine"; /// TODO: make this better
 	if (args.Size() > 1)

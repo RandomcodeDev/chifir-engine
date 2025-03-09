@@ -6,7 +6,8 @@ The engine will support at least Windows and Linux. All desktop platforms will u
   [Windows], [MSVC, GDK], [DirectX 12, Vulkan, OpenGL], [Most complete port],
   [Linux], [LLVM], [Vulkan, OpenGL], [Largely complete],
   [Xbox Series X|S], [MSVC, GDKX], [DirectX 12], [Minimal effort with existing Windows support],
-  [PlayStation 5], [LLVM, PS5 SDK], [GNM], [Minimal effort with existing Linux support],
+  [PlayStation 4], [LLVM, PS4 SDK], [GNM], [Not too hard, other than GNM],
+  [PlayStation 5], [LLVM, PS5 SDK], [GNM], [See PS4 note],
   [Nintendo Switch/Switch 2], [LLVM, Switch SDK], [Vulkan], [Not supported yet],
 )
 These platforms may be supported purely out of personal interest:
