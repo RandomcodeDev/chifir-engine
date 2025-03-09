@@ -28,6 +28,8 @@ struct VulkanDeviceInfo_t
 	VulkanDeviceInfo_t() DEFAULT;
 };
 
+class CVulkanRhiInstance;
+
 class CVulkanRhiDevice: public IRhiDevice
 {
   public:

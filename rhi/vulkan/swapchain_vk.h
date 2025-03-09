@@ -3,6 +3,8 @@
 #include "rhi/irhiimage.h"
 #include "rhi/irhiswapchain.h"
 
+class CVulkanRhiDevice;
+
 class CVulkanRhiSwapChain: public IRhiSwapChain
 {
   public:

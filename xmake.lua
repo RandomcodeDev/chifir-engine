@@ -193,6 +193,7 @@ elseif is_plat("linux", "switch", "orbis") then
         "-fno-threadsafe-statics",
         "-working-directory=$(scriptdir)", -- to fix __FILE__
 
+        "-Wno-unknown-warning-option",
         "-Wno-#pragma-messages",
         "-Wno-nonportable-include-path", -- None of this is on non-Windows code I control
         "-Wno-macro-redefined", -- This is avoided in any scenario where it matters
@@ -200,6 +201,7 @@ elseif is_plat("linux", "switch", "orbis") then
         "-Wno-unknown-attributes",
         "-Wno-ignored-pragma-intrinsic",
         "-Wno-ignored-attributes",
+        "-Wno-frame-address",
     {force = true})
 end
 

@@ -1,7 +1,7 @@
 #pragma once
 
 // Unfortunately, the SDK I have doesn't like the debugging stuff
-#if defined CH_DEBUG && !defined CH_SWITCH
+#ifdef CH_DEBUG
 #define VULKAN_DEBUG
 #endif
 

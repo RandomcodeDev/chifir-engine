@@ -120,6 +120,7 @@ extern void __stdcall RunThreadConstructors();
 #define OPTIMIZE_OFF               _Pragma("clang optimize off")
 #define OPTIMIZE_ON                _Pragma("clang optimize on")
 
+
 /// Get the return address
 #define Plat_GetReturnAddress(...) reinterpret_cast<uptr>(__builtin_return_address(__VA_ARGS__ + 0))
 

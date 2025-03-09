@@ -29,7 +29,7 @@ constexpr cstr REQUIRED_LAYERS[] = {
 #endif
 	nullptr};
 
-#ifdef VULKAN_DEBUG
+#if defined VULKAN_DEBUG && !defined CH_SWITCH
 constexpr cstr LAYER_NAME = "VK_LAYER_KHRONOS_validation";
 
 constexpr VkBool32 SETTING_VALIDATE_CORE = VK_TRUE;
@@ -162,7 +162,9 @@ bool CVulkanRhiInstance::Initialize(IVideoSystem* videoSystem)
 	debugCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT |
 								  VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
 	debugCreateInfo.pfnUserCallback = VkDebugCallback;
+	instanceCreateInfo.pNext = &debugCreateInfo;
 
+#ifndef CH_SWITCH
 	VkLayerSettingsCreateInfoEXT layerSettingsCreateInfo = {};
 	layerSettingsCreateInfo.sType = VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT;
 	layerSettingsCreateInfo.pSettings = LAYER_SETTINGS;
@@ -170,6 +172,7 @@ bool CVulkanRhiInstance::Initialize(IVideoSystem* videoSystem)
 
 	layerSettingsCreateInfo.pNext = &debugCreateInfo;
 	instanceCreateInfo.pNext = &layerSettingsCreateInfo;
+#endif
 #endif
 
 	Log_Debug("Creating VkInstance");
@@ -286,7 +289,7 @@ IRhiDevice* CVulkanRhiInstance::CreateDevice(const RhiDeviceInfo_t& info)
 		return nullptr;
 	}
 
-	Log_Debug("Creating Vulkan device for GPU %zd %s [%04x:%04x]", index, info.name, info.vendorId, info.deviceId);
+	Log_Debug("Creating Vulkan device for GPU %zd %s [%04x:%04x]", index, info.name.Data(), info.vendorId, info.deviceId);
 
 	CVulkanRhiDevice* device = new CVulkanRhiDevice(this, m_devices[index]);
 	if (!device->Initialize())
