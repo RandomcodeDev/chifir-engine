@@ -1,10 +1,56 @@
 // Exports Rhi_CreateInstance
 
+#include "base/basicstr.h"
 #include "base/loader.h"
 #include "base/log.h"
 
 #include "rhi/irhiinstance.h"
 #include "rhi/rhi.h"
+
+RHIAPI cstr Rhi_GetBackendName(RhiBackendType_t backend)
+{
+	switch (backend)
+	{
+	case RhiBackendType_t::None:
+	default:
+		return "None";
+	case RhiBackendType_t::Vulkan:
+		return "Vulkan";
+	case RhiBackendType_t::DirectX12:
+		return "DirectX12";
+	case RhiBackendType_t::DirectX9:
+		return "DirectX9";
+	case RhiBackendType_t::OpenGl:
+		return "OpenGl";
+	case RhiBackendType_t::Custom:
+		return "Custom";
+	}
+}
+
+RHIAPI RhiBackendType_t Rhi_GetBackendTypeByName(cstr name)
+{
+	// TODO: case insensitive, once it's done
+	if (Base_StrCompare(name, "Vulkan") == 0 || Base_StrCompare(name, "vk") == 0)
+	{
+		return RhiBackendType_t::Vulkan;
+	}
+	else if (Base_StrCompare(name, "DirectX12") == 0 || Base_StrCompare(name, "dx12") == 0 || Base_StrCompare(name, "d3d12") == 0)
+	{
+		return RhiBackendType_t::DirectX12;
+	}
+	else if (Base_StrCompare(name, "DirectX9") == 0 || Base_StrCompare(name, "dx9") == 0 || Base_StrCompare(name, "d3d9") == 0)
+	{
+		return RhiBackendType_t::DirectX12;
+	}
+	else if (Base_StrCompare(name, "OpenGL") == 0 || Base_StrCompare(name, "gl") == 0)
+	{
+		return RhiBackendType_t::DirectX12;
+	}
+	else
+	{
+		return RhiBackendType_t::Custom;
+	}
+}
 
 #ifdef CH_STATIC
 #ifdef CH_VULKAN
@@ -14,10 +60,10 @@ extern IRhiInstance* CreateVulkanRhiInstance();
 extern IRhiInstance* CreateDx12RhiInstance();
 #endif
 #ifdef CH_DIRECTX9
-//extern IRhiInstance* CreateDx9Instance();
+// extern IRhiInstance* CreateDx9Instance();
 #endif
 #ifdef CH_OPENGL
-//extern IRhiInstance* CreateOpenGlInstance();
+// extern IRhiInstance* CreateOpenGlInstance();
 #endif
 #else
 static IRhiInstance* GetBackend(cstr name)
@@ -45,60 +91,44 @@ static IRhiInstance* GetBackend(cstr name)
 
 extern "C" RHIAPI IRhiInstance* Rhi_CreateInstance(RhiBackendType_t type)
 {
+#ifndef CH_STATIC
+	return GetBackend(Rhi_GetBackendName(type));
+#else
 	switch (type)
 	{
 	case RhiBackendType_t::Vulkan: {
-#ifdef CH_STATIC
 #ifdef CH_VULKAN
 		return CreateVulkanRhiInstance();
 #else
 		Log_Error("Vulkan support not available in this build!");
 #endif
 		return nullptr;
-#else
-		return GetBackend("Vulkan");
-#endif
 	}
 	case RhiBackendType_t::DirectX12: {
-#ifdef CH_STATIC
 #ifdef CH_DIRECTX12
 		return CreateDx12RhiInstance();
 #else
 		Log_Error("DirectX 12 support not available in this build!");
 #endif
-#else
-		return GetBackend("DirectX12");
-#endif
 	}
 	case RhiBackendType_t::DirectX9: {
-#ifdef CH_STATIC
 #ifdef CH_DIRECTX9
 		return CreateDx9RhiInstance();
 #else
 		Log_Error("DirectX 9 support not available in this build!");
 #endif
-#else
-		return GetBackend("DirectX9");
-#endif
 	}
 	case RhiBackendType_t::OpenGl: {
-#ifdef CH_STATIC
 #ifdef CH_OPENGL
 		return CreateOpenGlRhiInstance();
 #else
 		Log_Error("OpenGL support not available in this build!");
 #endif
-#else
-		return GetBackend("OpenGl");
-#endif
 	}
-	case RhiBackendType_t::Unknown: {
-#ifndef CH_STATIC
-		return GetBackend("Custom");
-#endif
-	}
+	case RhiBackendType_t::Custom:
 	case RhiBackendType_t::None:
 	default:
 		return nullptr;
 	}
+#endif
 }

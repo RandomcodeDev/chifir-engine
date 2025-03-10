@@ -3,9 +3,10 @@
 #include "base/loader.h"
 #include "base/log.h"
 #include "rendersystem/irendersystem.h"
+#include "rhi/rhi.h"
 #include "videosystem/ivideosystem.h"
 
-CEngine::CEngine() : m_state(EngineState_t::Uninitialized), m_headless(false), m_renderSystem(nullptr), m_videoSystem(nullptr)
+CEngine::CEngine() : m_state(EngineState_t::Uninitialized), m_headless(false), m_rhiBackend(DEFAULT_RHI_BACKEND), m_renderSystem(nullptr), m_videoSystem(nullptr)
 {
 }
 
@@ -24,6 +25,18 @@ void CEngine::Setup(const CVector<CString>& args)
 		if (args[i] == "-headless")
 		{
 			m_headless = true;
+		}
+
+		if (args[i] == "-rhi_backend")
+		{
+			i++;
+			Log_Debug("\t%s", args[i].Data());
+			ssize endOffset = 0;
+			m_rhiBackend = static_cast<RhiBackendType_t>(args[i].ParseInt(0, &endOffset));
+			if (endOffset < 1) // wasn't valid
+			{
+				m_rhiBackend = Rhi_GetBackendTypeByName(args[i].Data());
+			}
 		}
 	}
 }
@@ -127,8 +140,8 @@ bool CEngine::InitializeSystems(const CVector<ISystem*>& systems)
 			return false;
 		}
 
-		m_renderSystem = reinterpret_cast<IRenderSystem*>(systems[0]);
-		if (!m_renderSystem->Initialize(m_videoSystem))
+		m_renderSystem = reinterpret_cast<IRenderSystem*>(systems[1]);
+		if (!m_renderSystem->Initialize(m_videoSystem, m_rhiBackend))
 		{
 			Log_FatalError("Render system initialization failed!");
 			return false;

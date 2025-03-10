@@ -62,6 +62,11 @@ BASEAPI dstr Base_StrCopy(dstr RESTRICT dest, cstr RESTRICT src, ssize maxCount)
 
 BASEAPI dstr Base_StrClone(cstr str, ssize maxSize)
 {
+	if (!str)
+	{
+		str = "";
+	}
+
 	ssize size = Min(Base_StrLength(str), maxSize) + 1;
 	if (maxSize < 0)
 	{
@@ -141,4 +146,172 @@ BASEAPI CString Base_FormatDateTime(const DateTime_t& time)
 	return CString::FormatStr(
 		"%04u-%02u-%02u %02u:%02u:%02u.%03u", time.year, time.month, time.day, time.hour, time.minute, time.second,
 		time.millisecond);
+}
+
+BASEAPI s64 Base_ParseInt(cstr str, ssize* endOffset)
+{
+	if (!str)
+	{
+		if (endOffset)
+		{
+			*endOffset = -1;
+		}
+		return 0;
+	}
+
+	bool negative = str[0] == '-';
+	s64 sign = negative ? -1 : 1;
+	ssize start = (str[0] == '-' || str[0] == '+') ? 1 : 0;
+
+	u32 base = 10;
+	ssize len = Base_StrLength(str);
+	if (len > start + 2)
+	{
+		switch (str[start + 1])
+		{
+		case 'b':
+		case 'B':
+			base = 16;
+			start++;
+			break;
+		case 'x':
+		case 'X':
+			base = 2;
+			start++;
+			break;
+		}
+	}
+
+	s64 value = 0;
+	switch (base)
+	{
+	default:
+	case 10: {
+		for (ssize i = start; i < len; i++)
+		{
+			char c = str[i];
+			if (!Base_IsDecDigit(c))
+			{
+				if (endOffset)
+				{
+					*endOffset = i;
+				}
+				goto Done;
+			}
+
+			s64 digit = c - '0';
+			value = value * 10 + digit;
+		}
+		break;
+	}
+	case 16: {
+		for (ssize i = start; i < len; i++)
+		{
+			char c = Base_ToUpper(str[i]);
+			if (!Base_IsHexDigit(c))
+			{
+				if (endOffset)
+				{
+					*endOffset = i;
+				}
+				goto Done;
+			}
+
+			s64 digit = Base_IsDecDigit(c) ? c - '0' : c - 'A' + 0xA;
+			value |= digit << ((len - i - 1) << 3);
+		}
+		break;
+	}
+	case 2: {
+		for (ssize i = start; i < len; i++)
+		{
+			if (Base_IsBinDigit(str[i]))
+			{
+				if (endOffset)
+				{
+					*endOffset = i;
+				}
+				goto Done;
+			}
+
+			value |= (str[i] - '0') << (len - i - 1);
+		}
+		break;
+	}
+	}
+
+Done:
+	return value * sign;
+}
+
+BASEAPI f64 Base_ParseFloat(cstr str, ssize* endOffset)
+{
+	if (!str)
+	{
+		return 0.0f;
+	}
+
+	bool negative = str[0] == '-';
+	f64 sign = negative ? -1.0f : 1.0f;
+	usize start = (str[0] == '-' || str[0] == '+') ? 1 : 0;
+
+	f64 fractional = 0;
+	f64 integral = 0;
+
+	// dubious infinity/nan check, can be skipped cause of -ffast-math/equivalent
+	//if (Base_ToLower(str[start]) == 'i')
+	//{
+	//	return INFINITY * sign;
+	//}
+	//if (Base_ToLower(str[start]) == 'n')
+	//{
+	//	return NAN; // NaN's sign isn't specified
+	//}
+
+	ssize decimal = Base_StrFind(str, '.');
+	ssize len = Base_StrLength(str);
+	ssize integralLen = decimal < 0 ? decimal - start : len;
+
+	if (integralLen > 0)
+	{
+		for (ssize i = start; i < integralLen; i++)
+		{
+			char c = str[i];
+			if (!Base_IsDecDigit(c))
+			{
+				if (endOffset)
+				{
+					*endOffset = i;
+				}
+				goto Done;
+			}
+
+			f64 digit = c - '0';
+			integral = integral * 10 + digit;
+		}
+	}
+
+	if (decimal)
+	{
+		f64 scale = 0.1f;
+		for (ssize i = start + integralLen + 1; i < len; i++)
+		{
+			char c = str[i];
+			if (!Base_IsDecDigit(c))
+			{
+				if (endOffset)
+				{
+					*endOffset = i;
+				}
+				goto Done;
+			}
+
+			f64 digit = c - '0';
+			fractional += digit * scale;
+			scale *= 0.1f;
+		}
+	}
+
+Done:
+	return (integral + fractional) * sign;
 }

@@ -20,5 +20,8 @@ enum class RhiBackendType_t : s32
 	DirectX12,
 	DirectX9,
 	OpenGl,
-	Unknown,
+	Custom,
 };
+
+extern RHIAPI cstr Rhi_GetBackendName(RhiBackendType_t backend);
+extern RHIAPI RhiBackendType_t Rhi_GetBackendTypeByName(cstr name);

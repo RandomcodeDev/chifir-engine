@@ -181,6 +181,12 @@ class BASEAPI CString
 		return string;
 	}
 
+	/// Parse an integer from the string
+	s64 ParseInt(ssize offset = 0, ssize* endOffset = nullptr);
+
+	/// Parse a float from the string
+	f64 ParseFloat(ssize offset = 0, ssize* endOffset = nullptr);
+
 	/// Find a character
 	ssize Find(char c, bool reverse = false, ssize offset = 0) const
 	{

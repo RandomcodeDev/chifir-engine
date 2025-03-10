@@ -26,7 +26,8 @@ For every platform, you need [xmake](https://xmake.io).
 - For Windows, you need Visual Studio 2022 (or any version with C++14 support). You can also build with Clang, but you still
   need VS. You also (will, in the future) need the GDK to build the x64 version.
 - For Xbox 360, you need the SDK, it's on Internet Archive.
-- For Switch, you need version 15.3.2 of the SDK (also on Internet Archive), the private repo, and my private fork of xmake.
+- For Switch, you need version 15.3.2 of the SDK, the private repo, and my private fork of xmake.
+- For PS4, you need version 8.008 of the SDK, the private repo, and my private fork of xmake.
 - For Linux, you need Clang and glibc. GCC isn't supported and isn't a priority (maybe I'll add support for MinGW so I can
   cross compile for Windows).
 
@@ -41,7 +42,7 @@ For the Rust stuff, build the engine, then do `cargo build`.
 
 ## Supported platforms
 
-|       | Windows AMD64 | Windows x86 | Windows ARM64 | Xbox 360 | Nintendo Switch | Linux |
-|-------|---------------|-------------|---------------|----------|-----------------|-------|
-| Clang | yes           | yes         | no            | no       | yes             | kinda |
-| MSVC  | yes           | yes         | yes           | no       | no              | no    |
+|       | Windows AMD64 | Windows x86 | Windows ARM64 | Xbox 360 | Nintendo Switch | PlayStation 4 | Linux |
+|-------|---------------|-------------|---------------|----------|-----------------|---------------|-------|
+| Clang | yes           | yes         | no            | no       | yes             | yes           | yes   |
+| MSVC  | yes           | yes         | yes           | no       | no              |               | no    |

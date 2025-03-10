@@ -6,6 +6,7 @@
 #include "rhi/irhiimage.h"
 #include "rhi/irhiinstance.h"
 #include "rhi/irhiswapchain.h"
+#include "rhi/rhi.h"
 
 class IVideoSystem;
 
@@ -17,7 +18,7 @@ class CRenderSystem: public IRenderSystem
 	}
 	virtual ~CRenderSystem() DEFAULT;
 
-	virtual bool Initialize(IVideoSystem* videoSystem);
+	virtual bool Initialize(IVideoSystem* videoSystem, RhiBackendType_t backend);
 	virtual void Shutdown();
 
 	virtual bool ChangeDevice(u32 index);

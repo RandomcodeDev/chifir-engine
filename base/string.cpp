@@ -1,6 +1,5 @@
-
-#include "base/string.h"
 #include "base/basicstr.h"
+#include "base/string.h"
 #include "base/vector.h"
 
 CString::CString(cstr data, ssize size) : m_buffer(nullptr), m_size(0), m_capacity(0)
@@ -132,6 +131,18 @@ void CString::VFormat(cstr format, va_list args)
 	Resize(size);
 	Base_VStrFormat(m_buffer, static_cast<s32>(m_size), format, args2);
 	va_end(args2);
+}
+
+s64 CString::ParseInt(ssize offset, ssize* endOffset)
+{
+	ASSERT(offset < m_size);
+	return Base_ParseInt(&m_buffer[offset], endOffset);
+}
+
+f64 CString::ParseFloat(ssize offset, ssize* endOffset)
+{
+	ASSERT(offset < m_size);
+	return Base_ParseFloat(&m_buffer[offset], endOffset);
 }
 
 CVector<CString> CString::Split(char c) const

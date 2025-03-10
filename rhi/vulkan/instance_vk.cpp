@@ -104,19 +104,21 @@ bool CVulkanRhiInstance::CreateSurface(u64 handle)
 
 bool CVulkanRhiInstance::Initialize(IVideoSystem* videoSystem)
 {
-	Log_Debug("Initializing Vulkan instance");
-
-	Log_Debug("Loading Vulkan runtime");
-	m_vulkanLib = Base_LoadLibrary(
+	constexpr cstr VULKAN_LOADER_NAME =
 #ifdef CH_WIN32
 		"vulkan-1"
 #else
 		"vulkan.so.1"
 #endif
-	);
+		;
+
+	Log_Debug("Initializing Vulkan instance");
+
+	Log_Debug("Loading Vulkan loader");
+	m_vulkanLib = Base_LoadEngineOrSystemLibrary(VULKAN_LOADER_NAME);
 	if (!m_vulkanLib)
 	{
-		Log_Error("Failed to load Vulkan runtime!");
+		Log_Error("Failed to load Vulkan loader!");
 		return false;
 	}
 

@@ -6,6 +6,7 @@
 #include "base/types.h"
 
 #include "isystem.h"
+#include "rhi/rhi.h"
 
 class IVideoSystem;
 
@@ -15,7 +16,7 @@ class IRenderSystem: public ISystem
 	virtual ~IRenderSystem() DEFAULT;
 
 	/// Initialize the render system
-	virtual bool Initialize(IVideoSystem* videoSystem) = 0;
+	virtual bool Initialize(IVideoSystem* videoSystem, RhiBackendType_t backend) = 0;
 	/// Shut down the render system
 	virtual void Shutdown() = 0;
 

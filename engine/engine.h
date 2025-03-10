@@ -4,6 +4,7 @@
 
 #include "engine/engine.h"
 #include "iapplication.h"
+#include "rhi/rhi.h"
 
 class IWritableFilesystem;
 class IRenderSystem;
@@ -37,6 +38,7 @@ class CEngine: public IEngine
   private:
 	EngineState_t m_state;
 	bool m_headless;
+	RhiBackendType_t m_rhiBackend;
 	bool m_inFrame;
 
 	// IFilesystem* m_mainFilesystem;
@@ -68,4 +70,6 @@ class CEngine: public IEngine
 
 	/// Check if the engine's state should change
 	void CheckState();
+
+	static constexpr RhiBackendType_t DEFAULT_RHI_BACKEND = RhiBackendType_t::Vulkan;
 };

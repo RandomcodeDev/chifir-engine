@@ -3,13 +3,15 @@
 #include "rhi/irhidevice.h"
 #include "rhi/irhiinstance.h"
 
+#include "rhi/rhi.h"
 #include "videosystem/ivideosystem.h"
 
 #include "render.h"
 
-bool CRenderSystem::Initialize(IVideoSystem* videoSystem)
+bool CRenderSystem::Initialize(IVideoSystem* videoSystem, RhiBackendType_t backend)
 {
-	m_instance = Rhi_CreateInstance();
+	Log_Info("Creating %s RHI instance", Rhi_GetBackendName(backend));
+	m_instance = Rhi_CreateInstance(backend);
 	if (!m_instance)
 	{
 		Shutdown();

@@ -44,20 +44,39 @@ FORCEINLINE char Base_ToLower(char c)
 FORCEINLINE bool Base_IsWhitespace(char c)
 {
 	/// All whitespace characters are in (NUL, space]
-	return c > '\0' && c <= ' ';
+	return '\0' < c && c <= ' ';
+}
+
+/// Check if ASCII English letter
+FORCEINLINE bool Base_IsAlpha(char c)
+{
+	char upper = Base_ToUpper(c);
+	return 'A' <= upper && upper <= 'Z';
 }
 
 /// Check if decimal digit
 FORCEINLINE bool Base_IsDecDigit(char c)
 {
-	return c >= '0' && c <= '9';
+	return '0' <= c && c <= '9';
+}
+
+/// Check if letter or number
+FORCEINLINE bool Base_IsAlphannumeric(char c)
+{
+	return Base_IsDecDigit(c) || Base_IsAlpha(c);
 }
 
 /// Check if hexadecimal digit
 FORCEINLINE bool Base_IsHexDigit(char c)
 {
 	char upper = Base_ToUpper(c);
-	return Base_IsDecDigit(upper) || (upper >= 'A' && upper <= 'F');
+	return Base_IsDecDigit(upper) || ('A' <= upper && upper <= 'F');
+}
+
+/// Check if is binary digit
+FORCEINLINE bool Base_IsBinDigit(char c)
+{
+	return c == '0' || c == '1';
 }
 
 /// Count trailing whitespace
@@ -78,3 +97,9 @@ extern BASEAPI CString Base_FormatSize(u64 size);
 
 /// Format a date time
 extern BASEAPI CString Base_FormatDateTime(const DateTime_t& time);
+
+/// Parse an integer from a string
+extern BASEAPI s64 Base_ParseInt(cstr string, ssize* endOffset = nullptr);
+
+/// Parse a float from a string
+extern BASEAPI f64 Base_ParseFloat(cstr string, ssize* endOffset = nullptr);

@@ -27,6 +27,7 @@ class CDx12RhiInstance: public IRhiInstance
 
   private:
 	ILibrary* m_dxgi;
+	ILibrary* m_d3d12;
 	IDXGIFactory6* m_factory;
 	HWND m_hwnd;
 };

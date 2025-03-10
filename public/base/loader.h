@@ -33,7 +33,10 @@ struct LibDependency_t
 };
 
 /// Load a library (do not put an extension on the path)
-BASEAPI ILibrary* Base_LoadLibrary(cstr name);
+extern BASEAPI ILibrary* Base_LoadLibrary(cstr name);
 
 /// Load an engine library (just put the base name)
-BASEAPI ILibrary* Base_LoadEngineLibrary(cstr name);
+extern BASEAPI ILibrary* Base_LoadEngineLibrary(cstr name);
+
+/// Try loading an engine library, and fall back to the system one
+extern BASEAPI ILibrary* Base_LoadEngineOrSystemLibrary(cstr name);

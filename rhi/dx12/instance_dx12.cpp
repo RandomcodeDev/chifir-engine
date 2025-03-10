@@ -6,6 +6,9 @@
 #include "device_dx12.h"
 #include "instance_dx12.h"
 
+extern "C" DLLEXPORT u32 D3D12SDKVersion = 4;
+extern "C" DLLEXPORT cstr D3D12SDKPath = ".\\bin\\";
+
 bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
 {
 	Log_Debug("Loading DXGI");
@@ -13,6 +16,15 @@ bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
 	if (!m_dxgi)
 	{
 		Log_Error("Failed to load DXGI");
+		Destroy();
+		return false;
+	}
+	
+    Log_Debug("Loading DirectX 12 runtime");
+    m_d3d12 = Base_LoadLibrary("d3d12");
+	if (!m_d3d12)
+	{
+		Log_Error("Failed to load D3D12 runtime");
 		Destroy();
 		return false;
 	}
@@ -47,6 +59,10 @@ void CDx12RhiInstance::Destroy()
 		Log_Debug("Releasing IDXGIFactory6 0x%016X", reinterpret_cast<uptr>(m_factory));
 		m_factory->Release();
 		m_factory = nullptr;
+	}
+	if (m_d3d12)
+	{
+		delete m_d3d12;
 	}
 	if (m_dxgi)
 	{
