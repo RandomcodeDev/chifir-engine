@@ -12,10 +12,30 @@ BASEAPI ssize Base_StrLength(cstr str, ssize maxSize)
 
 BASEAPI s32 Base_StrCompare(cstr RESTRICT a, cstr RESTRICT b, ssize maxCount, bool caseSensitive)
 {
-	// TODO: case insensitive string compare
-	ASSERT_MSG(caseSensitive != false, "Case-insensitive string compare not yet implemented");
 	ssize size = Min(Base_StrLength(a), maxCount);
-	return Base_MemCompare(a, b, size);
+
+	if (caseSensitive)
+	{
+		return Base_MemCompare(a, b, size);
+	}
+	else
+	{
+		for (ssize i = 0; i < size; i++)
+		{
+			char ac = Base_ToUpper(a[i]);
+			char bc = Base_ToUpper(b[i]);
+			if (ac < bc)
+			{
+				return -1;
+			}
+			else if (ac > bc)
+			{
+				return 1;
+			}
+		}
+
+		return 0;
+	}
 }
 
 BASEAPI dstr Base_VStrFormat(cstr format, va_list args)
@@ -259,11 +279,11 @@ BASEAPI f64 Base_ParseFloat(cstr str, ssize* endOffset)
 	f64 integral = 0;
 
 	// dubious infinity/nan check, can be skipped cause of -ffast-math/equivalent
-	//if (Base_ToLower(str[start]) == 'i')
+	// if (Base_ToLower(str[start]) == 'i')
 	//{
 	//	return INFINITY * sign;
 	//}
-	//if (Base_ToLower(str[start]) == 'n')
+	// if (Base_ToLower(str[start]) == 'n')
 	//{
 	//	return NAN; // NaN's sign isn't specified
 	//}

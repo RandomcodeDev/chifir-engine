@@ -6,7 +6,7 @@
 #include "rhi/rhi.h"
 #include "videosystem/ivideosystem.h"
 
-CEngine::CEngine() : m_state(EngineState_t::Uninitialized), m_headless(false), m_rhiBackend(DEFAULT_RHI_BACKEND), m_renderSystem(nullptr), m_videoSystem(nullptr)
+CEngine::CEngine() : m_state(EngineState_t::Uninitialized), m_headless(false), m_rhiBackendName(DEFAULT_RHI_BACKEND), m_renderSystem(nullptr), m_videoSystem(nullptr)
 {
 }
 
@@ -16,6 +16,7 @@ CEngine::~CEngine()
 
 void CEngine::Setup(const CVector<CString>& args)
 {
+	// TODO: implement and use CCommandLine
 	Log_Debug("Got %zd command line arguments", args.Size());
 
 	for (ssize i = 0; i < args.Size(); i++)
@@ -27,16 +28,11 @@ void CEngine::Setup(const CVector<CString>& args)
 			m_headless = true;
 		}
 
-		if (args[i] == "-rhi_backend")
+		if (args[i] == "-rhi_backend" && !m_headless)
 		{
 			i++;
 			Log_Debug("\t%s", args[i].Data());
-			ssize endOffset = 0;
-			m_rhiBackend = static_cast<RhiBackendType_t>(args[i].ParseInt(0, &endOffset));
-			if (endOffset < 1) // wasn't valid
-			{
-				m_rhiBackend = Rhi_GetBackendTypeByName(args[i].Data());
-			}
+			m_rhiBackendName = args[i].Data();
 		}
 	}
 }
@@ -141,7 +137,7 @@ bool CEngine::InitializeSystems(const CVector<ISystem*>& systems)
 		}
 
 		m_renderSystem = reinterpret_cast<IRenderSystem*>(systems[1]);
-		if (!m_renderSystem->Initialize(m_videoSystem, m_rhiBackend))
+		if (!m_renderSystem->Initialize(m_videoSystem, m_rhiBackendName))
 		{
 			Log_FatalError("Render system initialization failed!");
 			return false;

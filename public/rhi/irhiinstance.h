@@ -31,7 +31,7 @@ class IRhiInstance
 };
 
 /// Create an IRhiInstance
-extern "C" RHIAPI IRhiInstance* Rhi_CreateInstance(RhiBackendType_t type = RhiBackendType_t::Vulkan);
+extern "C" RHIAPI IRhiInstance* Rhi_CreateInstance(cstr name);
 
 /// Exported by RHI backends as "CreateInstance"
 typedef IRhiInstance* (*CreateRhiInstance_t)();

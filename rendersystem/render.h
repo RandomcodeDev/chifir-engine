@@ -18,7 +18,7 @@ class CRenderSystem: public IRenderSystem
 	}
 	virtual ~CRenderSystem() DEFAULT;
 
-	virtual bool Initialize(IVideoSystem* videoSystem, RhiBackendType_t backend);
+	virtual bool Initialize(IVideoSystem* videoSystem, cstr backendName);
 	virtual void Shutdown();
 
 	virtual bool ChangeDevice(u32 index);

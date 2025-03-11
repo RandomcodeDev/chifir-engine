@@ -10,3 +10,15 @@ bool CDx12RhiDevice::Initialize()
 {
     return false;
 }
+
+void CDx12RhiDevice::Destroy()
+{
+
+}
+
+IRhiSwapChain* CDx12RhiDevice::CreateSwapChain(u32 bufferCount, CVector<IRhiRenderTarget*>& buffers)
+{
+    UNUSED(bufferCount);
+    UNUSED(buffers);
+    return nullptr;
+}

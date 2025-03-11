@@ -89,10 +89,18 @@ static IRhiInstance* GetBackend(cstr name)
 }
 #endif
 
-extern "C" RHIAPI IRhiInstance* Rhi_CreateInstance(RhiBackendType_t type)
+extern "C" RHIAPI IRhiInstance* Rhi_CreateInstance(cstr backendName)
 {
+	ssize endOffset = 0;
+	RhiBackendType_t type = static_cast<RhiBackendType_t>(Base_ParseInt(backendName, &endOffset));
+	if (endOffset < 1) // wasn't a number
+	{
+		type = Rhi_GetBackendTypeByName(backendName);
+	}
+
 #ifndef CH_STATIC
-	return GetBackend(Rhi_GetBackendName(type));
+	// only pass the name if it's unrecognized
+	return GetBackend(type == RhiBackendType_t::Custom ? backendName : Rhi_GetBackendName(type));
 #else
 	switch (type)
 	{

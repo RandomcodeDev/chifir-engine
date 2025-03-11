@@ -1,3 +1,4 @@
+#include "base/basicstr.h"
 #include "base/log.h"
 
 #include "rhi/irhidevice.h"
@@ -8,10 +9,10 @@
 
 #include "render.h"
 
-bool CRenderSystem::Initialize(IVideoSystem* videoSystem, RhiBackendType_t backend)
+bool CRenderSystem::Initialize(IVideoSystem* videoSystem, cstr backendName)
 {
-	Log_Info("Creating %s RHI instance", Rhi_GetBackendName(backend));
-	m_instance = Rhi_CreateInstance(backend);
+	Log_Info("Creating %s RHI instance", backendName);
+	m_instance = Rhi_CreateInstance(backendName);
 	if (!m_instance)
 	{
 		Shutdown();
