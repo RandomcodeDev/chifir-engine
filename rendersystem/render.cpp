@@ -70,7 +70,7 @@ bool CRenderSystem::ChangeDevice(u32 index)
 		return false;
 	}
 
-	if (index >= deviceInfo.Size())
+	if (static_cast<ssize>(index) >= deviceInfo.Size())
 	{
 		Log_Warning("Device %u doesn't exist, using device 0 instead", index);
 		index = 0;

@@ -41,6 +41,7 @@
 /// using those
 extern bool Base_InitLoader();
 extern bool Base_CheckWoW64();
+extern cstr Base_IsWine();
 
 extern bool g_loaderInitialized;
 

@@ -44,10 +44,12 @@ MAKE_STUB LdrUnloadDll, @4
 MAKE_STUB NtAllocateVirtualMemory, @24
 MAKE_STUB NtClose, @4
 MAKE_STUB NtCreateFile, @44
+MAKE_STUB NtCreateKey, @28
 MAKE_STUB NtFreeVirtualMemory, @16
 MAKE_STUB NtQueryFullAttributesFile, @8
 MAKE_STUB NtQueryInformationFile, @20
 MAKE_STUB NtQuerySystemInformation, @16
+MAKE_STUB NtQueryValueKey, @24
 MAKE_STUB NtRaiseHardError, @24
 MAKE_STUB NtReadFile, @36
 MAKE_STUB NtTerminateProcess, @8

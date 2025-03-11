@@ -46,8 +46,10 @@ MAKE_STUB(LdrLoadDll, __stdcall, @16)
 MAKE_STUB(LdrUnloadDll, __stdcall, @4)
 MAKE_STUB(NtClose, __stdcall, @4)
 MAKE_STUB(NtCreateFile, __stdcall, @44)
+MAKE_STUB(NtCreateKey, __stdcall, @28)
 MAKE_STUB(NtQueryInformationFile, __stdcall, @20)
 MAKE_STUB(NtQuerySystemInformation, __stdcall, @16)
+MAKE_STUB(NtQueryValueKey, __stdcall, @24)
 MAKE_STUB(NtRaiseHardError, __stdcall, @0)
 MAKE_STUB(NtReadFile, __stdcall, @36)
 MAKE_STUB(NtTerminateProcess, __stdcall, @8)
@@ -137,6 +139,19 @@ bool Base_CheckWoW64()
 	return GetArchitecture() != ((PIMAGE_NT_HEADERS)RVA_TO_VA(&__ImageBase, __ImageBase.e_lfanew))->FileHeader.Machine;
 }
 
+cstr Base_IsWine()
+{
+	char name[] = "wine_get_version";
+	ANSI_STRING nameStr = RTL_CONSTANT_STRING(name);
+	cstr (*wine_get_version)() = nullptr;
+	if (NT_SUCCESS(LdrGetProcedureAddress(s_ntDllBase, &nameStr, 0, reinterpret_cast<void**>(&wine_get_version))))
+	{
+		return wine_get_version();
+	}
+
+	return nullptr;
+}
+
 static bool FindLdrGetProcedureAddress()
 {
 	PIMAGE_NT_HEADERS ntHdrs = (PIMAGE_NT_HEADERS)RVA_TO_VA(s_ntDllBase, s_ntDllBase->e_lfanew);
@@ -224,8 +239,10 @@ bool Base_InitLoader()
 	GET_FUNCTION(&ntDll, LdrUnloadDll)
 	GET_FUNCTION(&ntDll, NtClose)
 	GET_FUNCTION(&ntDll, NtCreateFile)
+	GET_FUNCTION(&ntDll, NtCreateKey)
 	GET_FUNCTION(&ntDll, NtQueryInformationFile)
 	GET_FUNCTION(&ntDll, NtQuerySystemInformation)
+	GET_FUNCTION(&ntDll, NtQueryValueKey)
 	GET_FUNCTION(&ntDll, NtReadFile)
 	GET_FUNCTION(&ntDll, NtWriteFile)
 	GET_FUNCTION(&ntDll, RtlCaptureStackBackTrace)

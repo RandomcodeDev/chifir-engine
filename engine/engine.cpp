@@ -69,6 +69,9 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 
 	AddLogWriters();
 
+	// again, for the text log
+	Log_Info("Engine compiled by " COMPILER " running on %s on %s", Plat_GetSystemDescription(), Plat_GetHardwareDescription());
+
 	if (m_headless)
 	{
 		Log_Info("Running in headless mode");

@@ -36,6 +36,7 @@ SYSTEM_PERFORMANCE_INFORMATION g_systemPerfInfo;
 
 static char* s_systemDescription;
 static char* s_hardwareDescription;
+static char* s_productName;
 
 BASEAPI bool Plat_ConsoleHasColor()
 {
@@ -148,6 +149,64 @@ BASEAPI void Plat_Shutdown()
 	}
 }
 
+static cstr GetProductName()
+{
+	if (!s_productName)
+	{
+		// here cause of goto
+		wchar_t valueName[] = L"ProductName";
+		UNICODE_STRING valueNameStr = RTL_CONSTANT_STRING(valueName);
+
+		u8 keyInfoBuffer[128] = {};
+		KEY_VALUE_FULL_INFORMATION* keyInfo = reinterpret_cast<KEY_VALUE_FULL_INFORMATION*>(keyInfoBuffer);
+		keyInfo->NameLength = ArraySize<ULONG>(valueName);
+		keyInfo->DataLength = ArraySize<ULONG>(keyInfoBuffer) - sizeof(KEY_VALUE_FULL_INFORMATION) - ArraySize<ULONG>(valueName);
+		ULONG length = 0;
+
+		wchar_t nameBuffer[32] = {};
+		UNICODE_STRING nameStr = RTL_CONSTANT_STRING(nameBuffer);
+
+		ANSI_STRING productNameStr = {};
+
+		wchar_t keyName[] = L"\\Registry\\Machine\\Software\\Microsoft\\Windows NT\\CurrentVersion";
+		UNICODE_STRING keyNameStr = RTL_CONSTANT_STRING(keyName);
+		OBJECT_ATTRIBUTES objAttrs = {};
+		InitializeObjectAttributes(&objAttrs, &keyNameStr, OBJ_CASE_INSENSITIVE, nullptr, nullptr);
+
+		HANDLE key = nullptr;
+		NTSTATUS status = NtCreateKey(&key, KEY_QUERY_VALUE, &objAttrs, 0, nullptr, REG_OPTION_NON_VOLATILE, nullptr);
+		if (!NT_SUCCESS(status))
+		{
+			s_productName = Base_StrClone("Windows");
+			goto Done;
+		}
+
+		status = NtQueryValueKey(key, &valueNameStr, KeyValueFullInformation, keyInfo, sizeof(keyInfoBuffer), &length);
+		if (!NT_SUCCESS(status))
+		{
+			s_productName = Base_StrClone("Windows");
+			goto Done;
+		}
+
+		Base_MemCopy(
+			nameBuffer,
+			reinterpret_cast<cstr>(&keyInfoBuffer[keyInfo->DataOffset]),
+			Min<ssize>(nameStr.MaximumLength, keyInfo->DataLength));
+
+		RtlUnicodeStringToAnsiString(&productNameStr, &nameStr, TRUE);
+		s_productName = Base_StrClone(productNameStr.Buffer, productNameStr.Length);
+		RtlFreeAnsiString(&productNameStr);
+
+	Done:
+		if (key != INVALID_HANDLE_VALUE)
+		{
+			NtClose(key);
+		}
+	}
+
+	return s_productName;
+}
+
 BASEAPI cstr Plat_GetSystemDescription()
 {
 	if (!s_systemDescription)
@@ -158,11 +217,13 @@ BASEAPI cstr Plat_GetSystemDescription()
 			XboxKrnlVersion[2] << 16 | XboxKrnlVersion[3], XboxKrnlVersion[4] << 16 | XboxKrnlVersion[5], XboxKrnlVersion[6],
 			XboxKrnlVersion[7]);
 #else
-
+		cstr name = GetProductName();
+		cstr wineVersion = Base_IsWine();
 		s_systemDescription = Base_StrFormat(
-			"Windows %u.%u.%u (reported as %u.%u.%u)%s", USER_SHARED_DATA->NtMajorVersion, USER_SHARED_DATA->NtMinorVersion,
+			"%s %u.%u.%u (reported as %u.%u.%u)%s%s%s", name, USER_SHARED_DATA->NtMajorVersion, USER_SHARED_DATA->NtMinorVersion,
 			USER_SHARED_DATA->NtBuildNumber, NtCurrentPeb()->OSMajorVersion, NtCurrentPeb()->OSMinorVersion,
-			NtCurrentPeb()->OSBuildNumber, Base_CheckWoW64() ? " WoW64" : "");
+			NtCurrentPeb()->OSBuildNumber, wineVersion ? " Wine " : "", wineVersion ? wineVersion : "",
+			Base_CheckWoW64() ? " WoW64" : "");
 #endif
 	}
 
