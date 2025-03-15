@@ -1,11 +1,3 @@
-[musl]
-name = "musl"
-author = "Rich Felker, et al."
-use = "Some time code borrowed"
-path = "https://git.musl-libc.org/cgit/musl"
-license = "external/musl.txt"
-url = "https://git.musl-libc.org/cgit/musl"
-
 [directx]
 name = "DirectX Headers"
 author = "Microsoft"
@@ -14,6 +6,14 @@ path = "external/directx12"
 license = "external/directx/LICENSE"
 url = "https://github.com/Microsoft/DirectX-Headers"
 
+[musl]
+name = "musl"
+author = "Rich Felker, et al."
+use = "Some time code borrowed"
+path = "base/platform_unix.cpp"
+license = "external/musl.txt"
+url = "https://git.musl-libc.org/cgit/musl"
+
 [phnt]
 name = "phnt"
 author = "Winsider Seminars & Solutions, Inc."
@@ -21,6 +21,14 @@ use = "Accessing internal Windows APIs"
 path = "external/phnt"
 license = "external/phnt/LICENSE"
 url = "https://github.com/winsiderss/phnt"
+
+[sdl3]
+name = "SDL3"
+author = "Sam Latinga"
+use = "Some 32-bit arithmetic code borrowed"
+path = "public/base/compiler_msvc_x86.asm"
+license = "external/sdl3.txt"
+url = "https://libsdl.org"
 
 [stb]
 name = "stb"

@@ -16,12 +16,6 @@ _fltused DD 9875h
 Base_AbortSafe TEXTEQU <?Base_AbortSafe@@YAXHPEBD@Z>
 EXTERN Base_AbortSafe : PROC
 
-Base_MemSet TEXTEQU <?Base_MemSet@@YAPEAXPEAXI_J@Z>
-EXTERN Base_MemSet : PROC
-
-Base_MemCopy TEXTEQU <?Base_MemCopy@@YAPEAXPEIAXPEIBX_J@Z>
-EXTERN Base_MemCopy : PROC
-
 PUBLIC __security_check_cookie
 __security_check_cookie PROC
 	cmp rcx, [__security_cookie]

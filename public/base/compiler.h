@@ -35,13 +35,13 @@
 #endif
 #endif
 
-#define ATTRIBUTE(x)                  __declspec(x)
+#define ATTRIBUTE(x) __declspec(x)
 #ifdef CH_STATIC
 #define EXPORT_RAW(x)
 #else
-#define EXPORT_RAW(x)                 __pragma(comment(linker, "/export:" x))
+#define EXPORT_RAW(x) __pragma(comment(linker, "/export:" x))
 #endif
-#define EXPORT(x)                     EXPORT_RAW(#x)
+#define EXPORT(x) EXPORT_RAW(#x)
 #ifdef CH_IA32
 #define EXPORT_CDECL(x) EXPORT_RAW("_" #x)
 #else
@@ -60,19 +60,22 @@
 #define OPTIMIZE_OFF _Pragma("optimize(\"\", off)")
 #define OPTIMIZE_ON  _Pragma("optimize(\"\", on)")
 
-extern "C" ATTRIBUTE(dllimport) unsigned short __stdcall RtlCaptureStackBackTrace(
-	unsigned long skip, unsigned long count, void** frames, unsigned long* hash);
-
-extern "C"
-#ifdef IN_BASE
-	ATTRIBUTE(dllexport)
-#else
-	ATTRIBUTE(dllimport)
-#endif
-		bool RtlCaptureStackBackTrace_Available();
-
-__forceinline void* MSVC_GetReturnAddress(unsigned long frames)
+extern "C" __forceinline void* MSVC_GetReturnAddress(unsigned long frames)
 {
+	extern ATTRIBUTE(dllimport) unsigned short __stdcall RtlCaptureStackBackTrace(
+		unsigned long skip, unsigned long count, void** frames, unsigned long* hash);
+
+	extern
+#ifndef CH_STATIC
+#ifdef IN_BASE
+		ATTRIBUTE(dllexport)
+#else
+		ATTRIBUTE(dllimport)
+#endif
+#endif
+			bool
+			RtlCaptureStackBackTrace_Available();
+
 	if (RtlCaptureStackBackTrace_Available())
 	{
 		void* address = nullptr;
@@ -120,7 +123,6 @@ extern void __stdcall RunThreadConstructors();
 #define OPTIMIZE_OFF               _Pragma("clang optimize off")
 #define OPTIMIZE_ON                _Pragma("clang optimize on")
 
-
 /// Get the return address
 #define Plat_GetReturnAddress(...) reinterpret_cast<uptr>(__builtin_return_address(__VA_ARGS__ + 0))
 
@@ -148,8 +150,8 @@ extern void __stdcall RunThreadConstructors();
 #else
 #define RESTRICT __restrict
 #endif
-#define ALIGNOF(x)  __alignof(x)
-#define FORCEINLINE __forceinline
+#define ALIGNOF(x)    __alignof(x)
+#define FORCEINLINE   __forceinline
 #define UNREACHABLE() ASSUME(false)
 
 /// Decorated function name

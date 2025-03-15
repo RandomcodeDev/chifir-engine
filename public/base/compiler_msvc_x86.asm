@@ -22,17 +22,11 @@ PUBLIC @_RTC_CheckStackVars@8
 Base_AbortSafe TEXTEQU <?Base_AbortSafe@@YAXHPBD@Z>
 EXTERN Base_AbortSafe : PROC
 
-Base_MemSet TEXTEQU <?Base_MemSet@@YAPAXPAXIH@Z>
-EXTERN Base_MemSet : PROC
-
-Base_MemCopy TEXTEQU <?Base_MemCopy@@YAPAXPIAXPIBXH@Z>
-EXTERN Base_MemCopy : PROC
-
 PUBLIC @__security_check_cookie@4
 @__security_check_cookie@4 PROC
 	cmp ecx, [___security_cookie]
 	jnz Fail
-	 
+
 	; Instructions that would go here don't work with the security cookie value I choose to use
 
 	ret

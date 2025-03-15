@@ -1,7 +1,3 @@
-TITLE AMD64 Windows function stubs
-
-OPTION PROLOGUE:NONE
-
 MAKE_STUB MACRO name
 	.DATA
 	PUBLIC @CatStr(__imp_, name)
@@ -9,24 +5,28 @@ MAKE_STUB MACRO name
 	PUBLIC @CatStr(STUB_, name)
 	@CatStr(STUB_, name) DQ 0
 	.CODE
-	@CatStr(name, _Forwarder) PROC
-		jmp [QWORD PTR @CatStr(STUB_, name)]
-	@CatStr(name, _Forwarder) ENDP
-	PUBLIC @CatStr(name, _Available)
-	@CatStr(name, _Available) PROC
-		push rbp
-		mov rbp, rsp
-		mov rax, @CatStr(STUB_, name)
-		cmp rax, 0
-		jne Avail
-		mov eax, 0
-		pop rbp
+	@CatStr(name, _Forwarder)
+		ldr x0, =@CatStr(STUB_, name)
+		ldr x1, [x0]
+		br x1
+
+	@CatStr(name, _Available)
+		stp x29, x30, [sp, #-16]
+		mov x29, sp
+
+		ldr x0, =@CatStr(STUB_, name)
+		ldr x1, [x0]
+		cbz x1, Avail
+
+		mov x0, #0
+		b Done
+
+Avail
+		ldr x0, #1
+
+Done
+		ldp x29, x30, [sp], #16
 		ret
-Avail:
-		mov eax, 1
-		pop rbp
-		ret
-	@CatStr(name, _Available) ENDP
 ENDM
 
 ; ntdll stubs
