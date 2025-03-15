@@ -1,4 +1,6 @@
 target("VideoSystem")
+    set_kind("$(kind)")
+
     add_defines("IN_VIDEO")
 
     add_headerfiles("**.h", "../private/videosystem/**.h", "../public/videosystem/**.h")

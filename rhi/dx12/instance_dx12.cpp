@@ -87,8 +87,8 @@ void CDx12RhiInstance::GetDeviceInfo(CVector<RhiDeviceInfo_t>& info)
 
     for (ssize i = 0; i < info.Size(); i++)
     {
-        RhiDeviceInfo_t rhiInfo = {};
-        Dx12DeviceInfo_t dxInfo = {};
+//        RhiDeviceInfo_t rhiInfo = {};
+//        Dx12DeviceInfo_t dxInfo = {};
     }
 }
 

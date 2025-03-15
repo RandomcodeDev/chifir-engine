@@ -1,4 +1,6 @@
 target("Base")
+    set_kind("$(kind)")
+
     add_defines("IN_BASE")
 
     add_headerfiles("**.h", "../private/base/**.h", "../public/base/**.h")
@@ -19,7 +21,7 @@ target("Base")
         "../public/base/libc.cpp"
     )
 
-    if is_toolchain("clang", "nx-clang", "orbis-clang") then
+    if is_toolchain("clang", "nx-clang", "orbis-clang", "clang-cl") then
         add_files("../public/base/compiler_clang.cpp")
     end
 
@@ -65,7 +67,7 @@ target("CommonFiles")
         "../public/base/libc.cpp"
     )
 
-    if is_toolchain("clang", "nx-clang", "orbis-clang") then
+    if is_toolchain("clang", "nx-clang", "orbis-clang", "clang-cl") then
         add_files("../public/base/compiler_clang.cpp")
     end
 

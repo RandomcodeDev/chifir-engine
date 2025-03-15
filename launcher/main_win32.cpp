@@ -39,6 +39,7 @@ extern "C" __declspec(dllimport) size_t wcslen(const wchar_t* Buffer);
 extern "C" __declspec(dllimport) wchar_t* wcsncpy(wchar_t* Destination, const wchar_t* Source, size_t Count);
 extern "C" __declspec(dllimport) const wchar_t* wcsrchr(const wchar_t *str, wchar_t c);
 
+#ifndef CH_STATIC
 static PCWSTR GetEngineDir()
 {
 	static wchar_t s_directory[MAX_PATH + 1] = {0};
@@ -52,8 +53,7 @@ static PCWSTR GetEngineDir()
 
 	return s_directory;
 }
-
-#ifdef CH_STATIC
+#else
 extern void Base_Init();
 extern void Base_Shutdown();
 #endif

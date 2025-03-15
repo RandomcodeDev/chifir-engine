@@ -139,7 +139,7 @@ extern "C"
 	ATTRIBUTE(allocate(".CRT$XLZ")) PIMAGE_TLS_CALLBACK __xl_z = nullptr;
 
 #pragma section(".CRT$XLC")
-	ATTRIBUTE(allocate(".CRT$XLZ"))
+	ATTRIBUTE(allocate(".CRT$XLC"))
 	PIMAGE_TLS_CALLBACK __xl_c = [](void*, DWORD reason, void*) {
 		if (reason == DLL_THREAD_ATTACH)
 		{
@@ -247,6 +247,6 @@ void __stdcall RunThreadConstructors()
 }
 
 /// Ensures the vtable for type_info is generated
-type_info::~type_info()
-{
-}
+//type_info::~type_info() noexcept
+//{
+//}

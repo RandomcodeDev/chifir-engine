@@ -1,4 +1,6 @@
 target("RenderSystem")
+    set_kind("$(kind)")
+
     add_defines("IN_RENDER")
 
     add_headerfiles("**.h", "../public/rendersystem/**.h")

@@ -1,2 +1,5 @@
-ntdll exports some libc runctions that the launcher uses, but the public import library doesn't have them. these import libraries should fix that.
-
+ntdll.dll has the subset of the CRT available to native applications, and the
+launcher uses some of those functions. Microsoft only ships the ntdllp.lib
+import library that includes those functions in the WDK. Since people don't
+usually have that (I don't even know if I do), these import libraries with the
+functions the launcher uses are here.

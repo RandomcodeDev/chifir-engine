@@ -1,4 +1,6 @@
 target("RhiDirectX12")
+    set_kind("$(kind)")
+
     add_defines("IN_RHI", "IN_RHI_DIRECTX12", "RHI_DIRECTX12")
 
     add_headerfiles("**.h")

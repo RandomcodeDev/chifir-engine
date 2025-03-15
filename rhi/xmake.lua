@@ -7,6 +7,8 @@ if vulkan then
 end
 
 target("Rhi")
+    set_kind("$(kind)")
+
     add_defines("IN_RHI")
 
     add_headerfiles("*.h", "../public/rhi/**.h")
@@ -15,7 +17,7 @@ target("Rhi")
     )
 
     add_deps("Base", "CommonFiles", "DllSupport")
-    if is_static then
+    if is_kind("static") then
         if directx then
             add_deps("RhiDirectX12")
         end

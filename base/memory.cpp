@@ -218,26 +218,6 @@ BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment)
 	return nullptr;
 }
 
-static bool InsertFreedNode(AllocNode_t* node)
-{
-	if (s_free.IsEmpty())
-	{
-		s_free.Append(node);
-		return true;
-	}
-
-	// Find the node that should be before this one
-	AllocNode_t* current = s_free.GetHead();
-	while (!current->IsTail() && (current->data.systemAllocation != node->data.systemAllocation ||
-								  reinterpret_cast<sptr>(current) < reinterpret_cast<sptr>(node)))
-	{
-		current = current->GetNext();
-	}
-
-	ASSERT_MSG_SAFE(current != node, "Double free detected, node is already in free list");
-	return s_free.InsertAfter(current, node);
-}
-
 /// Resize an allocation. Currently just makes a new allocation and copies data over.
 BASEAPI void* Base_Realloc(void* block, ssize newSize)
 {

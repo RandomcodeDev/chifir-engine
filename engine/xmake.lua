@@ -1,4 +1,6 @@
 target("Engine")
+    set_kind("$(kind)")
+
     add_defines("IN_ENGINE")
 
     add_headerfiles("**.h", "../public/engine/**.h")

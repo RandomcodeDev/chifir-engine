@@ -14,19 +14,18 @@ set_allowedplats(
 	"orbis"
 )
 
-static = is_plat("switch", "orbis")
-if static then
-    set_allowedmodes(
-        "debug_static",
-        "release_static",
-        "retail_static"
-    )
-else
-    set_allowedmodes(
-        "debug", "debug_static",
-        "release", "release_static",
-        "retail", "retail_static"
-    )
+set_allowedarchs(
+	"x64", "x86", "arm64"
+)
+
+set_allowedmodes(
+	"debug",
+	"release",
+	"retail"
+)
+
+if is_plat("switch", "orbis") then
+	set_kind("static")
 end
 
 add_sysincludedirs(
@@ -79,12 +78,8 @@ if directx then
     add_defines("CH_DIRECTX", "CH_DIRECTX12")
 end
 
-is_static = is_mode("debug_static", "release_static", "retail_static")
-if is_static then
+if is_kind("static") then
     add_defines("CH_STATIC")
-    set_kind("static")
-else
-    set_kind("shared")
 end
 
 if is_plat("windows") then
@@ -103,23 +98,23 @@ elseif is_plat("orbis") then
 end
 
 if is_arch("x64") then
-    add_defines("CH_AMD64", "CH_X86")
+    add_defines("CH_AMD64", "CH_X86", "CH_SIMD128", "CH_SIMD256")
 elseif is_arch("x86") then
-    add_defines("CH_IA32", "CH_X86")
+    add_defines("CH_IA32", "CH_X86", "CH_SIMD128", "CH_SIMD256")
 elseif is_arch("arm64") then
-    add_defines("CH_ARM64")
+    add_defines("CH_ARM64", "CH_SIMD128", "CH_SIMD256")
 end
 
-if is_mode("debug", "debug_static") then
+if is_mode("debug") then
     add_defines("CH_DEBUG")
     set_symbols("debug")
     set_optimize("none")
-elseif is_mode("release", "release_static") then
+elseif is_mode("release") then
     add_defines("CH_RELEASE")
     set_symbols("debug")
     set_optimize("fastest")
     set_strip("all")
-elseif is_mode("retail", "retail_static") then
+elseif is_mode("retail") then
     add_defines("CH_RETAIL", "CH_RELEASE")
     set_symbols("none")
     set_optimize("fastest")
@@ -152,8 +147,9 @@ if is_plat("windows", "gdkx") then
     add_cxflags(
         "/Zl", -- prevent C runtime from being linked
         "/GS-", -- prevent buffer checks
+        "/GR-", -- no RTTI
         "/Zc:__cplusplus",
-        "/Zc:threadSafeInit-", -- idk how to support this
+        "/Zc:threadSafeInit-", -- idk how to implement this, just gonna do it the old fashioned way
 
         "/wd4201", -- nameless struct
         "/wd4324", -- structure padded due to alignment specifier
@@ -173,8 +169,16 @@ if is_plat("windows", "gdkx") then
         "/wd5045", -- Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
     {force = true})
 
+	-- /arch:SSE2 is the default for x86, SSE2 is the baseline for AMD64, but for x86, it needs
+	-- to be turned down to IA32 (I'm insane/stupid enough to eventually try to make this run on
+	-- a Pentium, which I do have, or something dumb like that)
     if is_arch("x64") then
         add_linkdirs("public/win32/x64")
+        if is_toolchain("clang-cl") then
+            add_cxflags(
+                "-march=x86-64-v3",
+            {force = true})
+        end
     elseif is_arch("x86") then
         add_cxflags(
             "/arch:IA32"
@@ -191,6 +195,7 @@ elseif is_plat("linux", "switch", "orbis") then
     add_cxflags(
         "-fms-extensions",
         "-fno-threadsafe-statics",
+        "-fno-rtti", -- no RTTI
         "-working-directory=$(scriptdir)", -- to fix __FILE__
 
         "-Wno-unknown-warning-option",

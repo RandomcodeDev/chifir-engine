@@ -1,4 +1,6 @@
 target("RhiVulkan")
+    set_kind("$(kind)")
+
     add_defines("IN_RHI", "IN_RHI_VULKAN", "RHI_VULKAN")
 
     add_headerfiles("**.h")

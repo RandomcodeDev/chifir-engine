@@ -6,7 +6,8 @@ target("LauncherMain")
 
     if is_plat("windows", "gdkx") then
         add_files("main_win32.cpp")
-        if not is_static then
+        if not is_kind("static") then
+			-- see public/win32/readme.txt
             add_links("ntdll.lib", "ntdll_libc.lib")
         end
     elseif is_plat("linux") then
@@ -17,12 +18,14 @@ target("LauncherMain")
 		add_files("../private/launcher/main_orbis.cpp")
     end
 
-    if is_static then
+    if is_kind("static") then
         add_deps("Launcher", "Engine", "RenderSystem", "VideoSystem")
     end
 target_end()
 
 target("Launcher")
+    set_kind("$(kind)")
+
     add_headerfiles("**.h", "../public/launcher/**.h")
     add_files("main.cpp")
 
