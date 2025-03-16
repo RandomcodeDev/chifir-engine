@@ -120,6 +120,9 @@ BASEAPI NORETURN void Base_AbortSafe(s32 error, cstr msg)
 	{
 		error = errno;
 	}
+
+	BREAKPOINT();
+
 	Base_SysCall(__NR_exit_group, error);
 	__builtin_unreachable();
 }

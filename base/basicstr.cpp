@@ -238,14 +238,14 @@ BASEAPI s64 Base_ParseInt(cstr str, ssize* endOffset)
 			}
 
 			s64 digit = Base_IsDecDigit(c) ? c - '0' : c - 'A' + 0xA;
-			value |= digit << ((len - i - 1) << 3);
+			value = value * 16 + digit;
 		}
 		break;
 	}
 	case 2: {
 		for (ssize i = start; i < len; i++)
 		{
-			if (Base_IsBinDigit(str[i]))
+			if (!Base_IsBinDigit(str[i]))
 			{
 				if (endOffset)
 				{
@@ -260,6 +260,10 @@ BASEAPI s64 Base_ParseInt(cstr str, ssize* endOffset)
 	}
 	}
 
+	if (endOffset)
+	{
+		*endOffset = len;
+	}
 Done:
 	return value * sign;
 }
@@ -332,6 +336,10 @@ BASEAPI f64 Base_ParseFloat(cstr str, ssize* endOffset)
 		}
 	}
 
+	if (endOffset)
+	{
+		*endOffset = len;
+	}
 Done:
 	return (integral + fractional) * sign;
 }

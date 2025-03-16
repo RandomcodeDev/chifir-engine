@@ -26,7 +26,7 @@ static cstr GetEngineDir()
 	return s_directory;
 }
 
-s32 Startup(s32 argc, dstr argv[], void (*DynamicAtExit)())
+extern "C" s32 Startup(s32 argc, dstr argv[], void (*DynamicAtExit)())
 {
 #ifdef CH_STATIC
 	extern void Base_Internal_SetArgs(s32 argc, dstr argv[]);

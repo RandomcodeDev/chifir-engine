@@ -248,7 +248,14 @@ BASEAPI void* Base_Realloc(void* block, ssize newSize)
 
 BASEAPI void Base_Free(void* block)
 {
+#ifdef STRICT_ALLOC
 	ASSERT_MSG_SAFE(block != nullptr, "Block was nullptr");
+#else
+	if (!block)
+	{
+		return;
+	}
+#endif
 
 	// TODO: check if block is within an allocation
 	AllocNode_t* node = FindNode(block);

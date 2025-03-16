@@ -208,6 +208,16 @@ elseif is_plat("linux", "switch", "orbis") then
         "-Wno-ignored-attributes",
         "-Wno-frame-address",
     {force = true})
+
+	add_ldflags(
+		"-fuse-ld=lld",
+	{force = true})
+
+	if is_arch("x64") then
+		add_cxflags(
+			"-march=x86-64-v3",
+		{force = true})
+	end
 end
 
 includes("base")
