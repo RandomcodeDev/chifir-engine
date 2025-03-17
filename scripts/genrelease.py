@@ -131,6 +131,16 @@ def main(argc, argv):
 	gatherlicenses_args = [f'{gatherlicenses.__file__}', f'--output={path.join(output, "licenses")}']
 	gatherlicenses.main(len(gatherlicenses_args), gatherlicenses_args)
 
+	if args.compress:
+		zip_name = f"{output}.zip"
+		z = ZipFile(zip_name, "w")
+		for root, _, files in os.walk(output):
+			for f in files:
+				inner_path = path.relpath(path.join(root, f), output)
+				print(f"{inner_path} -> {path.join(zip_name, inner_path)}")
+				z.write(path.join(root, f), inner_path)
+		z.close()
+
 
 if __name__ == "__main__":
 	main(len(sys.argv), sys.argv)
