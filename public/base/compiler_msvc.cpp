@@ -138,14 +138,17 @@ extern "C"
 #pragma section(".CRT$XLZ", long, read)
 	ATTRIBUTE(allocate(".CRT$XLZ")) PIMAGE_TLS_CALLBACK __xl_z = nullptr;
 
-#pragma section(".CRT$XLC")
-	ATTRIBUTE(allocate(".CRT$XLC"))
-	PIMAGE_TLS_CALLBACK __xl_c = [](void*, DWORD reason, void*) {
+	void __stdcall TlsCallback(void*, DWORD reason, void*)
+	{
 		if (reason == DLL_THREAD_ATTACH)
 		{
 			RunThreadConstructors();
 		}
-	};
+	}
+
+#pragma section(".CRT$XLC")
+	ATTRIBUTE(allocate(".CRT$XLC"))
+	PIMAGE_TLS_CALLBACK __xl_c = TlsCallback;
 
 	// other tls initializers?
 #pragma section(".CRT$XDA", long, read)
@@ -172,7 +175,7 @@ extern "C"
 		(u64)&_tls_index,   // address of tls_index
 		(u64)(&__xl_a + 1), // pointer to call back array
 		(u32)0,             // size of tls zero fill
-		{0}              // characteristics
+		{0}                 // characteristics
 	};
 #endif
 #pragma data_seg()
@@ -247,6 +250,6 @@ void __stdcall RunThreadConstructors()
 }
 
 /// Ensures the vtable for type_info is generated
-//type_info::~type_info() noexcept
+// type_info::~type_info() noexcept
 //{
-//}
+// }
