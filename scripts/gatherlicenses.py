@@ -19,15 +19,15 @@ def main(argc, argv):
     else:
         output = os.path.abspath(args.output)
 
-    print(f"Gathering licenses in {args.licenses} to {args.output}{".zip" if args.compress else ""}")
+    print(f"Gathering licenses in {args.licenses} to {args.output}{'.zip' if args.compress else ''}")
     licenses = tomllib.load(open(args.licenses, "rb"))
     for dep, info in licenses.items():
         print(f"{dep}: {info}")
         with open(info["license"]) as f:
             license = f.read()
         license_ext = os.path.splitext(info["license"])
-        path = f"{dep}{license_ext[1] if len(license_ext[1]) else ".txt"}"
-        data = f"Dependency: {info["name"]}\nAuthor: {info["author"]}\nUsed for: {info["use"]}\nPath: {info["path"]}\nURL: {info["url"]}\n\nLicense:\n{license}"
+        path = f"{dep}{license_ext[1] if len(license_ext[1]) else '.txt'}"
+        data = f"Dependency: {info['name']}\nAuthor: {info['author']}\nUsed for: {info['use']}\nPath: {info['path']}\nURL: {info['url']}\n\nLicense:\n{license}"
         if args.compress:
             output.writestr(path, data)
         else:
