@@ -100,7 +100,6 @@ static void ConvertDeviceInfo(
 	info.vendorId = properties.vendorID;
 	info.deviceId = properties.deviceID;
 
-	info.maxTextureSize = properties.limits.maxImageDimension2D;
 	info.totalMemory = memoryProperties.memoryHeaps[0].size;
 
 	info.handle = index;

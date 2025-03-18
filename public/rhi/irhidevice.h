@@ -36,7 +36,6 @@ struct RhiDeviceInfo_t
 	u32 deviceId;
 
 	s64 totalMemory;
-	s32 maxTextureSize;
 
 	u64 handle;
 };

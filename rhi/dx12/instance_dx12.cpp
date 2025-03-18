@@ -85,10 +85,17 @@ void CDx12RhiInstance::GetDeviceInfo(CVector<RhiDeviceInfo_t>& info)
     info.Empty();
     info.Reserve(adapters.Size());
 
-    for (ssize i = 0; i < info.Size(); i++)
+    for (ssize i = 0; i < adapters.Size(); i++)
     {
-//        RhiDeviceInfo_t rhiInfo = {};
-//        Dx12DeviceInfo_t dxInfo = {};
+        RhiDeviceInfo_t rhiInfo = {};
+        Dx12DeviceInfo_t dxInfo = {};
+		if (CDx12RhiDevice::GetDeviceInfo(rhiInfo, dxInfo, adapters[i], i))
+		{
+			info.Add(rhiInfo);
+			Log_Debug("Device %s [%04x:%04x] is usable", rhiInfo.name.Data(), rhiInfo.vendorId, rhiInfo.deviceId);
+		}
+
+		m_devices.Add(dxInfo);
     }
 }
 

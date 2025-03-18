@@ -40,11 +40,11 @@ RHIAPI RhiBackendType_t Rhi_GetBackendTypeByName(cstr name)
 	}
 	else if (Base_StrCompare(name, "DirectX9") == 0 || Base_StrCompare(name, "dx9") == 0 || Base_StrCompare(name, "d3d9") == 0)
 	{
-		return RhiBackendType_t::DirectX12;
+		return RhiBackendType_t::DirectX9;
 	}
 	else if (Base_StrCompare(name, "OpenGL") == 0 || Base_StrCompare(name, "gl") == 0)
 	{
-		return RhiBackendType_t::DirectX12;
+		return RhiBackendType_t::OpenGl;
 	}
 	else
 	{

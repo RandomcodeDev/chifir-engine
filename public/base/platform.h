@@ -64,3 +64,11 @@ extern BASEAPI cstr Plat_GetEngineDir();
 
 /// Get an environment variable
 extern BASEAPI cstr Plat_GetEnvironment(cstr name);
+
+#ifdef CH_WIN32
+/// Get the ASCII version of a Unicode string
+extern BASEAPI dstr Plat_GetNarrowString(cwstr wide);
+
+/// Get the Unicode version of an ASCII string
+extern BASEAPI dwstr Plat_GetWideString(cstr narrow);
+#endif

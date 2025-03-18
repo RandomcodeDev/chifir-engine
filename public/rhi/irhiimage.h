@@ -46,6 +46,9 @@ class IRhiImageView
   public:
     virtual ~IRhiImageView() DEFAULT;
 
+    // Get the image this is a view of, if it's controlled by the RHI
+    virtual IRhiImage* GetImage() = 0;
+
     virtual void Destroy() = 0;
 
     virtual u32 GetWidth() = 0;

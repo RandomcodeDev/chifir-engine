@@ -2,6 +2,7 @@
 
 #include "base/vector.h"
 
+#include "device_dx12.h"
 #include "rhi/irhidevice.h"
 #include "rhi/irhiinstance.h"
 
@@ -30,4 +31,5 @@ class CDx12RhiInstance: public IRhiInstance
 	ILibrary* m_d3d12;
 	IDXGIFactory6* m_factory;
 	HWND m_hwnd;
+	CVector<Dx12DeviceInfo_t> m_devices;
 };

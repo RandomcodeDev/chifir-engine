@@ -10,6 +10,8 @@
 #include "base/string.h"
 #include "base/types.h"
 #include "base/vector.h"
+#include "phnt.h"
+#include "phnt_ntdef.h"
 #include "platform_win32.h"
 
 DECLARE_AVAILABLE(DbgPrint);
