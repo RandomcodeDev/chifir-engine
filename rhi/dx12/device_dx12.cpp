@@ -41,7 +41,7 @@ bool CDx12RhiDevice::GetDeviceInfo(RhiDeviceInfo_t& rhiInfo, Dx12DeviceInfo_t& i
 	UNICODE_STRING descWStr = {};
 	descWStr.Buffer = info.desc.Description;
 	descWStr.MaximumLength = sizeof(info.desc.Description);
-	descWStr.Length = static_cast<u16>(Base_MemFind(descWStr.Buffer, descWStr.MaximumLength, L"\0", sizeof(wchar_t)) - 1);
+	descWStr.Length = static_cast<u16>(Base_MemFind(descWStr.Buffer, descWStr.MaximumLength, L"", sizeof(wchar_t)) - 1);
 	ANSI_STRING descStr = {};
 	RtlUnicodeStringToAnsiString(&descStr, &descWStr, TRUE);
 	rhiInfo.name = CString(descStr.Buffer, descStr.Length);
