@@ -34,6 +34,9 @@ class IEngine: public IApplication
 	/// Get whether the engine is headless
 	virtual bool Headless() = 0;
 
+	/// Get the engine's start time
+	virtual const DateTime_t& GetStartTime() = 0;
+
 	/// Get the engine's current state
 	virtual EngineState_t GetState() = 0;
 

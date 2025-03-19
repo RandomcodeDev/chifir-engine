@@ -2,11 +2,14 @@
 #include "base/filesystem.h"
 #include "base/loader.h"
 #include "base/log.h"
+#include "base/platform.h"
 #include "rendersystem/irendersystem.h"
 #include "rhi/rhi.h"
 #include "videosystem/ivideosystem.h"
 
-CEngine::CEngine() : m_state(EngineState_t::Uninitialized), m_headless(false), m_rhiBackendName(DEFAULT_RHI_BACKEND), m_renderSystem(nullptr), m_videoSystem(nullptr)
+CEngine::CEngine()
+	: m_state(EngineState_t::Uninitialized), m_headless(false), m_rhiBackendName(DEFAULT_RHI_BACKEND), m_renderSystem(nullptr),
+	  m_videoSystem(nullptr)
 {
 }
 
@@ -39,14 +42,6 @@ void CEngine::Setup(const CVector<CString>& args)
 
 void CEngine::GetDependencies(CVector<SystemDependency_t>& systems, CVector<LibDependency_t>& libs)
 {
-	static const LibDependency_t CLIENT_LIBS[] = {
-		{"Rhi", true}
-    };
-	static const SystemDependency_t CLIENT_SYSTEMS[] = {
-		{ "VideoSystem",  IVideoSystem::VERSION, true, false},
-        {"RenderSystem", IRenderSystem::VERSION, true, false}
-    };
-
 	if (!m_headless)
 	{
 		libs.Add(CLIENT_LIBS, ArraySize(CLIENT_LIBS));
@@ -61,7 +56,13 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	Log_Info("Initializing engine");
 	m_state = EngineState_t::Startup;
 
+	Plat_GetDateTime(m_startTime);
+	m_logName.Format(
+		GAME_NAME "_%04d-%02d-%02d_%02d-%02d-%02d.log", m_startTime.year, m_startTime.month, m_startTime.day, m_startTime.hour,
+		m_startTime.minute, m_startTime.second);
+
 	// TODO: make it so save filesystem is only open when necessary, it seems like console companies prefer that
+	// maybe on platforms that are picky about that, since writes are uncommon, mount and unmount at every write
 	if (!InitializeSaveFilesystem())
 	{
 		Base_Quit("Failed to initialize filesystem!");
@@ -120,7 +121,7 @@ void CEngine::AddLogWriters()
 {
 	// in general, it goes against
 #if defined CH_DEBUG || !defined CH_CONSOLE
-	Log_AddWriter(new CFileLogWriter(m_saveFilesystem, "chifir.log"));
+	Log_AddWriter(new CFileLogWriter(m_saveFilesystem, m_logName.Data()));
 #endif
 }
 
@@ -132,14 +133,14 @@ bool CEngine::InitializeSystems(const CVector<ISystem*>& systems)
 
 	if (!m_headless)
 	{
-		m_videoSystem = reinterpret_cast<IVideoSystem*>(systems[0]);
+		m_videoSystem = reinterpret_cast<IVideoSystem*>(systems[CLIENT_SYSTEMS_OFFSET + 0]);
 		if (!m_videoSystem->Initialize())
 		{
 			Log_FatalError("Video system initialization failed!");
 			return false;
 		}
 
-		m_renderSystem = reinterpret_cast<IRenderSystem*>(systems[1]);
+		m_renderSystem = reinterpret_cast<IRenderSystem*>(systems[CLIENT_SYSTEMS_OFFSET + 1]);
 		if (!m_renderSystem->Initialize(m_videoSystem, m_rhiBackendName))
 		{
 			Log_FatalError("Render system initialization failed!");

@@ -2,9 +2,12 @@
 
 #pragma once
 
+#include "base/string.h"
 #include "engine/engine.h"
 #include "iapplication.h"
+#include "rendersystem/irendersystem.h"
 #include "rhi/rhi.h"
+#include "videosystem/ivideosystem.h"
 
 class IWritableFilesystem;
 class IRenderSystem;
@@ -20,23 +23,30 @@ class CEngine: public IEngine
 	virtual void GetDependencies(CVector<SystemDependency_t>& systems, CVector<LibDependency_t>& libs);
 	virtual s32 Run(const CVector<ISystem*>& systems /* TODO: , CCommandLine cmdLine */);
 
-	bool Headless()
+	virtual bool Headless()
 	{
 		return m_headless;
 	}
 
-	EngineState_t GetState()
+	virtual const DateTime_t& GetStartTime()
+	{
+		return m_startTime;
+	}
+
+	virtual EngineState_t GetState()
 	{
 		return m_state;
 	}
 
-	void Quit()
+	virtual void Quit()
 	{
 		m_state = EngineState_t::Shutdown;
 	}
 
   private:
 	EngineState_t m_state;
+	DateTime_t m_startTime;
+	CString m_logName;
 	bool m_headless;
 	cstr m_rhiBackendName;
 	bool m_inFrame;
@@ -70,6 +80,16 @@ class CEngine: public IEngine
 
 	/// Check if the engine's state should change
 	void CheckState();
+
+
+	static constexpr LibDependency_t CLIENT_LIBS[] = {
+		{"Rhi", true}
+    };
+	static constexpr SystemDependency_t CLIENT_SYSTEMS[] = {
+		{ "VideoSystem",  IVideoSystem::VERSION, true, false},
+        {"RenderSystem", IRenderSystem::VERSION, true, false}
+    };
+	static constexpr u32 CLIENT_SYSTEMS_OFFSET = 0;
 
 	static constexpr cstr DEFAULT_RHI_BACKEND = "Vulkan";
 };

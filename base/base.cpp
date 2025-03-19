@@ -134,7 +134,7 @@ BASEAPI NORETURN void Base_Quit(cstr message, ...)
 
 	Log_FatalError("%s", formatted);
 	// this is a guess, since this function has no knowledge of the engine's paths, just where it probably initialized it to
-	Log_FatalError("Check the log in (probably) %s/chifir.log", Plat_GetSaveLocation());
+	Log_FatalError("Check the log in (probably) %s", Plat_GetSaveLocation());
 	Base_AbortSafe(ABORT_RELEVANT_ERROR, formatted);
 }
 
