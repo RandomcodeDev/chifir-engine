@@ -209,8 +209,17 @@ elseif is_plat("linux", "switch", "orbis") then
         "-Wno-frame-address",
     {force = true})
 
+    if is_arch("arm64") then
+        add_cxflags(
+            "-mfloat-abi=hard",
+        {force = true})
+    end
+
 	if is_plat("linux") then
 		add_ldflags(
+			"-fuse-ld=lld",
+		{force = true})
+		add_shflags(
 			"-fuse-ld=lld",
 		{force = true})
 
@@ -218,7 +227,7 @@ elseif is_plat("linux", "switch", "orbis") then
 			add_cxflags(
 				"-march=x86-64-v3",
 			{force = true})
-		end
+        end
 	end
 end
 

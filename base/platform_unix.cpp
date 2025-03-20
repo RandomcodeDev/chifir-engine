@@ -10,7 +10,6 @@
 
 #include <fcntl.h>
 #include <unistd.h>
-#include <asm/unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -37,7 +36,7 @@ BASEAPI void Plat_Init()
 	{
 		char exePath[1024];
 
-		Base_SysCall(__NR_readlink, "/proc/self/exe", exePath, ArraySize<usize>(exePath));
+		readlink("/proc/self/exe", exePath, ArraySize<usize>(exePath));
 
 		ssize index = Base_StrFind(exePath, '/', true);
 		g_exeDir = Base_StrClone(exePath, index);
@@ -123,7 +122,7 @@ BASEAPI NORETURN void Base_AbortSafe(s32 error, cstr msg)
 
 	BREAKPOINT();
 
-	Base_SysCall(__NR_exit_group, error);
+	exit(error);
 	__builtin_unreachable();
 }
 
@@ -133,7 +132,7 @@ bool Base_GetSystemMemory(ssize size)
 	static LinkedNode_t<SystemAllocation_t> memoryNodes[64];
 
 	// Maximize available space by rounding up to page size directly
-	size = AlignUp(size, PAGE_SIZE);
+	size = AlignUp(size, getpagesize());
 
 	ASSERT_MSG(
 		g_memInfo.allocations.Size() < ArraySize(memoryNodes),
@@ -143,7 +142,7 @@ bool Base_GetSystemMemory(ssize size)
 	node->data.size = size;
 
 	node->data.memory = reinterpret_cast<void*>(
-		Base_SysCall(__NR_mmap, nullptr, node->data.size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+		mmap(nullptr, node->data.size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
 	if (node->data.memory == MAP_FAILED)
 	{
 		return false;
@@ -205,7 +204,7 @@ BASEAPI bool Plat_ConsoleHasColor()
 
 BASEAPI void Plat_WriteConsole(cstr message)
 {
-	Base_SysCall(__NR_write, STDOUT_FD, reinterpret_cast<uptr>(message), Base_StrLength(message));
+	write(STDOUT_FD, message, Base_StrLength(message));
 }
 
 BASEAPI cstr Plat_GetSaveLocation()
@@ -238,7 +237,7 @@ BASEAPI cstr Plat_GetEngineDir()
 
 	if (!Base_StrLength(s_directory))
 	{
-		Base_SysCall(__NR_readlink, "/proc/self/exe", s_directory, ArraySize<usize>(s_directory));
+		readlink("/proc/self/exe", s_directory, ArraySize<usize>(s_directory));
 		ssize exeName = Base_StrFind(s_directory, '/', true); // chances that this fails are 0
 		s_directory[exeName] = 0;
 	}
@@ -255,7 +254,7 @@ BASEAPI u64 Plat_GetMilliseconds()
 {
 	struct timespec time = {};
 
-	Base_SysCall(__NR_clock_gettime, CLOCK_REALTIME, reinterpret_cast<uptr>(&time));
+	clock_gettime(CLOCK_REALTIME, &time);
 
 	return time.tv_sec * 1000 + (time.tv_nsec + 500000) / 1000000;
 }
