@@ -1,20 +1,21 @@
-MAKE_STUB MACRO name
+MACRO
+MAKE_STUB $name
 	.DATA
-	PUBLIC @CatStr(__imp_, name)
-	@CatStr(__imp_, name) LABEL QWORD
-	PUBLIC @CatStr(STUB_, name)
-	@CatStr(STUB_, name) DQ 0
+	EXPORT @CatStr(__imp_, $name)
+	@CatStr(__imp_, $name) LABEL QWORD
+	EXPORT @CatStr(STUB_, $name)
+	@CatStr(STUB_, $name) DQ 0
 	.CODE
-	@CatStr(name, _Forwarder)
-		ldr x0, =@CatStr(STUB_, name)
+	@CatStr($name, _Forwarder)
+		ldr x0, =@CatStr(STUB_, $name)
 		ldr x1, [x0]
 		br x1
 
-	@CatStr(name, _Available)
+	@CatStr($name, _Available)
 		stp x29, x30, [sp, #-16]
 		mov x29, sp
 
-		ldr x0, =@CatStr(STUB_, name)
+		ldr x0, =@CatStr(STUB_, $name)
 		ldr x1, [x0]
 		cbz x1, Avail
 
@@ -27,7 +28,7 @@ Avail
 Done
 		ldp x29, x30, [sp], #16
 		ret
-ENDM
+MEND
 
 ; ntdll stubs
 MAKE_STUB DbgPrint
