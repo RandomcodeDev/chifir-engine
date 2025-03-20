@@ -80,11 +80,6 @@ extern "C"
 	{
 	}
 
-	void __chkstk(uptr addr)
-	{
-		UNUSED(addr);
-	}
-
 #if !defined __clang__ && _MSC_VER >= 1700
 	ATTRIBUTE(guard(suppress))
 #endif

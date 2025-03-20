@@ -81,7 +81,6 @@ class CEngine: public IEngine
 	/// Check if the engine's state should change
 	void CheckState();
 
-
 	static constexpr LibDependency_t CLIENT_LIBS[] = {
 		{"Rhi", true}
     };

@@ -55,6 +55,13 @@ def main(argc, argv):
 		action="store_true",
 	)
 	parser.add_argument(
+		"--static",
+		"-s",
+		help="ensure symbols from a static build are copied",
+		default=False,
+		action="store_true"
+	)
+	parser.add_argument(
 		"--build-dir", "-i", help="build directory to check", default=path.abspath(path.join(path.dirname(argv[0]), "..", "build"))
 	)
 	parser.add_argument(
@@ -115,16 +122,18 @@ def main(argc, argv):
 			dest = None
 			syms = None
 			if name == path.splitext(args.game)[0] and ext == EXE_EXTS[plat]:
-				dest = path.join(output)
+				dest = output
 			elif ext == DLL_EXTS[plat]:
 				dest = path.join(output, "bin")
+			elif ext == SYM_EXTS[plat] and args.static:
+				dest = output
 
 			syms = path.join(build_dir, f"{name}{SYM_EXTS[plat]}")
 
 			if dest != None:
 				print(f"{file} -> {path.join(dest, f)}")
 				shutil.copy(file, dest)
-				if path.exists(syms):
+				if path.exists(syms) and syms != file:
 					print(f"{syms} -> {path.join(dest, path.basename(syms))}")
 					shutil.copy(syms, dest)
 

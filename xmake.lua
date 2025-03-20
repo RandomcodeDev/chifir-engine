@@ -138,7 +138,7 @@ add_private_settings()
 
 add_defines("_GNU_SOURCE", "_CRT_SECURE_NO_WARNINGS")
 
-set_languages("gnu17", "gnuxx14")
+set_languages("gnu17", "gnuxx17")
 set_warnings("all", "error")
 
 if is_plat("windows", "gdkx") then
@@ -209,14 +209,16 @@ elseif is_plat("linux", "switch", "orbis") then
         "-Wno-frame-address",
     {force = true})
 
-	add_ldflags(
-		"-fuse-ld=lld",
-	{force = true})
-
-	if is_arch("x64") then
-		add_cxflags(
-			"-march=x86-64-v3",
+	if is_plat("linux") then
+		add_ldflags(
+			"-fuse-ld=lld",
 		{force = true})
+
+		if is_arch("x64") then
+			add_cxflags(
+				"-march=x86-64-v3",
+			{force = true})
+		end
 	end
 end
 

@@ -52,6 +52,8 @@ bool CVulkanRhiDevice::Initialize()
 		return false;
 	}
 
+	volkLoadDevice(m_handle);
+
 	Log_Debug("Getting queues");
 	vkGetDeviceQueue(m_handle, m_info.graphicsFamilyIndex, 0, &m_graphicsQueue);
 	NameVkObject(m_handle, m_graphicsQueue, VK_OBJECT_TYPE_QUEUE, "Graphics queue");

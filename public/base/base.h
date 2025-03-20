@@ -97,9 +97,9 @@ template <typename T> constexpr T AlignDown(const T& value, const T& align) noex
 }
 
 /// Get the number of elements in a stack/static array
-template <typename S = ssize, typename T, S N> constexpr S ArraySize(const T (&array)[N]) noexcept
+template <typename S = ssize, typename T, ssize N> constexpr S ArraySize(const T (&array)[N]) noexcept
 {
-	return N;
+	return static_cast<S>(N);
 }
 
 /// FNV-1a hash

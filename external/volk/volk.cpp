@@ -121,8 +121,8 @@ void volkInitializeCustom(PFN_vkVoidFunction (*handler)(void*, const char*), voi
 	//vkGetInstanceProcAddr = handler;
 
 	//loadedModule = data;
-	volkGenLoadLoader(data, handler);
 	vkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(handler(data, "vkGetInstanceProcAddr"));
+	volkGenLoadLoader(data, handler);
 }
 
 void volkFinalize(void)
@@ -166,7 +166,7 @@ void volkLoadInstance(VkInstance instance)
 {
 	loadedInstance = instance;
 	volkGenLoadInstance(instance, vkGetInstanceProcAddrStub);
-	volkGenLoadDevice(instance, vkGetInstanceProcAddrStub);
+	//volkGenLoadDevice(instance, vkGetInstanceProcAddrStub);
 }
 
 void volkLoadInstanceOnly(VkInstance instance)

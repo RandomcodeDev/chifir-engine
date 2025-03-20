@@ -38,6 +38,7 @@ MAKE_STUB(RtlTimeToTimeFields, __stdcall, @8)
 // These are desktop/OneCore things
 
 // ntdll
+MAKE_STUB(__chkstk, __cdecl)
 MAKE_STUB(LdrAddDllDirectory, __stdcall, @8)
 MAKE_STUB(LdrAddRefDll, __stdcall, @8)
 MAKE_STUB(LdrGetDllHandle, __stdcall, @16)
@@ -233,6 +234,7 @@ bool Base_InitLoader()
 	GET_FUNCTION(&ntDll, RtlFreeUnicodeString)
 
 	// ntdll
+	GET_FUNCTION(&ntDll, __chkstk)
 	GET_FUNCTION(&ntDll, LdrAddRefDll)
 	GET_FUNCTION(&ntDll, LdrGetDllHandle)
 	GET_FUNCTION(&ntDll, LdrLoadDll)
