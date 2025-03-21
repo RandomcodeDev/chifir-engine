@@ -43,7 +43,7 @@ struct SystemAllocation_t
 /// Memory info
 struct MemoryInfo_t
 {
-	CLinkedList<SystemAllocation_t> allocations;
+	CIntrusiveLinkedList<SystemAllocation_t> allocations;
 	ssize used;
 	ssize size;
 	ssize totalAllocated;
@@ -56,7 +56,7 @@ extern MemoryInfo_t g_memInfo;
 extern bool Base_GetSystemMemory(ssize size);
 
 /// Release a chunk of memory
-extern void Base_ReleaseSystemMemory(LinkedNode_t<SystemAllocation_t> alloc);
+extern void Base_ReleaseSystemMemory(IntrusiveLinkedNode_t<SystemAllocation_t> alloc);
 
 /// Release all system memory, you shouldn't call this unless you're done with the allocator and any memory it owns
 extern void Base_ReleaseAllMemory();

@@ -19,16 +19,16 @@ struct AllocInfo_t
 {
 	ssize size; // Includes the size of the AllocNode_t header
 	ssize alignment;
-	LinkedNode_t<SystemAllocation_t>* systemAllocation;
+	IntrusiveLinkedNode_t<SystemAllocation_t>* systemAllocation;
 	u64 signature; // Must equal ALLOC_SIGNATURE
 };
 
-typedef LinkedNode_t<AllocInfo_t> AllocNode_t;
+typedef IntrusiveLinkedNode_t<AllocInfo_t> AllocNode_t;
 
 /// List of unused blocks. Nodes are stored at the start of each chunk of memory in the allocator's control, and their size is
 /// included in AllocInfo_t's size member.
 /// TODO: once threading has been implemented, this MUST be made thread safe.
-static CLinkedList<AllocInfo_t> s_free;
+static CIntrusiveLinkedList<AllocInfo_t> s_free;
 
 static s32 FindSystemNode(SystemAllocation_t* alloc, void* data)
 {
@@ -52,7 +52,7 @@ static const ssize MAXIMUM_ALIGNMENT = 64;
 /// This finds a system node with the requested size, or allocates a new one of a fixed size, and then makes a new AllocNode_t
 static AllocNode_t* MakeNewNode(ssize size)
 {
-	LinkedNode_t<SystemAllocation_t>* node = g_memInfo.allocations.Find(FindSystemNode, reinterpret_cast<void*>(size));
+	IntrusiveLinkedNode_t<SystemAllocation_t>* node = g_memInfo.allocations.Find(FindSystemNode, reinterpret_cast<void*>(size));
 	if (!node)
 	{
 		ASSERT_MSG_SAFE(Base_GetSystemMemory(SYSTEM_ALLOC_SIZE) != false, "system memory allocator exhausted or not initialized");

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "base/loader.h"
 #include "base/vector.h"
 
 #include "device_dx12.h"
@@ -8,7 +9,6 @@
 
 #include "dx12.h"
 
-class ILibrary;
 class IVideoSystem;
 
 class CDx12RhiInstance: public IRhiInstance
@@ -25,6 +25,25 @@ class CDx12RhiInstance: public IRhiInstance
 	virtual void GetDeviceInfo(CVector<RhiDeviceInfo_t>& info);
 
 	virtual IRhiDevice* CreateDevice(const RhiDeviceInfo_t& info);
+
+	template<typename T>
+	T GetD3d12Symbol(cstr name)
+	{
+		return m_d3d12->GetSymbol<T>(name);
+	}
+
+	static constexpr cstr DXGI_DLL_NAME =
+#ifdef CH_GDKX
+		"d3d12_xs";
+#else
+		"dxgi";
+#endif
+	static constexpr cstr D3D12_DLL_NAME =
+#ifdef CH_GDKX
+		"d3d12_xs";
+#else
+		"d3d12";
+#endif
 
   private:
 	ILibrary* m_dxgi;

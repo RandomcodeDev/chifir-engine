@@ -9,5 +9,27 @@ target("RhiDirectX12")
         "instance_dx12.cpp"
     )
 
+    after_build(function (target)
+        if is_plat("windows") then
+            agility_dir = "$(scriptdir)/../../external/d3d12_agility/build/native/bin/"
+            if is_arch("x64") then
+                agility_dir = path.join(agility_dir, "x64/")
+            elseif is_arch("x86") then
+                agility_dir = path.join(agility_dir, "win32/")
+            elseif is_arch("arm64") then
+                agility_dir = path.join(agility_dir, "arm64/")
+            end
+
+            outdir = target:targetdir() .. "/bin"
+            os.mkdir(outdir)
+            for _, dll in ipairs({"D3D12Core", "d3d12SDKLayers"}) do
+                if not os.exists(path.join(outdir, dll .. ".dll")) then
+                    os.cp(path.join(agility_dir, dll .. ".dll"), path.join(outdir, dll .. ".dll"))
+                    os.cp(path.join(agility_dir, dll .. ".pdb"), path.join(outdir, dll .. ".pdb"))
+                end
+            end
+        end
+    end)
+
     add_deps("Base", "CommonFiles", "DllSupport")
 target_end()

@@ -1,3 +1,11 @@
+[d3d12_agility]
+name = "DirectX 12 Agility SDK"
+author = "Microsoft"
+use = "DirectX 12 runtime"
+path = "external/d3d12_agility"
+license = "external/d3d12_agility/LICENSE.txt"
+url = "https://devblogs.microsoft.com/directx/directx12agility"
+
 [directx]
 name = "DirectX Headers"
 author = "Microsoft"

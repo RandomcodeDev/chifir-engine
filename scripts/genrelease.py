@@ -30,6 +30,8 @@ def python_machine_to_xmake(machine: str = platform.machine()) -> str:
 
 
 def main(argc, argv):
+	repo_dir = path.abspath(path.join(path.dirname(argv[0]), ".."))
+
 	parser = ArgumentParser(
 		description="copy engine binaries to a proper release structure"
 	)
@@ -62,7 +64,7 @@ def main(argc, argv):
 		action="store_true"
 	)
 	parser.add_argument(
-		"--build-dir", "-i", help="build directory to check", default=path.abspath(path.join(path.dirname(argv[0]), "..", "build"))
+		"--build-dir", "-i", help="build directory to check", default=path.join(repo_dir, "build"))
 	)
 	parser.add_argument(
 		"--plat", "-p", help="platform of the build", default=platform.system()
@@ -136,6 +138,17 @@ def main(argc, argv):
 				if path.exists(syms) and syms != file:
 					print(f"{syms} -> {path.join(dest, path.basename(syms))}")
 					shutil.copy(syms, dest)
+
+	if plat == "windows":
+		d3d12_agility = path.join(repo_dir, "external", "d3d12_agility")
+		for f in os.listdir(d3d12_agility):
+			file = path.join(d3d12_agility, f)
+			if path.isfile(file):
+				(name, ext) = path.splitext(f)
+				if ext == DLL_EXTS[plat]:
+					dest = path.join(output, "bin")
+					print(f"{file} -> {path.join(dest, f)}")
+					shutil.copy(file, dest)
 
 	gatherlicenses_args = [f'{gatherlicenses.__file__}', f'--output={path.join(output, "licenses")}']
 	gatherlicenses.main(len(gatherlicenses_args), gatherlicenses_args)

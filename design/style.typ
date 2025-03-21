@@ -27,14 +27,14 @@ Additionally, when functions are complex, add comments explaining what's happeni
 `base/memory.cpp` and the Windows loader in `base/loader_win32.cpp` are the best example of commenting things so far.
 
 == Naming
-Variables are camel case, prefixed with `m_` for private/protected members, `g_` for globals, and `s_` for static globals. Types are Pascal
-case, prefixed with `C` for classes, `CBase` for abstract classes, and `I` for interfaces, while structs are suffixed with `_t`. Functions are
-Pascal case, with the name of their component and an underscore as a prefix, like `Base_`. Common abbreviations (like str, len, max, min, alloc,
-buf, src, dest) are allowed, but obscure ones should be avoided. Try to balance clearness with succintness when naming variables, so they're
-easier to type.
+Variables are camel case, prefixed with `m_` for private/protected members, `g_` for globals, and `s_` for static globals, and `f_` for (some)
+function pointers. Types are Pascal case, prefixed with `C` for classes, `CBase` for abstract classes, and `I` for interfaces, while structs are
+suffixed with `_t`. Functions are Pascal case, with the name of their component and an underscore as a prefix, like `Base_`. Common abbreviations
+(like str, len, max, min, alloc, buf, src, dest, common acronyms) are allowed, but obscure ones should be avoided. Try to balance clearness with
+succintness when naming variables, so they're easier to type but you can still easily recognize them.
 
 == Classes vs structs
-Classes do things, structs store data. That's the distinction so far.
+Classes do things, structs store data (you can have a destructor in them though). That's the distinction so far.
 
 == Headers
 Public headers (ones visible to any component) should include as few headers as possible, and forward declare types where needed.
@@ -53,7 +53,7 @@ they're overloaded and have behaviour controlled by parameters, which makes them
 
 There's not many fancy containers yet, but `CVector<T>` defined in `public/base/vector.h` is a working implementation of a dynamic array.
 `public/base/string.h` defines `CString`, and it implements advanced features like splitting and multiplication. Additionally, there's
-`CLinkedList<T>`, which is used for the free list in the memory allocator, and offers significant user control over the nodes for exactly
+`CIntrusiveLinkedList<T>`, which is used for the free list in the memory allocator, and offers significant user control over the nodes for exactly
 that reason.
 
 == Assertions and error handling

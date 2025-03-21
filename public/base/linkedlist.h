@@ -5,18 +5,18 @@
 #include "compiler.h"
 #include "types.h"
 
-template <typename T> class CLinkedList;
+template <typename T> class CIntrusiveLinkedList;
 
-template <typename T> struct LinkedNode_t
+template <typename T> struct IntrusiveLinkedNode_t
 {
 	T data;
 
-	LinkedNode_t<T>* GetPrev()
+	IntrusiveLinkedNode_t<T>* GetPrev()
 	{
 		return prev;
 	}
 
-	LinkedNode_t<T>* GetNext()
+	IntrusiveLinkedNode_t<T>* GetNext()
 	{
 		return next;
 	}
@@ -32,22 +32,22 @@ template <typename T> struct LinkedNode_t
 	}
 
   protected:
-	friend class CLinkedList<T>;
+	friend class CIntrusiveLinkedList<T>;
 
-	LinkedNode_t<T>* prev;
-	LinkedNode_t<T>* next;
+	IntrusiveLinkedNode_t<T>* prev;
+	IntrusiveLinkedNode_t<T>* next;
 };
 
 /// A doubly linked list,
-template <typename T> class CLinkedList
+template <typename T> class CIntrusiveLinkedList
 {
   public:
-	typedef LinkedNode_t<T> Node_t;
+	typedef IntrusiveLinkedNode_t<T> Node_t;
 
-	CLinkedList() : m_head(nullptr), m_tail(nullptr), m_nodeCount(0)
+	CIntrusiveLinkedList() : m_head(nullptr), m_tail(nullptr), m_nodeCount(0)
 	{
 	}
-	~CLinkedList()
+	~CIntrusiveLinkedList()
 	{
 		for (Node_t* current = m_head; current->next != nullptr && current->next != m_tail; current = current->next)
 		{

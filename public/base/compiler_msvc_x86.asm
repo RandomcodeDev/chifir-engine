@@ -22,11 +22,13 @@ PUBLIC @_RTC_CheckStackVars@8
 Base_AbortSafe TEXTEQU <?Base_AbortSafe@@YAXHPBD@Z>
 EXTERN Base_AbortSafe : PROC
 
+IFDEF CH_STATIC
 EXTERN _chkstk_Forwarder : PROC
 PUBLIC __chkstk
 __chkstk PROC
 	jmp _chkstk_Forwarder
 __chkstk ENDP
+ENDIF
 
 PUBLIC @__security_check_cookie@4
 @__security_check_cookie@4 PROC

@@ -1,4 +1,3 @@
-#include "base/loader.h"
 #include "base/log.h"
 
 #include "videosystem/ivideosystem.h"
@@ -6,22 +5,22 @@
 #include "device_dx12.h"
 #include "instance_dx12.h"
 
-extern "C" DLLEXPORT u32 D3D12SDKVersion = 4;
+extern "C" DLLEXPORT u32 D3D12SDKVersion = 615;
 extern "C" DLLEXPORT cstr D3D12SDKPath = ".\\bin\\";
 
 bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
 {
-	Log_Debug("Loading DXGI");
-	m_dxgi = Base_LoadLibrary("dxgi");
+	Log_Debug("Loading DXGI %s.dll", DXGI_DLL_NAME);
+	m_dxgi = Base_LoadLibrary(DXGI_DLL_NAME);
 	if (!m_dxgi)
 	{
 		Log_Error("Failed to load DXGI");
 		Destroy();
 		return false;
 	}
-	
-    Log_Debug("Loading DirectX 12 runtime");
-    m_d3d12 = Base_LoadLibrary("d3d12");
+
+	Log_Debug("Loading DirectX 12 runtime %s.dll, with D3D12SDKVersion=%d and D3D12SDKPath=%s", D3D12_DLL_NAME, D3D12SDKVersion, D3D12SDKPath);
+	m_d3d12 = Base_LoadLibrary(D3D12_DLL_NAME);
 	if (!m_d3d12)
 	{
 		Log_Error("Failed to load D3D12 runtime");
@@ -30,8 +29,8 @@ bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
 	}
 
 	Log_Debug("Getting address of CreateDXGIFactory2");
-	auto s_CreateDXGIFactory2 = m_dxgi->GetSymbol<HRESULT (*)(UINT, const IID& iid, void** factory)>("CreateDXGIFactory2");
-	if (!s_CreateDXGIFactory2)
+	auto f_CreateDXGIFactory2 = m_dxgi->GetSymbol<HRESULT(WINAPI*)(UINT, REFIID iid, void** factory)>("CreateDXGIFactory2");
+	if (!f_CreateDXGIFactory2)
 	{
 		Log_Error("Failed to get CreateDXGIFactory2");
 		Destroy();
@@ -40,14 +39,46 @@ bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
 
 	m_hwnd = reinterpret_cast<HWND>(videoSystem->GetHandle());
 
-	Log_Debug("Creating IDXGIFactory6");
-	HRESULT result = s_CreateDXGIFactory2(0, IID_PPV_ARGS(&m_factory));
-	if (!HR_SUCCESS(result))
+#ifdef CH_DEBUG
+	u32 factoryFlags = DXGI_CREATE_FACTORY_DEBUG;
+#else
+	u32 factoryFlags = 0;
+#endif
+	Log_Debug("Creating IDXGIFactory6%s", factoryFlags == DXGI_CREATE_FACTORY_DEBUG ? " with DXGI_CREATE_FACTORY_DEBUG" : "");
+	HRESULT result = f_CreateDXGIFactory2(factoryFlags, IID_PPV_ARGS(&m_factory));
+	if (!SUCCEEDED(result))
 	{
 		Log_Error("CreateDXGIFactory2 failed: HRESULT 0x%08X", result);
 		Destroy();
 		return false;
 	}
+
+#ifdef CH_DEBUG
+	// success of everything here is optional, just don't crash
+	Log_Debug("Getting address of D3D12GetDebugInterface");
+	auto f_D3D12GetDebugInterface = m_d3d12->GetSymbol<HRESULT(WINAPI*)(REFIID iid, void** debug)>("D3D12GetDebugInterface");
+	if (f_D3D12GetDebugInterface)
+	{
+		ID3D12Debug6* debug;
+		result = f_D3D12GetDebugInterface(IID_PPV_ARGS(&debug));
+		if (SUCCEEDED(result))
+		{
+			debug->EnableDebugLayer();
+			debug->SetEnableAutoName(true);
+			debug->Release();
+
+			Log_Debug("DirectX 12 debug layer enabled");
+		}
+		else
+		{
+			Log_Error("D3D12GetDebugInterface failed: HRESULT 0x%08x", result);
+		}
+	}
+	else
+	{
+		Log_Error("Failed to get address of D3D12GetDebugInterface!");
+	}
+#endif
 
 	return true;
 }
@@ -76,19 +107,19 @@ void CDx12RhiInstance::GetDeviceInfo(CVector<RhiDeviceInfo_t>& info)
 
 	u32 i = 0;
 	IDXGIAdapter1* adapter;
-    CVector<IDXGIAdapter1*> adapters;
-	while (HR_SUCCESS(m_factory->EnumAdapterByGpuPreference(i++, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter))))
+	CVector<IDXGIAdapter1*> adapters;
+	while (SUCCEEDED(m_factory->EnumAdapterByGpuPreference(i++, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter))))
 	{
-        adapters.Add(adapter);
+		adapters.Add(adapter);
 	}
 
-    info.Empty();
-    info.Reserve(adapters.Size());
+	info.Empty();
+	info.Reserve(adapters.Size());
 
-    for (ssize i = 0; i < adapters.Size(); i++)
-    {
-        RhiDeviceInfo_t rhiInfo = {};
-        Dx12DeviceInfo_t dxInfo = {};
+	for (ssize i = 0; i < adapters.Size(); i++)
+	{
+		RhiDeviceInfo_t rhiInfo = {};
+		Dx12DeviceInfo_t dxInfo = {};
 		if (CDx12RhiDevice::GetDeviceInfo(rhiInfo, dxInfo, adapters[i], i))
 		{
 			info.Add(rhiInfo);
@@ -96,13 +127,28 @@ void CDx12RhiInstance::GetDeviceInfo(CVector<RhiDeviceInfo_t>& info)
 		}
 
 		m_devices.Add(dxInfo);
-    }
+	}
 }
 
 IRhiDevice* CDx12RhiInstance::CreateDevice(const RhiDeviceInfo_t& info)
 {
-	UNUSED(info);
-	return nullptr;
+	ssize index = static_cast<ssize>(info.handle);
+	if (index < 0 || index >= m_devices.Size())
+	{
+		Log_Error("Device %s has invalid handle %zd", info.name.Data(), index);
+		return nullptr;
+	}
+
+	Log_Debug("Creating DirectX 12 device for GPU %zd %s [%04x:%04x]", index, info.name.Data(), info.vendorId, info.deviceId);
+
+	CDx12RhiDevice* device = new CDx12RhiDevice(this, m_devices[index]);
+	if (!device->Initialize())
+	{
+		delete device;
+		return nullptr;
+	}
+
+	return device;
 }
 
 #ifdef CH_STATIC
