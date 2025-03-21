@@ -34,7 +34,7 @@ Avail:
 ENDM
 
 ; ntdll stubs
-MAKE_STUB __chkstk,
+MAKE_STUB _chkstk,
 MAKE_STUB DbgPrint,
 MAKE_STUB LdrAddRefDll, @8
 MAKE_STUB LdrAddDllDirectory, @8

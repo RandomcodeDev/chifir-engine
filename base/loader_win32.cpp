@@ -38,7 +38,11 @@ MAKE_STUB(RtlTimeToTimeFields, __stdcall, @8)
 // These are desktop/OneCore things
 
 // ntdll
+#ifdef CH_IA32
+MAKE_STUB(_chkstk, __cdecl)
+#else
 MAKE_STUB(__chkstk, __cdecl)
+#endif
 MAKE_STUB(LdrAddDllDirectory, __stdcall, @8)
 MAKE_STUB(LdrAddRefDll, __stdcall, @8)
 MAKE_STUB(LdrGetDllHandle, __stdcall, @16)
@@ -78,6 +82,7 @@ MAKE_STUB(SHGetFolderPathA, __stdcall, @20)
 
 // user32
 // user32 does some black magic in its startup that win32u/win32k require for the syscalls to work
+// On modern Xboxes, GameOS has user32, while SystemOS only has UWP and win32kmin.sys
 MAKE_STUB(AdjustWindowRect, __stdcall, @12)
 MAKE_STUB(ClientToScreen, __stdcall, @8)
 MAKE_STUB(CreateWindowExA, __stdcall, @48)
@@ -234,7 +239,11 @@ bool Base_InitLoader()
 	GET_FUNCTION(&ntDll, RtlFreeUnicodeString)
 
 	// ntdll
+#ifdef CH_IA32
+	GET_FUNCTION(&ntDll, _chkstk)
+#else
 	GET_FUNCTION(&ntDll, __chkstk)
+#endif
 	GET_FUNCTION(&ntDll, LdrAddRefDll)
 	GET_FUNCTION(&ntDll, LdrGetDllHandle)
 	GET_FUNCTION(&ntDll, LdrLoadDll)
@@ -254,22 +263,22 @@ bool Base_InitLoader()
 	GET_FUNCTION(&ntDll, RtlTimeToTimeFields)
 	GET_FUNCTION(&ntDll, RtlUnicodeStringToAnsiString)
 
-	ILibrary* kernel32 = Base_LoadLibrary("kernel32");
-	ASSERT(kernel32 != nullptr);
+	// kernelbase is loaded on more OneCore platforms, and exports the functions the engine cares about
+	ILibrary* kernel32 = Base_LoadLibrary(USER_SHARED_DATA->NtMajorVersion >= 6 ? "kernelbase" : "kernel32");
 
 	// kernel32
-	GET_FUNCTION(kernel32, AllocConsole)
-	GET_FUNCTION(kernel32, AttachConsole)
-	GET_FUNCTION(kernel32, GetConsoleMode)
-	GET_FUNCTION(kernel32, GetStdHandle)
-	GET_FUNCTION(kernel32, SetConsoleMode)
-	GET_FUNCTION(kernel32, WriteConsoleA)
+	// optional because consoles aren't required
+	GET_FUNCTION_OPTIONAL(kernel32, AllocConsole)
+	GET_FUNCTION_OPTIONAL(kernel32, AttachConsole)
+	GET_FUNCTION_OPTIONAL(kernel32, GetConsoleMode)
+	GET_FUNCTION_OPTIONAL(kernel32, GetStdHandle)
+	GET_FUNCTION_OPTIONAL(kernel32, SetConsoleMode)
+	GET_FUNCTION_OPTIONAL(kernel32, WriteConsoleA)
 
 	ILibrary* shell32 = Base_LoadLibrary("shell32");
-	ASSERT(shell32 != nullptr);
 
 	// shell32
-	GET_FUNCTION(shell32, SHGetFolderPathA)
+	GET_FUNCTION_OPTIONAL(shell32, SHGetFolderPathA)
 
 	ILibrary* user32 = Base_LoadLibrary("user32");
 	ASSERT(user32 != nullptr);

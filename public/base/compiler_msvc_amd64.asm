@@ -16,6 +16,12 @@ _fltused DD 9875h
 Base_AbortSafe TEXTEQU <?Base_AbortSafe@@YAXHPEBD@Z>
 EXTERN Base_AbortSafe : PROC
 
+EXTERN __chkstk_Forwarder : PROC
+PUBLIC __chkstk
+__chkstk PROC
+	jmp __chkstk_Forwarder
+__chkstk ENDP
+
 PUBLIC __security_check_cookie
 __security_check_cookie PROC
 	cmp rcx, [__security_cookie]
