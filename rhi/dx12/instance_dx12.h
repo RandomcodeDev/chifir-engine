@@ -26,12 +26,6 @@ class CDx12RhiInstance: public IRhiInstance
 
 	virtual IRhiDevice* CreateDevice(const RhiDeviceInfo_t& info);
 
-	template<typename T>
-	T GetD3d12Symbol(cstr name)
-	{
-		return m_d3d12->GetSymbol<T>(name);
-	}
-
 	static constexpr cstr DXGI_DLL_NAME =
 #ifdef CH_GDKX
 		"d3d12_xs";
@@ -46,9 +40,19 @@ class CDx12RhiInstance: public IRhiInstance
 #endif
 
   private:
+	friend class CDx12RhiDevice;
+	friend class CDx12RhiSwapChain;
+
+	IVideoSystem* m_videoSystem;
 	ILibrary* m_dxgi;
 	ILibrary* m_d3d12;
 	IDXGIFactory6* m_factory;
 	HWND m_hwnd;
 	CVector<Dx12DeviceInfo_t> m_devices;
+
+	/// Loads dxgi.dll and d3d12.dll
+	bool LoadDlls();
+
+	/// Tries to enable the debug layer, logging if it goes wrong
+	void EnableDebugLayer();
 };

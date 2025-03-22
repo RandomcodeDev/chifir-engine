@@ -51,8 +51,6 @@ void CEngine::GetDependencies(CVector<SystemDependency_t>& systems, CVector<LibD
 
 s32 CEngine::Run(const CVector<ISystem*>& systems)
 {
-	Log_Info("Engine compiled by " COMPILER " running on %s on %s", Plat_GetSystemDescription(), Plat_GetHardwareDescription());
-
 	Log_Info("Initializing engine");
 	m_state = EngineState_t::Startup;
 
@@ -71,7 +69,9 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	AddLogWriters();
 
 	// again, for the text log
-	Log_Info("Engine compiled by " COMPILER " running on %s on %s", Plat_GetSystemDescription(), Plat_GetHardwareDescription());
+	Log_Info(
+		"Engine compiled by %s running on %s on %s", COMPILER_VERSION(), Plat_GetSystemDescription(),
+		Plat_GetHardwareDescription());
 
 	if (m_headless)
 	{

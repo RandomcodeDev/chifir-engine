@@ -8,15 +8,21 @@ class CVulkanRhiDevice;
 class CVulkanRhiSwapChain: public IRhiSwapChain
 {
   public:
-    virtual void Destroy();
-    virtual void ResizeBuffers(CVector<IRhiRenderTarget*>& images);
-    virtual u32 Present(IRhiSemaphore* renderCompleteSemaphore);
+	virtual void Destroy();
+	virtual void GetBuffers(CVector<IRhiRenderTarget*>& images);
+	virtual void ResizeBuffers();
+	virtual u32 GetFrameIndex()
+	{
+		return m_frameIndex;
+	}
+	virtual u32 Present();
 
   private:
 	friend class CVulkanRhiDevice;
 
 	CVulkanRhiDevice* m_device;
+	u32 m_frameIndex;
 
 	CVulkanRhiSwapChain(CVulkanRhiDevice* device);
-	bool Initialize();
+	bool Initialize(u32 bufferCount);
 };

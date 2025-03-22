@@ -11,6 +11,8 @@
 
 bool CRenderSystem::Initialize(IVideoSystem* videoSystem, cstr backendName)
 {
+	m_videoSystem = videoSystem;
+
 	Log_Info("Creating %s RHI instance", backendName);
 	m_instance = Rhi_CreateInstance(backendName);
 	if (!m_instance)
@@ -19,7 +21,7 @@ bool CRenderSystem::Initialize(IVideoSystem* videoSystem, cstr backendName)
 		return false;
 	}
 
-	if (!m_instance->Initialize(videoSystem))
+	if (!m_instance->Initialize(m_videoSystem))
 	{
 		Shutdown();
 		return false;
@@ -83,18 +85,24 @@ bool CRenderSystem::ChangeDevice(u32 index)
 		return false;
 	}
 
-	m_swapChain = m_device->CreateSwapChain(3, m_swapChainBuffers);
+	m_swapChain = m_device->CreateSwapChain(3);
 	if (!m_swapChain)
 	{
 		Shutdown();
 		return false;
 	}
 
+	m_swapChain->GetBuffers(m_swapChainBuffers);
+
 	return true;
 }
 
 void CRenderSystem::BeginFrame()
 {
+	if (m_videoSystem->Resized())
+	{
+		m_swapChain->ResizeBuffers();
+	}
 }
 
 void CRenderSystem::EndFrame()

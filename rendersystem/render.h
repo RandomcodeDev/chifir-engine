@@ -27,6 +27,7 @@ class CRenderSystem: public IRenderSystem
 	virtual void EndFrame();
 
   private:
+	IVideoSystem* m_videoSystem;
 	IRhiInstance* m_instance;
 	IRhiDevice* m_device;
 	IRhiSwapChain* m_swapChain;

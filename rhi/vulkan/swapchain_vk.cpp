@@ -6,7 +6,7 @@ CVulkanRhiSwapChain::CVulkanRhiSwapChain(CVulkanRhiDevice* device) : m_device(de
 {
 }
 
-bool CVulkanRhiSwapChain::Initialize()
+bool CVulkanRhiSwapChain::Initialize(u32 bufferCount)
 {
 	Log_Debug("Creating VkSwapchainKHR");
 	return true;
@@ -16,11 +16,15 @@ void CVulkanRhiSwapChain::Destroy()
 {
 }
 
-void CVulkanRhiSwapChain::ResizeBuffers(CVector<IRhiRenderTarget*>& buffers)
+void CVulkanRhiSwapChain::GetBuffers(CVector<IRhiRenderTarget*>& buffers)
 {
 }
 
-u32 CVulkanRhiSwapChain::Present(IRhiSemaphore* renderCompleteSemaphore)
+void CVulkanRhiSwapChain::ResizeBuffers()
+{
+}
+
+u32 CVulkanRhiSwapChain::Present()
 {
 	return 0;
 }

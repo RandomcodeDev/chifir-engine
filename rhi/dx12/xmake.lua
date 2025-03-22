@@ -6,7 +6,9 @@ target("RhiDirectX12")
     add_headerfiles("**.h")
     add_files(
         "device_dx12.cpp",
-        "instance_dx12.cpp"
+        "image_dx12.cpp",
+        "instance_dx12.cpp",
+        "swapchain_dx12.cpp"
     )
 
     after_build(function (target)

@@ -17,9 +17,15 @@ class IRhiSwapChain
     /// Destroy the swap chain
     virtual void Destroy() = 0;
 
-    /// Resize backbuffers to match the window size, invalidates previous images from this swapchain
-    virtual void ResizeBuffers(CVector<IRhiRenderTarget*>& buffers) = 0;
+    /// Get the swap chain's buffers
+    virtual void GetBuffers(CVector<IRhiRenderTarget*>& buffers) = 0;
 
-    /// Present, waiting for rendering to complete, returning the new current backbuffer index
-    virtual u32 Present(IRhiSemaphore* renderCompletedSemaphore) = 0;
+    /// Resize backbuffers to match the window size, invalidates previous buffers from this swapchain
+    virtual void ResizeBuffers() = 0;
+
+    /// Get the current frame index
+    virtual u32 GetFrameIndex() = 0;
+
+    /// Present and get the current frame index
+    virtual u32 Present() = 0;
 };

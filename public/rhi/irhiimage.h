@@ -17,11 +17,15 @@ enum class RhiImageType_t
 /// All color formats are sRGB
 enum class RhiImageFormat_t
 {
-    R8, // 8-bit color
-    Rg16, // 16-bit color
-    Rgb24, // 24-bit color
-    Rgba32, // 32-bit color
-    D24, // 24-bit depth
+    R8Uint, // 8-bit color, uint
+    Rg16Uint, // 16-bit color, uint
+    Rgb24Uint, // 24-bit color, uint
+    Rgba32Uint, // 32-bit color, uint
+    R8Unorm, // 8-bit color, uint
+    Rg16Unorm, // 16-bit color, uint normalized
+    Rgb24Unorm, // 24-bit color, uint normalized
+    Rgba32Unorm, // 32-bit color, uint normalized
+    D24Float, // 24-bit depth, float
 };
 
 /// Represents a VkImage or an ID3D12Resource used as an image

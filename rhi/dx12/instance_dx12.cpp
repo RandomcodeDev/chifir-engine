@@ -8,7 +8,7 @@
 extern "C" DLLEXPORT u32 D3D12SDKVersion = 615;
 extern "C" DLLEXPORT cstr D3D12SDKPath = ".\\bin\\";
 
-bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
+bool CDx12RhiInstance::LoadDlls()
 {
 	Log_Debug("Loading DXGI %s.dll", DXGI_DLL_NAME);
 	m_dxgi = Base_LoadLibrary(DXGI_DLL_NAME);
@@ -19,7 +19,9 @@ bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
 		return false;
 	}
 
-	Log_Debug("Loading DirectX 12 runtime %s.dll, with D3D12SDKVersion=%d and D3D12SDKPath=%s", D3D12_DLL_NAME, D3D12SDKVersion, D3D12SDKPath);
+	Log_Debug(
+		"Loading DirectX 12 runtime %s.dll, with D3D12SDKVersion=%d and D3D12SDKPath=\"%s\"", D3D12_DLL_NAME, D3D12SDKVersion,
+		D3D12SDKPath);
 	m_d3d12 = Base_LoadLibrary(D3D12_DLL_NAME);
 	if (!m_d3d12)
 	{
@@ -28,39 +30,18 @@ bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
 		return false;
 	}
 
-	Log_Debug("Getting address of CreateDXGIFactory2");
-	auto f_CreateDXGIFactory2 = m_dxgi->GetSymbol<HRESULT(WINAPI*)(UINT, REFIID iid, void** factory)>("CreateDXGIFactory2");
-	if (!f_CreateDXGIFactory2)
-	{
-		Log_Error("Failed to get CreateDXGIFactory2");
-		Destroy();
-		return false;
-	}
+	return true;
+}
 
-	m_hwnd = reinterpret_cast<HWND>(videoSystem->GetHandle());
-
-#ifdef CH_DEBUG
-	u32 factoryFlags = DXGI_CREATE_FACTORY_DEBUG;
-#else
-	u32 factoryFlags = 0;
-#endif
-	Log_Debug("Creating IDXGIFactory6%s", factoryFlags == DXGI_CREATE_FACTORY_DEBUG ? " with DXGI_CREATE_FACTORY_DEBUG" : "");
-	HRESULT result = f_CreateDXGIFactory2(factoryFlags, IID_PPV_ARGS(&m_factory));
-	if (!SUCCEEDED(result))
-	{
-		Log_Error("CreateDXGIFactory2 failed: HRESULT 0x%08X", result);
-		Destroy();
-		return false;
-	}
-
-#ifdef CH_DEBUG
+void CDx12RhiInstance::EnableDebugLayer()
+{
 	// success of everything here is optional, just don't crash
 	Log_Debug("Getting address of D3D12GetDebugInterface");
 	auto f_D3D12GetDebugInterface = m_d3d12->GetSymbol<HRESULT(WINAPI*)(REFIID iid, void** debug)>("D3D12GetDebugInterface");
 	if (f_D3D12GetDebugInterface)
 	{
 		ID3D12Debug6* debug;
-		result = f_D3D12GetDebugInterface(IID_PPV_ARGS(&debug));
+		HRESULT result = f_D3D12GetDebugInterface(IID_PPV_ARGS(&debug));
 		if (SUCCEEDED(result))
 		{
 			debug->EnableDebugLayer();
@@ -78,6 +59,42 @@ bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
 	{
 		Log_Error("Failed to get address of D3D12GetDebugInterface!");
 	}
+}
+
+bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
+{
+	m_videoSystem = videoSystem;
+
+	if (!LoadDlls())
+	{
+		return false;
+	}
+
+	Log_Debug("Getting address of CreateDXGIFactory2");
+	auto f_CreateDXGIFactory2 = m_dxgi->GetSymbol<HRESULT(WINAPI*)(UINT, REFIID iid, void** factory)>("CreateDXGIFactory2");
+	if (!f_CreateDXGIFactory2)
+	{
+		Log_Error("Failed to get CreateDXGIFactory2");
+		Destroy();
+		return false;
+	}
+
+#ifdef CH_DEBUG
+	u32 factoryFlags = DXGI_CREATE_FACTORY_DEBUG;
+#else
+	u32 factoryFlags = 0;
+#endif
+	Log_Debug("Creating IDXGIFactory6%s", factoryFlags == DXGI_CREATE_FACTORY_DEBUG ? " with DXGI_CREATE_FACTORY_DEBUG" : "");
+	HRESULT result = f_CreateDXGIFactory2(factoryFlags, IID_PPV_ARGS(&m_factory));
+	if (!SUCCEEDED(result))
+	{
+		Log_Error("CreateDXGIFactory2 failed: HRESULT 0x%08X", result);
+		Destroy();
+		return false;
+	}
+
+#ifdef CH_DEBUG
+	EnableDebugLayer();
 #endif
 
 	return true;

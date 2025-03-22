@@ -108,7 +108,11 @@ extern BASEAPI void Log_Write(const LogMessage_t& message);
 /// Write a log message, and format it
 extern BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr file, cstr function, cstr message, ...);
 
+#ifdef CH_RETAIL
 #define Log_Message(level, ...) Log_Write(LogLevel_t::level, __LINE__, false, __FILE__, FUNCTION_NAME, __VA_ARGS__)
+#else
+#define Log_Message(level, ...) Log_Write(LogLevel_t::level, __LINE__, false, __FILE__, FUNCTION_SIGNATURE, __VA_ARGS__)
+#endif
 #define Log_Trace(...)          Log_Message(Trace, __VA_ARGS__)
 #define Log_Debug(...)          Log_Message(Debug, __VA_ARGS__)
 #define Log_Info(...)           Log_Message(Info, __VA_ARGS__)

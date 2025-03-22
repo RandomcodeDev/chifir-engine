@@ -18,7 +18,7 @@ class CDx12RhiDevice: public IRhiDevice
   public:
 	virtual void Destroy();
 
-	virtual IRhiSwapChain* CreateSwapChain(u32 bufferCount, CVector<IRhiRenderTarget*>& buffers);
+	virtual IRhiSwapChain* CreateSwapChain(u32 bufferCount);
 
 	virtual IRhiCommandList* CreateCommandList(RhiCommandListFlags_t flags)
 	{
@@ -56,15 +56,22 @@ class CDx12RhiDevice: public IRhiDevice
 
   private:
 	friend class CDx12RhiInstance;
+	friend class CDx12RhiSwapChain;
 
 	CDx12RhiInstance* m_instance;
 	Dx12DeviceInfo_t m_info;
 	ID3D12Device4* m_handle;
 	ID3D12CommandQueue* m_queue;
+	ID3D12CommandQueue* m_copyQueue;
 
 	CDx12RhiDevice(CDx12RhiInstance* instance, const Dx12DeviceInfo_t& info);
 	bool Initialize();
 
 	/// Get information about a device. Returns false if the device isn't usable.
 	static bool GetDeviceInfo(RhiDeviceInfo_t& rhiInfo, Dx12DeviceInfo_t& info, IDXGIAdapter1* adapter, ssize i);
+
+	CDx12RhiInstance* GetInstance()
+	{
+		return m_instance;
+	}
 };

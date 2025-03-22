@@ -10,11 +10,23 @@
 #include "macros.h"
 
 #ifdef __clang__
-#define COMPILER "Clang " __clang_version__
+#define COMPILER_VERSION() "Clang " __clang_version__
 #elif defined _MSC_VER
-#define MSVC_STRING_VER(ver)  #ver
-#define MSVC_STRING_VER2(ver) MSVC_STRING_VER(ver)
-#define COMPILER              "MSVC " MSVC_STRING_VER2(_MSC_FULL_VER)
+// MSVC only gives an integer, so this ungodly mess is needed (and it still isn't a string literal)
+#define V_EXPAND2(v, b) (#v #b)
+#define V_EXPAND(v, b)  V_EXPAND2(v, b)
+#define V               V_EXPAND(_MSC_FULL_VER, _MSC_BUILD)
+static constexpr char MSVC_VERSION[] = {'M', 'S',  'V',  'C',  ' ',  V[0], V[1], '.',  V[2],  V[3],
+										'.', V[4], V[5], V[6], V[7], V[8], '.',  V[10] ? V[9] : '0', V[10] ? V[10] : V[9], '\0'};
+static constexpr const char* GetMsvcVersionString()
+{
+	return MSVC_VERSION;
+}
+#undef V_EXPAND2
+#undef V_EXPAND
+#undef V
+
+#define COMPILER_VERSION() GetMsvcVersionString()
 #endif
 
 #ifdef CH_ARM64
@@ -25,9 +37,7 @@
 #if defined _MSC_VER && defined CH_WIN32
 #ifdef CH_XBOX360
 #include <VectorIntrinsics.h>
-#endif
-
-#ifdef CH_X86
+#elif defined CH_X86
 #ifdef __clang__
 #include <x86intrin.h>
 #else
@@ -154,11 +164,13 @@ extern void __stdcall RunThreadConstructors();
 #define FORCEINLINE   __forceinline
 #define UNREACHABLE() ASSUME(false)
 
+#define FUNCTION_NAME __func__
+
 /// Decorated function name
 #if defined _MSC_VER
-#define FUNCTION_NAME __FUNCSIG__
+#define FUNCTION_SIGNATURE __FUNCSIG__
 #else
-#define FUNCTION_NAME __PRETTY_FUNCTION__
+#define FUNCTION_SIGNATURE __PRETTY_FUNCTION__
 #endif
 
 /// Xbox 360 doesn't define this

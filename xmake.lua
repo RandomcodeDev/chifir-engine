@@ -169,6 +169,13 @@ if is_plat("windows", "gdkx") then
         "/wd5045", -- Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
     {force = true})
 
+    -- Modern Xbox is all AMD
+    if is_plat("gdkx") then
+        add_cxflags(
+            "/favor:AMD64",
+        {force = true})
+    end
+
 	-- /arch:SSE2 is the default for x86, SSE2 is the baseline for AMD64, but for x86, it needs
 	-- to be turned down to IA32 (I'm insane/stupid enough to eventually try to make this run on
 	-- a Pentium, which I do have, or something dumb like that)

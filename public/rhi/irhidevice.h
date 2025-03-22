@@ -50,7 +50,7 @@ class IRhiDevice
 	virtual void Destroy() = 0;
 
 	/// Create a swap chain
-	virtual IRhiSwapChain* CreateSwapChain(u32 bufferCount, CVector<IRhiRenderTarget*>& buffers) = 0;
+	virtual IRhiSwapChain* CreateSwapChain(u32 bufferCount) = 0;
 
 	/// Create a command list
 	virtual IRhiCommandList* CreateCommandList(RhiCommandListFlags_t flags) = 0;

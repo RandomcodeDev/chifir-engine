@@ -35,7 +35,7 @@ class CVulkanRhiDevice: public IRhiDevice
   public:
 	virtual void Destroy();
 
-	virtual IRhiSwapChain* CreateSwapChain(u32 bufferCount, CVector<IRhiRenderTarget*>& buffers);
+	virtual IRhiSwapChain* CreateSwapChain(u32 bufferCount);
 
 	virtual IRhiCommandList* CreateCommandList(RhiCommandListFlags_t flags)
 	{

@@ -75,10 +75,10 @@ void CVulkanRhiDevice::Destroy()
 	}
 }
 
-IRhiSwapChain* CVulkanRhiDevice::CreateSwapChain(u32 bufferCount, CVector<IRhiRenderTarget*>& buffers)
+IRhiSwapChain* CVulkanRhiDevice::CreateSwapChain(u32 bufferCount)
 {
 	CVulkanRhiSwapChain* swapChain = new CVulkanRhiSwapChain(this);
-	if (!swapChain->Initialize())
+	if (!swapChain->Initialize(bufferCount))
 	{
 		delete swapChain;
 		return nullptr;
