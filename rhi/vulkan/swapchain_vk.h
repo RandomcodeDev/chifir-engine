@@ -1,5 +1,5 @@
-/// Vulkan swap chain implementation
-/// Copyright 2025 Randomcode Developers
+/// \file Vulkan swap chain implementation
+/// \copyright Randomcode Developers
 
 #pragma once
 

@@ -1,5 +1,5 @@
-/// RHI image interface
-/// Copyright 2025 Randomcode Developers
+/// \file RHI image interface
+/// \copyright Randomcode Developers
 
 #pragma once
 

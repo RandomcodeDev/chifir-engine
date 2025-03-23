@@ -1,5 +1,5 @@
-/// Type definitions
-/// Copyright 2025 Randomcode Developers
+/// \file Type definitions
+/// \copyright Randomcode Developers
 
 /// If you're a Rust fan, I'm sure you'll love these, except it's s32 instead of i32 (sorry)
 

@@ -1,5 +1,5 @@
-/// RHI memory buffers
-/// Copyright 2025 Randomcode Developers
+/// \file RHI memory buffers
+/// \copyright Randomcode Developers
 
 #pragma once
 

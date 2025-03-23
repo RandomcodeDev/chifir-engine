@@ -1,5 +1,5 @@
-/// Video system interface
-/// Copyright 2025 Randomcode Developers
+/// \file Video system interface
+/// \copyright Randomcode Developers
 
 #pragma once
 

@@ -1,5 +1,5 @@
-/// RHI definitions
-/// Copyright 2025 Randomcode Developers
+/// \file RHI definitions
+/// \copyright Randomcode Developers
 
 #pragma once
 

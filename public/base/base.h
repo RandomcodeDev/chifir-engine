@@ -1,5 +1,5 @@
-/// Base definitions
-/// Copyright 2025 Randomcode Developers
+/// \file Base definitions
+/// \copyright Randomcode Developers
 
 #pragma once
 

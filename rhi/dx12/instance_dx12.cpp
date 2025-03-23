@@ -1,5 +1,5 @@
-/// DirectX 12 instance implementation
-/// Copyright 2025 Randomcode Developers
+/// \file DirectX 12 instance implementation
+/// \copyright Randomcode Developers
 
 #include "base/log.h"
 

@@ -1,5 +1,5 @@
-/// stb build file
-/// Copyright 2025 Randomcode Developers
+/// \file stb build file
+/// \copyright Randomcode Developers
 
 #include "base/base.h"
 #include "base/basicstr.h"

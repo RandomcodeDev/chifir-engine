@@ -1,5 +1,5 @@
-/// Public engine interface for other components
-/// Copyright 2025 Randomcode Developers
+/// \file Public engine interface for other components
+/// \copyright Randomcode Developers
 
 #pragma once
 

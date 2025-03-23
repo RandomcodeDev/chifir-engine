@@ -13,8 +13,8 @@ as well.
 Just try to copy the existing style as much as possible and you'll be fine. Don't reformat external code.
 
 == Colourful language
-Avoid it if it might offend someone, but basic swearing is probably fine. Don't insult anyone. If something is designed really bad
-and gave you a headache, you can get mad about it within reason. Probably don't swear in public headers.
+You shouldn't be mean to anyone, but you can swear a little and be snarky. You can complain about something that gave you a headache
+within reason.
 
 == Documentation
 You should try to document everything important. Any public declarations, macros, `constexpr` functions, any weird decisions,
@@ -32,8 +32,8 @@ Put a very short comment followed by a copyright line (usually for Randomcode De
 
 Example:
 ```c++
-/// <file description>
-/// Copyright <year> Randomcode Developers
+/// \file <file description>
+/// \author Randomcode Developers
 ```
 
 == Formatting

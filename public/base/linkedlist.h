@@ -1,5 +1,5 @@
-/// Linked list
-/// Copyright 2025 Randomcode Developers
+/// \file Linked list
+/// \copyright Randomcode Developers
 
 #pragma once
 

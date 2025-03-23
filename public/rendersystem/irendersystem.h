@@ -1,5 +1,5 @@
-/// Render system interface
-/// Copyright 2025 Randomcode Developers
+/// \file Render system interface
+/// \copyright Randomcode Developers
 
 #pragma once
 

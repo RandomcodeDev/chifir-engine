@@ -1,5 +1,5 @@
-/// Macros
-/// Copyright 2025 Randomcode Developers
+/// \file Macros
+/// \copyright Randomcode Developers
 
 #pragma once
 

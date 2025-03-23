@@ -1,5 +1,5 @@
-/// Dynamic string
-/// Copyright 2025 Randomcode Developers
+/// \file Dynamic string
+/// \copyright Randomcode Developers
 
 #include "base/basicstr.h"
 #include "base/string.h"

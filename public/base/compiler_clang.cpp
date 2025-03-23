@@ -1,5 +1,5 @@
-/// Clang freestanding support
-/// Copyright 2025 Randomcode Developers
+/// \file Clang freestanding support
+/// \copyright Randomcode Developers
 
 #include "base.h"
 #include "types.h"

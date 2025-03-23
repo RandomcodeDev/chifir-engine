@@ -1,5 +1,5 @@
-/// Library test
-/// Copyright 2025 Randomcode Developers
+/// \file Library test
+/// \copyright Randomcode Developers
 
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]

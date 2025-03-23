@@ -1,5 +1,5 @@
-/// Windows support
-/// Copyright 2025 Randomcode Developers
+/// \file Windows support
+/// \copyright Randomcode Developers
 
 #pragma once
 

@@ -1,5 +1,5 @@
-/// Platform API
-/// Copyright 2025 Randomcode Developers
+/// \file Platform API
+/// \copyright Randomcode Developers
 
 #pragma once
 

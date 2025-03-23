@@ -1,5 +1,5 @@
-/// Miscellaneous stuff for bindings to use
-/// Copyright 2025 Randomcode Developers
+/// \file Miscellaneous stuff for bindings to use
+/// \copyright Randomcode Developers
 
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]

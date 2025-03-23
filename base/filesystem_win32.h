@@ -1,5 +1,5 @@
-/// Windows raw filesystem
-/// Copyright 2025 Randomcode Developers
+/// \file Windows raw filesystem
+/// \copyright Randomcode Developers
 
 #pragma once
 

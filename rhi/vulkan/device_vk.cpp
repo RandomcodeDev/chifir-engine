@@ -1,5 +1,5 @@
-/// Vulkan device implementation
-/// Copyright 2025 Randomcode Developers
+/// \file Vulkan device implementation
+/// \copyright Randomcode Developers
 
 #include "base/log.h"
 

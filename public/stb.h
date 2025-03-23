@@ -1,5 +1,5 @@
-/// Makes stb work properly
-/// Copyright 2025 Randomcode Developers
+/// \file Makes stb work properly
+/// \copyright Randomcode Developers
 
 #pragma once
 

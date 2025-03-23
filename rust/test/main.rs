@@ -1,5 +1,5 @@
-/// Executable test
-/// Copyright 2025 Randomcode Developers
+/// \file Executable test
+/// \copyright Randomcode Developers
 
 use chifir::{*, sys::*};
 

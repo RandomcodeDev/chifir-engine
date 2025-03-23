@@ -1,5 +1,5 @@
-/// Bindings to Base_* functions
-/// Copyright 2025 Randomcode Developers
+/// \file Bindings to Base_* functions
+/// \copyright Randomcode Developers
 
 use core::slice;
 use std::{

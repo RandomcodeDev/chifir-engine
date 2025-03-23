@@ -1,5 +1,5 @@
-/// Filesystem interfaces
-/// Copyright 2025 Randomcode Developers
+/// \file Filesystem interfaces
+/// \copyright Randomcode Developers
 
 #pragma once
 

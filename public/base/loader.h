@@ -1,5 +1,5 @@
-/// Dynamic loading API
-/// Copyright 2025 Randomcode Developers
+/// \file Dynamic loading API
+/// \copyright Randomcode Developers
 
 #pragma once
 

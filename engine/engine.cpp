@@ -1,5 +1,5 @@
-/// Engine core implementation
-/// Copyright 2025 Randomcode Developers
+/// \file Engine core implementation
+/// \copyright Randomcode Developers
 
 #include "engine.h"
 #include "base/filesystem.h"

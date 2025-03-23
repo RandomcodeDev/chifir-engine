@@ -1,5 +1,5 @@
-/// Dynamic array implementation
-/// Copyright 2025 Randomcode Developers
+/// \file Dynamic array implementation
+/// \copyright Randomcode Developers
 
 #pragma once
 

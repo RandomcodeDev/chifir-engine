@@ -1,5 +1,5 @@
-/// Windows video system
-/// Copyright 2025 Randomcode Developers
+/// \file Windows video system
+/// \copyright Randomcode Developers
 
 #pragma once
 

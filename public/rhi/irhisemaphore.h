@@ -1,5 +1,5 @@
-/// RHI semaphore interface
-/// Copyright 2025 Randomcode Developers
+/// \file RHI semaphore interface
+/// \copyright Randomcode Developers
 
 #pragma once
 

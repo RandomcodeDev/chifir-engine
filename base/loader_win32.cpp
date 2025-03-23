@@ -1,5 +1,5 @@
-/// Windows loader implementation
-/// Copyright 2025 Randomcode Developers
+/// \file Windows loader implementation
+/// \copyright Randomcode Developers
 
 /// This file is the reason Base.dll doesn't have an import table. It first locates the base address of ntdll.dll using the
 /// PEB_LDR_DATA structure, then it parses it and finds the address of LdrGetProcedureAddress by searching the export table for a

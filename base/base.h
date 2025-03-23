@@ -1,5 +1,5 @@
-/// Internal base definitions
-/// Copyright 2025 Randomcode Developers
+/// \file Internal base definitions
+/// \copyright Randomcode Developers
 
 #pragma once
 

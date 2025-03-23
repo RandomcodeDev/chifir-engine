@@ -1,5 +1,5 @@
-/// Build script
-/// Copyright 2025 Randomcode Developers
+/// \file Build script
+/// \copyright Randomcode Developers
 
 use std::{
     env::var,

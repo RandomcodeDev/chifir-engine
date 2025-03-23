@@ -1,5 +1,5 @@
-/// Vulkan instance implementation
-/// Copyright 2025 Randomcode Developers
+/// \file Vulkan instance implementation
+/// \copyright Randomcode Developers
 
 #include "base/loader.h"
 #include "base/log.h"

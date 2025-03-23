@@ -1,5 +1,5 @@
-/// DLL interface for render system
-/// Copyright 2025 Randomcode Developers
+/// \file DLL interface for render system
+/// \copyright Randomcode Developers
 
 #include "isystem.h"
 #include "render.h"

@@ -1,5 +1,5 @@
-/// Vulkan utility functions
-/// Copyright 2025 Randomcode Developers
+/// \file Vulkan utility functions
+/// \copyright Randomcode Developers
 
 #include "base/log.h"
 #include "vulkan.h"

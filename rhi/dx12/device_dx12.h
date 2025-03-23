@@ -1,5 +1,5 @@
-/// DirectX 12 device implementation
-/// Copyright 2025 Randomcode Developers
+/// \file DirectX 12 device implementation
+/// \copyright Randomcode Developers
 
 #pragma once
 

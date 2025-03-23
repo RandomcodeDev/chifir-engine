@@ -1,5 +1,5 @@
-/// Launcher implementation
-/// Copyright 2025 Randomcode Developers
+/// \file Launcher implementation
+/// \copyright Randomcode Developers
 
 #include "base/filesystem.h"
 #include "base/loader.h"

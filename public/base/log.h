@@ -1,5 +1,5 @@
-/// Logging system
-/// Copyright 2025 Randomcode Developers
+/// \file Logging system
+/// \copyright Randomcode Developers
 
 #pragma once
 

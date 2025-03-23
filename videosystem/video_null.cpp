@@ -1,5 +1,5 @@
-/// Stubbed video system
-/// Copyright 2025 Randomcode Developers
+/// \file Stubbed video system
+/// \copyright Randomcode Developers
 
 #include "video_null.h"
 #include "base/base.h"

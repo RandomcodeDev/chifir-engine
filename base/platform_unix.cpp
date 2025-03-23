@@ -1,5 +1,5 @@
-/// Unix support
-/// Copyright 2025 Randomcode Developers
+/// \file Unix support
+/// \copyright Randomcode Developers
 
 #include <cerrno>
 #include <cstdlib>

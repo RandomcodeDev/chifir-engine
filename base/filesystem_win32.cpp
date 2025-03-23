@@ -1,5 +1,5 @@
-/// Windows raw filesystem
-/// Copyright 2025 Randomcode Developers
+/// \file Windows raw filesystem
+/// \copyright Randomcode Developers
 
 #include "filesystem_win32.h"
 #include "base/log.h"

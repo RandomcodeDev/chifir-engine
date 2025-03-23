@@ -1,5 +1,5 @@
-/// System interface
-/// Copyright 2025 Randomcode Developers
+/// \file System interface
+/// \copyright Randomcode Developers
 
 #pragma once
 

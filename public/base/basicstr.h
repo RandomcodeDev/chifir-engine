@@ -1,5 +1,5 @@
-/// Basic string functions
-/// Copyright 2025 Randomcode Developers
+/// \file Basic string functions
+/// \copyright Randomcode Developers
 
 #pragma once
 

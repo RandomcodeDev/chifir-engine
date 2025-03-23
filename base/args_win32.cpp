@@ -1,5 +1,5 @@
-/// Windows argument parsing
-/// Copyright 2025 Randomcode Developers
+/// \file Windows argument parsing
+/// \copyright Randomcode Developers
 
 #include "base.h"
 #include "base/string.h"

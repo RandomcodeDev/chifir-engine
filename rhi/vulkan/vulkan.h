@@ -1,5 +1,5 @@
-/// Vulkan definitions
-/// Copyright 2025 Randomcode Developers
+/// \file Vulkan definitions
+/// \copyright Randomcode Developers
 
 #pragma once
 

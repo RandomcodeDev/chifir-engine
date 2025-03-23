@@ -1,5 +1,5 @@
-/// malloc/free override
-/// Copyright 2025 Randomcode Developers
+/// \file malloc/free override
+/// \copyright Randomcode Developers
 
 #include <cerrno>
 

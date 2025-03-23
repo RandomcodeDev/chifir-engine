@@ -1,5 +1,5 @@
-; AMD64 Windows function stubs
-; Copyright 2025 Randomcode Developers
+; \file AMD64 Windows function stubs
+; \copyright Randomcode Developers
 
 TITLE AMD64 Windows function stubs
 

@@ -1,5 +1,5 @@
-/// DirectX 12 definitions
-/// Copyright 2025 Randomcode Developers
+/// \file DirectX 12 definitions
+/// \copyright Randomcode Developers
 
 #pragma once
 

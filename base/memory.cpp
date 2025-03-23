@@ -1,5 +1,5 @@
-/// Memory management
-/// Copyright 2025 Randomcode Developers
+/// \file Memory management
+/// \copyright Randomcode Developers
 
 /// This is a basic general allocator that can serve as a basis for more specialized things like bump allocators. It's implemented
 /// on top of Base_GetSystemMemory, and uses a free list with the nodes as headers to chunks of memory. It still needs to be

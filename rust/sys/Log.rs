@@ -1,5 +1,5 @@
-/// Bindings to Log_* functions
-/// Copyright 2025 Randomcode Developers
+/// \file Bindings to Log_* functions
+/// \copyright Randomcode Developers
 
 use std::ffi::{CStr, CString};
 

@@ -1,5 +1,5 @@
-/// DLL interface for video system
-/// Copyright 2025 Randomcode Developers
+/// \file DLL interface for video system
+/// \copyright Randomcode Developers
 
 #include "isystem.h"
 #include "video_null.h"

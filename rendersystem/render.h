@@ -1,5 +1,5 @@
-/// Render system implementation
-/// Copyright 2025 Randomcode Developers
+/// \file Render system implementation
+/// \copyright Randomcode Developers
 
 #pragma once
 

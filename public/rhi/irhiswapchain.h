@@ -1,5 +1,5 @@
-/// RHI swap chain interface
-/// Copyright 2025 Randomcode Developers
+/// \file RHI swap chain interface
+/// \copyright Randomcode Developers
 
 #pragma once
 

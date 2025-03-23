@@ -1,5 +1,5 @@
-/// String functions
-/// Copyright 2025 Randomcode Developers
+/// \file String functions
+/// \copyright 2025 Randomcode Developers
 
 #include "base/basicstr.h"
 #include "base/base.h"

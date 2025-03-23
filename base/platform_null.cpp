@@ -1,5 +1,5 @@
-/// <PLATFORM NAME> support
-/// Copyright 2025 Randomcode Developers
+/// \file <PLATFORM NAME> support
+/// \copyright Randomcode Developers
 
 #include "platform_null.h"
 #include "base.h"

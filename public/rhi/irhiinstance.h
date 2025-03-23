@@ -1,5 +1,5 @@
-/// RHI instance/context/whatever interface
-/// Copyright 2025 Randomcode Developers
+/// \file RHI instance/context/whatever interface
+/// \copyright Randomcode Developers
 
 #pragma once
 

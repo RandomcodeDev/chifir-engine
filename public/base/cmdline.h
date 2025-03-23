@@ -1,5 +1,5 @@
-/// Command line parsing (WIP)
-/// Copyright 2025 Randomcode Developers
+/// \file Command line parsing (WIP)
+/// \copyright Randomcode Developers
 
 #pragma once
 

@@ -1,5 +1,5 @@
-/// RHI device interface
-/// Copyright 2025 Randomcode Developers
+/// \file RHI device interface
+/// \copyright Randomcode Developers
 
 #pragma once
 

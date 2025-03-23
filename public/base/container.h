@@ -1,5 +1,5 @@
-/// Common container stuff
-/// Copyright 2025 Randomcode Developers
+/// \file Common container stuff
+/// \copyright Randomcode Developers
 
 #pragma once
 
