@@ -1,3 +1,6 @@
+/// Render system implementation
+/// Copyright 2025 Randomcode Developers
+
 #pragma once
 
 #include "rendersystem/irendersystem.h"

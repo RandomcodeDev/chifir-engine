@@ -1,3 +1,6 @@
+/// stb build file
+/// Copyright 2025 Randomcode Developers
+
 #include "base/base.h"
 #include "base/basicstr.h"
 #include "base/types.h"

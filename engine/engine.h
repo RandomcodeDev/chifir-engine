@@ -1,4 +1,5 @@
-/// Engine implementation class
+/// Engine core implementation
+/// Copyright 2025 Randomcode Developers
 
 #pragma once
 

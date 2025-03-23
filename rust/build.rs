@@ -1,3 +1,6 @@
+/// Build script
+/// Copyright 2025 Randomcode Developers
+
 use std::{
     env::var,
     io,

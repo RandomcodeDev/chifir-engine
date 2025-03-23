@@ -1,3 +1,6 @@
+/// DirectX 12 instance implementation
+/// Copyright 2025 Randomcode Developers
+
 #pragma once
 
 #include "base/loader.h"

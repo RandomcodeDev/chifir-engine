@@ -1,3 +1,6 @@
+/// Vulkan device implementation
+/// Copyright 2025 Randomcode Developers
+
 #include "base/log.h"
 
 #include "rhi/irhidevice.h"

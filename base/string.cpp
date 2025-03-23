@@ -1,3 +1,6 @@
+/// Dynamic string
+/// Copyright 2025 Randomcode Developers
+
 #include "base/basicstr.h"
 #include "base/string.h"
 #include "base/vector.h"

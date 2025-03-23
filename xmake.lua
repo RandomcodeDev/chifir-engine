@@ -1,3 +1,6 @@
+-- Root build script
+-- Copyright 2025 Randomcode Developers
+
 add_rules(
 	"plugin.vsxmake.autoupdate"
 --"c.unity_build",

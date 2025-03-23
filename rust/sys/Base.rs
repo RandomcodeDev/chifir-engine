@@ -1,3 +1,6 @@
+/// Bindings to Base_* functions
+/// Copyright 2025 Randomcode Developers
+
 use core::slice;
 use std::{
     alloc::{self, AllocError, Layout},

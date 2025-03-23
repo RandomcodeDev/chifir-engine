@@ -1,4 +1,5 @@
-/// libc functions that forward to Base functions for when libraries won't listen
+/// libc overrides for libraries
+/// Copyright 2025 Randomcode Developers
 
 #include "base.h"
 #include "basicstr.h"

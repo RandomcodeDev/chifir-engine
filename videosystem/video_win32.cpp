@@ -1,3 +1,6 @@
+/// Windows video system
+/// Copyright 2025 Randomcode Developers
+
 #include "video_win32.h"
 #include "base/base.h"
 #include "base/basicstr.h"

@@ -1,3 +1,6 @@
+-- DirectX 12 RHI implementation build script
+-- Copyright 2025 Randomcode Developers
+
 target("RhiDirectX12")
     set_kind("$(kind)")
 

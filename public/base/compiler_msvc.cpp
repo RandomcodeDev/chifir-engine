@@ -1,3 +1,6 @@
+/// MSVC freestanding support
+/// Copyright 2025 Randomcode Developers
+
 /// Implements/stubs everything MSVC asks for, like the security cookie, GS handling, RTC stuff
 /// This is basically because it's too hard to separate the runtime from certain compiler builtins,
 /// so this file implements the bare minimum, at times using functions from the engine to replace

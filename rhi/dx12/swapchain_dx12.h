@@ -1,3 +1,6 @@
+/// DirectX 12 swap chain implementation
+/// Copyright 2025 Randomcode Developers
+
 #pragma once
 
 #include "base/vector.h"

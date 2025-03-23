@@ -1,3 +1,6 @@
+/// Windows support
+/// Copyright 2025 Randomcode Developers
+
 #include <ntstatus.h>
 #include <shlobj.h>
 #include <winuser.h>

@@ -1,3 +1,6 @@
+/// Math constants
+/// Copyright 2025 Randomcode Developers (then again, they're numbers from like 2000+ years ago, so you can steal them)
+
 #pragma once
 
 #define PI      3.14159265359

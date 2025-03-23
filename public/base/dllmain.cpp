@@ -1,3 +1,6 @@
+/// Shared library startup/shutdown
+/// Copyright 2025 Randomcode Developers
+
 #include "base/platform.h"
 
 #ifdef CH_WIN32

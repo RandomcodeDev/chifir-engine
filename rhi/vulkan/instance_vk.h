@@ -1,3 +1,6 @@
+/// Vulkan instance implementation
+/// Copyright 2025 Randomcode Developers
+
 #pragma once
 
 #include "base/vector.h"

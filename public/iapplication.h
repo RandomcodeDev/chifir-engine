@@ -1,3 +1,6 @@
+/// Launcher application interface
+/// Copyright 2025 Randomcode Developers
+
 /// Application interface, for the launcher. An application is a DLL that the launcher loads, and tells it what systems
 /// it wants, and the launcher loads them and checks that they're the right version.
 

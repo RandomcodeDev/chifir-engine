@@ -1,4 +1,5 @@
-// Fixes phnt
+/// Fixes phnt on xbox 360
+/// Copyright 2025 Randomcode Developers
 
 #pragma once
 

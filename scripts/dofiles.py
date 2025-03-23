@@ -1,3 +1,7 @@
+# Do a command on every file with a name matching a given pattern.
+# Be really careful, especially if it's not just clang-format or dos2unix.
+# Copyright 2025 Randomcode Developers
+
 import argparse
 import os
 import re

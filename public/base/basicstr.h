@@ -1,4 +1,5 @@
 /// Basic string functions
+/// Copyright 2025 Randomcode Developers
 
 #pragma once
 

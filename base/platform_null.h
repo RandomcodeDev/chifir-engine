@@ -1,4 +1,5 @@
-/// Null platform stuff
+/// <PLATFORM NAME> support
+/// Copyright 2025 Randomcode Developers
 
 #pragma once
 

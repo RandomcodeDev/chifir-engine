@@ -1,3 +1,6 @@
+# Generates a release zip for PC
+# Copyright 2025 Randomcode Developers
+
 import gatherlicenses
 import os
 import platform

@@ -1,3 +1,6 @@
+/// Logging
+/// Copyright 2025 Randomcode Developers
+
 #include "base/log.h"
 #include "base/base.h"
 #include "base/basicstr.h"

@@ -2,7 +2,7 @@
 #show link: underline
 
 #align(center, text(30pt)[*Чифир (Chifir) Engine*])
-#align(center, text(20pt)[By Elliot McNeil])
+#align(center, text(20pt)[Copyright 2025 Randomcode Developers])
 
 #outline()
 #pagebreak()

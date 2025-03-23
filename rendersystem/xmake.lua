@@ -1,3 +1,6 @@
+-- RenderSystem build script
+-- Copyright 2025 Randomcode Developers
+
 target("RenderSystem")
     set_kind("$(kind)")
 

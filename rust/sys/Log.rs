@@ -1,3 +1,6 @@
+/// Bindings to Log_* functions
+/// Copyright 2025 Randomcode Developers
+
 use std::ffi::{CStr, CString};
 
 #[repr(u32)]

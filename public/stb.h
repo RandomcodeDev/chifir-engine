@@ -1,4 +1,5 @@
-// To ensure all non-static stb headers work correctly
+/// Makes stb work properly
+/// Copyright 2025 Randomcode Developers
 
 #pragma once
 

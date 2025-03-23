@@ -1,3 +1,6 @@
+/// DirectX 12 swap chain implementation
+/// Copyright 2025 Randomcode Developers
+
 #include "base/log.h"
 
 #include "videosystem/ivideosystem.h"

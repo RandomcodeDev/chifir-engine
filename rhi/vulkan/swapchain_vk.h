@@ -1,3 +1,6 @@
+/// Vulkan swap chain implementation
+/// Copyright 2025 Randomcode Developers
+
 #pragma once
 
 #include "rhi/irhiimage.h"

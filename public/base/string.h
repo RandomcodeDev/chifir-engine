@@ -1,4 +1,5 @@
 /// Dynamic string
+/// Copyright 2025 Randomcode Developers
 
 #pragma once
 
@@ -9,7 +10,6 @@
 
 template <typename T> class CVector;
 
-/// Dynamic string
 class BASEAPI CString
 {
   public:

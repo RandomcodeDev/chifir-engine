@@ -1,4 +1,5 @@
 /// Internal definitions for the launcher
+/// Copyright 2025 Randomcode Developers
 
 #pragma once
 

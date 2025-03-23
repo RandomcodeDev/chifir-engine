@@ -1,3 +1,6 @@
+/// Windows raw filesystem
+/// Copyright 2025 Randomcode Developers
+
 #pragma once
 
 #ifndef CH_WIN32

@@ -1,3 +1,5 @@
+-- Vulkan RHI implementation build script
+
 target("RhiVulkan")
     set_kind("$(kind)")
 

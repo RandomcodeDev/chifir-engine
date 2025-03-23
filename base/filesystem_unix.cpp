@@ -1,3 +1,6 @@
+/// Unix raw filesystem
+/// Copyright 2025 Randomcode Developers
+
 #include <cstring>
 #include <cerrno>
 

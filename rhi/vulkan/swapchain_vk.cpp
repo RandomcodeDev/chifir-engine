@@ -1,3 +1,6 @@
+/// Vulkan swap chain implementation
+/// Copyright 2025 Randomcode Developers
+
 #include "base/log.h"
 
 #include "swapchain_vk.h"

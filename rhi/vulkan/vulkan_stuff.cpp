@@ -1,3 +1,6 @@
+/// Vulkan utility functions
+/// Copyright 2025 Randomcode Developers
+
 #include "base/log.h"
 #include "vulkan.h"
 

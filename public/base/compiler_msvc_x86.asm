@@ -1,3 +1,6 @@
+; MSVC IA-32 freestanding support
+; Copyright 2025 Randomcode Developers
+
 .386
 .MODEL FLAT
 

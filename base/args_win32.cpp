@@ -1,3 +1,6 @@
+/// Windows argument parsing
+/// Copyright 2025 Randomcode Developers
+
 #include "base.h"
 #include "base/string.h"
 #include "base/types.h"

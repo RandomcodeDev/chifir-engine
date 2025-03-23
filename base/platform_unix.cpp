@@ -1,8 +1,10 @@
+/// Unix support
+/// Copyright 2025 Randomcode Developers
+
 #include <cerrno>
 #include <cstdlib>
 #include <ctime>
 #include <dlfcn.h>
-
 
 #ifdef CH_LINUX
 #include <linux/limits.h>

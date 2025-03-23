@@ -1,3 +1,6 @@
+/// Unix launcher
+/// Copyright 2025 Randomcode Developers
+
 #include <cassert>
 #include <cerrno>
 #include <cstdio>

@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+	NatVis for some containers in Base
+	Copyright 2025 Randomcode Developers
+-->
+
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
     <Type Name="CVector&lt;*&gt;">
         <DisplayString>{{Size = {m_size}}}</DisplayString>

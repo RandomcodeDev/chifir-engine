@@ -1,3 +1,6 @@
+-- Base build script
+-- Copyright 2025 Randomcode Developers
+
 target("Base")
     set_kind("$(kind)")
 

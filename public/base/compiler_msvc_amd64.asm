@@ -1,3 +1,6 @@
+; MSVC AMD64 freestanding support
+; Copyright 2025 Randomcode Developers
+
 TITLE MSVC AMD64 support
 
 OPTION PROLOGUE:NONE
@@ -48,4 +51,3 @@ __GSHandlerCheck PROC
 __GSHandlerCheck ENDP
 
 END
-

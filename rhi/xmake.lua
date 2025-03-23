@@ -1,3 +1,6 @@
+-- RHI interface build script
+-- Copyright 2025 Randomcode Developers
+
 if directx then
     includes("dx12")
 end

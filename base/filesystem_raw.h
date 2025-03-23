@@ -1,3 +1,6 @@
+/// Raw filesystem
+/// Copyright 2025 Randomcode Developers
+
 #pragma once
 
 #include "base/basicstr.h"

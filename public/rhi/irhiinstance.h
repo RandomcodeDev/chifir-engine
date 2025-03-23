@@ -1,4 +1,5 @@
-/// This file defines the interface for abstracting a graphics API's idea of a context or instance
+/// RHI instance/context/whatever interface
+/// Copyright 2025 Randomcode Developers
 
 #pragma once
 

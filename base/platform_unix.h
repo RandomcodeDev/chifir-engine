@@ -1,4 +1,5 @@
-/// Linux platform stuff
+/// Unix support
+/// Copyright 2025 Randomcode Developers
 
 #pragma once
 

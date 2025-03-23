@@ -1,3 +1,6 @@
+/// Loader helper functions
+/// Copyright 2025 Randomcode Developers
+
 #include "base/loader.h"
 #include "base/log.h"
 #include "base/platform.h"
@@ -62,6 +65,6 @@ BASEAPI ILibrary* Base_LoadEngineOrSystemLibrary(cstr name)
 			return nullptr;
 		}
 	}
-	
+
 	return lib;
 }

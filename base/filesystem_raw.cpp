@@ -1,3 +1,6 @@
+/// Raw filesystem
+/// Copyright 2025 Randomcode Developers
+
 #include "filesystem_raw.h"
 #ifdef CH_WIN32
 #include "filesystem_win32.h"

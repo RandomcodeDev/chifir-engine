@@ -1,5 +1,8 @@
-// Hacky code to load Launcher.dll from the bin directory next to the executable.
-// It can only use ntdll.dll
+/// Windows launcher
+/// Copyright 2025 Randomcode Developers
+
+/// Hacky code to load Launcher.dll from the bin directory next to the executable.
+/// It can only use ntdll.dll
 
 #define wcsrchr _wcsrchr
 #define wcsncpy _wcsncpy

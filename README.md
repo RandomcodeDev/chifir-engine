@@ -46,3 +46,6 @@ For the Rust stuff, build the engine, then do `cargo build`.
 |-------|---------------|-------------|---------------|----------|-----------------|---------------|-------|
 | Clang | yes           | yes         | no            | no       | yes             | yes           | yes   |
 | MSVC  | yes           | yes         | yes           | no       | no              |               | no    |
+
+## External dependencies
+See [`scripts/licenses.toml`](scripts/licenses.toml)

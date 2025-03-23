@@ -1,4 +1,5 @@
 /// Definitions for importing/exporting functions from shared libraries
+/// Copyright 2025 Randomcode Developers
 
 #pragma once
 

@@ -1,5 +1,5 @@
 = Engine coding style
-The engine is written in C++14 with no STL and (almost) no C runtime. This comes with some advantages, but plenty of disadvantages
+The engine is written in C++17 with no STL and (almost) no C runtime. This comes with some advantages, but plenty of disadvantages
 as well.
 #table(
   columns: 2,
@@ -10,10 +10,39 @@ as well.
   [Only the exact functionality needed is implemented], [Features not built on existing support code take longer],
 )
 
+Just try to copy the existing style as much as possible and you'll be fine. Don't reformat external code.
+
+== Colourful language
+Avoid it if it might offend someone, but basic swearing is probably fine. Don't insult anyone. If something is designed really bad
+and gave you a headache, you can get mad about it within reason. Probably don't swear in public headers.
+
+== Documentation
+You should try to document everything important. Any public declarations, macros, `constexpr` functions, any weird decisions,
+folders with weird stuff in them, anything where someone might wonder what it is and how it works/why it's there. For implementations
+of interfaces/abstract classes, you don't have to document inherited functions. TLDR, just document stuff in a header file and anything
+complicated/weird.
+
+== External code
+Always document where external code is from, and avoid introducing it. Put it in `external` when possible, preferrably as
+a Git submodule unless it's only a few files. Always include licenses, and add information to `scripts/licenses.toml`.
+
+== File header
+Put a very short comment followed by a copyright line (usually for Randomcode Developers). Keep track of where files outside
+`external` come from, and add a license in `external` and `scripts/licenses.toml` for loose code (i.e. SDL/musl).
+
+Example:
+```c++
+/// <file description>
+/// Copyright <year> Randomcode Developers
+```
+
 == Formatting
 Just use `clang-format` aggressively. The only thing that I'm pretty sure it doesn't do is adding curly brackets to one-line
 if statements and loops, which is part of the style. Also, be careful about putting a blank line between headers that shouldn't
 be sorted alphabetically.
+
+== `#include`s
+Separate by folder, sort alphabetically when possible
 
 == Types
 `public/base/types.h` defines short type names largely based on Rust's type names. Sizes should use the signed `ssize` to make
@@ -62,6 +91,5 @@ debug/release builds; don't use them for general error handling. For example, if
 where the standard technically requires that it not return `nullptr` (even though the standard isn't as relevant for the engine), or an index is
 outside the valid range, or a parameter is wrong in a way it shouldn't be, then you can use an assert. Normally, you can use the `ASSERT` macro.
 If a condition isn't the most indicative of why something is wrong, `ASSERT_MSG` lets you add a message. For functions which just succeed or fail,
-return `false`, `nullptr`, or some other documented value when an error happens. When an unrecoverable error happens, use `Base_Quit` (or
+return `false`, `nullptr`, or some other reasonable/documented value when an error happens. When an unrecoverable error happens, use `Base_Quit` (or
 `Base_Abort`/`Base_AbortSafe` in functions where logging/allocation isn't available) to kill the engine and show the user an error message.
-

@@ -1,3 +1,6 @@
+-- VideoSystem build script
+-- Copyright 2025 Randomcode Developers
+
 target("VideoSystem")
     set_kind("$(kind)")
 

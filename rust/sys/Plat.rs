@@ -1,3 +1,6 @@
+/// Bindings to Plat_* functions
+/// Copyright 2025 Randomcode Developers
+
 #[link(name = "Base")]
 unsafe extern "C" {
     #[cfg_attr(target_os = "linux", link_name = "_Z25Plat_GetSystemDescriptionv")]

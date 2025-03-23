@@ -1,3 +1,6 @@
+/// Engine core implementation
+/// Copyright 2025 Randomcode Developers
+
 #include "engine.h"
 #include "base/filesystem.h"
 #include "base/loader.h"

@@ -1,4 +1,5 @@
-// Windows-specific stuff for the video system
+/// Windows video system
+/// Copyright 2025 Randomcode Developers
 
 #pragma once
 

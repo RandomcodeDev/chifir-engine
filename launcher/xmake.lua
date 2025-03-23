@@ -1,3 +1,6 @@
+-- Launcher build script
+-- Copyright 2025 Randomcode Developers
+
 target("LauncherMain")
     set_kind("binary")
     set_basename(game_name)

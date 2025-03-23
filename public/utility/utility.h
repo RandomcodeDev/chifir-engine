@@ -1,4 +1,5 @@
 // Utility stuff, implemented on top of Base
+// Copyright 2025 Randomcode Developers
 
 #pragma once
 

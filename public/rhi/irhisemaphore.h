@@ -1,3 +1,6 @@
+/// RHI semaphore interface
+/// Copyright 2025 Randomcode Developers
+
 #pragma once
 
 #include "base/compiler.h"

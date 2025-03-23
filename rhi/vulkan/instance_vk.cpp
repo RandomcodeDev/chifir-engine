@@ -1,10 +1,16 @@
-#include "instance_vk.h"
+/// Vulkan instance implementation
+/// Copyright 2025 Randomcode Developers
+
 #include "base/loader.h"
 #include "base/log.h"
 #include "base/vector.h"
-#include "device_vk.h"
+
 #include "rhi/irhidevice.h"
+
 #include "videosystem/ivideosystem.h"
+
+#include "device_vk.h"
+#include "instance_vk.h"
 
 constexpr cstr REQUIRED_EXTENSIONS[] = {
 	VK_KHR_SURFACE_EXTENSION_NAME,

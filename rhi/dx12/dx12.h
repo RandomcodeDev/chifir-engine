@@ -1,3 +1,6 @@
+/// DirectX 12 definitions
+/// Copyright 2025 Randomcode Developers
+
 #pragma once
 
 #include <dxgi1_6.h>

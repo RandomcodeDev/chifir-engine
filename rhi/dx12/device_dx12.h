@@ -1,3 +1,6 @@
+/// DirectX 12 device implementation
+/// Copyright 2025 Randomcode Developers
+
 #pragma once
 
 #include "rhi/irhidevice.h"

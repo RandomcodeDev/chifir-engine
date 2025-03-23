@@ -1,7 +1,9 @@
+; IA-32 Windows function stubs
+
 .386
 .MODEL FLAT
 
-TITLE x86 Windows function stubs
+TITLE IA-32 Windows function stubs
 
 OPTION PROLOGUE:NONE
 

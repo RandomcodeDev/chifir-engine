@@ -1,3 +1,6 @@
+/// DirectX 12 instance implementation
+/// Copyright 2025 Randomcode Developers
+
 #include "base/log.h"
 
 #include "videosystem/ivideosystem.h"

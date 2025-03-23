@@ -1,6 +1,9 @@
+/// Vulkan definitions
+/// Copyright 2025 Randomcode Developers
+
 #pragma once
 
-// Unfortunately, the SDK I have doesn't like the debugging stuff
+// Release builds should be performance-accurate to some degree
 #ifdef CH_DEBUG
 #define VULKAN_DEBUG
 #endif

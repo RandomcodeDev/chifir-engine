@@ -1,3 +1,6 @@
+# Makes a .def file for a DLL
+# Copyright 2025 Randomcode Developers
+
 import os
 import pefile
 import sys

@@ -1,3 +1,6 @@
+/// Miscellaneous functions (Mem*, Quit) and initialization/shutdown
+/// Copyright 2025 Randomcode Developers
+
 #include "base.h"
 #include "base/base.h"
 #include "base/basicstr.h"

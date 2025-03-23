@@ -1,3 +1,6 @@
+; Xbox 360 function stubs
+; Copyright 2025 Randomcode Developers
+
 TITLE Xbox 360 function stubs
 
 OPTION PROLOGUE:NONE

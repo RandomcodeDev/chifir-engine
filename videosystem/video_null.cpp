@@ -1,3 +1,6 @@
+/// Stubbed video system
+/// Copyright 2025 Randomcode Developers
+
 #include "video_null.h"
 #include "base/base.h"
 #include "base/basicstr.h"

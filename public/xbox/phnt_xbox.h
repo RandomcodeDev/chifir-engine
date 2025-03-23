@@ -1,5 +1,7 @@
 /*
- * Xbox 360 Win32 definition support
+ * Xbox 360 Win32 definition support (evil)
+ * all definitions here were copied from windows sdk headers and stuff
+ * copyright 2025 microsoft
  */
 
 #ifndef _PHNT_WINDOWS_H

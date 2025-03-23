@@ -1,3 +1,6 @@
+-- Engine build script
+-- Copyright 2025 Randomcode Developers
+
 target("Engine")
     set_kind("$(kind)")
 

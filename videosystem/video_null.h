@@ -1,4 +1,5 @@
-// Dummy video system
+/// Stubbed video system
+/// Copyright 2025 Randomcode Developers
 
 #pragma once
 

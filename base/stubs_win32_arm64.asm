@@ -1,3 +1,6 @@
+; ARM64 Windows function stubs
+; Copyright 2025 Randomcode Developers
+
 MACRO
 MAKE_STUB $name
 	.DATA

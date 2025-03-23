@@ -1,5 +1,8 @@
 # Doxyfile 1.9.7
 
+# Doxygen configuration
+# Copyright 2025 Randomcode Developers
+
 # This file describes the settings to be used by the documentation system
 # doxygen (www.doxygen.org) for a project.
 #
@@ -54,7 +57,7 @@ PROJECT_NUMBER         =
 # for a project that appears at the top of each page and should give viewer a
 # quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          =
+PROJECT_BRIEF          = A custom, highly portable, open source 3D game engine created by Randomcode Developers
 
 # With the PROJECT_LOGO tag one can specify a logo or an icon that is included
 # in the documentation. The maximum height of the logo should not exceed 55
@@ -950,6 +953,7 @@ INPUT                  = base \
                          public \
                          rendersystem \
                          rhi \
+                         scripts \
                          testapp \
                          tools \
                          utility \

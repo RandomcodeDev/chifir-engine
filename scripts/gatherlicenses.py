@@ -1,3 +1,6 @@
+# Collects licenses described in licenses.toml into a folder/zip
+# Copyright 2025 Randomcode Developers
+
 import argparse
 import os
 import sys

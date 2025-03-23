@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
+
+<!--
+	Xbox 360 XEX configuration
+	Copyright 2025 Randomcode Developers
+-->
+
 <xex>
 	<version major="0x00" minor="0x00" build="0x0001" qfe="0x00" />
 	<!--<exportnames />-->
 </xex>
-

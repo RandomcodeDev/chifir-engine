@@ -1,3 +1,6 @@
+/// Xbox 360 launcher
+/// Copyright 2025 Randomcode Developers
+
 #include "base/base.h"
 
 #include "launcher.h"

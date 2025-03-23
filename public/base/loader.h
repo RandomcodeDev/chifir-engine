@@ -1,4 +1,5 @@
 /// Dynamic loading API
+/// Copyright 2025 Randomcode Developers
 
 #pragma once
 

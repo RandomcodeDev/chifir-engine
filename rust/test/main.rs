@@ -1,3 +1,6 @@
+/// Executable test
+/// Copyright 2025 Randomcode Developers
+
 use chifir::{*, sys::*};
 
 #[global_allocator]

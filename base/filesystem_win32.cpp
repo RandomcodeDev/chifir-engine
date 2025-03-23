@@ -1,3 +1,6 @@
+/// Windows raw filesystem
+/// Copyright 2025 Randomcode Developers
+
 #include "filesystem_win32.h"
 #include "base/log.h"
 

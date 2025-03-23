@@ -1,4 +1,5 @@
 /// Public engine interface for other components
+/// Copyright 2025 Randomcode Developers
 
 #pragma once
 

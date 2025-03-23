@@ -1,3 +1,6 @@
+; AMD64 Windows function stubs
+; Copyright 2025 Randomcode Developers
+
 TITLE AMD64 Windows function stubs
 
 OPTION PROLOGUE:NONE

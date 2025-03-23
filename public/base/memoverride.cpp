@@ -1,3 +1,6 @@
+/// malloc/free override
+/// Copyright 2025 Randomcode Developers
+
 #include <cerrno>
 
 #include "base.h"

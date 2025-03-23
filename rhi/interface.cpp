@@ -1,4 +1,7 @@
-// Exports Rhi_CreateInstance
+/// RHI library interface
+/// Copyright 2025 Randomcode Developers
+
+/// Honestly, some of the ifdefs in this file are really ugly
 
 #include "base/basicstr.h"
 #include "base/loader.h"

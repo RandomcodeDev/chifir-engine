@@ -1,3 +1,6 @@
+/// DirectX 12 device implementation
+/// Copyright 2025 Randomcode Developers
+
 #include "base/basicstr.h"
 #include "base/log.h"
 #include "base/platform.h"

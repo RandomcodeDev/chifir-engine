@@ -1,4 +1,5 @@
-/// Clang stuff
+/// Clang freestanding support
+/// Copyright 2025 Randomcode Developers
 
 #include "base.h"
 #include "types.h"

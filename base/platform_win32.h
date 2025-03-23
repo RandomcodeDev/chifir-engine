@@ -1,4 +1,5 @@
-/// Implementation details of Windows DLL shenanigans
+/// Windows support
+/// Copyright 2025 Randomcode Developers
 
 #pragma once
 

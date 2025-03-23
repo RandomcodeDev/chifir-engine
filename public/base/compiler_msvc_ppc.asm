@@ -1,3 +1,6 @@
+; MSVC Xbox 360 freestanding support
+; Copyright 2025 Randomcode Developers
+
 TITLE MSVC PowerPC support
 
 OPTION PROLOGUE:NONE
@@ -34,4 +37,3 @@ Fail:
 __security_check_cookie ENDP
 
 END
-

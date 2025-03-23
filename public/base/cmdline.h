@@ -1,3 +1,6 @@
+/// Command line parsing (WIP)
+/// Copyright 2025 Randomcode Developers
+
 #pragma once
 
 #include "base/string.h"
