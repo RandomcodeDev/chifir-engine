@@ -33,6 +33,11 @@ For every platform, you need [xmake](https://xmake.io).
 
 There are Rust bindings in progress, you need the `nightly` toolchain for them.
 
+You can get a semi-accurate line count with this command if you have tokei installed:
+```sh
+tokei -t="C,C++,C Header,Python,Lua,Assembly" -e external -e public/xbox
+```
+
 ## Build instructions
 
 You'll need xmake. First, you should copy `config.default.lua` to `config.lua`, and change any important stuff.
