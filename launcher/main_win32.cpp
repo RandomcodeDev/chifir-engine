@@ -85,7 +85,8 @@ extern "C"
 	void* launcher = nullptr;
 	bool triedSameDir = false;
 Load:
-	UNICODE_STRING launcherDll = RTL_CONSTANT_STRING(L"Launcher.dll");
+	wchar_t launcherDllBuffer[] = L"Launcher.dll";
+	UNICODE_STRING launcherDll = RTL_CONSTANT_STRING(launcherDllBuffer);
 	NTSTATUS status = LdrLoadDll(binDir, nullptr, &launcherDll, &launcher);
 	if (!NT_SUCCESS(status))
 	{

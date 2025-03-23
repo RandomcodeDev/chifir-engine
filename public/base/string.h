@@ -9,6 +9,7 @@
 
 template <typename T> class CVector;
 
+/// Dynamic string
 class BASEAPI CString
 {
   public:

@@ -147,15 +147,20 @@ bool Base_CheckWoW64()
 
 cstr Base_IsWine()
 {
-	char name[] = "wine_get_version";
-	ANSI_STRING nameStr = RTL_CONSTANT_STRING(name);
-	cstr (*wine_get_version)() = nullptr;
-	if (NT_SUCCESS(LdrGetProcedureAddress(s_ntDllBase, &nameStr, 0, reinterpret_cast<void**>(&wine_get_version))))
+	static cstr (*wine_get_version)() = nullptr;
+	static cstr wine_version = nullptr;
+
+	if (!wine_get_version)
 	{
-		return wine_get_version();
+		char name[] = "wine_get_version";
+		ANSI_STRING nameStr = RTL_CONSTANT_STRING(name);
+		if (NT_SUCCESS(LdrGetProcedureAddress(s_ntDllBase, &nameStr, 0, reinterpret_cast<void**>(&wine_get_version))))
+		{
+			wine_version = wine_get_version();
+		}
 	}
 
-	return nullptr;
+	return wine_version;
 }
 
 static bool FindLdrGetProcedureAddress()

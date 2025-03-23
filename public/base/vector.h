@@ -8,6 +8,7 @@
 #include "container.h"
 #include "types.h"
 
+/// Generic dynamic array
 template <typename T> class CVector: public IContainer<T, ssize>
 {
   public:
