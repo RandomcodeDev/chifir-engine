@@ -10,7 +10,7 @@ vsxmake*/
 fastbuild/Config.bff
 *.fdb
 *.idb
-*.pdb
+#*.pdb
 private/
 compile_commands.json
 .*cache*/
