@@ -9,4 +9,4 @@
 class CDx12RhiRenderTarget: public IRhiRenderTarget
 {
 
-}
+};

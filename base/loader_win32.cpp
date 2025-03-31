@@ -108,6 +108,7 @@ MAKE_STUB(TranslateMessage, __stdcall, @4)
 MAKE_STUB(UnregisterClassA, __stdcall, @8)
 
 // combase
+MAKE_STUB(CoTaskMemAlloc, __stdcall, @4)
 MAKE_STUB(RoInitialize, __stdcall, @8)
 MAKE_STUB(RoUninitialize, __stdcall, @0)
 MAKE_STUB(RoGetActivationFactory, __stdcall, @24)
@@ -323,6 +324,7 @@ bool Base_InitLoader()
 	ILibrary* combase = Base_LoadLibrary("combase");
 	ASSERT(combase != nullptr);
 
+	GET_FUNCTION_OPTIONAL(combase, CoTaskMemAlloc)
 	GET_FUNCTION_OPTIONAL(combase, RoInitialize)
 	GET_FUNCTION_OPTIONAL(combase, RoUninitialize)
 	GET_FUNCTION_OPTIONAL(combase, RoGetActivationFactory)

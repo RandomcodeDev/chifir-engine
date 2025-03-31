@@ -29,8 +29,12 @@ target("RhiDirectX12")
             os.mkdir(outdir)
             for _, dll in ipairs({"D3D12Core", "d3d12SDKLayers"}) do
                 if not os.exists(path.join(outdir, dll .. ".dll")) then
-                    os.cp(path.join(agility_dir, dll .. ".dll"), path.join(outdir, dll .. ".dll"))
-                    os.cp(path.join(agility_dir, dll .. ".pdb"), path.join(outdir, dll .. ".pdb"))
+                    if os.exists(path.join(agility_dir, dll .. ".dll")) then
+                        os.cp(path.join(agility_dir, dll .. ".dll"), path.join(outdir, dll .. ".dll"))
+                    end
+                    if os.exists(path.join(agility_dir, dll .. ".pdb")) then
+                        os.cp(path.join(agility_dir, dll .. ".pdb"), path.join(outdir, dll .. ".pdb"))
+                    end
                 end
             end
         end

@@ -1,6 +1,37 @@
+#include "base/base.h"
 #ifndef CH_XBOX360
 #include "base/basicstr.h"
 #include "winrt_min.h"
+
+template <typename T>
+static HRESULT GetClass(PCWSTR name, T** instance)
+{
+	HSTRING string = nullptr;
+	ssize length = Base_StrLength(name);
+	ASSERT(SUCCEEDED(WindowsCreateString(name, static_cast<u32>(length), &string)));
+
+	IActivationFactory* factory = nullptr;
+	HRESULT result = RoGetActivationFactory(string, IID_PPV_ARGS(&factory));
+	if (!SUCCEEDED(result))
+	{
+		DbgPrint("Failed to get activation factory for class %ls: HRESULT 0x%08X\n", name, result);
+		goto Done;
+	}
+
+	result = factory->ActivateInstance(reinterpret_cast<IInspectable**>(instance));
+	if (!SUCCEEDED(result))
+	{
+		DbgPrint("Failed to activate instance of class %ls: HRESULT 0x%08X\n", name, result);
+		goto Done;
+	}
+
+Done:
+	WindowsDeleteString(string);
+	return result;
+}
+
+static winrt_min::ICoreApplication* CoreApplication;
+static winrt_min::ICoreWindow* CoreWindow;
 
 bool Base_InitWinRt()
 {
@@ -11,6 +42,19 @@ bool Base_InitWinRt()
 		return false;
 	}
 
+	;
+	result = GetClass(winrt_min::RuntimeClass_CoreApplication, &CoreApplication);
+	if (!SUCCEEDED(result))
+	{
+		return false;
+	}
+
+	result = GetClass(winrt_min::RuntimeClass_CoreWindow, &CoreWindow);
+	if (!SUCCEEDED(result))
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -18,12 +62,13 @@ bool Base_InitWinRt()
 
 struct UnknownBase: public IUnknown
 {
+  public:
 	UnknownBase() : m_refCount(1)
 	{
 	}
 	virtual ~UnknownBase() = default;
 
-	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppvObject)
+	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppvObject) override
 	{
 		if (!ppvObject)
 		{
@@ -31,17 +76,17 @@ struct UnknownBase: public IUnknown
 		}
 
 		AddRef();
-		*ppvObject = this;
+		*ppvObject = static_cast<IUnknown*>(this);
 		return S_OK;
 	}
 
-	virtual ULONG __stdcall AddRef(void)
+	virtual ULONG __stdcall AddRef(void) override
 	{
 		m_refCount++;
 		return m_refCount;
 	}
 
-	virtual ULONG __stdcall Release(void)
+	virtual ULONG __stdcall Release(void) override
 	{
 		if (m_refCount == 1)
 		{
@@ -59,9 +104,30 @@ struct UnknownBase: public IUnknown
 
 struct InspectableBase: public IInspectable, public UnknownBase
 {
+  public:
+	InspectableBase(PCWSTR className, TrustLevel trustLevel, const IID* iids, ULONG iidCount)
+		: UnknownBase(), m_className(className), m_classNameLength(static_cast<ULONG>(Base_StrLength(m_className))),
+		  m_trustLevel(trustLevel), m_iids(iids), m_iidCount(iidCount)
+	{
+	}
 	virtual ~InspectableBase() = default;
 
-	virtual HRESULT __stdcall GetIids(ULONG* iidCount, IID** iids)
+	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppvObject) override
+    {
+        return UnknownBase::QueryInterface(riid, ppvObject);
+    }
+
+    virtual ULONG __stdcall AddRef(void) override
+    {
+        return UnknownBase::AddRef();
+    }
+
+    virtual ULONG __stdcall Release(void) override
+    {
+        return UnknownBase::Release();
+    }
+
+	virtual HRESULT __stdcall GetIids(ULONG* iidCount, IID** iids) override
 	{
 		if (!iidCount || !iids)
 		{
@@ -79,7 +145,7 @@ struct InspectableBase: public IInspectable, public UnknownBase
 		return S_OK;
 	}
 
-	virtual HRESULT __stdcall GetRuntimeClassName(HSTRING* className)
+	virtual HRESULT __stdcall GetRuntimeClassName(HSTRING* className) override
 	{
 		if (!className)
 		{
@@ -89,7 +155,7 @@ struct InspectableBase: public IInspectable, public UnknownBase
 		return WindowsCreateString(m_className, m_classNameLength, className);
 	}
 
-	virtual HRESULT __stdcall GetTrustLevel(TrustLevel* trustLevel)
+	virtual HRESULT __stdcall GetTrustLevel(TrustLevel* trustLevel) override
 	{
 		if (!trustLevel)
 		{
@@ -100,13 +166,6 @@ struct InspectableBase: public IInspectable, public UnknownBase
 		return S_OK;
 	}
 
-  protected:
-	InspectableBase(PCWSTR className, TrustLevel trustLevel, const IID* iids, ULONG iidCount)
-		: UnknownBase(), m_className(className), m_classNameLength(Base_StrLength(m_className)), m_trustLevel(trustLevel), m_iids(iids),
-		  m_iidCount(iidCount)
-	{
-	}
-
   private:
 	PCWSTR m_className;
 	ULONG m_classNameLength;
@@ -115,19 +174,55 @@ struct InspectableBase: public IInspectable, public UnknownBase
 	ULONG m_iidCount;
 };
 
-struct App: public winrt_min::IFrameworkView, public winrt_min::IFrameworkViewSource,
-			public InspectableBase
+struct App: public InspectableBase, public winrt_min::IFrameworkView, public winrt_min::IFrameworkViewSource
 {
+  public:
 	int (*main)();
 	int result;
 	const winrt_min::ICoreWindow* window;
 
-	virtual ~App() = default;
-
-	virtual void __stdcall Initialize(const winrt_min::ICoreApplicationView& appView)
+	App() : InspectableBase(NAME, TRUST, IIDS, ArraySize<ULONG>(IIDS))
 	{
-		winrt_min::TypedEventHandler<winrt_min::ICoreApplicationView*, void*> handler;
-		appView.Activated(&handler, &token);
+	}
+	virtual ~App() = default;
+	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppvObject) override
+    {
+        return InspectableBase::QueryInterface(riid, ppvObject);
+    }
+
+    virtual ULONG __stdcall AddRef(void) override
+    {
+        return InspectableBase::AddRef();
+    }
+
+    virtual ULONG __stdcall Release(void) override
+    {
+        return InspectableBase::Release();
+    }
+
+	virtual HRESULT __stdcall GetIids(ULONG* iidCount, IID** iids) override
+	{
+		return InspectableBase::GetIids(iidCount, iids);
+	}
+
+	virtual HRESULT __stdcall GetRuntimeClassName(HSTRING* className) override
+	{
+		return InspectableBase::GetRuntimeClassName(className);
+	}
+
+	virtual HRESULT __stdcall GetTrustLevel(TrustLevel* trustLevel) override
+	{
+		return InspectableBase::GetTrustLevel(trustLevel);
+	}
+
+	virtual HRESULT __stdcall Initialize(winrt_min::ICoreApplicationView* appView) override
+	{
+		return S_OK;
+	}
+
+	virtual HRESULT __stdcall Load(HSTRING entryPoint) override
+	{
+		return S_OK;
 	}
 
 	virtual HRESULT __stdcall Uninitialize() override
@@ -141,9 +236,10 @@ struct App: public winrt_min::IFrameworkView, public winrt_min::IFrameworkViewSo
 		return S_OK;
 	}
 
-	virtual void __stdcall SetWindow(const winrt_min::ICoreWindow& window) override
+	virtual HRESULT __stdcall SetWindow(winrt_min::ICoreWindow* window) override
 	{
-		this->window = &window;
+		this->window = window;
+		return S_OK;
 	}
 
 	virtual HRESULT __stdcall CreateView(winrt_min::IFrameworkView** viewProvider) override
@@ -151,42 +247,21 @@ struct App: public winrt_min::IFrameworkView, public winrt_min::IFrameworkViewSo
 		*viewProvider = this;
 		return S_OK;
 	}
+
+  private:
+	static constexpr wchar_t NAME[] = L"Windows.ApplicationModel.Core.IFrameworkView";
+	static constexpr TrustLevel TRUST = FullTrust;
+	static const IID IIDS[4];
 };
 
-HRESULT GetClass(PCWSTR name, const IID& iid, void** instance)
-{
-	HSTRING string = nullptr;
-	u32 length = Base_StrLength(name);
-	ASSERT(SUCCEEDED(WindowsCreateString(name, length, &string)));
-
-	HRESULT result = RoGetActivationFactory(string, iid, instance);
-	if (!SUCCEEDED(result))
-	{
-		DbgPrint("Failed to get activation factory for class %ls: HRESULT 0x%08X\n", name, result);
-	}
-
-	WindowsDeleteString(string);
-	return result;
-}
+const IID App::IIDS[] = {
+	winrt_min::IID_IFrameworkView, winrt_min::IID_IFrameworkViewSource, __uuidof(IInspectable), __uuidof(IUnknown)};
 
 int Base_RunMainWinRt(int (*main)())
 {
-	winrt_min::ICoreApplication* coreApp;
-	HRESULT result = GetClass(winrt_min::RuntimeClass_CoreApplication, IID_PPV_ARGS(&coreApp));
-	if (!SUCCEEDED(result))
-	{
-		return result;
-	}
-	winrt_min::ICoreWindow* coreWindow;
-	result = GetClass(winrt_min::RuntimeClass_CoreWindow, IID_PPV_ARGS(&coreWindow));
-	if (!SUCCEEDED(result))
-	{
-		return result;
-	}
-
 	App* app = new App();
 	app->main = main;
-	coreApp->Run(app);
+	CoreApplication->Run(app);
 
 	s32 result = app->result;
 	reinterpret_cast<IUnknown*>(app)->Release();

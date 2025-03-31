@@ -67,7 +67,7 @@ def main(argc, argv):
 		action="store_true"
 	)
 	parser.add_argument(
-		"--build-dir", "-i", help="build directory to check", default=path.join(repo_dir, "build"))
+		"--build-dir", "-i", help="build directory to check", default=path.join(repo_dir, "build")
 	)
 	parser.add_argument(
 		"--plat", "-p", help="platform of the build", default=platform.system()
@@ -152,6 +152,19 @@ def main(argc, argv):
 					dest = path.join(output, "bin")
 					print(f"{file} -> {path.join(dest, f)}")
 					shutil.copy(file, dest)
+		gdk_meta = path.join(repo_dir, "public", "gdk")
+		for root, _, files in os.walk(gdk_meta):
+			for f in files:
+				file = path.join(root, f)
+				if path.isfile(file):
+					(name, ext) = path.splitext(f)
+					dest = root.replace(gdk_meta, output)
+					if ext == ".mgc":
+						f = path.join(output, "MicrosoftGame.config")
+					print(f"{file} -> {path.join(dest, f)}")
+					if not path.exists(dest):
+						os.mkdir(dest)
+					shutil.copy(file, path.join(dest, f))
 
 	gatherlicenses_args = [f'{gatherlicenses.__file__}', f'--output={path.join(output, "licenses")}']
 	gatherlicenses.main(len(gatherlicenses_args), gatherlicenses_args)

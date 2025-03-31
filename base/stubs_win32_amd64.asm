@@ -105,6 +105,7 @@ MAKE_STUB TranslateMessage
 MAKE_STUB UnregisterClassA
 
 ; combase stubs
+MAKE_STUB CoTaskMemAlloc
 MAKE_STUB RoInitialize
 MAKE_STUB RoUninitialize
 MAKE_STUB RoGetActivationFactory
