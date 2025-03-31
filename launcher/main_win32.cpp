@@ -59,6 +59,7 @@ static PCWSTR GetEngineDir()
 #else
 extern void Base_Init();
 extern void Base_Shutdown();
+extern int Base_RunMain(int (*main)());
 #endif
 
 extern "C"
@@ -76,7 +77,7 @@ extern "C"
 	__security_init_cookie();
 	RunGlobalConstructors();
 	Base_Init();
-	int result = LauncherMain();
+	int result = Base_RunMain(LauncherMain);
 	Base_Shutdown();
 	RunGlobalConstructors();
 
@@ -115,8 +116,23 @@ Load:
 		NtTerminateProcess(NtCurrentProcess(), status);
 	}
 
+	void* base = nullptr;
+	wchar_t baseName[] = L"Base.dll";
+	UNICODE_STRING baseString = RTL_CONSTANT_STRING(baseName);
+	status = LdrGetDllHandleByName(&baseString, nullptr, &base);
+	if (!NT_SUCCESS(status))
+	{
+		NtTerminateProcess(NtCurrentProcess(), status);
+	}
+
+	void* runMainAddr = nullptr;
+	char runMainName[] = "Base_RunMain";
+	ANSI_STRING runMainString = RTL_CONSTANT_STRING(runMainName);
+	status = LdrGetProcedureAddress(base, &runMainString, 0, &runMainAddr);
+
+	int (*Base_RunMain)(int (*main)()) = reinterpret_cast<int(*)(int(*)())>(runMainAddr);
 	int (*LauncherMain)() = reinterpret_cast<int (*)()>(launcherMainAddr);
-	int result = LauncherMain();
+	int result = Base_RunMain(LauncherMain);
 
 	NtTerminateProcess(NtCurrentProcess(), result);
 #endif

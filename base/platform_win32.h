@@ -44,6 +44,10 @@ extern bool Base_InitLoader();
 extern bool Base_CheckWoW64();
 extern cstr Base_IsWine();
 
+extern bool Base_InitWinRt();
+extern void Base_ShutdownWinRt();
+extern int Base_RunMainWinRt(int (*main)());
+
 extern bool g_loaderInitialized;
 
 class CWindowsLibrary: public ILibrary

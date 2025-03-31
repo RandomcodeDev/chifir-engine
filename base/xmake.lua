@@ -34,6 +34,7 @@ target("Base")
             "filesystem_win32.cpp",
             "loader_win32.cpp",
             "platform_win32.cpp",
+            "platform_winrt.cpp",
             "../public/base/compiler_msvc.cpp"
         )
 

@@ -9,6 +9,7 @@
 
 /// String length
 extern BASEAPI ssize Base_StrLength(cstr str, ssize maxSize = SSIZE_MAX);
+extern BASEAPI ssize Base_StrLength(cwstr str, ssize maxSize = SSIZE_MAX);
 
 /// Compare two strings
 extern BASEAPI s32 Base_StrCompare(cstr RESTRICT a, cstr RESTRICT b, ssize maxCount = SSIZE_MAX, bool caseSensitive = true);

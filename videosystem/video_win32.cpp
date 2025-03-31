@@ -8,7 +8,7 @@
 
 extern "C" bool SetProcessDPIAware_Available();
 
-bool CWindowsVideoSystem::Initialize()
+bool CWin32VideoSystem::Initialize()
 {
 	m_hinstance = reinterpret_cast<HINSTANCE>(NtCurrentImageBase());
 
@@ -33,7 +33,7 @@ bool CWindowsVideoSystem::Initialize()
 	return true;
 }
 
-bool CWindowsVideoSystem::Update()
+bool CWin32VideoSystem::Update()
 {
 	m_resized = false;
 
@@ -47,7 +47,7 @@ bool CWindowsVideoSystem::Update()
 	return !m_closed;
 }
 
-void CWindowsVideoSystem::Shutdown()
+void CWin32VideoSystem::Shutdown()
 {
 	DestroyWindow(m_window);
 	UnregisterClassA(WINDOW_CLASS, m_hinstance);
@@ -55,7 +55,7 @@ void CWindowsVideoSystem::Shutdown()
 	Log_Info("Windows video system shut down");
 }
 
-void CWindowsVideoSystem::SetTitle(cstr newTitle)
+void CWin32VideoSystem::SetTitle(cstr newTitle)
 {
 	m_title = Base_StrClone(newTitle);
 	if (m_window)
@@ -64,7 +64,7 @@ void CWindowsVideoSystem::SetTitle(cstr newTitle)
 	}
 }
 
-bool CWindowsVideoSystem::RegisterWindowClass()
+bool CWin32VideoSystem::RegisterWindowClass()
 {
 	WNDCLASSEXA wndClass = {};
 	wndClass.cbSize = SIZEOF(WNDCLASSEXA);
@@ -94,7 +94,7 @@ bool CWindowsVideoSystem::RegisterWindowClass()
 	return true;
 }
 
-bool CWindowsVideoSystem::InitializeMainWindow()
+bool CWin32VideoSystem::InitializeMainWindow()
 {
 	RECT clientArea = {};
 
@@ -141,7 +141,7 @@ bool CWindowsVideoSystem::InitializeMainWindow()
 	return true;
 }
 
-void CWindowsVideoSystem::UpdateSize()
+void CWin32VideoSystem::UpdateSize()
 {
 	RECT clientArea = {};
 	GetClientRect(m_window, &clientArea);
@@ -149,7 +149,7 @@ void CWindowsVideoSystem::UpdateSize()
 	m_height = clientArea.bottom - clientArea.top;
 }
 
-void CWindowsVideoSystem::UpdatePosition()
+void CWin32VideoSystem::UpdatePosition()
 {
 	RECT clientArea = {};
 	GetClientRect(m_window, &clientArea);
@@ -161,7 +161,7 @@ void CWindowsVideoSystem::UpdatePosition()
 
 DECLARE_AVAILABLE(GetDpiForWindow);
 
-void CWindowsVideoSystem::UpdateDpi()
+void CWin32VideoSystem::UpdateDpi()
 {
 	// Only on Windows 10 and later
 	if (GetDpiForWindow_Available())
@@ -175,10 +175,10 @@ void CWindowsVideoSystem::UpdateDpi()
 	}
 }
 
-LRESULT __stdcall CWindowsVideoSystem::WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT __stdcall CWin32VideoSystem::WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	// Get the video system pointer from the window
-	CWindowsVideoSystem* videoSystem = reinterpret_cast<CWindowsVideoSystem*>(GetWindowLongPtrA(window, GWLP_USERDATA));
+	CWin32VideoSystem* videoSystem = reinterpret_cast<CWin32VideoSystem*>(GetWindowLongPtrA(window, GWLP_USERDATA));
 	if (!videoSystem || videoSystem->m_window != window)
 	{
 		return DefWindowProcA(window, msg, wparam, lparam);

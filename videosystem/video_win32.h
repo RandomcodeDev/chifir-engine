@@ -7,15 +7,15 @@
 #include "base/types.h"
 #include "videosystem/ivideosystem.h"
 
-class CWindowsVideoSystem: public IVideoSystem
+class CWin32VideoSystem: public IVideoSystem
 {
   public:
-	CWindowsVideoSystem()
+	CWin32VideoSystem()
 		: m_hinstance(nullptr), m_window(nullptr), m_title(nullptr), m_width(0), m_height(0), m_extraWidth(0), m_extraHeight(0),
 		  m_x(0), m_y(0), m_resized(false), m_focused(false), m_closed(false), m_dpi(1.0)
 	{
 	}
-	~CWindowsVideoSystem() DEFAULT;
+	~CWin32VideoSystem() DEFAULT;
 
 	virtual bool Initialize();
 	virtual bool Update();

@@ -106,6 +106,13 @@ MAKE_STUB(SetWindowTextA, __stdcall, @8)
 MAKE_STUB(ShowWindow, __stdcall, @8)
 MAKE_STUB(TranslateMessage, __stdcall, @4)
 MAKE_STUB(UnregisterClassA, __stdcall, @8)
+
+// combase
+MAKE_STUB(RoInitialize, __stdcall, @8)
+MAKE_STUB(RoUninitialize, __stdcall, @0)
+MAKE_STUB(RoGetActivationFactory, __stdcall, @24)
+MAKE_STUB(WindowsCreateString, __stdcall, @12)
+MAKE_STUB(WindowsDeleteString, __stdcall, @4)
 #endif
 
 #ifndef CH_XBOX360
@@ -292,27 +299,37 @@ bool Base_InitLoader()
 	ASSERT(user32 != nullptr);
 
 	// user32
-	GET_FUNCTION(user32, AdjustWindowRect)
-	GET_FUNCTION(user32, ClientToScreen)
-	GET_FUNCTION(user32, CreateWindowExA)
-	GET_FUNCTION(user32, DefWindowProcA)
-	GET_FUNCTION(user32, DestroyWindow)
-	GET_FUNCTION(user32, DispatchMessageA)
-	GET_FUNCTION(user32, GetClassInfoExA)
-	GET_FUNCTION(user32, GetClientRect)
+	GET_FUNCTION_OPTIONAL(user32, AdjustWindowRect)
+	GET_FUNCTION_OPTIONAL(user32, ClientToScreen)
+	GET_FUNCTION_OPTIONAL(user32, CreateWindowExA)
+	GET_FUNCTION_OPTIONAL(user32, DefWindowProcA)
+	GET_FUNCTION_OPTIONAL(user32, DestroyWindow)
+	GET_FUNCTION_OPTIONAL(user32, DispatchMessageA)
+	GET_FUNCTION_OPTIONAL(user32, GetClassInfoExA)
+	GET_FUNCTION_OPTIONAL(user32, GetClientRect)
 	GET_FUNCTION_OPTIONAL(user32, GetDpiForWindow)
-	GET_FUNCTION(user32, GetSystemMetrics)
-	GET_FUNCTION(user32, GetWindowLongPtrA)
-	GET_FUNCTION(user32, LoadCursorA)
-	GET_FUNCTION(user32, PeekMessageA)
-	GET_FUNCTION(user32, RegisterClassExA)
-	GET_FUNCTION_OPTIONAL(user32, SetProcessDPIAware);
-	GET_FUNCTION(user32, SetWindowLongPtrA)
-	GET_FUNCTION(user32, SetWindowTextA)
-	GET_FUNCTION(user32, ShowWindow)
-	GET_FUNCTION(user32, TranslateMessage)
-	GET_FUNCTION(user32, UnregisterClassA)
+	GET_FUNCTION_OPTIONAL(user32, GetSystemMetrics)
+	GET_FUNCTION_OPTIONAL(user32, GetWindowLongPtrA)
+	GET_FUNCTION_OPTIONAL(user32, LoadCursorA)
+	GET_FUNCTION_OPTIONAL(user32, PeekMessageA)
+	GET_FUNCTION_OPTIONAL(user32, RegisterClassExA)
+	GET_FUNCTION_OPTIONAL(user32, SetProcessDPIAware)
+	GET_FUNCTION_OPTIONAL(user32, SetWindowLongPtrA)
+	GET_FUNCTION_OPTIONAL(user32, SetWindowTextA)
+	GET_FUNCTION_OPTIONAL(user32, ShowWindow)
+	GET_FUNCTION_OPTIONAL(user32, TranslateMessage)
+	GET_FUNCTION_OPTIONAL(user32, UnregisterClassA)
 
+	ILibrary* combase = Base_LoadLibrary("combase");
+	ASSERT(combase != nullptr);
+
+	GET_FUNCTION_OPTIONAL(combase, RoInitialize)
+	GET_FUNCTION_OPTIONAL(combase, RoUninitialize)
+	GET_FUNCTION_OPTIONAL(combase, RoGetActivationFactory)
+	GET_FUNCTION_OPTIONAL(combase, WindowsCreateString)
+	GET_FUNCTION_OPTIONAL(combase, WindowsDeleteString)
+
+	delete combase;
 	delete kernel32;
 	delete shell32;
 	delete user32;

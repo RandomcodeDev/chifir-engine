@@ -43,6 +43,8 @@ static char* s_systemDescription;
 static char* s_hardwareDescription;
 static char* s_productName;
 
+static bool s_useUwp;
+
 BASEAPI bool Plat_ConsoleHasColor()
 {
 #ifdef CH_XBOX360
@@ -109,6 +111,8 @@ BASEAPI void Plat_Init()
 		(void)Plat_GetSystemDescription();
 		(void)Plat_GetHardwareDescription();
 
+		s_useUwp = Base_InitWinRt();
+
 #ifndef CH_XBOX360
 #ifdef CH_WIN32
 		// Get a console
@@ -151,6 +155,18 @@ BASEAPI void Plat_Shutdown()
 	if (s_hardwareDescription)
 	{
 		Base_Free(s_hardwareDescription);
+	}
+}
+
+extern "C" BASEAPI int Base_RunMain(int (*main)())
+{
+	if (s_useUwp)
+	{
+		return Base_RunMainWinRt(main);
+	}
+	else
+	{
+		return main();
 	}
 }
 

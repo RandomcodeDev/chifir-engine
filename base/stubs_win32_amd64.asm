@@ -32,6 +32,14 @@ Avail:
 	@CatStr(name, _Available) ENDP
 ENDM
 
+MAKE_STUB_LOCAL MACRO name
+	MAKE_STUB name
+	.CODE
+	name PROC
+		jmp [QWORD PTR @CatStr(STUB_, name)]
+	name ENDP
+ENDM
+
 ; ntdll stubs
 MAKE_STUB __chkstk
 MAKE_STUB DbgPrint
@@ -95,5 +103,12 @@ MAKE_STUB SetWindowTextA
 MAKE_STUB ShowWindow
 MAKE_STUB TranslateMessage
 MAKE_STUB UnregisterClassA
+
+; combase stubs
+MAKE_STUB RoInitialize
+MAKE_STUB RoUninitialize
+MAKE_STUB RoGetActivationFactory
+MAKE_STUB_LOCAL WindowsCreateString
+MAKE_STUB_LOCAL WindowsDeleteString
 
 END

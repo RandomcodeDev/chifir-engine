@@ -18,7 +18,7 @@ extern "C" DLLEXPORT ISystem* CreateInterface()
 #endif
 {
 #if defined CH_WIN32 && !defined CH_XBOX360
-	return new CWindowsVideoSystem();
+	return new CWin32VideoSystem();
 #elif defined CH_SWITCH
 	return new CSwitchVideoSystem();
 #else
