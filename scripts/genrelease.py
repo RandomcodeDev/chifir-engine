@@ -83,7 +83,7 @@ def main(argc, argv):
 	args = parser.parse_args(argv[1:])
 
 	plat = python_platform_to_xmake(args.plat)
-	if plat not in ["windows", "gdkx", "linux"]:
+	if plat not in ["windows", "gdk", "gdkx", "linux"]:
 		print(
 			f"genrelease is not designed for {plat}, there's probably another one specific to it (makensp, etc)"
 		)
@@ -91,7 +91,7 @@ def main(argc, argv):
 	build_dir = path.join(
 		os.getcwd(),
 		args.build_dir,
-		plat,
+		"windows" if plat == "gdk" else plat,
 		python_machine_to_xmake(args.arch),
 		args.mode,
 	)
@@ -112,13 +112,14 @@ def main(argc, argv):
 	os.mkdir(path.join(output, "bin"))
 
 	# only Windows, Xbox, and Linux are non-static
-	EXE_EXTS = {"windows": ".exe", "gdkx": ".exe", "linux": None}
+	EXE_EXTS = {"windows": ".exe", "gdk": ".exe", "gdkx": ".exe", "linux": None}
 	DLL_EXTS = {
 		"windows": ".dll",
+		"gdk": ".dll",
 		"gdkx": ".dll",
 		"linux": ".so",
 	}
-	SYM_EXTS = {"windows": ".pdb", "gdkx": ".pdb", "linux": None}
+	SYM_EXTS = {"windows": ".pdb", "gdk": ".pdb", "gdkx": ".pdb", "linux": None}
 
 	for f in os.listdir(build_dir):
 		file = path.join(build_dir, f)
@@ -159,12 +160,27 @@ def main(argc, argv):
 				if path.isfile(file):
 					(name, ext) = path.splitext(f)
 					dest = root.replace(gdk_meta, output)
-					if ext == ".mgc":
-						f = path.join(output, "MicrosoftGame.config")
-					print(f"{file} -> {path.join(dest, f)}")
-					if not path.exists(dest):
-						os.mkdir(dest)
-					shutil.copy(file, path.join(dest, f))
+					if ext != ".mgc":
+						print(f"{file} -> {path.join(dest, f)}")
+						if not path.exists(dest):
+							os.mkdir(dest)
+						shutil.copy(file, path.join(dest, f))
+
+	if plat in ["gdk", "gdkx"]:
+		gdk_meta = path.join(repo_dir, "public", "gdk")
+		for root, _, files in os.walk(gdk_meta):
+			for f in files:
+				file = path.join(root, f)
+				if path.isfile(file):
+					(name, ext) = path.splitext(f)
+					dest = root.replace(gdk_meta, output)
+					if f != "AppxManifest.xml":
+						if ext == ".mgc":
+							f = "MicrosoftGame.config"
+						print(f"{file} -> {path.join(dest, f)}")
+						if not path.exists(dest):
+							os.mkdir(dest)
+						shutil.copy(file, path.join(dest, f))
 
 	gatherlicenses_args = [f'{gatherlicenses.__file__}', f'--output={path.join(output, "licenses")}']
 	gatherlicenses.main(len(gatherlicenses_args), gatherlicenses_args)

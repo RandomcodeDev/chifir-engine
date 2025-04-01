@@ -49,6 +49,7 @@ extern void Base_ShutdownWinRt();
 extern int Base_RunMainWinRt(int (*main)());
 
 extern bool g_loaderInitialized;
+extern bool g_uwp;
 
 class CWindowsLibrary: public ILibrary
 {

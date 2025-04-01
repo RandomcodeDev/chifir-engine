@@ -43,7 +43,7 @@ static char* s_systemDescription;
 static char* s_hardwareDescription;
 static char* s_productName;
 
-static bool s_useUwp;
+bool g_uwp;
 
 BASEAPI bool Plat_ConsoleHasColor()
 {
@@ -111,7 +111,7 @@ BASEAPI void Plat_Init()
 		(void)Plat_GetSystemDescription();
 		(void)Plat_GetHardwareDescription();
 
-		s_useUwp = Base_InitWinRt();
+		g_uwp = Base_InitWinRt();
 
 #ifndef CH_XBOX360
 #ifdef CH_WIN32
@@ -160,7 +160,7 @@ BASEAPI void Plat_Shutdown()
 
 extern "C" BASEAPI int Base_RunMain(int (*main)())
 {
-	if (s_useUwp)
+	if (g_uwp)
 	{
 		return Base_RunMainWinRt(main);
 	}
@@ -168,6 +168,11 @@ extern "C" BASEAPI int Base_RunMain(int (*main)())
 	{
 		return main();
 	}
+}
+
+BASEAPI bool Plat_IsUwpApp()
+{
+	return g_uwp;
 }
 
 static cstr GetProductName()
