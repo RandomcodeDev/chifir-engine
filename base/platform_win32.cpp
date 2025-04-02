@@ -246,10 +246,9 @@ BASEAPI cstr Plat_GetSystemDescription()
 		cstr name = GetProductName();
 		cstr wineVersion = Base_IsWine();
 		s_systemDescription = Base_StrFormat(
-			"%s %u.%u.%u (reported as %u.%u.%u)%s%s%s", name, USER_SHARED_DATA->NtMajorVersion, USER_SHARED_DATA->NtMinorVersion,
+			"%s %u.%u.%u (reported as %u.%u.%u)%s%s%s%s", name, USER_SHARED_DATA->NtMajorVersion, USER_SHARED_DATA->NtMinorVersion,
 			USER_SHARED_DATA->NtBuildNumber, NtCurrentPeb()->OSMajorVersion, NtCurrentPeb()->OSMinorVersion,
-			NtCurrentPeb()->OSBuildNumber, wineVersion ? " Wine " : "", wineVersion ? wineVersion : "",
-			Base_CheckWoW64() ? " WoW64" : "");
+			NtCurrentPeb()->OSBuildNumber, wineVersion ? " Wine " : "", wineVersion ? wineVersion : "", Base_CheckWoW64() ? " WoW64" : "", Plat_IsUwpApp() ? " UWP" : "");
 #endif
 	}
 

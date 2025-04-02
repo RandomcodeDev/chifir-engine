@@ -24,8 +24,12 @@ static HRESULT GetClass(PCWSTR name, T** instance)
 		DbgPrint("Failed to get instance of class %ls: HRESULT 0x%08X\n", name, result);
 		goto Done;
 	}
-
+	
 Done:
+	if (factory)
+	{
+		factory->Release();
+	}
 	WindowsDeleteString(string);
 	return result;
 }
@@ -41,7 +45,6 @@ bool Base_InitWinRt()
 		return false;
 	}
 
-	;
 	result = GetClass(winrt_min::RuntimeClass_CoreApplication, &CoreApplication);
 	if (!SUCCEEDED(result))
 	{
@@ -172,7 +175,7 @@ struct App: public InspectableBase, public winrt_min::IFrameworkView, public win
   public:
 	int (*main)();
 	int result;
-	const winrt_min::ICoreWindow* window;
+	winrt_min::ICoreWindow* window;
 
 	App() : InspectableBase(NAME, TRUST, IIDS, ArraySize<ULONG>(IIDS))
 	{
@@ -226,6 +229,12 @@ struct App: public InspectableBase, public winrt_min::IFrameworkView, public win
 	virtual HRESULT __stdcall Run() override
 	{
 		result = main();
+
+		winrt_min::ICoreApplicationView* view = nullptr;
+		CoreApplication->GetCurrentView(&view);
+		view->CoreWindow(reinterpret_cast<void**>(&window));
+		window->Activate();
+
 		return S_OK;
 	}
 
