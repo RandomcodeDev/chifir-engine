@@ -43,7 +43,7 @@ static char* s_systemDescription;
 static char* s_hardwareDescription;
 static char* s_productName;
 
-static bool s_useUwp;
+bool g_uwp;
 
 BASEAPI bool Plat_ConsoleHasColor()
 {
@@ -111,7 +111,7 @@ BASEAPI void Plat_Init()
 		(void)Plat_GetSystemDescription();
 		(void)Plat_GetHardwareDescription();
 
-		s_useUwp = Base_InitWinRt();
+		g_uwp = Base_InitWinRt();
 
 #ifndef CH_XBOX360
 #ifdef CH_WIN32
@@ -160,7 +160,7 @@ BASEAPI void Plat_Shutdown()
 
 extern "C" BASEAPI int Base_RunMain(int (*main)())
 {
-	if (s_useUwp)
+	if (g_uwp)
 	{
 		return Base_RunMainWinRt(main);
 	}
@@ -168,6 +168,11 @@ extern "C" BASEAPI int Base_RunMain(int (*main)())
 	{
 		return main();
 	}
+}
+
+BASEAPI bool Plat_IsUwpApp()
+{
+	return g_uwp;
 }
 
 static cstr GetProductName()
@@ -241,10 +246,9 @@ BASEAPI cstr Plat_GetSystemDescription()
 		cstr name = GetProductName();
 		cstr wineVersion = Base_IsWine();
 		s_systemDescription = Base_StrFormat(
-			"%s %u.%u.%u (reported as %u.%u.%u)%s%s%s", name, USER_SHARED_DATA->NtMajorVersion, USER_SHARED_DATA->NtMinorVersion,
+			"%s %u.%u.%u (reported as %u.%u.%u)%s%s%s%s", name, USER_SHARED_DATA->NtMajorVersion, USER_SHARED_DATA->NtMinorVersion,
 			USER_SHARED_DATA->NtBuildNumber, NtCurrentPeb()->OSMajorVersion, NtCurrentPeb()->OSMinorVersion,
-			NtCurrentPeb()->OSBuildNumber, wineVersion ? " Wine " : "", wineVersion ? wineVersion : "",
-			Base_CheckWoW64() ? " WoW64" : "");
+			NtCurrentPeb()->OSBuildNumber, wineVersion ? " Wine " : "", wineVersion ? wineVersion : "", Base_CheckWoW64() ? " WoW64" : "", Plat_IsUwpApp() ? " UWP" : "");
 #endif
 	}
 

@@ -67,9 +67,6 @@ extern BASEAPI cstr Plat_GetEngineDir();
 extern BASEAPI cstr Plat_GetEnvironment(cstr name);
 
 #ifdef CH_WIN32
-/// Get the ASCII version of a Unicode string
-extern BASEAPI dstr Plat_GetNarrowString(cwstr wide);
-
-/// Get the Unicode version of an ASCII string
-extern BASEAPI dwstr Plat_GetWideString(cstr narrow);
+/// Get whether the engine is running as a UWP app or not
+extern BASEAPI bool Plat_IsUwpApp();
 #endif

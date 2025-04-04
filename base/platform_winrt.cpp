@@ -18,20 +18,23 @@ static HRESULT GetClass(PCWSTR name, T** instance)
 		goto Done;
 	}
 
-	result = factory->ActivateInstance(reinterpret_cast<IInspectable**>(instance));
+	result = factory->QueryInterface(instance);
 	if (!SUCCEEDED(result))
 	{
-		DbgPrint("Failed to activate instance of class %ls: HRESULT 0x%08X\n", name, result);
+		DbgPrint("Failed to get instance of class %ls: HRESULT 0x%08X\n", name, result);
 		goto Done;
 	}
-
+	
 Done:
+	if (factory)
+	{
+		factory->Release();
+	}
 	WindowsDeleteString(string);
 	return result;
 }
 
 static winrt_min::ICoreApplication* CoreApplication;
-static winrt_min::ICoreWindow* CoreWindow;
 
 bool Base_InitWinRt()
 {
@@ -42,14 +45,7 @@ bool Base_InitWinRt()
 		return false;
 	}
 
-	;
 	result = GetClass(winrt_min::RuntimeClass_CoreApplication, &CoreApplication);
-	if (!SUCCEEDED(result))
-	{
-		return false;
-	}
-
-	result = GetClass(winrt_min::RuntimeClass_CoreWindow, &CoreWindow);
 	if (!SUCCEEDED(result))
 	{
 		return false;
@@ -179,7 +175,7 @@ struct App: public InspectableBase, public winrt_min::IFrameworkView, public win
   public:
 	int (*main)();
 	int result;
-	const winrt_min::ICoreWindow* window;
+	winrt_min::ICoreWindow* window;
 
 	App() : InspectableBase(NAME, TRUST, IIDS, ArraySize<ULONG>(IIDS))
 	{
@@ -233,6 +229,12 @@ struct App: public InspectableBase, public winrt_min::IFrameworkView, public win
 	virtual HRESULT __stdcall Run() override
 	{
 		result = main();
+
+		winrt_min::ICoreApplicationView* view = nullptr;
+		CoreApplication->GetCurrentView(&view);
+		view->CoreWindow(reinterpret_cast<void**>(&window));
+		window->Activate();
+
 		return S_OK;
 	}
 
@@ -261,7 +263,15 @@ int Base_RunMainWinRt(int (*main)())
 {
 	App* app = new App();
 	app->main = main;
+
+	// basically, if the process isn't a UWP process (wasn't launched as an app package), CoreApplicationFactory::Run doesn't execute it, so just run normally instead
+	app->result = 0xDEAD;
 	CoreApplication->Run(app);
+	if (app->result == 0xDEAD)
+	{
+		g_uwp = false;
+		return main();
+	}
 
 	s32 result = app->result;
 	reinterpret_cast<IUnknown*>(app)->Release();
