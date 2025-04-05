@@ -94,6 +94,7 @@ MAKE_STUB GetClientRect
 MAKE_STUB GetDpiForWindow
 MAKE_STUB GetSystemMetrics
 MAKE_STUB GetWindowLongPtrA
+MAKE_STUB IsImmersiveProcess
 MAKE_STUB LoadCursorA
 MAKE_STUB PeekMessageA
 MAKE_STUB RegisterClassExA

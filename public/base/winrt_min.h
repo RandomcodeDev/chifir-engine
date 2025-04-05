@@ -3,13 +3,18 @@
 
 #pragma once
 
-#include "platform_win32.h"
+#ifndef CH_WIN32
+#error "This file is Windows only"
+#endif
+
+#include "base/compiler.h"
+#include "base/platform.h"
+#include "base/types.h"
 
 // i honestly can't tell if i hate this file or it's beautiful
 
 #include <roapi.h>
 #include <winstring.h>
-
 
 namespace winrt_min
 {
@@ -380,4 +385,4 @@ MAKE_INTERFACE(
 
 const PCWSTR RuntimeClass_CoreApplication = L"Windows.ApplicationModel.Core.CoreApplication";
 
-} // namespace winrt_min
+}

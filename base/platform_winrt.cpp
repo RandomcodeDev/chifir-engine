@@ -1,7 +1,9 @@
 #include "base/base.h"
+
+#include "platform_win32.h"
+
 #ifndef CH_XBOX360
 #include "base/basicstr.h"
-#include "winrt_min.h"
 
 template <typename T>
 static HRESULT GetClass(PCWSTR name, T** instance)
@@ -24,7 +26,7 @@ static HRESULT GetClass(PCWSTR name, T** instance)
 		DbgPrint("Failed to get instance of class %ls: HRESULT 0x%08X\n", name, result);
 		goto Done;
 	}
-	
+
 Done:
 	if (factory)
 	{
@@ -36,8 +38,23 @@ Done:
 
 static winrt_min::ICoreApplication* CoreApplication;
 
+DECLARE_AVAILABLE(RoInitialize);
+DECLARE_AVAILABLE(RoGetActivationFactory);
+DECLARE_AVAILABLE(IsImmersiveProcess);
+
 bool Base_InitWinRt()
 {
+	if (!RoInitialize_Available() || !RoGetActivationFactory_Available() || !IsImmersiveProcess_Available())
+	{
+		return false;
+	}
+
+	if (!IsImmersiveProcess(NtCurrentProcess()))
+	{
+		DbgPrint("Not attempting Windows Runtime initialization, not a UWP process\n");
+		return false;
+	}
+
 	HRESULT result = RoInitialize(RO_INIT_MULTITHREADED);
 	if (!SUCCEEDED(result))
 	{
@@ -54,6 +71,8 @@ bool Base_InitWinRt()
 	return true;
 }
 
+#define COMPARE_IID(a, b) (Base_MemCompare(&(a), &(b), sizeof(IID)) == 0)
+
 // TODO: make refcounting thread safe
 
 struct UnknownBase: public IUnknown
@@ -63,18 +82,6 @@ struct UnknownBase: public IUnknown
 	{
 	}
 	virtual ~UnknownBase() = default;
-
-	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppvObject) override
-	{
-		if (!ppvObject)
-		{
-			return E_POINTER;
-		}
-
-		AddRef();
-		*ppvObject = static_cast<IUnknown*>(this);
-		return S_OK;
-	}
 
 	virtual ULONG __stdcall AddRef(void) override
 	{
@@ -107,11 +114,6 @@ struct InspectableBase: public IInspectable, public UnknownBase
 	{
 	}
 	virtual ~InspectableBase() = default;
-
-	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppvObject) override
-    {
-        return UnknownBase::QueryInterface(riid, ppvObject);
-    }
 
     virtual ULONG __stdcall AddRef(void) override
     {
@@ -183,7 +185,34 @@ struct App: public InspectableBase, public winrt_min::IFrameworkView, public win
 	virtual ~App() = default;
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppvObject) override
     {
-        return InspectableBase::QueryInterface(riid, ppvObject);
+		if (!ppvObject)
+		{
+			return E_POINTER;
+		}
+
+		// https://groups.google.com/g/microsoft.public.win32.programmer.ole/c/5Q-2AC9yk7Q?pli=1
+		if (COMPARE_IID(riid, winrt_min::IID_IFrameworkView) || COMPARE_IID(riid, __uuidof(IUnknown)))
+		{
+			*ppvObject = reinterpret_cast<void*>(static_cast<winrt_min::IFrameworkView*>(this));
+		}
+		else if (COMPARE_IID(riid, winrt_min::IID_IFrameworkViewSource))
+		{
+			*ppvObject = reinterpret_cast<void*>(static_cast<winrt_min::IFrameworkViewSource*>(this));
+		}
+		else
+		{
+			*ppvObject = nullptr;
+		}
+
+		if (*ppvObject)
+		{
+			reinterpret_cast<IUnknown*>(*ppvObject)->AddRef();
+			return S_OK;
+		}
+		else
+		{
+			return E_NOINTERFACE;
+		}
     }
 
     virtual ULONG __stdcall AddRef(void) override
@@ -228,12 +257,12 @@ struct App: public InspectableBase, public winrt_min::IFrameworkView, public win
 
 	virtual HRESULT __stdcall Run() override
 	{
-		result = main();
-
 		winrt_min::ICoreApplicationView* view = nullptr;
 		CoreApplication->GetCurrentView(&view);
 		view->CoreWindow(reinterpret_cast<void**>(&window));
 		window->Activate();
+
+		result = main();
 
 		return S_OK;
 	}
@@ -259,27 +288,30 @@ struct App: public InspectableBase, public winrt_min::IFrameworkView, public win
 const IID App::IIDS[] = {
 	winrt_min::IID_IFrameworkView, winrt_min::IID_IFrameworkViewSource, __uuidof(IInspectable), __uuidof(IUnknown)};
 
+static App* s_app;
+static UwpVideoCallbacks_t s_videoCallbacks;
+
 int Base_RunMainWinRt(int (*main)())
 {
-	App* app = new App();
-	app->main = main;
+	s_app = new App();
+	s_app->main = main;
 
-	// basically, if the process isn't a UWP process (wasn't launched as an app package), CoreApplicationFactory::Run doesn't execute it, so just run normally instead
-	app->result = 0xDEAD;
-	CoreApplication->Run(app);
-	if (app->result == 0xDEAD)
-	{
-		g_uwp = false;
-		return main();
-	}
+	CoreApplication->Run(s_app);
 
-	s32 result = app->result;
-	reinterpret_cast<IUnknown*>(app)->Release();
+	s32 result = s_app->result;
+	// could probably use delete, but might as well do it right so the runtime doesn't explode
+	reinterpret_cast<IUnknown*>(s_app)->Release();
 	return result;
 }
 
 void Base_ShutdownWinRt()
 {
+}
+
+BASEAPI void Plat_BindUwpVideo(winrt_min::ICoreWindow*& window, const UwpVideoCallbacks_t& callbacks)
+{
+	window = s_app->window;
+	s_videoCallbacks = callbacks;
 }
 
 #endif

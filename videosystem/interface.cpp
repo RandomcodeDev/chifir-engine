@@ -7,6 +7,7 @@
 
 #if defined CH_WIN32 && !defined CH_XBOX360
 #include "video_win32.h"
+#include "video_winrt.h"
 #elif defined CH_SWITCH
 #include "videosystem/video_switch.h"
 #endif
@@ -18,7 +19,14 @@ extern "C" DLLEXPORT ISystem* CreateInterface()
 #endif
 {
 #if defined CH_WIN32 && !defined CH_XBOX360
-	return new CWin32VideoSystem();
+	if (Plat_IsUwpApp())
+	{
+		return new CWinRtVideoSystem();
+	}
+	else
+	{
+		return new CWin32VideoSystem();
+	}
 #elif defined CH_SWITCH
 	return new CSwitchVideoSystem();
 #else

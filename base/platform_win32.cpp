@@ -215,8 +215,7 @@ static cstr GetProductName()
 		}
 
 		Base_MemCopy(
-			nameBuffer,
-			reinterpret_cast<cstr>(&keyInfoBuffer[keyInfo->DataOffset]),
+			nameBuffer, reinterpret_cast<cstr>(&keyInfoBuffer[keyInfo->DataOffset]),
 			Min<ssize>(nameStr.MaximumLength, keyInfo->DataLength));
 
 		RtlUnicodeStringToAnsiString(&productNameStr, &nameStr, TRUE);
@@ -246,9 +245,10 @@ BASEAPI cstr Plat_GetSystemDescription()
 		cstr name = GetProductName();
 		cstr wineVersion = Base_IsWine();
 		s_systemDescription = Base_StrFormat(
-			"%s %u.%u.%u (reported as %u.%u.%u)%s%s%s%s", name, USER_SHARED_DATA->NtMajorVersion, USER_SHARED_DATA->NtMinorVersion,
-			USER_SHARED_DATA->NtBuildNumber, NtCurrentPeb()->OSMajorVersion, NtCurrentPeb()->OSMinorVersion,
-			NtCurrentPeb()->OSBuildNumber, wineVersion ? " Wine " : "", wineVersion ? wineVersion : "", Base_CheckWoW64() ? " WoW64" : "", Plat_IsUwpApp() ? " UWP" : "");
+			"%s %u.%u.%u (reported as %u.%u.%u)%s%s%s%s", name, USER_SHARED_DATA->NtMajorVersion,
+			USER_SHARED_DATA->NtMinorVersion, USER_SHARED_DATA->NtBuildNumber, NtCurrentPeb()->OSMajorVersion,
+			NtCurrentPeb()->OSMinorVersion, NtCurrentPeb()->OSBuildNumber, wineVersion ? " Wine " : "",
+			wineVersion ? wineVersion : "", Base_CheckWoW64() ? " WoW64" : "", Plat_IsUwpApp() ? " UWP" : "");
 #endif
 	}
 
@@ -459,11 +459,18 @@ BASEAPI cstr Plat_GetSaveLocation()
 
 	if (!Base_StrLength(s_directory))
 	{
-		SHGetFolderPathA(nullptr, CSIDL_APPDATA | CSIDL_FLAG_CREATE, nullptr, SHGFP_TYPE_CURRENT, s_directory);
-		s_directory[Min(ArraySize(s_directory) - 1, Base_StrLength(s_directory))] = '/';
-		Base_StrCopy(
-			s_directory + Base_StrLength(s_directory), GAME_NAME,
-			Min(ArraySize(s_directory) - Base_StrLength(s_directory), ArraySize(GAME_NAME)));
+		if (g_uwp)
+		{
+			// TODO
+		}
+		else
+		{
+			SHGetFolderPathA(nullptr, CSIDL_APPDATA | CSIDL_FLAG_CREATE, nullptr, SHGFP_TYPE_CURRENT, s_directory);
+			s_directory[Min(ArraySize(s_directory) - 1, Base_StrLength(s_directory))] = '/';
+			Base_StrCopy(
+				s_directory + Base_StrLength(s_directory), GAME_NAME,
+				Min(ArraySize(s_directory) - Base_StrLength(s_directory), ArraySize(GAME_NAME)));
+		}
 	}
 
 	return s_directory;

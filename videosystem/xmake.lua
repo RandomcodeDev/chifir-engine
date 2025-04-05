@@ -13,7 +13,7 @@ target("VideoSystem")
     )
 
     if is_plat("windows", "gdkx") then
-        add_files("video_win32.cpp")
+        add_files("video_win32.cpp", "video_winrt.cpp")
     elseif is_plat("switch") then
         add_files("../private/videosystem/video_switch.cpp")
     end

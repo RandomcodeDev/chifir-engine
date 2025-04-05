@@ -93,10 +93,6 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	app->Setup(args);
 #else
 	cstr appName = "Engine"; /// TODO: make this better
-	if (args.Size() > 1)
-	{
-		appName = args[1].Data();
-	}
 
 	// first, try bin folder. if that fails (such as when running from the build directory), try same as exe.
 

@@ -1,4 +1,4 @@
-/// \file Windows video system
+/// \file Win32 video system
 /// \copyright Randomcode Developers
 
 #pragma once
@@ -23,7 +23,7 @@ class CWin32VideoSystem: public IVideoSystem
 
 	virtual cstr GetName() const
 	{
-		return "Windows Video";
+		return "Win32 Video";
 	}
 
 	virtual u32 GetVersion() const

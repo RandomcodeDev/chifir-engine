@@ -1,4 +1,4 @@
-/// \file Windows video system
+/// \file WinRT video system
 /// \copyright Randomcode Developers
 
 #include "video_win32.h"
@@ -12,7 +12,7 @@ bool CWin32VideoSystem::Initialize()
 {
 	m_hinstance = reinterpret_cast<HINSTANCE>(NtCurrentImageBase());
 
-	Log_Info("Initializing Windows video system");
+	Log_Info("Initializing Win32 video system");
 
 	if (SetProcessDPIAware_Available())
 	{

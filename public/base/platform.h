@@ -6,6 +6,7 @@
 #ifdef CH_WIN32
 #include "phnt_wrapper.h"
 #include "win32_aliases.h"
+#include "winrt_min.h"
 
 /// Get the last Win32 error
 #define LastNtError() NtCurrentTeb()->LastErrorValue
@@ -69,4 +70,16 @@ extern BASEAPI cstr Plat_GetEnvironment(cstr name);
 #ifdef CH_WIN32
 /// Get whether the engine is running as a UWP app or not
 extern BASEAPI bool Plat_IsUwpApp();
+
+// TODO: similar functions for input and etc
+#if defined IN_BASE || defined IN_VIDEO
+struct UwpVideoCallbacks_t
+{
+	bool (*Resized)(f32 width, f32 height);
+	bool (*VisibilityChanged)(bool visible);
+};
+
+/// Register video callbacks for the CoreWindow
+extern BASEAPI void Plat_BindUwpVideo(winrt_min::ICoreWindow*& window, const UwpVideoCallbacks_t& callbacks);
+#endif
 #endif
