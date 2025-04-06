@@ -21,7 +21,7 @@ class CEngine: public IEngine
 	~CEngine();
 
 	virtual void Setup(const CVector<CString>& args);
-	virtual void GetDependencies(CVector<SystemDependency_t>& systems, CVector<LibDependency_t>& libs);
+	virtual void GetDependencies(CVector<SystemDependency>& systems, CVector<LibDependency_t>& libs);
 	virtual s32 Run(const CVector<ISystem*>& systems /* TODO: , CCommandLine cmdLine */);
 
 	virtual bool Headless()
@@ -29,7 +29,7 @@ class CEngine: public IEngine
 		return m_headless;
 	}
 
-	virtual const DateTime_t& GetStartTime()
+	virtual const DateTime& GetStartTime()
 	{
 		return m_startTime;
 	}
@@ -46,7 +46,7 @@ class CEngine: public IEngine
 
   private:
 	EngineState_t m_state;
-	DateTime_t m_startTime;
+	DateTime m_startTime;
 	CString m_logName;
 	bool m_headless;
 	cstr m_rhiBackendName;
@@ -85,7 +85,7 @@ class CEngine: public IEngine
 	static constexpr LibDependency_t CLIENT_LIBS[] = {
 		{"Rhi", true}
     };
-	static constexpr SystemDependency_t CLIENT_SYSTEMS[] = {
+	static constexpr SystemDependency CLIENT_SYSTEMS[] = {
 		{ "VideoSystem",  IVideoSystem::VERSION, true, false},
         {"RenderSystem", IRenderSystem::VERSION, true, false}
     };

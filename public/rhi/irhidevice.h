@@ -65,7 +65,7 @@ class IRhiDevice
 
 	/// Create an image
 	virtual IRhiImage* CreateImage(
-		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType_t type, RhiImageFormat_t format) = 0;
+		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType type, RhiImageFormat format) = 0;
 
 	/// Create a pipeline state
 	virtual IRhiPipelineState* CreatePipelineState(const RhiPipelineStateDesc_t& desc) = 0;

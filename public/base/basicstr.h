@@ -98,7 +98,7 @@ extern BASEAPI ssize Base_StrFind(cstr str, cstr sequence, bool reverse = false,
 extern BASEAPI CString Base_FormatSize(u64 size);
 
 /// Format a date time
-extern BASEAPI CString Base_FormatDateTime(const DateTime_t& time);
+extern BASEAPI CString Base_FormatDateTime(const DateTime& time);
 
 /// Parse an integer from a string
 extern BASEAPI s64 Base_ParseInt(cstr string, ssize* endOffset = nullptr);

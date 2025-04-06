@@ -339,7 +339,7 @@ BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)
 bool Base_GetSystemMemory(ssize size)
 {
 	// Linked list nodes, can contain any size of allocation, but there's a limit to the number of OS allocations
-	static IntrusiveLinkedNode_t<SystemAllocation_t> memoryNodes[64];
+	static IntrusiveLinkedNode<SystemAllocation_t> memoryNodes[64];
 
 	if (!NtAllocateVirtualMemory_Available())
 	{
@@ -353,7 +353,7 @@ bool Base_GetSystemMemory(ssize size)
 		g_memInfo.allocations.Size() < ArraySize(memoryNodes),
 		"OS allocation nodes exhausted, increase the size of the memory nodes array");
 
-	IntrusiveLinkedNode_t<SystemAllocation_t>* node = &memoryNodes[g_memInfo.allocations.Size()];
+	IntrusiveLinkedNode<SystemAllocation_t>* node = &memoryNodes[g_memInfo.allocations.Size()];
 	node->data.size = size;
 
 	NTSTATUS status =
@@ -370,7 +370,7 @@ bool Base_GetSystemMemory(ssize size)
 	return true;
 }
 
-void Base_ReleaseSystemMemory(IntrusiveLinkedNode_t<SystemAllocation_t>* allocation)
+void Base_ReleaseSystemMemory(IntrusiveLinkedNode<SystemAllocation_t>* allocation)
 {
 	ssize size = 0;
 	NtFreeVirtualMemory(NtCurrentProcess(), &allocation->data.memory, (PSIZE_T)&size, MEM_RELEASE);
@@ -379,7 +379,7 @@ void Base_ReleaseSystemMemory(IntrusiveLinkedNode_t<SystemAllocation_t>* allocat
 
 void Base_ReleaseAllMemory()
 {
-	for (IntrusiveLinkedNode_t<SystemAllocation_t>* cur = g_memInfo.allocations.GetHead(); cur; cur = cur->GetNext())
+	for (IntrusiveLinkedNode<SystemAllocation_t>* cur = g_memInfo.allocations.GetHead(); cur; cur = cur->GetNext())
 	{
 		Base_ReleaseSystemMemory(cur);
 	}
@@ -387,7 +387,7 @@ void Base_ReleaseAllMemory()
 
 DECLARE_AVAILABLE(DbgPrint);
 
-BASEAPI void CDbgPrintLogWriter::Write(const LogMessage_t& message)
+BASEAPI void CDbgPrintLogWriter::Write(const LogMessage& message)
 {
 	if (DbgPrint_Available())
 	{
@@ -426,7 +426,7 @@ BASEAPI u64 Plat_GetMilliseconds()
 	return GetSysTime() / 10000;
 }
 
-BASEAPI void Plat_GetDateTime(DateTime_t& time, bool utc)
+BASEAPI void Plat_GetDateTime(DateTime& time, bool utc)
 {
 	s64 timeZoneBias = 0;
 	LARGE_INTEGER ntTime;

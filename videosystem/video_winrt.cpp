@@ -8,7 +8,7 @@
 
 bool CWinRtVideoSystem::Initialize()
 {
-	UwpVideoCallbacks_t callbacks = {};
+	UwpVideoCallbacks callbacks = {};
 	Plat_BindUwpVideo(m_window, callbacks);
 	return true;
 }

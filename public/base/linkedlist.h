@@ -8,16 +8,16 @@
 
 template <typename T> class CIntrusiveLinkedList;
 
-template <typename T> struct IntrusiveLinkedNode_t
+template <typename T> struct IntrusiveLinkedNode
 {
 	T data;
 
-	IntrusiveLinkedNode_t<T>* GetPrev()
+	IntrusiveLinkedNode<T>* GetPrev()
 	{
 		return prev;
 	}
 
-	IntrusiveLinkedNode_t<T>* GetNext()
+	IntrusiveLinkedNode<T>* GetNext()
 	{
 		return next;
 	}
@@ -35,15 +35,15 @@ template <typename T> struct IntrusiveLinkedNode_t
   protected:
 	friend class CIntrusiveLinkedList<T>;
 
-	IntrusiveLinkedNode_t<T>* prev;
-	IntrusiveLinkedNode_t<T>* next;
+	IntrusiveLinkedNode<T>* prev;
+	IntrusiveLinkedNode<T>* next;
 };
 
 /// A doubly linked list,
 template <typename T> class CIntrusiveLinkedList
 {
   public:
-	typedef IntrusiveLinkedNode_t<T> Node_t;
+	typedef IntrusiveLinkedNode<T> Node_t;
 
 	CIntrusiveLinkedList() : m_head(nullptr), m_tail(nullptr), m_nodeCount(0)
 	{

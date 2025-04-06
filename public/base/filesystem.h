@@ -12,7 +12,7 @@
 class IDirIter;
 
 /// Type of a file
-enum class FileType_t : s32
+enum class FileType : s32
 {
 	Normal = 0,
 	Directory,
@@ -35,7 +35,7 @@ class IFilesystem
 	virtual bool Read(cstr path, CVector<u8>& buffer, ssize count = SSIZE_MAX, ssize offset = 0) = 0;
 
 	/// Get the type of a file
-	virtual FileType_t GetFileType(cstr path) = 0;
+	virtual FileType GetFileType(cstr path) = 0;
 
 	/// Get whether a file exists
 	virtual bool Exists(cstr path) = 0;
@@ -60,7 +60,7 @@ class IDirIter
 	virtual cstr GetPath() = 0;
 
 	/// Get the type of entry this is
-	virtual FileType_t GetType() = 0;
+	virtual FileType GetType() = 0;
 };
 
 /// Represents a read-write filesystem

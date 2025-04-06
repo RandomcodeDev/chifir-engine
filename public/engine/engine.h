@@ -13,7 +13,7 @@ class IEngine: public IApplication
 	virtual ~IEngine() DEFAULT;
 
 	virtual void Setup(const CVector<CString>& args) = 0;
-	virtual void GetDependencies(CVector<SystemDependency_t>& systems, CVector<LibDependency_t>& libs) = 0;
+	virtual void GetDependencies(CVector<SystemDependency>& systems, CVector<LibDependency_t>& libs) = 0;
 	virtual s32 Run(const CVector<ISystem*>& systems /* TODO: , CCommandLine cmdLine */) = 0;
 
 	enum class EngineState_t : s32
@@ -36,7 +36,7 @@ class IEngine: public IApplication
 	virtual bool Headless() = 0;
 
 	/// Get the engine's start time
-	virtual const DateTime_t& GetStartTime() = 0;
+	virtual const DateTime& GetStartTime() = 0;
 
 	/// Get the engine's current state
 	virtual EngineState_t GetState() = 0;

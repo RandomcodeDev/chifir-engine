@@ -9,7 +9,7 @@
 #include "base/types.h"
 
 /// Log message priority level
-enum class LogLevel_t : s32
+enum class LogLevel : s32
 {
 	Trace = 0,
 	Debug,
@@ -20,15 +20,15 @@ enum class LogLevel_t : s32
 };
 
 /// Represents a log message
-struct LogMessage_t
+struct LogMessage
 {
-	LogLevel_t level;
+	LogLevel level;
 	uptr location;
 	bool isAddress; /// Whether location should be displayed in hex
 	cstr file;
 	cstr function;
 	cstr message;
-	DateTime_t time;
+	DateTime time;
 };
 
 /// Log writer interface
@@ -38,22 +38,22 @@ class BASEAPI ILogWriter
 	virtual ~ILogWriter() DEFAULT;
 
 	/// Write a message
-	virtual void Write(const LogMessage_t& message) = 0;
+	virtual void Write(const LogMessage& message) = 0;
 
 	/// Set the level that messages have to be at or above to be logged
-	LogLevel_t SetLevel(LogLevel_t level)
+	LogLevel SetLevel(LogLevel level)
 	{
-		LogLevel_t old = m_minLevel;
+		LogLevel old = m_minLevel;
 		m_minLevel = level;
 		return old;
 	}
 
   protected:
-	friend void BASEAPI Log_Write(const LogMessage_t& message);
+	friend void BASEAPI Log_Write(const LogMessage& message);
 
-	LogLevel_t m_minLevel =
+	LogLevel m_minLevel =
 #ifdef CH_DEBUG
-		LogLevel_t::Trace;
+		LogLevel::Trace;
 #else
 		LogLevel_t::Info;
 #endif
@@ -78,7 +78,7 @@ class BASEAPI CFileLogWriter: public ILogWriter
 	CFileLogWriter(IWritableFilesystem* filesystem, cstr logName, bool addDate = true);
 	~CFileLogWriter();
 
-	void Write(const LogMessage_t& message);
+	void Write(const LogMessage& message);
 
   protected:
 	IWritableFilesystem* m_filesystem;
@@ -90,29 +90,30 @@ class BASEAPI CFileLogWriter: public ILogWriter
 class BASEAPI CDbgPrintLogWriter: public ILogWriter
 {
   public:
-	void Write(const LogMessage_t& message);
+	void Write(const LogMessage& message);
 };
 #endif
 
 class BASEAPI CConsoleLogWriter: public ILogWriter
 {
   public:
-	void Write(const LogMessage_t& message);
+	void Write(const LogMessage& message);
 };
 
 /// Add a log writer
 extern BASEAPI void Log_AddWriter(ILogWriter* writer);
 
 /// Write a log message
-extern BASEAPI void Log_Write(const LogMessage_t& message);
+extern BASEAPI void Log_Write(const LogMessage
+	& message);
 
 /// Write a log message, and format it
-extern BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr file, cstr function, cstr message, ...);
+extern BASEAPI void Log_Write(LogLevel level, uptr location, bool isAddress, cstr file, cstr function, cstr message, ...);
 
 #ifdef CH_RETAIL
-#define Log_Message(level, ...) Log_Write(LogLevel_t::level, __LINE__, false, __FILE__, FUNCTION_NAME, __VA_ARGS__)
+#define Log_Message(level, ...) Log_Write(LogLevel::level, __LINE__, false, __FILE__, FUNCTION_NAME, __VA_ARGS__)
 #else
-#define Log_Message(level, ...) Log_Write(LogLevel_t::level, __LINE__, false, __FILE__, FUNCTION_SIGNATURE, __VA_ARGS__)
+#define Log_Message(level, ...) Log_Write(LogLevel::level, __LINE__, false, __FILE__, FUNCTION_SIGNATURE, __VA_ARGS__)
 #endif
 #define Log_Trace(...)          Log_Message(Trace, __VA_ARGS__)
 #define Log_Debug(...)          Log_Message(Debug, __VA_ARGS__)

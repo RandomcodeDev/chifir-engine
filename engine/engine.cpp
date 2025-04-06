@@ -43,7 +43,7 @@ void CEngine::Setup(const CVector<CString>& args)
 	}
 }
 
-void CEngine::GetDependencies(CVector<SystemDependency_t>& systems, CVector<LibDependency_t>& libs)
+void CEngine::GetDependencies(CVector<SystemDependency>& systems, CVector<LibDependency_t>& libs)
 {
 	if (!m_headless)
 	{

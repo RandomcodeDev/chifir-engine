@@ -61,26 +61,26 @@ VkBool32 VKAPI_CALL VkDebugCallback(
 	const VkDebugUtilsMessengerCallbackDataEXT* callbackData, void* userData)
 {
 	char typeStr[64];
-	LogLevel_t level;
+	LogLevel level;
 
 	UNUSED(userData);
 
 	switch (severity)
 	{
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-		level = LogLevel_t::Trace;
+		level = LogLevel::Trace;
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-		level = LogLevel_t::Debug;
+		level = LogLevel::Debug;
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-		level = LogLevel_t::Info;
+		level = LogLevel::Info;
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-		level = LogLevel_t::Warning;
+		level = LogLevel::Warning;
 		break;
 	default:
-		level = LogLevel_t::Debug;
+		level = LogLevel::Debug;
 		break;
 	}
 

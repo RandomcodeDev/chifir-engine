@@ -20,7 +20,7 @@ class IApplication
 	virtual void Setup(const CVector<CString>& args) = 0;
 
 	/// Get the application's required systems and libraries
-	virtual void GetDependencies(CVector<SystemDependency_t>& systems, CVector<LibDependency_t>& libs) = 0;
+	virtual void GetDependencies(CVector<SystemDependency>& systems, CVector<LibDependency_t>& libs) = 0;
 
 	/// Run the application
 	/// systems is in the same order as the list from GetRequiredSystems, with nullptrs for optional systems that couldn't be

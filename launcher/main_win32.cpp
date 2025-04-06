@@ -119,7 +119,7 @@ Load:
 	void* base = nullptr;
 	wchar_t baseName[] = L"Base.dll";
 	UNICODE_STRING baseString = RTL_CONSTANT_STRING(baseName);
-	status = LdrGetDllHandleByName(&baseString, nullptr, &base);
+	status = LdrGetDllHandle(nullptr, nullptr, &baseString, &base);
 	if (!NT_SUCCESS(status))
 	{
 		NtTerminateProcess(NtCurrentProcess(), status);

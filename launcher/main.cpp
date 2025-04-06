@@ -112,7 +112,7 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 
 	app->Setup(args);
 
-	CVector<SystemDependency_t> appSystems;
+	CVector<SystemDependency> appSystems;
 	CVector<LibDependency_t> appLibs;
 	app->GetDependencies(appSystems, appLibs);
 

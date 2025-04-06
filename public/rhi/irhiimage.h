@@ -9,7 +9,7 @@
 #include "rhi/irhibuffer.h"
 
 /// The number of dimensions in an image
-enum class RhiImageType_t
+enum class RhiImageType
 {
     Image1d,
     Image2d,
@@ -18,7 +18,7 @@ enum class RhiImageType_t
 
 /// The format of an image
 /// All color formats are sRGB
-enum class RhiImageFormat_t
+enum class RhiImageFormat
 {
     R8Uint, // 8-bit color, uint
     Rg16Uint, // 16-bit color, uint
@@ -39,8 +39,8 @@ class IRhiImage
 
     virtual void Destroy() = 0;
 
-    virtual RhiImageType_t GetType() = 0;
-    virtual RhiImageFormat_t GetFormat() = 0;
+    virtual RhiImageType GetType() = 0;
+    virtual RhiImageFormat GetFormat() = 0;
 
     virtual u32 GetWidth() = 0;
     virtual u32 GetHeight() = 0;

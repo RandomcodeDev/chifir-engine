@@ -22,7 +22,7 @@ class CString;
 
 /// Represents the current date and time in a format suitable for displaying to a user
 /// Automatically initialized with Plat_GetDateTime.
-struct DateTime_t
+struct DateTime
 {
 	u32 year;
 	u32 month; /// 1-12
@@ -34,9 +34,9 @@ struct DateTime_t
 	u32 millisecond; /// not guaranteed, 0-999
 	u32 weekDay;     /// 0-6, sunday to saturday
 
-	DateTime_t()
+	DateTime()
 	{
-		extern BASEAPI void Plat_GetDateTime(DateTime_t&, bool = false);
+		extern BASEAPI void Plat_GetDateTime(DateTime&, bool = false);
 		Plat_GetDateTime(*this);
 	}
 };

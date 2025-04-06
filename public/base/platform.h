@@ -52,11 +52,8 @@ extern BASEAPI bool Plat_ConsoleHasColor();
 /// Use Plat_GetDateTime for real world time, this is only for timing and not relative to a consistent point across platforms.
 extern BASEAPI u64 Plat_GetMilliseconds();
 
-/// Pause the thread for the given amount of time
-extern BASEAPI void Plat_Sleep(u64 milliseconds);
-
 /// Get the date and time
-extern BASEAPI void Plat_GetDateTime(DateTime_t& time, bool utc = false);
+extern BASEAPI void Plat_GetDateTime(DateTime& time, bool utc = false);
 
 /// Get the location for saving stuff
 extern BASEAPI cstr Plat_GetSaveLocation();
@@ -73,13 +70,13 @@ extern BASEAPI bool Plat_IsUwpApp();
 
 // TODO: similar functions for input and etc
 #if defined IN_BASE || defined IN_VIDEO
-struct UwpVideoCallbacks_t
+struct UwpVideoCallbacks
 {
 	bool (*Resized)(f32 width, f32 height);
 	bool (*VisibilityChanged)(bool visible);
 };
 
 /// Register video callbacks for the CoreWindow
-extern BASEAPI void Plat_BindUwpVideo(winrt_min::ICoreWindow*& window, const UwpVideoCallbacks_t& callbacks);
+extern BASEAPI void Plat_BindUwpVideo(winrt_min::ICoreWindow*& window, const UwpVideoCallbacks& callbacks);
 #endif
 #endif

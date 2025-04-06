@@ -10,48 +10,48 @@
 #include "rhi/irhiinstance.h"
 #include "rhi/rhi.h"
 
-RHIAPI cstr Rhi_GetBackendName(RhiBackendType_t backend)
+RHIAPI cstr Rhi_GetBackendName(RhiBackendType backend)
 {
 	switch (backend)
 	{
-	case RhiBackendType_t::None:
+	case RhiBackendType::None:
 	default:
 		return "None";
-	case RhiBackendType_t::Vulkan:
+	case RhiBackendType::Vulkan:
 		return "Vulkan";
-	case RhiBackendType_t::DirectX12:
+	case RhiBackendType::DirectX12:
 		return "DirectX12";
-	case RhiBackendType_t::DirectX9:
+	case RhiBackendType::DirectX9:
 		return "DirectX9";
-	case RhiBackendType_t::OpenGl:
+	case RhiBackendType::OpenGl:
 		return "OpenGl";
-	case RhiBackendType_t::Custom:
+	case RhiBackendType::Custom:
 		return "Custom";
 	}
 }
 
-RHIAPI RhiBackendType_t Rhi_GetBackendTypeByName(cstr name)
+RHIAPI RhiBackendType Rhi_GetBackendTypeByName(cstr name)
 {
 	// TODO: case insensitive, once it's done
 	if (Base_StrCompare(name, "Vulkan") == 0 || Base_StrCompare(name, "vk") == 0)
 	{
-		return RhiBackendType_t::Vulkan;
+		return RhiBackendType::Vulkan;
 	}
 	else if (Base_StrCompare(name, "DirectX12") == 0 || Base_StrCompare(name, "dx12") == 0 || Base_StrCompare(name, "d3d12") == 0)
 	{
-		return RhiBackendType_t::DirectX12;
+		return RhiBackendType::DirectX12;
 	}
 	else if (Base_StrCompare(name, "DirectX9") == 0 || Base_StrCompare(name, "dx9") == 0 || Base_StrCompare(name, "d3d9") == 0)
 	{
-		return RhiBackendType_t::DirectX9;
+		return RhiBackendType::DirectX9;
 	}
 	else if (Base_StrCompare(name, "OpenGL") == 0 || Base_StrCompare(name, "gl") == 0)
 	{
-		return RhiBackendType_t::OpenGl;
+		return RhiBackendType::OpenGl;
 	}
 	else
 	{
-		return RhiBackendType_t::Custom;
+		return RhiBackendType::Custom;
 	}
 }
 
@@ -95,7 +95,7 @@ static IRhiInstance* GetBackend(cstr name)
 extern "C" RHIAPI IRhiInstance* Rhi_CreateInstance(cstr backendName)
 {
 	ssize endOffset = 0;
-	RhiBackendType_t type = static_cast<RhiBackendType_t>(Base_ParseInt(backendName, &endOffset));
+	RhiBackendType type = static_cast<RhiBackendType>(Base_ParseInt(backendName, &endOffset));
 	if (endOffset < 1) // wasn't a number
 	{
 		type = Rhi_GetBackendTypeByName(backendName);
@@ -103,7 +103,7 @@ extern "C" RHIAPI IRhiInstance* Rhi_CreateInstance(cstr backendName)
 
 #ifndef CH_STATIC
 	// only pass the name if it's unrecognized
-	return GetBackend(type == RhiBackendType_t::Custom ? backendName : Rhi_GetBackendName(type));
+	return GetBackend(type == RhiBackendType::Custom ? backendName : Rhi_GetBackendName(type));
 #else
 	switch (type)
 	{

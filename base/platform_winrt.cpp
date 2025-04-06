@@ -289,7 +289,7 @@ const IID App::IIDS[] = {
 	winrt_min::IID_IFrameworkView, winrt_min::IID_IFrameworkViewSource, __uuidof(IInspectable), __uuidof(IUnknown)};
 
 static App* s_app;
-static UwpVideoCallbacks_t s_videoCallbacks;
+static UwpVideoCallbacks s_videoCallbacks;
 
 int Base_RunMainWinRt(int (*main)())
 {
@@ -308,7 +308,7 @@ void Base_ShutdownWinRt()
 {
 }
 
-BASEAPI void Plat_BindUwpVideo(winrt_min::ICoreWindow*& window, const UwpVideoCallbacks_t& callbacks)
+BASEAPI void Plat_BindUwpVideo(winrt_min::ICoreWindow*& window, const UwpVideoCallbacks& callbacks)
 {
 	window = s_app->window;
 	s_videoCallbacks = callbacks;

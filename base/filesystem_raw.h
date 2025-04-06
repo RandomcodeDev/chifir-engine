@@ -18,7 +18,7 @@ class CBaseRawFilesystem: public IWritableFilesystem
 
 	virtual ssize GetSize(cstr path) = 0;
 	virtual bool Read(cstr path, CVector<u8>& buffer, ssize count = SSIZE_MAX, ssize offset = 0) = 0;
-	virtual FileType_t GetFileType(cstr path) = 0;
+	virtual FileType GetFileType(cstr path) = 0;
 	virtual bool Exists(cstr path) = 0;
 	virtual IDirIter* ReadDirectory(cstr path) = 0;
 

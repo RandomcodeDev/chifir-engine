@@ -168,7 +168,7 @@ BASEAPI CString Base_FormatSize(u64 size)
 	return CString::FormatStr("%lf %s", value, SUFFIXES[Min(suffix, ArraySize(SUFFIXES) - 1)]);
 }
 
-BASEAPI CString Base_FormatDateTime(const DateTime_t& time)
+BASEAPI CString Base_FormatDateTime(const DateTime& time)
 {
 	// https://xkcd.com/1179/
 	return CString::FormatStr(

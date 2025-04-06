@@ -22,7 +22,7 @@ class CWin32Filesystem: public CBaseRawFilesystem
 
 	ssize GetSize(cstr path);
 	bool Read(cstr path, CVector<u8>& buffer, ssize count = SSIZE_MAX, ssize offset = 0);
-	FileType_t GetFileType(cstr path);
+	FileType GetFileType(cstr path);
 	bool Exists(cstr path);
 	IDirIter* ReadDirectory(cstr path);
 	ssize Write(cstr path, const void* data, ssize count, bool append = true, ssize offset = 0);

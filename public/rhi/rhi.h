@@ -16,7 +16,7 @@
 #endif
 #endif
 
-enum class RhiBackendType_t : s32
+enum class RhiBackendType : s32
 {
 	None,
 	Vulkan,
@@ -26,5 +26,5 @@ enum class RhiBackendType_t : s32
 	Custom,
 };
 
-extern RHIAPI cstr Rhi_GetBackendName(RhiBackendType_t backend);
-extern RHIAPI RhiBackendType_t Rhi_GetBackendTypeByName(cstr name);
+extern RHIAPI cstr Rhi_GetBackendName(RhiBackendType backend);
+extern RHIAPI RhiBackendType Rhi_GetBackendTypeByName(cstr name);

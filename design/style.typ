@@ -57,10 +57,10 @@ Additionally, when functions are complex, add comments explaining what's happeni
 
 == Naming
 Variables are camel case, prefixed with `m_` for private/protected members, `g_` for globals, and `s_` for static globals, and `f_` for (some)
-function pointers. Types are Pascal case, prefixed with `C` for classes, `CBase` for abstract classes, and `I` for interfaces, while structs are
-suffixed with `_t`. Functions are Pascal case, with the name of their component and an underscore as a prefix, like `Base_`. Common abbreviations
-(like str, len, max, min, alloc, buf, src, dest, common acronyms) are allowed, but obscure ones should be avoided. Try to balance clearness with
-succintness when naming variables, so they're easier to type but you can still easily recognize them.
+function pointers. Types are Pascal case, prefixed with `C` for classes, `CBase` for abstract classes, and `I` for interfaces, and typedefs end
+with `_t`. Functions are Pascal case, with the name of their component and an underscore as a prefix, like `Base_`. Common abbreviations (like str,
+len, max, min, alloc, buf, src, dest, common acronyms) are allowed, but obscure ones should be avoided. Try to balance clearness with succintness
+when naming variables, so they're easier to type but you can still easily recognize them.
 
 == Classes vs structs
 Classes do things, structs store data (you can have a destructor in them though). That's the distinction so far.

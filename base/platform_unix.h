@@ -47,4 +47,4 @@ ATTRIBUTE(naked) uptr Base_SysCall(uptr number, T1 arg1 = 0, T2 arg2 = 0, T3 arg
 extern s64 g_timeZoneOffset;
 
 /// Convert a Unix timestamp in milliseconds to a DateTime
-extern bool UnixTimestampToDateTime(s64 seconds, DateTime_t& time);
+extern bool UnixTimestampToDateTime(s64 seconds, DateTime& time);

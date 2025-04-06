@@ -26,7 +26,7 @@ BASEAPI CFileLogWriter::~CFileLogWriter()
 	Base_Free(m_filename);
 }
 
-BASEAPI void CFileLogWriter::Write(const LogMessage_t& message)
+BASEAPI void CFileLogWriter::Write(const LogMessage& message)
 {
 	if (m_filesystem->IsWriteSafe())
 	{
@@ -37,7 +37,7 @@ BASEAPI void CFileLogWriter::Write(const LogMessage_t& message)
 	}
 }
 
-BASEAPI void CConsoleLogWriter::Write(const LogMessage_t& message)
+BASEAPI void CConsoleLogWriter::Write(const LogMessage& message)
 {
 	dstr fullMessage = Base_StrFormat(LOG_FORMAT(Plat_ConsoleHasColor(), message));
 	Plat_WriteConsole(fullMessage);
@@ -52,7 +52,7 @@ BASEAPI void Log_AddWriter(ILogWriter* writer)
 	}
 }
 
-BASEAPI void Log_Write(const LogMessage_t& message)
+BASEAPI void Log_Write(const LogMessage& message)
 {
 	for (ssize i = 0; i < s_writers.Size(); i++)
 	{
@@ -63,7 +63,7 @@ BASEAPI void Log_Write(const LogMessage_t& message)
 	}
 }
 
-BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr file, cstr function, cstr message, ...)
+BASEAPI void Log_Write(LogLevel level, uptr location, bool isAddress, cstr file, cstr function, cstr message, ...)
 {
 	va_list args;
 	va_start(args, message);
@@ -75,9 +75,9 @@ BASEAPI void Log_Write(LogLevel_t level, uptr location, bool isAddress, cstr fil
 	}
 
 	// strip repo path from log messages, to make them shorter
-	DateTime_t time;
-	LogMessage_t messageData = {
-		Clamp(level, LogLevel_t::Trace, LogLevel_t::FatalError), location, isAddress, file, function, formatted, time};
+	DateTime time;
+	LogMessage messageData = {
+		Clamp(level, LogLevel::Trace, LogLevel::FatalError), location, isAddress, file, function, formatted, time};
 	ssize pos = Base_StrFind(file, REPO_NAME, true);
 	if (pos >= 0)
 	{

@@ -58,7 +58,7 @@ class CVulkanRhiDevice: public IRhiDevice
 		return nullptr;
 	}
 	virtual IRhiImage* CreateImage(
-		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType_t type, RhiImageFormat_t format)
+		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType type, RhiImageFormat format)
 	{
 		UNUSED(width);
 		UNUSED(height);

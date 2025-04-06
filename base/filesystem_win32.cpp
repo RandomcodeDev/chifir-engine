@@ -115,7 +115,7 @@ bool CWin32Filesystem::Read(cstr path, CVector<u8>& buffer, ssize count, ssize o
 	return true;
 }
 
-FileType_t CWin32Filesystem::GetFileType(cstr path)
+FileType CWin32Filesystem::GetFileType(cstr path)
 {
 	UNICODE_STRING unicodePath = {};
 	ConvertPath(path, &unicodePath);
@@ -127,27 +127,27 @@ FileType_t CWin32Filesystem::GetFileType(cstr path)
 	if (!NT_SUCCESS(status))
 	{
 		Log_Error("Failed to get attributes of %s/%s: NTSTATUS 0x%08X", m_root, path, status);
-		return FileType_t::Unknown;
+		return FileType::Unknown;
 	}
 
-	FileType_t type = FileType_t::Normal;
+	FileType type = FileType::Normal;
 	if (info.FileAttributes & FILE_ATTRIBUTE_DEVICE)
 	{
-		type = FileType_t::Device;
+		type = FileType::Device;
 	}
 	else if (info.FileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 	{
-		type = FileType_t::Directory;
+		type = FileType::Directory;
 	}
 #ifndef CH_XBOX360
 	else if (info.FileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
 	{
-		type = FileType_t::Symlink;
+		type = FileType::Symlink;
 	}
 #endif
 	else if (info.FileAttributes & FILE_ATTRIBUTE_SYSTEM)
 	{
-		type = FileType_t::System;
+		type = FileType::System;
 	}
 
 	return type;

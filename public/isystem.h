@@ -8,7 +8,7 @@
 #include "utility/utility.h"
 
 /// Describes a system an application wants loaded for it
-struct SystemDependency_t
+struct SystemDependency
 {
 	const char* name;         /// The name of the DLL where the system can be found
 	u32 minimumVersion;       /// The minimum version of the system
