@@ -44,6 +44,7 @@ CWin32Filesystem::CWin32Filesystem(cstr root) : CBaseRawFilesystem(root)
 		FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, FILE_OPEN_IF, FILE_DIRECTORY_FILE, nullptr, 0);
 	if (!NT_SUCCESS(status))
 	{
+		NtCurrentTeb()->LastStatusValue = status;
 		Base_Quit("Failed to open directory %s (%ls): NTSTATUS 0x%08X", m_root, rootString.Buffer, status);
 	}
 
@@ -77,6 +78,7 @@ ssize CWin32Filesystem::GetSize(HANDLE file)
 	NTSTATUS status = NtQueryInformationFile(file, &ioStatus, &info, SIZEOF(FILE_STANDARD_INFORMATION), FileStandardInformation);
 	if (!NT_SUCCESS(status))
 	{
+		NtCurrentTeb()->LastStatusValue = status;
 		return -1;
 	}
 
@@ -107,6 +109,7 @@ bool CWin32Filesystem::Read(cstr path, CVector<u8>& buffer, ssize count, ssize o
 	NtClose(file);
 	if (!NT_SUCCESS(status))
 	{
+		NtCurrentTeb()->LastStatusValue = status;
 		Log_Error("Failed to read %zd bytes from offset 0x%X in %s/%s: NTSTATUS 0x%08X", size, offset, m_root, path, status);
 		buffer.Empty();
 		return false;
@@ -126,6 +129,7 @@ FileType CWin32Filesystem::GetFileType(cstr path)
 	RtlFreeUnicodeString(&unicodePath);
 	if (!NT_SUCCESS(status))
 	{
+		NtCurrentTeb()->LastStatusValue = status;
 		Log_Error("Failed to get attributes of %s/%s: NTSTATUS 0x%08X", m_root, path, status);
 		return FileType::Unknown;
 	}
@@ -165,6 +169,7 @@ bool CWin32Filesystem::Exists(cstr path)
 	RtlFreeUnicodeString(&unicodePath);
 	if (!NT_SUCCESS(status))
 	{
+		NtCurrentTeb()->LastStatusValue = status;
 		Log_Error("Failed to get attributes of %s/%s: NTSTATUS 0x%08X", m_root, path, status);
 		return false;
 	}
@@ -201,6 +206,7 @@ ssize CWin32Filesystem::Write(cstr path, const void* data, ssize count, bool app
 		file, nullptr, nullptr, nullptr, &ioStatus, CONST_CAST(void*, data), static_cast<u32>(count), &largeOffset, nullptr);
 	if (!NT_SUCCESS(status))
 	{
+		NtCurrentTeb()->LastStatusValue = status;
 		m_safe = false;
 		Log_Error(
 			"Failed to write %zd bytes to %s/%s at offset 0x%X: NTSTATUS 0x%08X", count, m_root, path, largeOffset.QuadPart,
@@ -244,6 +250,7 @@ HANDLE CWin32Filesystem::OpenFile(cstr path, bool writable)
 	RtlFreeUnicodeString(&unicodePath);
 	if (!NT_SUCCESS(status))
 	{
+		NtCurrentTeb()->LastStatusValue = status;
 		m_safe = false;
 		Log_Error(
 			"Failed to %s %s/%s with access 0x%08X: NTSTATUS 0x%08X", writable ? "create" : "open", m_root, path, access, status);

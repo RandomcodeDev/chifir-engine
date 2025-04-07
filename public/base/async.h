@@ -96,9 +96,16 @@ template <typename T> struct Atomic
 		ExchangeAdd(value);
 	}
 
-	void operator++(int value)
+	// prefix
+	T operator++()
 	{
-		ExchangeAdd(value);
+		return ExchangeAdd(1) + 1;
+	}
+
+	// suffix
+	T operator++(int value)
+	{
+		return ExchangeAdd(1);
 	}
 
 	T ExchangeSubtract(T value)
@@ -111,9 +118,16 @@ template <typename T> struct Atomic
 		ExchangeSubtract(value);
 	}
 
-	void operator--(int value)
+	// prefix
+	T operator--()
 	{
-		ExchangeSubtract(value);
+		return ExchangeSubtract(1) - 1;
+	}
+
+	// suffix
+	T operator--(int value)
+	{
+		return ExchangeSubtract(1);
 	}
 
 	T And(T value)

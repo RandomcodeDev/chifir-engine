@@ -115,6 +115,7 @@ MAKE_STUB(RoUninitialize, __stdcall, @0)
 MAKE_STUB(RoGetActivationFactory, __stdcall, @24)
 MAKE_STUB(WindowsCreateString, __stdcall, @12)
 MAKE_STUB(WindowsDeleteString, __stdcall, @4)
+MAKE_STUB(WindowsGetStringRawBuffer, __stdcall, @8)
 #endif
 
 #ifndef CH_XBOX360
@@ -332,6 +333,7 @@ bool Base_InitLoader()
 	GET_FUNCTION_OPTIONAL(combase, RoGetActivationFactory)
 	GET_FUNCTION_OPTIONAL(combase, WindowsCreateString)
 	GET_FUNCTION_OPTIONAL(combase, WindowsDeleteString)
+	GET_FUNCTION_OPTIONAL(combase, WindowsGetStringRawBuffer)
 
 	delete combase;
 	delete kernel32;

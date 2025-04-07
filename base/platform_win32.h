@@ -47,6 +47,7 @@ extern cstr Base_IsWine();
 extern bool Base_InitWinRt();
 extern void Base_ShutdownWinRt();
 extern int Base_RunMainWinRt(int (*main)());
+extern cstr Base_GetWinRtAppData();
 
 extern bool g_loaderInitialized;
 

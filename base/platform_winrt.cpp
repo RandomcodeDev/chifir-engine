@@ -38,6 +38,8 @@ Done:
 }
 
 static winrt_min::ICoreApplication* CoreApplication;
+static winrt_min::IApplicationDataStatics* ApplicationDataStatics;
+static winrt_min::IApplicationData* ApplicationData;
 
 DECLARE_AVAILABLE(RoInitialize);
 DECLARE_AVAILABLE(RoGetActivationFactory);
@@ -64,6 +66,18 @@ bool Base_InitWinRt()
 	}
 
 	result = GetClass(winrt_min::RuntimeClass_CoreApplication, &CoreApplication);
+	if (!SUCCEEDED(result))
+	{
+		return false;
+	}
+
+	result = GetClass(winrt_min::RuntimeClass_ApplicationData, &ApplicationDataStatics);
+	if (!SUCCEEDED(result))
+	{
+		return false;
+	}
+
+	result = ApplicationDataStatics->Current(&ApplicationData);
 	if (!SUCCEEDED(result))
 	{
 		return false;
@@ -307,6 +321,39 @@ int Base_RunMainWinRt(int (*main)())
 
 void Base_ShutdownWinRt()
 {
+}
+
+cstr Base_GetWinRtAppData()
+{
+	static char s_path[MAX_PATH + 1];
+
+	if (!Base_StrLength(s_path))
+	{
+		winrt_min::IStorageFolder* folder = nullptr;
+		HRESULT result = ApplicationData->RoamingFolder(&folder);
+		if (!SUCCEEDED(result))
+		{
+			Base_Quit("Failed to get AppData folder: HRESULT 0x%08X", result);
+		}
+
+		HSTRING path = nullptr;
+		result = folder->Path(&path);
+		if (!SUCCEEDED(result))
+		{
+			Base_Quit("Failed to get AppData folder: HRESULT 0x%08X", result);
+		}
+
+		UNICODE_STRING pathWStr = {};
+		u32 length = 0;
+		pathWStr.Buffer = (dwstr)WindowsGetStringRawBuffer(path, &length);
+		pathWStr.Length = length;
+		pathWStr.MaximumLength = length;
+
+		ANSI_STRING pathStr = RTL_CONSTANT_STRING(s_path);
+		RtlUnicodeStringToAnsiString(&pathStr, &pathWStr, FALSE);
+	}
+
+	return s_path;
 }
 
 BASEAPI void Plat_BindUwpVideo(winrt_min::ICoreWindow*& window, const UwpVideoCallbacks& callbacks)

@@ -112,5 +112,6 @@ MAKE_STUB RoUninitialize
 MAKE_STUB RoGetActivationFactory
 MAKE_STUB_LOCAL WindowsCreateString
 MAKE_STUB_LOCAL WindowsDeleteString
+MAKE_STUB_LOCAL WindowsGetStringRawBuffer
 
 END

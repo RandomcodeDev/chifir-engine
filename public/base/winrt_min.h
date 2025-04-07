@@ -42,7 +42,7 @@ template <typename S, typename R> MIDL_INTERFACE("5A648006-843A-4DA9-865B-9D26E5
 	const PCWSTR RuntimeClass_TypedEventHandler##S##_##R = L"TypedEventHandler`2<" L#S L", " L#R L">";                           \
 	const ATTRIBUTE(selectany) IID& IID_TypedEventHandler##S##_##R = __uuidof(TypedEventHandler<S, R>) = 0;
 
-#define MAKE_INTERFACE(name, uuid, body)                                                                                   \
+#define MAKE_INTERFACE(name, uuid, body)                                                                                         \
 	MIDL_INTERFACE(uuid) name body;                                                                                              \
 	const ATTRIBUTE(selectany) IID& IID_##name = __uuidof(name);
 
@@ -52,7 +52,7 @@ MAKE_INTERFACE(
 	ICoreApplicationView, "638BB2DB-451D-4661-B099-414F34FFB9F1", : public IInspectable {
 		virtual HRESULT __stdcall CoreWindow(void** value) = 0;
 		virtual HRESULT __stdcall Activated(
-			TypedEventHandler<ICoreApplicationView*, void*>* handler, EventRegistrationToken* token) = 0;
+			TypedEventHandler<ICoreApplicationView*, void*> * handler, EventRegistrationToken * token) = 0;
 		virtual HRESULT __stdcall Activated(EventRegistrationToken token) = 0;
 		virtual HRESULT __stdcall IsMain(bool* value) = 0;
 		virtual HRESULT __stdcall IsHosted(bool* value) = 0;
@@ -307,7 +307,8 @@ MAKE_INTERFACE(
 		virtual HRESULT __stdcall GetKeyState(VirtualKey virtualKey, CoreVirtualKeyStates * KeyState) = 0;
 		virtual HRESULT __stdcall ReleasePointerCapture() = 0;
 		virtual HRESULT __stdcall SetPointerCapture() = 0;
-		virtual HRESULT __stdcall Activated(TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
+		virtual HRESULT __stdcall Activated(
+			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
 		virtual HRESULT __stdcall Activated(EventRegistrationToken cookie) = 0;
 		virtual HRESULT __stdcall AutomationProviderRequested(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * cookie) = 0;
@@ -333,7 +334,8 @@ MAKE_INTERFACE(
 		virtual HRESULT __stdcall PointerExited(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * cookie) = 0;
 		virtual HRESULT __stdcall PointerExited(EventRegistrationToken cookie) = 0;
-		virtual HRESULT __stdcall PointerMoved(TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * cookie) = 0;
+		virtual HRESULT __stdcall PointerMoved(
+			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * cookie) = 0;
 		virtual HRESULT __stdcall PointerMoved(EventRegistrationToken cookie) = 0;
 		virtual HRESULT __stdcall PointerPressed(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * cookie) = 0;
@@ -347,7 +349,8 @@ MAKE_INTERFACE(
 		virtual HRESULT __stdcall PointerWheelChanged(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * cookie) = 0;
 		virtual HRESULT __stdcall PointerWheelChanged(EventRegistrationToken cookie) = 0;
-		virtual HRESULT __stdcall SizeChanged(TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
+		virtual HRESULT __stdcall SizeChanged(
+			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
 		virtual HRESULT __stdcall SizeChanged(EventRegistrationToken cookie) = 0;
 		virtual HRESULT __stdcall VisibilityChanged(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
@@ -373,9 +376,9 @@ MAKE_INTERFACE(
 MAKE_INTERFACE(
 	ICoreApplication, "0AACF7A4-5E1D-49DF-8034-FB6A68BC5ED1", : public IInspectable {
 		virtual HRESULT __stdcall Id(HSTRING * value) = 0;
-		virtual HRESULT __stdcall Suspending(EventHandler<void*> * handler, EventRegistrationToken* token) = 0;
+		virtual HRESULT __stdcall Suspending(EventHandler<void*> * handler, EventRegistrationToken * token) = 0;
 		virtual HRESULT __stdcall Suspending(EventRegistrationToken token) = 0;
-		virtual HRESULT __stdcall Resuming(EventHandler<IInspectable*> * handler, EventRegistrationToken* token) = 0;
+		virtual HRESULT __stdcall Resuming(EventHandler<IInspectable*> * handler, EventRegistrationToken * token) = 0;
 		virtual HRESULT __stdcall Resuming(EventRegistrationToken token) = 0;
 		virtual HRESULT __stdcall Properties(IPropertySet * *value) = 0;
 		virtual HRESULT __stdcall GetCurrentView(ICoreApplicationView * *value) = 0;
@@ -385,4 +388,57 @@ MAKE_INTERFACE(
 
 const PCWSTR RuntimeClass_CoreApplication = L"Windows.ApplicationModel.Core.CoreApplication";
 
-}
+MAKE_INTERFACE(
+	IStorageItem, "4207A996-CA2F-42F7-BDE8-8B10457A7F30", : public IInspectable {
+		virtual HRESULT __stdcall RenameAsyncOverloadDefaultOptions(HSTRING desiredName, void** operation);
+		virtual HRESULT __stdcall RenameAsync(HSTRING desiredName, UINT32 option, void** operation);
+		virtual HRESULT __stdcall DeleteAsyncOverloadDefaultOptions(void** operation);
+		virtual HRESULT __stdcall DeleteAsync(UINT32 option, void** operation);
+		virtual HRESULT __stdcall GetBasicPropertiesAsync(void** operation);
+		virtual HRESULT __stdcall Name(HSTRING * value);
+		virtual HRESULT __stdcall Path(HSTRING * value);
+		virtual HRESULT __stdcall Attributes(void* value);
+		virtual HRESULT __stdcall DateCreated(void* value);
+		virtual HRESULT __stdcall IsOfType(UINT32 type, BOOLEAN * value);
+	})
+
+MAKE_INTERFACE(
+	IStorageFolder, "72D1CB78-B3EF-4F75-A80B-6FD9DAE2944B", : public IStorageItem {
+		virtual HRESULT __stdcall CreateFileAsyncOverloadDefaultOptions(HSTRING desiredName, void** operation);
+		virtual HRESULT __stdcall CreateFileAsync(HSTRING desiredName, UINT32 options, void** operation);
+		virtual HRESULT __stdcall CreateFolderAsyncOverloadDefaultOptions(HSTRING desiredName, void** operation);
+		virtual HRESULT __stdcall CreateFolderAsync(HSTRING desiredName, UINT32 options, void** operation);
+		virtual HRESULT __stdcall GetFileAsync(HSTRING name, void** operation);
+		virtual HRESULT __stdcall GetFolderAsync(HSTRING name, void** operation);
+		virtual HRESULT __stdcall GetItemAsync(HSTRING name, void** operation);
+		virtual HRESULT __stdcall GetFilesAsyncOverloadDefaultOptionsStartAndCount(void** operation);
+		virtual HRESULT __stdcall GetFoldersAsyncOverloadDefaultOptionsStartAndCount(void** operation);
+		virtual HRESULT __stdcall GetItemsAsyncOverloadDefaultStartAndCount(void** operation);
+	})
+
+MAKE_INTERFACE(
+	IApplicationData, "C3DA6FB7-B744-4B45-B0B8-223A0938D0DC", : public IInspectable {
+		virtual HRESULT __stdcall Version(UINT32 * value);
+		virtual HRESULT __stdcall SetVersionAsync(UINT32 desiredVersion, void* handler, void** setVersionOperation);
+		virtual HRESULT __stdcall ClearAllAsync(void** clearOperation);
+		virtual HRESULT __stdcall ClearAsync(UINT32 locality, void** clearOperation);
+		virtual HRESULT __stdcall LocalSettings(void** value);
+		virtual HRESULT __stdcall RoamingSettings(void** value);
+		virtual HRESULT __stdcall LocalFolder(IStorageFolder * *value);
+		virtual HRESULT __stdcall RoamingFolder(IStorageFolder * *value);
+		virtual HRESULT __stdcall TemporaryFolder(IStorageFolder * *value);
+		virtual HRESULT __stdcall DataChanged(
+			TypedEventHandler<IApplicationData*, IInspectable*> * handler, EventRegistrationToken * token);
+		virtual HRESULT __stdcall DataChanged(EventRegistrationToken token);
+		virtual HRESULT __stdcall SignalDataChanged();
+		virtual HRESULT __stdcall RoamingStorageQuota(UINT64 * value);
+	})
+
+MAKE_INTERFACE(
+	IApplicationDataStatics, "5612147B-E843-45E3-94D8-06169E3C8E17", : public IInspectable {
+		virtual HRESULT __stdcall Current(IApplicationData * *value);
+	})
+
+const PCWSTR RuntimeClass_ApplicationData = L"Windows.Storage.ApplicationData";
+
+} // namespace winrt_min

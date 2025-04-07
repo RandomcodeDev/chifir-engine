@@ -461,16 +461,16 @@ BASEAPI cstr Plat_GetSaveLocation()
 	{
 		if (g_uwp)
 		{
-			// TODO
+			Base_StrCopy(s_directory, Base_GetWinRtAppData(), ArraySize(s_directory));
 		}
 		else
 		{
 			SHGetFolderPathA(nullptr, CSIDL_APPDATA | CSIDL_FLAG_CREATE, nullptr, SHGFP_TYPE_CURRENT, s_directory);
-			s_directory[Min(ArraySize(s_directory) - 1, Base_StrLength(s_directory))] = '/';
 			Base_StrCopy(
 				s_directory + Base_StrLength(s_directory), GAME_NAME,
 				Min(ArraySize(s_directory) - Base_StrLength(s_directory), ArraySize(GAME_NAME)));
 		}
+		s_directory[Min(ArraySize(s_directory) - 1, Base_StrLength(s_directory))] = '/';
 	}
 
 	return s_directory;
