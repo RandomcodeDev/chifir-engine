@@ -7,9 +7,19 @@
 #include "platform.h"
 #include "types.h"
 
-/// Mutex
+/// A mutex
 class IMutex
 {
+
+};
+
+/// A running thread
+class IThread
+{
+  public:
+	virtual ~IThread() = default;
+
+	
 };
 
 #define IS_VALID_ATOMIC(T) (sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8)
