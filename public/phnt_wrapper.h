@@ -9,8 +9,6 @@
 // _Very_ questionable wrapper that I made by copying definitions that probably don't quite work
 #include "phnt_xbox.h"
 #else
-typedef unsigned long PROCESS_ACTIVITY_TYPE;
-typedef void* PWORKER_FACTORY_DEFERRED_WORK;
 #define PHNT_VERSION PHNT_WIN11
 #include "phnt_windows.h"
 #include <evntrace.h>
