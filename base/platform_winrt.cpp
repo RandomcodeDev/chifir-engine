@@ -1,3 +1,4 @@
+#include "base/async.h"
 #include "base/base.h"
 
 #include "platform_win32.h"
@@ -102,7 +103,7 @@ struct UnknownBase: public IUnknown
 	}
 
   private:
-	ULONG m_refCount;
+	Atomic<ULONG> m_refCount;
 };
 
 struct InspectableBase: public IInspectable, public UnknownBase

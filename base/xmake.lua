@@ -31,6 +31,7 @@ target("Base")
     if is_plat("windows", "gdkx") then
         add_files(
             "args_win32.cpp",
+			"async_win32.cpp",
             "filesystem_win32.cpp",
             "loader_win32.cpp",
             "platform_win32.cpp",

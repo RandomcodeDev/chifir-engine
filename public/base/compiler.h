@@ -103,6 +103,41 @@ extern "C" __forceinline void* MSVC_GetReturnAddress(unsigned long frames)
 /// Get the return address
 #define Plat_GetReturnAddress(...) reinterpret_cast<uptr>(MSVC_GetReturnAddress(__VA_ARGS__ + 0))
 
+#define Async_AtomicAnd8(x, v)  _InterlockedAnd8(&(x), (v))
+#define Async_AtomicAnd16(x, v) _InterlockedAnd16(&(x), (v))
+#define Async_AtomicAnd32(x, v) _InterlockedAnd(&(x), (v))
+#define Async_AtomicAnd64(x, v) _InterlockedAnd64(&(x), (v))
+
+#define Async_AtomicOr8(x, v)  _InterlockedOr8(&(x), (v))
+#define Async_AtomicOr16(x, v) _InterlockedOr16(&(x), (v))
+#define Async_AtomicOr32(x, v) _InterlockedOr(&(x), (v))
+#define Async_AtomicOr64(x, v) _InterlockedOr64(&(x), (v))
+
+#define Async_AtomicXor8(x, v)  _InterlockedXor8(&(x), (v))
+#define Async_AtomicXor16(x, v) _InterlockedXor16(&(x), (v))
+#define Async_AtomicXor32(x, v) _InterlockedXor(&(x), (v))
+#define Async_AtomicXor64(x, v) _InterlockedXor64(&(x), (v))
+
+#define Async_AtomicXchgAdd8(x, v)  _InterlockedExchangeAdd8(&(x), (v))
+#define Async_AtomicXchgAdd16(x, v) _InterlockedExchangeAdd16(&(x), (v))
+#define Async_AtomicXchgAdd32(x, v) _InterlockedExchangeAdd(&(x), (v))
+#define Async_AtomicXchgAdd64(x, v) _InterlockedExchangeAdd64(&(x), (v))
+
+#define Async_AtomicXchgSub8(x, v)  Async_AtomicXchgAdd8(x, -(v))
+#define Async_AtomicXchgSub16(x, v) Async_AtomicXchgAdd16(x, -(v))
+#define Async_AtomicXchgSub32(x, v) Async_AtomicXchgAdd32(x, -(v))
+#define Async_AtomicXchgSub64(x, v) Async_AtomicXchgAdd64(x, -(v))
+
+#define Async_AtomicCmpXchg8(x, v, c)  _InterlockedCompareExchange8(&(x), (v), (c))
+#define Async_AtomicCmpXchg16(x, v, c) _InterlockedCompareExchange16(&(x), (v), (c))
+#define Async_AtomicCmpXchg32(x, v, c) _InterlockedCompareExchange(&(x), (v), (c))
+#define Async_AtomicCmpXchg64(x, v, c) _InterlockedCompareExchange64(&(x), (v), (c))
+
+#define Async_AtomicXchg8(x, v)  _InterlockedExchange8(&(x), (v))
+#define Async_AtomicXchg16(x, v) _InterlockedExchange16(&(x), (v))
+#define Async_AtomicXchg32(x, v) _InterlockedExchange(&(x), (v))
+#define Async_AtomicXchg64(x, v) _InterlockedExchange64(&(x), (v))
+
 #define BYTESWAP16(x) _byteswap_ushort(x)
 #define BYTESWAP32(x) _byteswap_ulong(x)
 #define BYTESWAP64(x) _byteswap_uint64(x)
