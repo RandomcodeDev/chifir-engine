@@ -89,7 +89,7 @@ bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
 #endif
 	Log_Debug("Creating IDXGIFactory6%s", factoryFlags == DXGI_CREATE_FACTORY_DEBUG ? " with DXGI_CREATE_FACTORY_DEBUG" : "");
 	HRESULT result = f_CreateDXGIFactory2(factoryFlags, IID_PPV_ARGS(&m_factory));
-	if (!SUCCEEDED(result))
+	if (FAILED(result))
 	{
 		Log_Error("CreateDXGIFactory2 failed: HRESULT 0x%08X", result);
 		Destroy();

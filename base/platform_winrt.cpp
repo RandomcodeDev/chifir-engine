@@ -6,8 +6,7 @@
 #ifndef CH_XBOX360
 #include "base/basicstr.h"
 
-template <typename T>
-static HRESULT GetClass(PCWSTR name, T** instance)
+template <typename T> static HRESULT GetClass(PCWSTR name, T** instance)
 {
 	HSTRING string = nullptr;
 	ssize length = Base_StrLength(name);
@@ -15,14 +14,14 @@ static HRESULT GetClass(PCWSTR name, T** instance)
 
 	IActivationFactory* factory = nullptr;
 	HRESULT result = RoGetActivationFactory(string, IID_PPV_ARGS(&factory));
-	if (!SUCCEEDED(result))
+	if (FAILED(result))
 	{
 		DbgPrint("Failed to get activation factory for class %ls: HRESULT 0x%08X\n", name, result);
 		goto Done;
 	}
 
 	result = factory->QueryInterface(instance);
-	if (!SUCCEEDED(result))
+	if (FAILED(result))
 	{
 		DbgPrint("Failed to get instance of class %ls: HRESULT 0x%08X\n", name, result);
 		goto Done;
@@ -59,26 +58,26 @@ bool Base_InitWinRt()
 	}
 
 	HRESULT result = RoInitialize(RO_INIT_MULTITHREADED);
-	if (!SUCCEEDED(result))
+	if (FAILED(result))
 	{
 		DbgPrint("Failed to initialize Windows Runtime: 0x%08X\n", result);
 		return false;
 	}
 
 	result = GetClass(winrt_min::RuntimeClass_CoreApplication, &CoreApplication);
-	if (!SUCCEEDED(result))
+	if (FAILED(result))
 	{
 		return false;
 	}
 
 	result = GetClass(winrt_min::RuntimeClass_ApplicationData, &ApplicationDataStatics);
-	if (!SUCCEEDED(result))
+	if (FAILED(result))
 	{
 		return false;
 	}
 
 	result = ApplicationDataStatics->Current(&ApplicationData);
-	if (!SUCCEEDED(result))
+	if (FAILED(result))
 	{
 		return false;
 	}
@@ -130,15 +129,15 @@ struct InspectableBase: public IInspectable, public UnknownBase
 	}
 	virtual ~InspectableBase() = default;
 
-    virtual ULONG __stdcall AddRef(void) override
-    {
-        return UnknownBase::AddRef();
-    }
+	virtual ULONG __stdcall AddRef(void) override
+	{
+		return UnknownBase::AddRef();
+	}
 
-    virtual ULONG __stdcall Release(void) override
-    {
-        return UnknownBase::Release();
-    }
+	virtual ULONG __stdcall Release(void) override
+	{
+		return UnknownBase::Release();
+	}
 
 	virtual HRESULT __stdcall GetIids(ULONG* iidCount, IID** iids) override
 	{
@@ -198,8 +197,9 @@ struct App: public InspectableBase, public winrt_min::IFrameworkView, public win
 	{
 	}
 	virtual ~App() = default;
+
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppvObject) override
-    {
+	{
 		if (!ppvObject)
 		{
 			return E_POINTER;
@@ -228,17 +228,17 @@ struct App: public InspectableBase, public winrt_min::IFrameworkView, public win
 		{
 			return E_NOINTERFACE;
 		}
-    }
+	}
 
-    virtual ULONG __stdcall AddRef(void) override
-    {
-        return InspectableBase::AddRef();
-    }
+	virtual ULONG __stdcall AddRef(void) override
+	{
+		return InspectableBase::AddRef();
+	}
 
-    virtual ULONG __stdcall Release(void) override
-    {
-        return InspectableBase::Release();
-    }
+	virtual ULONG __stdcall Release(void) override
+	{
+		return InspectableBase::Release();
+	}
 
 	virtual HRESULT __stdcall GetIids(ULONG* iidCount, IID** iids) override
 	{
@@ -329,16 +329,23 @@ cstr Base_GetWinRtAppData()
 
 	if (!Base_StrLength(s_path))
 	{
-		winrt_min::IStorageFolder* folder = nullptr;
-		HRESULT result = ApplicationData->RoamingFolder(&folder);
-		if (!SUCCEEDED(result))
+		IInspectable* folderUnk = nullptr;
+		HRESULT result = ApplicationData->LocalFolder(reinterpret_cast<winrt_min::IStorageFolder**>(&folderUnk));
+		if (FAILED(result))
 		{
 			Base_Quit("Failed to get AppData folder: HRESULT 0x%08X", result);
 		}
 
+		winrt_min::IStorageFolder* folder = nullptr;
+		result = folderUnk->QueryInterface(&folder);
+		if (FAILED(result))
+		{
+			Base_Quit("Failed to get IStorageFolder: HRESULT 0x%08X", result);
+		}
+
 		HSTRING path = nullptr;
 		result = folder->Path(&path);
-		if (!SUCCEEDED(result))
+		if (FAILED(result))
 		{
 			Base_Quit("Failed to get AppData folder: HRESULT 0x%08X", result);
 		}

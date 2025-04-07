@@ -30,7 +30,7 @@ bool CDx12RhiDevice::Initialize()
 
 	Log_Debug("Creating ID3D12Device4 with feature level " STRINGIZE_EXPAND(DX12_TARGET_FEATURE_LEVEL));
 	HRESULT result = f_D3D12CreateDevice(m_info.adapter, DX12_TARGET_FEATURE_LEVEL, IID_PPV_ARGS(&m_handle));
-	if (!SUCCEEDED(result))
+	if (FAILED(result))
 	{
 		Log_Error("D3D12CreateDevice failed: HRESULT 0x%08X", result);
 		return false;
@@ -42,7 +42,7 @@ bool CDx12RhiDevice::Initialize()
 	cmdQueueDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
 	cmdQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 	result = m_handle->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(&m_queue));
-	if (!SUCCEEDED(result))
+	if (FAILED(result))
 	{
 		Log_Error("Failed to create direct command queue: HRESULT 0x%08X", result);
 		Destroy();
@@ -51,7 +51,7 @@ bool CDx12RhiDevice::Initialize()
 
 	cmdQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_COPY;
 	result = m_handle->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(&m_copyQueue));
-	if (!SUCCEEDED(result))
+	if (FAILED(result))
 	{
 		Log_Error("Failed to create copy command queue: HRESULT 0x%08X", result);
 		Destroy();
@@ -103,7 +103,7 @@ bool CDx12RhiDevice::GetDeviceInfo(RhiDeviceInfo_t& rhiInfo, Dx12DeviceInfo_t& i
 
 	info.adapter = adapter;
 	HRESULT result = adapter->GetDesc1(&info.desc);
-	if (!SUCCEEDED(result))
+	if (FAILED(result))
 	{
 		Log_Error("Failed to get adapter description: HRESULT 0x%08X", result);
 		return false;

@@ -35,7 +35,7 @@ bool CDx12RhiSwapChain::Initialize(u32 bufferCount)
 	IDXGISwapChain1* swapChain;
 	HRESULT result = m_device->m_instance->m_factory->CreateSwapChainForHwnd(
 		m_device->m_queue, reinterpret_cast<HWND>(video->GetHandle()), &desc, nullptr, nullptr, &swapChain);
-    if (!SUCCEEDED(result))
+    if (FAILED(result))
     {
         Log_Error("Failed to CreateSwapChainForHwnd failed: HRESULT 0x%08X", result);
         return false;

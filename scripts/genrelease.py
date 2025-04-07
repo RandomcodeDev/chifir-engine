@@ -101,12 +101,16 @@ def main(argc, argv):
 	print(f"copying binaries in {build_dir} to {output}")
 
 	if path.exists(output):
-		resp = "y" if args.force else input(f"remove directory {output} (yes or no)? ")
-		if resp.lower()[0] == "n":
-			print("not removing")
+		try:
+			resp = "y" if args.force else input(f"remove directory {output} (yes or no)? ")
+			if resp.lower()[0] == "n":
+				print("not removing")
+				exit()
+			else:
+				shutil.rmtree(output)
+		except KeyboardInterrupt:
+			print("\nnot removing")
 			exit()
-		else:
-			shutil.rmtree(output)
 
 	os.mkdir(output)
 	os.mkdir(path.join(output, "bin"))
