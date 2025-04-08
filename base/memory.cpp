@@ -38,6 +38,7 @@ typedef IntrusiveLinkedNode<AllocInfo_t> AllocNode_t;
 #ifdef CH_WIN32
 typedef CWindowsMutex AllocMutex_t;
 #else
+#error "Unknown mutex type"
 #endif
 
 static u8 s_freeMutexMem[sizeof(AllocMutex_t)];
