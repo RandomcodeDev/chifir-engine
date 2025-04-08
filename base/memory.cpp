@@ -32,17 +32,20 @@ struct AllocInfo_t
 
 typedef IntrusiveLinkedNode<AllocInfo_t> AllocNode_t;
 
-/// List of unused blocks. Nodes are stored at the start of each chunk of memory in the allocator's control, and their size is
-/// included in AllocInfo_t's size member.
-
 #ifdef CH_WIN32
 typedef CWindowsMutex AllocMutex_t;
 #else
 #error "Unknown mutex type"
 #endif
 
+/// Memory for s_freeMutex, since it can't be allocated
 static u8 s_freeMutexMem[sizeof(AllocMutex_t)];
+
+/// Protects the free list, backed by s_freeMutexMem
 static IMutex* s_freeMutex;
+
+/// List of unused blocks. Nodes are stored at the start of each chunk of memory in the allocator's control, and their size is
+/// included in AllocInfo_t's size member.
 static CIntrusiveLinkedList<AllocInfo_t> s_free;
 
 void Base_InitAllocator()
