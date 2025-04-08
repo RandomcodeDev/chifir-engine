@@ -13,7 +13,7 @@ bool g_platInitialized;
 bool g_allocUsable;
 BaseCpuData_t g_cpuData;
 
-#ifdef CH_ORBIS
+#if defined CH_ORBIS || CH_GDKX
 static void InitCpuData()
 {
 	g_cpuData.haveSimd128 = true;

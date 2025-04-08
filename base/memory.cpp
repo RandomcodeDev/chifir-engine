@@ -12,6 +12,10 @@
 #include "base/platform.h"
 #include "base/types.h"
 
+#ifdef CH_WIN32
+#include "platform_win32.h"
+#endif
+
 MemoryInfo_t g_memInfo;
 
 /// Signature so header can be found in aligned blocks (also is 'CHFALLOC' in ASCII on little endian)
@@ -30,8 +34,28 @@ typedef IntrusiveLinkedNode<AllocInfo_t> AllocNode_t;
 
 /// List of unused blocks. Nodes are stored at the start of each chunk of memory in the allocator's control, and their size is
 /// included in AllocInfo_t's size member.
-/// TODO: once threading has been implemented, this MUST be made thread safe.
+
+#ifdef CH_WIN32
+typedef CWindowsMutex AllocMutex_t;
+#else
+#endif
+
+static u8 s_freeMutexMem[sizeof(AllocMutex_t)];
+static IMutex* s_freeMutex;
 static CIntrusiveLinkedList<AllocInfo_t> s_free;
+
+void Base_InitAllocator()
+{
+	// can't allocate the mutex with new, so some shenanigans have to occur
+	s_freeMutex = reinterpret_cast<IMutex*>(s_freeMutexMem);
+	new(s_freeMutex) AllocMutex_t;
+}
+
+void Base_ShutdownAllocator()
+{
+	// call the virtual destructor
+	s_freeMutex->~IMutex();
+}
 
 static s32 FindSystemNode(SystemAllocation_t* alloc, void* data)
 {
@@ -125,7 +149,9 @@ static AllocNode_t* GetFreeNode(ssize size)
 		alloc->data.signature = ALLOC_SIGNATURE;
 
 		// Keep sorted
+		s_freeMutex->Lock();
 		s_free.InsertAfter(alloc, next);
+		s_freeMutex->Unlock();
 	}
 
 	return alloc;
@@ -146,7 +172,7 @@ static AllocNode_t* FindNode(void* block)
 	}
 
 #ifdef __clang__
-	// data should be at a constant offset in AllocNode_t
+	// data is at a constant offset in AllocNode_t, but it's a template so clang is rightfully paranoid
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #endif
@@ -179,7 +205,9 @@ static void CoalesceAllocations()
 			if (Contiguous(alloc, next))
 			{
 				alloc->data.size += next->data.size;
+				s_freeMutex->Lock();
 				s_free.Remove(next);
+				s_freeMutex->Unlock();
 				Base_MemSet(&next->data, 0, sizeof(AllocInfo_t));
 			}
 		}
@@ -202,7 +230,9 @@ BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment)
 	AllocNode_t* alloc = GetFreeNode(realSize);
 	if (alloc)
 	{
+		s_freeMutex->Lock();
 		s_free.Remove(alloc);
+		s_freeMutex->Unlock();
 	}
 	else
 	{

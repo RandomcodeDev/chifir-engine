@@ -58,6 +58,12 @@ struct MemoryInfo_t
 
 extern MemoryInfo_t g_memInfo;
 
+/// Initialize the memory allocator
+extern void Base_InitAllocator();
+
+/// Shut down the memory allocator
+extern void Base_ShutdownAllocator();
+
 /// Allocate a chunk of memory from the OS for the allocator
 extern bool Base_GetSystemMemory(ssize size);
 
