@@ -8,6 +8,7 @@ target("Base")
 
     add_headerfiles("**.h", "../private/base/**.h", "../public/base/**.h")
     add_files(
+        "async.cpp",
         "base.cpp",
         "basicstr.cpp",
         "filesystem.cpp",

@@ -92,7 +92,24 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 
 	app->Setup(args);
 #else
-	cstr appName = "Engine"; /// TODO: make this better
+	cstr appName = "Engine";
+	
+	// TODO: add proper argument parsing
+	for (ssize i = 0; i < args.Size(); i++)
+	{
+		if (args[i] == "-app")
+		{
+			if (i + 1 < args.Size())
+			{
+				i++;
+				appName = args[i].Data();
+			}
+			else
+			{
+				Base_Quit("Missing argument to -app");
+			}
+		}
+	}
 
 	// first, try bin folder. if that fails (such as when running from the build directory), try same as exe.
 

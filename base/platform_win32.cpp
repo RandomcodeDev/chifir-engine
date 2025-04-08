@@ -426,6 +426,13 @@ BASEAPI u64 Plat_GetMilliseconds()
 	return GetSysTime() / 10000;
 }
 
+BASEAPI void Plat_Sleep(u64 millis)
+{
+	LARGE_INTEGER delay;
+	delay.QuadPart = millis;
+	NtDelayExecution(FALSE, &delay);
+}
+
 BASEAPI void Plat_GetDateTime(DateTime& time, bool utc)
 {
 	s64 timeZoneBias = 0;

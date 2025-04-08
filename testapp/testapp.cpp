@@ -1,4 +1,5 @@
 #include "testapp.h"
+#include "base/async.h"
 #include "base/log.h"
 #include "base/string.h"
 
@@ -11,9 +12,17 @@ void CTestApp::Setup(const CVector<CString>& args)
 	}
 }
 
-void CTestApp::GetDependencies(CVector<SystemDependency_t>& dependencies)
+void CTestApp::GetDependencies(CVector<SystemDependency>& systems, CVector<LibDependency_t>& libs)
 {
-	UNUSED(dependencies);
+	UNUSED(systems);
+	UNUSED(libs);
+}
+
+s32 ThreadFunc(void* data)
+{
+	Log_Info("Thread running!");
+	*reinterpret_cast<u32*>(data) = 69;
+	return 420;
 }
 
 s32 CTestApp::Run(const CVector<ISystem*>& systems)
@@ -22,8 +31,13 @@ s32 CTestApp::Run(const CVector<ISystem*>& systems)
 
 	Log_Info("Running test app");
 
-	CString string = "a s d f";
-	CVector<CString> parts = string.Split();
+	u32 test = 0;
+	IThread* thread = Async_CreateThread(ThreadFunc, &test);
+	Log_Info("Starting thread (id = %u)", thread->GetId());
+	thread->Run();
+	Log_Info("Waiting for thread");
+	thread->Wait();
+	Log_Info("Thread returned %d, data = %u", thread->GetResult(), test);
 
 	return 0;
 }

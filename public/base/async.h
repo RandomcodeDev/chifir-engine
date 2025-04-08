@@ -10,7 +10,17 @@
 /// A mutex
 class IMutex
 {
+  public:
+	virtual ~IMutex() = default;
+	
+	/// Wait indefinitely and lock the mutex
+	virtual void Lock() = 0;
 
+	/// Wait up to the given number of milliseconds to acquire the mutex
+	virtual bool TryLock(u64 timeout = 0) = 0;
+
+	/// Release the mutex
+	virtual void Release() = 0;
 };
 
 /// A running thread
@@ -19,8 +29,36 @@ class IThread
   public:
 	virtual ~IThread() = default;
 
+	/// Start the thread and let it run independently
+	virtual void Run() = 0;
+
+	/// Wait for the thread to finish, with an optional millisecond timeout
+	virtual bool Wait(u64 timeout = UINT64_MAX) = 0;
 	
+	/// Get whether the thread is alive
+	virtual bool IsAlive() const = 0;
+
+	/// Get the result of the thread, if it's finished
+	virtual s32 GetResult() const = 0;
+
+	/// Get the ID of the thread
+	virtual u64 GetId() const = 0;
+
+	/// Get the system handle for the thread
+	virtual uptr GetHandle() const = 0;
+
+	/// Get the name of the thread
+	virtual cstr GetName() const = 0;
 };
+
+/// The required signature for a thread function
+typedef s32 (*ThreadStart_t)(void* userData);
+
+/// Create a thread
+extern BASEAPI IThread* Async_CreateThread(ThreadStart_t start, void* userData, cstr name = nullptr, ssize stackSize = 0, ssize maxStackSize = 0);
+
+/// Get the current thread (on the main thread and external threads, returns nullptr)
+extern BASEAPI IThread* Async_GetCurrentThread();
 
 #define IS_VALID_ATOMIC(T) (sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8)
 

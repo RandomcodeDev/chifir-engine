@@ -8,7 +8,7 @@ class CTestApp: public IApplication
 	CTestApp() DEFAULT;
 	~CTestApp() DEFAULT;
 
-	void Setup(const CVector<CString>& args);
-	void GetDependencies(CVector<SystemDependency_t>& dependencies);
-	s32 Run(const CVector<ISystem*>& systems /* TODO: , CCommandLine cmdLine */);
+	virtual void Setup(const CVector<CString>& args);
+	virtual void GetDependencies(CVector<SystemDependency>& systems, CVector<LibDependency_t>& libs);
+	virtual s32 Run(const CVector<ISystem*>& systems);
 };

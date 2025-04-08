@@ -7,9 +7,63 @@
 #error "This header is Windows only"
 #endif
 
+#include "base/async.h"
 #include "base/loader.h"
 #include "base/platform.h"
 #include "base/types.h"
+
+class CWindowsThread: public IThread
+{
+  public:
+	CWindowsThread(ThreadStart_t start, void* userData, cstr name, ssize stackSize, ssize maxStackSize);
+	virtual ~CWindowsThread();
+	
+	virtual void Run();
+	virtual bool Wait(u64 timeout);
+	
+	virtual bool IsAlive() const
+	{
+		return m_handle != nullptr;
+	}
+
+	virtual s32 GetResult() const
+	{
+		return m_result;
+	}
+
+	virtual u64 GetId() const
+	{
+		return m_id;
+	}
+
+	virtual uptr GetHandle() const
+	{
+		return reinterpret_cast<uptr>(m_handle);
+	}
+
+	virtual cstr GetName() const
+	{
+		// win32 threads don't have names
+		return m_name;
+	}
+
+  private:
+  	HANDLE m_handle;
+	u64 m_id;
+	s32 m_result;
+	dstr m_name;
+	ThreadStart_t m_start;
+	void* m_userData;
+
+	static NTSTATUS NTAPI ThreadMain(CWindowsThread* thread);
+};
+
+extern bool Base_InitWinRt();
+extern void Base_ShutdownWinRt();
+extern int Base_RunMainWinRt(int (*main)());
+extern cstr Base_GetWinRtAppData();
+
+extern bool g_uwp;
 
 /// Export a function but also define it so it can be used like it was imported from NTDLL within Base.dll
 /// The way the forwarder is written is kinda iffy, but the code generated should be (and has been thus far) valid
@@ -24,12 +78,10 @@
 #define MAKE_STUB(x, callingConv, ...)                                                                                           \
 	extern "C" uptr (*STUB_NAME(x))(...);                                                                                        \
 	extern "C" BASEAPI bool STUB_AVAILABLE(x)();                                                                                 \
-	EXPORT_RAW("_" STRINGIZE(x) "_Available")                                                                                  \
+	EXPORT_RAW("_" STRINGIZE(x) "_Available")                                                                                    \
 	EXPORT_AS_RAW(STRINGIZE(x) "_Forwarder", "_" STRINGIZE(x) #__VA_ARGS__)
 #elif defined CH_XBOX360
-#define MAKE_STUB(x, ...)                                                                                                        \
-	extern "C" BASEAPI bool STUB_AVAILABLE(x)()                                                                                  \
-	EXPORT_RAW(STRINGIZE(x) "_Available")
+#define MAKE_STUB(x, ...) extern "C" BASEAPI bool STUB_AVAILABLE(x)() EXPORT_RAW(STRINGIZE(x) "_Available")
 #else
 #define MAKE_STUB(x, ...)                                                                                                        \
 	extern "C" uptr (*STUB_NAME(x))(...);                                                                                        \
@@ -44,14 +96,7 @@ extern bool Base_InitLoader();
 extern bool Base_CheckWoW64();
 extern cstr Base_IsWine();
 
-extern bool Base_InitWinRt();
-extern void Base_ShutdownWinRt();
-extern int Base_RunMainWinRt(int (*main)());
-extern cstr Base_GetWinRtAppData();
-
 extern bool g_loaderInitialized;
-
-extern bool g_uwp;
 
 class CWindowsLibrary: public ILibrary
 {

@@ -53,6 +53,8 @@ MAKE_STUB NtAllocateVirtualMemory
 MAKE_STUB NtClose
 MAKE_STUB NtCreateFile
 MAKE_STUB NtCreateKey
+MAKE_STUB NtCreateThreadEx
+MAKE_STUB NtDelayExecution
 MAKE_STUB NtFreeVirtualMemory
 MAKE_STUB NtQueryFullAttributesFile
 MAKE_STUB NtQueryInformationFile
@@ -60,7 +62,9 @@ MAKE_STUB NtQuerySystemInformation
 MAKE_STUB NtQueryValueKey
 MAKE_STUB NtRaiseHardError
 MAKE_STUB NtReadFile
+MAKE_STUB NtResumeThread
 MAKE_STUB NtTerminateProcess
+MAKE_STUB NtWaitForSingleObject
 MAKE_STUB NtWriteFile
 MAKE_STUB RtlAnsiStringToUnicodeString
 MAKE_STUB RtlCaptureStackBackTrace

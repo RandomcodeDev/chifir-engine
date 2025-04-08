@@ -1,0 +1,81 @@
+#include "base.h"
+#include "base/async.h"
+#include "base/basicstr.h"
+#include "platform_win32.h"
+
+CWindowsThread::CWindowsThread(ThreadStart_t start, void* userData, cstr name, ssize stackSize, ssize maxStackSize)
+	: m_handle(nullptr), m_id(0), m_result(INT32_MIN), m_name(nullptr), m_start(start), m_userData(userData)
+{
+    ASSERT(g_platInitialized != false);
+
+	PS_ATTRIBUTE_LIST psAttrs = {};
+	psAttrs.TotalLength = sizeof(PS_ATTRIBUTE_LIST);
+
+	CLIENT_ID clientId = {};
+	PPS_ATTRIBUTE clientIdAttr = &psAttrs.Attributes[0];
+	clientIdAttr->Attribute = PS_ATTRIBUTE_CLIENT_ID;
+	clientIdAttr->Size = sizeof(CLIENT_ID);
+	clientIdAttr->ValuePtr = &clientId;
+
+	OBJECT_ATTRIBUTES objAttrs = {};
+	NTSTATUS status = NtCreateThreadEx(
+		&m_handle, THREAD_ALL_ACCESS, &objAttrs, NtCurrentProcess(), reinterpret_cast<PUSER_THREAD_START_ROUTINE>(ThreadMain),
+		this, THREAD_CREATE_FLAGS_CREATE_SUSPENDED, 0, stackSize, maxStackSize, nullptr);
+	if (!NT_SUCCESS(status))
+	{
+		Base_Quit(
+			"Failed to create thread with start 0x%016X and user data 0x%016X: NTSTATUS 0x%08X", m_start, m_userData, status);
+	}
+
+	m_id = reinterpret_cast<u64>(clientId.UniqueThread);
+
+	if (name)
+	{
+		m_name = Base_StrClone(name);
+	}
+}
+
+CWindowsThread::~CWindowsThread()
+{
+	if (m_name)
+	{
+		Base_Free(m_name);
+	}
+
+	if (m_handle)
+	{
+		NtClose(m_handle);
+	}
+}
+
+void CWindowsThread::Run()
+{
+	NTSTATUS status = NtResumeThread(m_handle, nullptr);
+	if (!NT_SUCCESS(status))
+	{
+		Base_Quit("Failed to resume thread 0x%016X: NTSTATUS 0x%08X", m_handle, status);
+	}
+}
+
+bool CWindowsThread::Wait(u64 timeout)
+{
+	LARGE_INTEGER timeoutNt;
+	// negative means relative, and timeout is in 100ns intervals
+	timeoutNt.QuadPart = timeout * -10000;
+	NTSTATUS status = NtWaitForSingleObject(m_handle, false, &timeoutNt);
+	if (status == STATUS_TIMEOUT)
+	{
+		return false;
+	}
+
+	// the thread's result is stored in ThreadMain
+
+	return true;
+}
+
+NTSTATUS NTAPI CWindowsThread::ThreadMain(CWindowsThread* thread)
+{
+    g_currentThread = thread;
+    thread->m_result = thread->m_start(thread->m_userData);
+    return thread->m_result;
+}

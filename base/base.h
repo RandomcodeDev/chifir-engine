@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "base/async.h"
 #include "base/compiler.h"
 #include "base/linkedlist.h"
 #include "base/types.h"
@@ -32,6 +33,9 @@ extern bool g_allocUsable;
 
 /// Initialized in Base_Init
 extern BaseCpuData_t g_cpuData;
+
+/// Current thread
+extern ATTRIBUTE(thread) IThread* g_currentThread;
 
 /// OS allocation
 struct SystemAllocation_t

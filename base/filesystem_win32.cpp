@@ -1,11 +1,14 @@
 /// \file Windows raw filesystem
 /// \copyright Randomcode Developers
 
+#include "base.h"
 #include "filesystem_win32.h"
 #include "base/log.h"
 
 CWin32Filesystem::CWin32Filesystem(cstr root) : CBaseRawFilesystem(root)
 {
+	ASSERT(g_platInitialized != false);
+
 #ifdef CH_XBOX360
 	m_rootHandle = CreateFileA(
 		m_root, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0, FILE_OPEN_IF,
