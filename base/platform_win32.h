@@ -12,6 +12,25 @@
 #include "base/platform.h"
 #include "base/types.h"
 
+class CWindowsMutex: public IMutex
+{
+  public:
+	CWindowsMutex();
+	virtual ~CWindowsMutex();
+
+	virtual void Lock();
+	virtual bool TryLock(u32 timeout);
+	virtual void Unlock();
+
+	virtual uptr GetHandle() const
+	{
+		return reinterpret_cast<uptr>(m_handle);
+	}
+
+  private:
+	HANDLE m_handle;
+};
+
 class CWindowsThread: public IThread
 {
   public:
@@ -19,7 +38,7 @@ class CWindowsThread: public IThread
 	virtual ~CWindowsThread();
 	
 	virtual void Run();
-	virtual bool Wait(u64 timeout);
+	virtual bool Wait(u32 timeout);
 	
 	virtual bool IsAlive() const
 	{

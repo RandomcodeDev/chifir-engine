@@ -7,7 +7,7 @@
 
 CWin32Filesystem::CWin32Filesystem(cstr root) : CBaseRawFilesystem(root)
 {
-	ASSERT(g_platInitialized != false);
+	ASSERT_MSG(g_platInitialized != false, "Call Base_Init first!");
 
 #ifdef CH_XBOX360
 	m_rootHandle = CreateFileA(

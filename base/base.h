@@ -36,6 +36,7 @@ extern BaseCpuData_t g_cpuData;
 
 /// Current thread
 extern ATTRIBUTE(thread) IThread* g_currentThread;
+extern ATTRIBUTE(thread) bool g_mainThread;
 
 /// OS allocation
 struct SystemAllocation_t
@@ -65,3 +66,9 @@ extern void Base_ReleaseSystemMemory(IntrusiveLinkedNode<SystemAllocation_t> all
 
 /// Release all system memory, you shouldn't call this unless you're done with the allocator and any memory it owns
 extern void Base_ReleaseAllMemory();
+
+/// Initialize the logging system
+extern void Log_Init();
+
+/// Shut down the logging system
+extern void Log_Shutdown();

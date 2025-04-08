@@ -54,14 +54,17 @@ MAKE_STUB(LdrLoadDll, __stdcall, @16)
 MAKE_STUB(LdrUnloadDll, __stdcall, @4)
 MAKE_STUB(NtClose, __stdcall, @4)
 MAKE_STUB(NtCreateFile, __stdcall, @44)
+MAKE_STUB(NtCreateMutant, __stdcall, @16)
 MAKE_STUB(NtCreateKey, __stdcall, @28)
 MAKE_STUB(NtCreateThreadEx, __stdcall, @44)
 MAKE_STUB(NtDelayExecution, __stdcall, @8)
 MAKE_STUB(NtQueryInformationFile, __stdcall, @20)
+MAKE_STUB(NtQueryInformationThread, __stdcall, @20)
 MAKE_STUB(NtQuerySystemInformation, __stdcall, @16)
 MAKE_STUB(NtQueryValueKey, __stdcall, @24)
 MAKE_STUB(NtRaiseHardError, __stdcall, @0)
 MAKE_STUB(NtReadFile, __stdcall, @36)
+MAKE_STUB(NtReleaseMutant, __stdcall, @8)
 MAKE_STUB(NtResumeThread, __stdcall, @8)
 MAKE_STUB(NtTerminateProcess, __stdcall, @8)
 MAKE_STUB(NtWaitForSingleObject, __stdcall, @12)
@@ -272,13 +275,16 @@ bool Base_InitLoader()
 	GET_FUNCTION(&ntDll, LdrUnloadDll)
 	GET_FUNCTION(&ntDll, NtClose)
 	GET_FUNCTION(&ntDll, NtCreateFile)
+	GET_FUNCTION(&ntDll, NtCreateMutant)
 	GET_FUNCTION(&ntDll, NtCreateKey)
 	GET_FUNCTION(&ntDll, NtCreateThreadEx)
 	GET_FUNCTION(&ntDll, NtDelayExecution)
 	GET_FUNCTION(&ntDll, NtQueryInformationFile)
+	GET_FUNCTION(&ntDll, NtQueryInformationThread)
 	GET_FUNCTION(&ntDll, NtQuerySystemInformation)
 	GET_FUNCTION(&ntDll, NtQueryValueKey)
 	GET_FUNCTION(&ntDll, NtReadFile)
+	GET_FUNCTION(&ntDll, NtReleaseMutant)
 	GET_FUNCTION(&ntDll, NtResumeThread)
 	GET_FUNCTION(&ntDll, NtWaitForSingleObject)
 	GET_FUNCTION(&ntDll, NtWriteFile)
@@ -392,7 +398,14 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 			return nullptr;
 		}
 
-		Log_Debug("Loading library %s", fileName);
+		if (g_baseInitialized)
+		{
+			Log_Debug("Loading library %s", fileName);
+		}
+		else
+		{
+			DbgPrint("Loading library %s\n", fileName);
+		}
 
 		ANSI_STRING nameStr = {};
 		nameStr.Buffer = fileName;

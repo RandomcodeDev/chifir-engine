@@ -3,24 +3,73 @@
 #include "base/basicstr.h"
 #include "platform_win32.h"
 
+CWindowsMutex::CWindowsMutex() : m_handle(nullptr)
+{
+    NTSTATUS status = NtCreateMutant(&m_handle, MUTANT_ALL_ACCESS, nullptr, FALSE);
+    if (!NT_SUCCESS(status))
+    {
+        Base_Quit("Failed to create mutant: NTSTATUS 0x%08X", status);
+    }
+}
+
+CWindowsMutex::~CWindowsMutex()
+{
+    if (m_handle)
+    {
+        NtClose(m_handle);
+        m_handle = nullptr;
+    }
+}
+
+void CWindowsMutex::Lock()
+{
+    TryLock(UINT32_MAX);
+}
+
+bool CWindowsMutex::TryLock(u32 timeout)
+{
+    LARGE_INTEGER delay;
+    delay.QuadPart = -10000 * timeout;
+    NTSTATUS status = NtWaitForSingleObject(m_handle, false, &delay);
+    switch (status)
+    {
+        // TODO: not sure if this is correct, guess I'll find out eventually
+    case STATUS_ABANDONED:
+    case STATUS_WAIT_0:
+        return true;
+    default:
+        return false;
+    }
+}
+
+void CWindowsMutex::Unlock()
+{
+    NtReleaseMutant(m_handle, nullptr);
+}
+
+#define PS_ATTRIBUTE_LIST_SIZE(n) (sizeof(PS_ATTRIBUTE_LIST) + ((n) - 1) * sizeof(PS_ATTRIBUTE))
+
 CWindowsThread::CWindowsThread(ThreadStart_t start, void* userData, cstr name, ssize stackSize, ssize maxStackSize)
 	: m_handle(nullptr), m_id(0), m_result(INT32_MIN), m_name(nullptr), m_start(start), m_userData(userData)
 {
-    ASSERT(g_platInitialized != false);
+	ASSERT(stackSize <= maxStackSize);
 
-	PS_ATTRIBUTE_LIST psAttrs = {};
-	psAttrs.TotalLength = sizeof(PS_ATTRIBUTE_LIST);
+	u8 psAttrBuf[PS_ATTRIBUTE_LIST_SIZE(1)] = {};
+	PPS_ATTRIBUTE_LIST psAttrs = reinterpret_cast<PPS_ATTRIBUTE_LIST>(psAttrBuf);
+	psAttrs->TotalLength = sizeof(PS_ATTRIBUTE_LIST);
 
 	CLIENT_ID clientId = {};
-	PPS_ATTRIBUTE clientIdAttr = &psAttrs.Attributes[0];
+	PPS_ATTRIBUTE clientIdAttr = &psAttrs->Attributes[0];
 	clientIdAttr->Attribute = PS_ATTRIBUTE_CLIENT_ID;
 	clientIdAttr->Size = sizeof(CLIENT_ID);
 	clientIdAttr->ValuePtr = &clientId;
 
 	OBJECT_ATTRIBUTES objAttrs = {};
+	InitializeObjectAttributes(&objAttrs, nullptr, 0, nullptr, nullptr);
+
 	NTSTATUS status = NtCreateThreadEx(
 		&m_handle, THREAD_ALL_ACCESS, &objAttrs, NtCurrentProcess(), reinterpret_cast<PUSER_THREAD_START_ROUTINE>(ThreadMain),
-		this, THREAD_CREATE_FLAGS_CREATE_SUSPENDED, 0, stackSize, maxStackSize, nullptr);
+		this, THREAD_CREATE_FLAGS_CREATE_SUSPENDED, 0, stackSize, maxStackSize, psAttrs);
 	if (!NT_SUCCESS(status))
 	{
 		Base_Quit(
@@ -40,11 +89,13 @@ CWindowsThread::~CWindowsThread()
 	if (m_name)
 	{
 		Base_Free(m_name);
+		m_name = nullptr;
 	}
 
 	if (m_handle)
 	{
 		NtClose(m_handle);
+		m_handle = nullptr;
 	}
 }
 
@@ -57,12 +108,12 @@ void CWindowsThread::Run()
 	}
 }
 
-bool CWindowsThread::Wait(u64 timeout)
+bool CWindowsThread::Wait(u32 timeout)
 {
-	LARGE_INTEGER timeoutNt;
+	LARGE_INTEGER delay;
 	// negative means relative, and timeout is in 100ns intervals
-	timeoutNt.QuadPart = timeout * -10000;
-	NTSTATUS status = NtWaitForSingleObject(m_handle, false, &timeoutNt);
+	delay.QuadPart = timeout * -10000ll;
+	NTSTATUS status = NtWaitForSingleObject(m_handle, false, &delay);
 	if (status == STATUS_TIMEOUT)
 	{
 		return false;
@@ -75,7 +126,36 @@ bool CWindowsThread::Wait(u64 timeout)
 
 NTSTATUS NTAPI CWindowsThread::ThreadMain(CWindowsThread* thread)
 {
-    g_currentThread = thread;
-    thread->m_result = thread->m_start(thread->m_userData);
-    return thread->m_result;
+	g_currentThread = thread;
+	thread->m_result = thread->m_start(thread->m_userData);
+	return thread->m_result;
+}
+
+BASEAPI u64 Async_GetCurrentThreadId()
+{
+    // doing a syscall every time is slower, this function should be fast
+	static ATTRIBUTE(thread) u64 s_currentId = UINT64_MAX;
+
+    // cache it the first time the thread calls this
+	if (s_currentId == UINT64_MAX)
+	{
+		if (g_currentThread)
+		{
+			// skip over doing a syscall
+			s_currentId = g_currentThread->GetId();
+		}
+
+		THREAD_BASIC_INFORMATION info = {};
+		NTSTATUS status =
+			NtQueryInformationThread(NtCurrentThread(), ThreadBasicInformation, &info, sizeof(THREAD_BASIC_INFORMATION), nullptr);
+		if (!NT_SUCCESS(status))
+		{
+			DbgPrint("Failed to get thread ID for current thread: NTSTATUS 0x%08X\n", status);
+			s_currentId = UINT64_MAX - 1;
+		}
+
+		s_currentId = reinterpret_cast<u64>(info.ClientId.UniqueThread);
+	}
+
+    return s_currentId;
 }

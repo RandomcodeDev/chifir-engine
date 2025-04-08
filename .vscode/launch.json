@@ -56,7 +56,7 @@
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/windows/x64/debug/FalseKing.exe",
-      "args": ["Engine", "-rhi_backend", "d3d12"],
+      "args": ["-app", "TestApp", "-rhi_backend", "d3d12"],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
       "environment": [],

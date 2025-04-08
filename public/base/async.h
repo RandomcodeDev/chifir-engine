@@ -17,11 +17,16 @@ class IMutex
 	virtual void Lock() = 0;
 
 	/// Wait up to the given number of milliseconds to acquire the mutex
-	virtual bool TryLock(u64 timeout = 0) = 0;
+	virtual bool TryLock(u32 timeout = 0) = 0;
 
 	/// Release the mutex
-	virtual void Release() = 0;
+	virtual void Unlock() = 0;
+
+	/// Get the system handle for the mutex
+	virtual uptr GetHandle() const = 0;
 };
+
+extern BASEAPI IMutex* Async_CreateMutex();
 
 /// A running thread
 class IThread
@@ -33,7 +38,7 @@ class IThread
 	virtual void Run() = 0;
 
 	/// Wait for the thread to finish, with an optional millisecond timeout
-	virtual bool Wait(u64 timeout = UINT64_MAX) = 0;
+	virtual bool Wait(u32 timeout = UINT32_MAX) = 0;
 	
 	/// Get whether the thread is alive
 	virtual bool IsAlive() const = 0;
@@ -59,6 +64,15 @@ extern BASEAPI IThread* Async_CreateThread(ThreadStart_t start, void* userData, 
 
 /// Get the current thread (on the main thread and external threads, returns nullptr)
 extern BASEAPI IThread* Async_GetCurrentThread();
+
+/// Get whether this is the main thread
+extern BASEAPI bool Async_IsMainThread();
+
+/// Get the current thread's name
+#define Async_GetCurrentThreadName() (Async_IsMainThread() ? "Main" : (Async_GetCurrentThread() ? Async_GetCurrentThread()->GetName() : nullptr))
+
+/// Get a thread's ID
+extern BASEAPI u64 Async_GetCurrentThreadId();
 
 #define IS_VALID_ATOMIC(T) (sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8)
 

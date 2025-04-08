@@ -105,6 +105,7 @@ BASEAPI void Base_Init()
 		InitCpuData();
 
 		Plat_Init();
+		Log_Init();
 
 #ifdef CH_WIN32
 		Log_AddWriter(new CDbgPrintLogWriter());
@@ -119,6 +120,7 @@ BASEAPI void Base_Shutdown()
 {
 	if (g_baseInitialized)
 	{
+		Log_Shutdown();
 		Plat_Shutdown();
 	}
 }
