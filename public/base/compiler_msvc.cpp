@@ -136,12 +136,23 @@ extern "C"
 #pragma section(".CRT$XLZ", long, read)
 	ATTRIBUTE(allocate(".CRT$XLZ")) PIMAGE_TLS_CALLBACK __xl_z = nullptr;
 
+#if defined(_MSC_VER) && !defined(__clang__)
+	[[msvc::no_tls_guard]]
+#endif
+	__declspec(thread) bool __tls_guard = false;
+
 	void __stdcall __dyn_tls_init(void*, DWORD reason, void*)
 	{
-		if (reason == DLL_THREAD_ATTACH)
+		if (reason == DLL_THREAD_ATTACH && !__tls_guard)
 		{
+			__tls_guard = true;
 			RunThreadConstructors();
 		}
+	}
+
+	void __cdecl __dyn_tls_on_demand_init() noexcept
+	{
+		__dyn_tls_init(nullptr, DLL_THREAD_ATTACH, nullptr);
 	}
 
 #pragma section(".CRT$XLC")
@@ -245,13 +256,6 @@ void RunGlobalDestructors()
 void __stdcall RunThreadConstructors()
 {
 	CallXtors(&__xd_a + 1, &__xd_z);
-}
-
-[[msvc::no_tls_guard]] __declspec(thread) bool __tls_guard = false;
-
-void __cdecl __dyn_tls_on_demand_init() noexcept
-{
-    __dyn_tls_init(nullptr, DLL_THREAD_ATTACH, nullptr);
 }
 
 /// Ensures the vtable for type_info is generated

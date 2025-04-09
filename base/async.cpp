@@ -17,8 +17,8 @@ BASEAPI IMutex* Async_CreateMutex()
 }
 
 // null on the main thread
-ATTRIBUTE(thread) IThread* g_currentThread;
-ATTRIBUTE(thread) bool g_mainThread;
+ATTRIBUTE(thread) IThread* g_currentThread = nullptr;
+ATTRIBUTE(thread) bool g_mainThread = false;
 
 BASEAPI IThread* Async_CreateThread(ThreadStart_t start, void* userData, cstr name, ssize stackSize, ssize maxStackSize)
 {
