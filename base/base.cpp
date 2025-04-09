@@ -105,6 +105,10 @@ BASEAPI void Base_Init()
 		InitCpuData();
 
 		Plat_Init();
+
+		// the thread that called Base_Init is the main one
+		g_mainThread = true;
+
 		Log_Init();
 
 #ifdef CH_WIN32

@@ -127,6 +127,7 @@ bool CWindowsThread::Wait(u32 timeout)
 NTSTATUS NTAPI CWindowsThread::ThreadMain(CWindowsThread* thread)
 {
 	g_currentThread = thread;
+    g_mainThread = false;
 	thread->m_result = thread->m_start(thread->m_userData);
 	return thread->m_result;
 }

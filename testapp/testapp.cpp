@@ -32,7 +32,7 @@ s32 CTestApp::Run(const CVector<ISystem*>& systems)
 	Log_Info("Running test app");
 
 	u32 test = 0;
-	IThread* thread = Async_CreateThread(ThreadFunc, &test);
+	IThread* thread = Async_CreateThread(ThreadFunc, &test, "Test");
 	Log_Info("Starting thread (id = %u)", thread->GetId());
 	thread->Run();
 	Log_Info("Waiting for thread");

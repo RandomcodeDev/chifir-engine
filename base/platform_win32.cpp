@@ -89,8 +89,6 @@ BASEAPI void Plat_Init()
 			Base_AbortSafe(LastNtStatus(), "Failed to initialize dynamic loader");
 		}
 
-		g_mainThread = true;
-
 #ifndef CH_XBOX360
 		// Properly determine the page size just in case, and get other info
 		NTSTATUS status =
