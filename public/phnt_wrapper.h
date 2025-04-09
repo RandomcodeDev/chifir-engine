@@ -9,7 +9,7 @@
 // _Very_ questionable wrapper that I made by copying definitions that probably don't quite work
 #include "phnt_xbox.h"
 #else
-#define PHNT_VERSION PHNT_WIN11
+#define PHNT_VERSION PHNT_WINDOWS_NEW
 #include "phnt_windows.h"
 #include <evntrace.h>
 #endif
@@ -31,7 +31,9 @@
 #define RtlLeaveCriticalSection                  RtlLeaveCriticalSection_phnt
 #define ExitProcess(...)
 #endif
+
 #include "phnt.h"
+
 #ifdef CH_XBOX360
 #undef RtlLockHeap
 #undef RtlUnlockHeap
