@@ -1,6 +1,7 @@
 /// \file Vulkan utility functions
 /// \copyright Randomcode Developers
 
+#include "base/async.h"
 #include "base/log.h"
 #include "vulkan.h"
 
@@ -97,7 +98,10 @@ VkBool32 VKAPI_CALL VkDebugCallback(
 	// util_DebugReportMessage   1
 	// loader_log                2
 	// <real source of message>  3
-	Log_Write(level, Plat_GetReturnAddress(3), true, "Vulkan", typeStr, "Vulkan log thread", UINT64_MAX, callbackData->pMessage);
+	// 
+	// note: TLS seems messed up in this callback
+	Log_Write(level, Plat_GetReturnAddress(3), true, "Vulkan", typeStr, "Main", UINT64_MAX,
+		callbackData->pMessage);
 
 	return true;
 }

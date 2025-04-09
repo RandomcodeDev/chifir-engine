@@ -6,10 +6,15 @@
 /// so this file implements the bare minimum, at times using functions from the engine to replace
 /// functionality normally provided by the CRT.
 
+#include "async.h"
 #include "base.h"
 #include "compiler.h"
 #include "platform.h"
 #include "types.h"
+
+#ifdef IN_BASE
+#include "../../base/base.h"
+#endif
 
 typedef void (*_PVFV)(void);
 typedef int (*_PIFV)(void);
@@ -130,7 +135,7 @@ extern "C"
 	u8 _tls_end = 0;
 #pragma data_seg()
 
-	// tls initializers
+	// these are called by ntdll, and that triggers calling __xd_*
 #pragma section(".CRT$XLA", long, read)
 	ATTRIBUTE(allocate(".CRT$XLA")) PIMAGE_TLS_CALLBACK __xl_a = nullptr;
 #pragma section(".CRT$XLZ", long, read)
@@ -139,7 +144,36 @@ extern "C"
 #if defined(_MSC_VER) && !defined(__clang__)
 	[[msvc::no_tls_guard]]
 #endif
-	__declspec(thread) bool __tls_guard = false;
+	ATTRIBUTE(thread) bool __tls_guard = false;
+	// these are made by the compiler for individual variables
+#pragma section(".CRT$XDA", long, read)
+	ATTRIBUTE(allocate(".CRT$XDA")) _PVFV __xd_a = nullptr;
+#pragma section(".CRT$XDZ", long, read)
+	ATTRIBUTE(allocate(".CRT$XDZ")) _PVFV __xd_z = nullptr;
+
+#pragma data_seg(".rdata$T")
+#ifdef CH_IA32
+	ATTRIBUTE(allocate(".rdata$T"))
+	extern const IMAGE_TLS_DIRECTORY _tls_used = {
+		(u32)(uptr)&_tls_start, // start of tls data
+		(u32)(uptr)&_tls_end,   // end of tls data
+		(u32)(uptr)&_tls_index, // address of tls_index
+		(u32)(uptr)(&__xl_a),   // pointer to call back array
+		(u32)0,                 // size of tls zero fill
+		(u32)0                  // characteristics
+	};
+#else
+	ATTRIBUTE(allocate(".rdata$T"))
+	extern const IMAGE_TLS_DIRECTORY64 _tls_used = {
+		(u64)&_tls_start, // start of tls data
+		(u64)&_tls_end,   // end of tls data
+		(u64)&_tls_index, // address of tls_index
+		(u64)(&__xl_a),   // pointer to call back array
+		(u32)0,           // size of tls zero fill
+		{0}               // characteristics
+	};
+#endif
+#pragma data_seg()
 
 	void __stdcall __dyn_tls_init(void*, DWORD reason, void*)
 	{
@@ -147,6 +181,11 @@ extern "C"
 		{
 			__tls_guard = true;
 			RunThreadConstructors();
+
+#ifdef IN_BASE
+			g_currentThread = nullptr;
+			g_mainThread = false;
+#endif
 		}
 	}
 
@@ -158,36 +197,6 @@ extern "C"
 #pragma section(".CRT$XLC")
 	ATTRIBUTE(allocate(".CRT$XLC"))
 	PIMAGE_TLS_CALLBACK __xl_c = __dyn_tls_init;
-
-	// other tls initializers?
-#pragma section(".CRT$XDA", long, read)
-	ATTRIBUTE(allocate(".CRT$XDA")) _PVFV __xd_a = nullptr;
-#pragma section(".CRT$XDZ", long, read)
-	ATTRIBUTE(allocate(".CRT$XDZ")) _PVFV __xd_z = nullptr;
-
-#pragma data_seg(".rdata$T")
-#ifdef CH_IA32
-	ATTRIBUTE(allocate(".rdata$T"))
-	extern const IMAGE_TLS_DIRECTORY _tls_used = {
-		(u32)(uptr)&_tls_start,   // start of tls data
-		(u32)(uptr)&_tls_end,     // end of tls data
-		(u32)(uptr)&_tls_index,   // address of tls_index
-		(u32)(uptr)(&__xl_a + 1), // pointer to call back array
-		(u32)0,                   // size of tls zero fill
-		(u32)0                    // characteristics
-	};
-#else
-	ATTRIBUTE(allocate(".rdata$T"))
-	extern const IMAGE_TLS_DIRECTORY64 _tls_used = {
-		(u64)&_tls_start,   // start of tls data
-		(u64)&_tls_end,     // end of tls data
-		(u64)&_tls_index,   // address of tls_index
-		(u64)(&__xl_a + 1), // pointer to call back array
-		(u32)0,             // size of tls zero fill
-		{0}                 // characteristics
-	};
-#endif
-#pragma data_seg()
 
 	ATTRIBUTE(thread) s32 _Init_thread_epoch = INT32_MIN;
 
@@ -213,7 +222,7 @@ static void CallXtors(_PVFV* begin, _PVFV* end)
 	{
 		if (*iter)
 		{
-			(**iter)();
+			(*iter)();
 		}
 	}
 }
@@ -225,7 +234,7 @@ static s32 CallXtors(_PIFV* begin, _PIFV* end)
 	{
 		if (*iter)
 		{
-			ret = (**iter)();
+			ret = (*iter)();
 			if (ret != 0)
 			{
 				return ret;
@@ -255,7 +264,7 @@ void RunGlobalDestructors()
 
 void __stdcall RunThreadConstructors()
 {
-	CallXtors(&__xd_a + 1, &__xd_z);
+	CallXtors(&__xd_a, &__xd_z);
 }
 
 /// Ensures the vtable for type_info is generated

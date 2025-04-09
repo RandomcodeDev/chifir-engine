@@ -145,6 +145,9 @@ extern "C" __forceinline void* MSVC_GetReturnAddress(unsigned long frames)
 /// Initialize the stack security cookie, local to the current DLL/EXE
 extern "C" void __cdecl __security_init_cookie();
 
+/// Initialize TLS for the current module
+extern "C" void __stdcall __dyn_tls_init(void*, unsigned long reason, void*);
+
 /// Call global constructors, local to the current DLL/EXE
 extern void RunGlobalConstructors();
 

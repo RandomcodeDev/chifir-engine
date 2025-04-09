@@ -5,46 +5,46 @@
 
 CWindowsMutex::CWindowsMutex() : m_handle(nullptr)
 {
-    NTSTATUS status = NtCreateMutant(&m_handle, MUTANT_ALL_ACCESS, nullptr, FALSE);
-    if (!NT_SUCCESS(status))
-    {
-        Base_Quit("Failed to create mutant: NTSTATUS 0x%08X", status);
-    }
+	NTSTATUS status = NtCreateMutant(&m_handle, MUTANT_ALL_ACCESS, nullptr, FALSE);
+	if (!NT_SUCCESS(status))
+	{
+		Base_Quit("Failed to create mutant: NTSTATUS 0x%08X", status);
+	}
 }
 
 CWindowsMutex::~CWindowsMutex()
 {
-    if (m_handle)
-    {
-        NtClose(m_handle);
-        m_handle = nullptr;
-    }
+	if (m_handle)
+	{
+		NtClose(m_handle);
+		m_handle = nullptr;
+	}
 }
 
 void CWindowsMutex::Lock()
 {
-    TryLock(UINT32_MAX);
+	TryLock(UINT32_MAX);
 }
 
 bool CWindowsMutex::TryLock(u32 timeout)
 {
-    LARGE_INTEGER delay;
-    delay.QuadPart = -10000 * timeout;
-    NTSTATUS status = NtWaitForSingleObject(m_handle, false, &delay);
-    switch (status)
-    {
-        // TODO: not sure if this is correct, guess I'll find out eventually
-    case STATUS_ABANDONED:
-    case STATUS_WAIT_0:
-        return true;
-    default:
-        return false;
-    }
+	LARGE_INTEGER delay;
+	delay.QuadPart = -10000 * timeout;
+	NTSTATUS status = NtWaitForSingleObject(m_handle, false, &delay);
+	switch (status)
+	{
+		// TODO: not sure if this is correct, guess I'll find out eventually
+	case STATUS_ABANDONED:
+	case STATUS_WAIT_0:
+		return true;
+	default:
+		return false;
+	}
 }
 
 void CWindowsMutex::Unlock()
 {
-    NtReleaseMutant(m_handle, nullptr);
+	NtReleaseMutant(m_handle, nullptr);
 }
 
 #define PS_ATTRIBUTE_LIST_SIZE(n) (sizeof(PS_ATTRIBUTE_LIST) + ((n) - 1) * sizeof(PS_ATTRIBUTE))
@@ -127,36 +127,27 @@ bool CWindowsThread::Wait(u32 timeout)
 NTSTATUS NTAPI CWindowsThread::ThreadMain(CWindowsThread* thread)
 {
 	g_currentThread = thread;
-    g_mainThread = false;
+	g_mainThread = false;
 	thread->m_result = thread->m_start(thread->m_userData);
 	return thread->m_result;
 }
 
 BASEAPI u64 Async_GetCurrentThreadId()
 {
-    // doing a syscall every time is slower, this function should be fast
-	static ATTRIBUTE(thread) u64 s_currentId = UINT64_MAX;
-
-    // cache it the first time the thread calls this
-	if (s_currentId == UINT64_MAX)
+	if (g_currentThread)
 	{
-		if (g_currentThread)
-		{
-			// skip over doing a syscall
-			s_currentId = g_currentThread->GetId();
-		}
-
-		THREAD_BASIC_INFORMATION info = {};
-		NTSTATUS status =
-			NtQueryInformationThread(NtCurrentThread(), ThreadBasicInformation, &info, sizeof(THREAD_BASIC_INFORMATION), nullptr);
-		if (!NT_SUCCESS(status))
-		{
-			DbgPrint("Failed to get thread ID for current thread: NTSTATUS 0x%08X\n", status);
-			s_currentId = UINT64_MAX - 1;
-		}
-
-		s_currentId = reinterpret_cast<u64>(info.ClientId.UniqueThread);
+		// skip over doing a syscall
+		return g_currentThread->GetId();
 	}
 
-    return s_currentId;
+	THREAD_BASIC_INFORMATION info = {};
+	NTSTATUS status =
+		NtQueryInformationThread(NtCurrentThread(), ThreadBasicInformation, &info, sizeof(THREAD_BASIC_INFORMATION), nullptr);
+	if (!NT_SUCCESS(status))
+	{
+		DbgPrint("Failed to get thread ID for current thread: NTSTATUS 0x%08X\n", status);
+		return UINT64_MAX;
+	}
+
+	return reinterpret_cast<u64>(info.ClientId.UniqueThread);
 }

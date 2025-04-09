@@ -19,7 +19,6 @@ extern "C" BOOL __stdcall _DllMainCRTStartup(HANDLE hDllHandle, DWORD dwReason, 
 #endif
 		break;
 	case DLL_THREAD_ATTACH:
-		RunThreadConstructors();
 		break;
 	case DLL_PROCESS_DETACH:
 #ifdef IN_BASE
