@@ -70,13 +70,7 @@ extern BASEAPI bool Plat_IsUwpApp();
 
 // TODO: similar functions for input and etc
 #if defined IN_BASE || defined IN_VIDEO
-struct UwpVideoCallbacks
-{
-	bool (*Resized)(f32 width, f32 height);
-	bool (*VisibilityChanged)(bool visible);
-};
-
-/// Register video callbacks for the CoreWindow
-extern BASEAPI void Plat_BindUwpVideo(winrt_min::ICoreWindow*& window, const UwpVideoCallbacks& callbacks);
+/// Get the CoreWindow for the application
+extern BASEAPI winrt_min::ICoreWindow* Plat_GetUwpWindow();
 #endif
 #endif

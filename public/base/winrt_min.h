@@ -403,7 +403,18 @@ MAKE_INTERFACE(
 	})
 
 MAKE_INTERFACE(
-	IStorageFolder, "72D1CB78-B3EF-4F75-A80B-6FD9DAE2944B", : public IStorageItem {
+	IStorageFolder, "72D1CB78-B3EF-4F75-A80B-6FD9DAE2944B",
+	: public IInspectable {
+		virtual HRESULT STDMETHODCALLTYPE RenameAsync(HSTRING desiredName, void** operation) = 0;
+		virtual HRESULT STDMETHODCALLTYPE RenameAsync(HSTRING desiredName, UINT32 option, void** operation) = 0;
+		virtual HRESULT STDMETHODCALLTYPE DeleteAsync(void** operation) = 0;
+		virtual HRESULT STDMETHODCALLTYPE DeleteAsync(UINT32 option, void** operation) = 0;
+		virtual HRESULT STDMETHODCALLTYPE GetBasicPropertiesAsync(void** operation) = 0;
+		virtual HRESULT STDMETHODCALLTYPE Name(HSTRING * value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE Path(HSTRING * value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE Attributes(void* value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE DateCreated(void* value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE IsOfType(UINT32 type, BOOLEAN * value) = 0;
 		virtual HRESULT STDMETHODCALLTYPE CreateFileAsync(HSTRING desiredName, void** operation) = 0;
 		virtual HRESULT STDMETHODCALLTYPE CreateFileAsync(HSTRING desiredName, UINT32 options, void** operation) = 0;
 		virtual HRESULT STDMETHODCALLTYPE CreateFolderAsync(HSTRING desiredName, void** operation) = 0;

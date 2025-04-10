@@ -11,8 +11,8 @@ class CWinRtVideoSystem: public IVideoSystem
 {
   public:
 	CWinRtVideoSystem()
-		: m_window(nullptr), m_title(nullptr), m_width(0), m_height(0), m_extraWidth(0), m_extraHeight(0),
-		  m_x(0), m_y(0), m_resized(false), m_focused(false), m_closed(false), m_dpi(1.0)
+		: m_window(nullptr), m_title(nullptr), m_width(0), m_height(0), m_x(0), m_y(0), m_resized(false), m_focused(false),
+		  m_closed(false), m_dpi(1.0)
 	{
 	}
 	~CWinRtVideoSystem() DEFAULT;
@@ -79,27 +79,17 @@ class CWinRtVideoSystem: public IVideoSystem
 	}
 
   private:
-	static const u32 WINDOW_STYLE = WS_OVERLAPPEDWINDOW;
 	winrt_min::ICoreWindow* m_window;
+	winrt_min::ICoreDispatcher* m_dispatcher;
 	dstr m_title;
 	u32 m_width;
 	u32 m_height;
-	u32 m_extraWidth;
-	u32 m_extraHeight;
 	u32 m_x;
 	u32 m_y;
 	bool m_resized;
 	bool m_focused;
 	bool m_closed;
 	f32 m_dpi;
-
-	bool RegisterWindowClass();
-	bool InitializeMainWindow();
-	void UpdateSize();
-	void UpdatePosition();
-	void UpdateDpi();
-
-	static LRESULT __stdcall WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam);
 };
 
 #define WINDOW_CLASS "ChifirWindow"
