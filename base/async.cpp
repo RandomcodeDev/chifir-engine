@@ -16,10 +16,6 @@ BASEAPI IMutex* Async_CreateMutex()
 #endif
 }
 
-// null on the main thread
-ATTRIBUTE(thread) IThread* g_currentThread = nullptr;
-ATTRIBUTE(thread) bool g_mainThread = false;
-
 BASEAPI IThread* Async_CreateThread(ThreadStart_t start, void* userData, cstr name, ssize stackSize, ssize maxStackSize)
 {
 	ASSERT_MSG(g_platInitialized != false, "Call Base_Init first!");
@@ -29,14 +25,4 @@ BASEAPI IThread* Async_CreateThread(ThreadStart_t start, void* userData, cstr na
 #else
     return nullptr;
 #endif
-}
-
-BASEAPI IThread* Async_GetCurrentThread()
-{
-    return g_currentThread;
-}
-
-BASEAPI bool Async_IsMainThread()
-{
-    return g_mainThread;
 }

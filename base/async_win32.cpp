@@ -124,20 +124,54 @@ bool CWindowsThread::Wait(u32 timeout)
 	return true;
 }
 
+u32 g_tlsIndex;
+
+TlsData* Plat_GetTlsData()
+{
+	return static_cast<TlsData*>(TlsGetValue(g_tlsIndex));
+}
+
 NTSTATUS NTAPI CWindowsThread::ThreadMain(CWindowsThread* thread)
 {
-	g_currentThread = thread;
-	g_mainThread = false;
+	TlsData* data = new TlsData;
+
+	data->currentThread = thread;
+	data->isMainThread = false;
+	TlsSetValue(g_tlsIndex, data);
+
 	thread->m_result = thread->m_start(thread->m_userData);
 	return thread->m_result;
 }
 
+BASEAPI IThread* Async_GetCurrentThread()
+{
+	TlsData* data = Plat_GetTlsData();
+	if (data)
+	{
+		return data->currentThread;
+	}
+
+	return nullptr;
+}
+
+BASEAPI bool Async_IsMainThread()
+{
+	TlsData* data = Plat_GetTlsData();
+	if (data)
+	{
+		return data->isMainThread;
+	}
+
+	return false;
+}
+
 BASEAPI u64 Async_GetCurrentThreadId()
 {
-	if (g_currentThread)
+	IThread* current = Async_GetCurrentThread();
+	if (current)
 	{
 		// skip over doing a syscall
-		return g_currentThread->GetId();
+		return current->GetId();
 	}
 
 	THREAD_BASIC_INFORMATION info = {};

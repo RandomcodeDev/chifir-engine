@@ -85,6 +85,10 @@ MAKE_STUB(GetConsoleMode, __stdcall, @8)
 MAKE_STUB(GetStdHandle, __stdcall, @4)
 MAKE_STUB(SetConsoleMode, __stdcall, @8)
 MAKE_STUB(WriteConsoleA, __stdcall, @20)
+// pre-Vista TLS was all in kernel32
+MAKE_STUB(TlsAlloc, __stdcall, @0)
+MAKE_STUB(TlsGetValue, __stdcall, @4)
+MAKE_STUB(TlsSetValue, __stdcall, @8)
 
 // shell32
 // Shell stuff is evil
@@ -306,6 +310,9 @@ bool Base_InitLoader()
 	GET_FUNCTION_OPTIONAL(kernel32, GetStdHandle)
 	GET_FUNCTION_OPTIONAL(kernel32, SetConsoleMode)
 	GET_FUNCTION_OPTIONAL(kernel32, WriteConsoleA)
+	GET_FUNCTION(kernel32, TlsAlloc)
+	GET_FUNCTION(kernel32, TlsGetValue)
+	GET_FUNCTION(kernel32, TlsSetValue)
 
 	ILibrary* shell32 = Base_LoadLibrary("shell32");
 

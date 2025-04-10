@@ -70,6 +70,47 @@ BASEAPI void Plat_WriteConsole(cstr text)
 #endif
 }
 
+static void GetConsole()
+{
+#ifndef CH_XBOX360
+#ifdef CH_WIN32
+	// Get a console
+	bool haveConsole = false;
+	if (AttachConsole_Available())
+	{
+		haveConsole = AttachConsole(ATTACH_PARENT_PROCESS);
+		if (haveConsole)
+		{
+			Plat_WriteConsole("\n");
+		}
+		else if (AllocConsole_Available())
+		{
+#ifndef CH_RETAIL
+			AllocConsole();
+			haveConsole = true;
+#endif
+		}
+	}
+#endif
+
+	if (haveConsole && Plat_ConsoleHasColor() && GetConsoleMode_Available() && SetConsoleMode_Available())
+	{
+		DWORD mode = 0;
+		GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), &mode);
+		SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+	}
+#endif
+}
+
+static void InitializeTls()
+{
+	g_tlsIndex = TlsAlloc();
+	TlsData* mainTlsData = new TlsData;
+	mainTlsData->currentThread = nullptr;
+	mainTlsData->isMainThread = true;
+	TlsSetValue(g_tlsIndex, mainTlsData);
+}
+
 BASEAPI void Plat_Init()
 {
 	if (!g_platInitialized)
@@ -113,34 +154,8 @@ BASEAPI void Plat_Init()
 
 		g_uwp = Base_InitWinRt();
 
-#ifndef CH_XBOX360
-#ifdef CH_WIN32
-		// Get a console
-		bool haveConsole = false;
-		if (AttachConsole_Available())
-		{
-			haveConsole = AttachConsole(ATTACH_PARENT_PROCESS);
-			if (haveConsole)
-			{
-				Plat_WriteConsole("\n");
-			}
-			else if (AllocConsole_Available())
-			{
-#ifndef CH_RETAIL
-				AllocConsole();
-				haveConsole = true;
-#endif
-			}
-		}
-#endif
-
-		if (haveConsole && Plat_ConsoleHasColor() && GetConsoleMode_Available() && SetConsoleMode_Available())
-		{
-			DWORD mode = 0;
-			GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), &mode);
-			SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
-		}
-#endif
+		GetConsole();
+		InitializeTls();
 
 		g_platInitialized = true;
 	}

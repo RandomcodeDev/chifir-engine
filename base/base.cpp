@@ -103,13 +103,8 @@ BASEAPI void Base_Init()
 	if (!g_baseInitialized)
 	{
 		InitCpuData();
-
 		Plat_Init();
-
-		g_mainThread = true;
-
 		Log_Init();
-
 #ifdef CH_WIN32
 		Log_AddWriter(new CDbgPrintLogWriter());
 #endif

@@ -31,6 +31,17 @@ class CWindowsMutex: public IMutex
 	HANDLE m_handle;
 };
 
+struct TlsData
+{
+	IThread* currentThread;
+	bool isMainThread;
+};
+
+extern u32 g_tlsIndex;
+
+/// Get the TLS data for this thread
+extern TlsData* Plat_GetTlsData();
+
 class CWindowsThread: public IThread
 {
   public:

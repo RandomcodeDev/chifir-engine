@@ -47,10 +47,11 @@ static constexpr const char* GetMsvcVersionString()
 #endif
 
 #define ATTRIBUTE(x) __declspec(x)
+#define LINKER_COMMENT(x) __pragma(comment(linker, x))
 #ifdef CH_STATIC
 #define EXPORT_RAW(x)
 #else
-#define EXPORT_RAW(x) __pragma(comment(linker, "/export:" x))
+#define EXPORT_RAW(x) LINKER_COMMENT("/export:" x)
 #endif
 #define EXPORT(x) EXPORT_RAW(#x)
 #ifdef CH_IA32
@@ -61,7 +62,7 @@ static constexpr const char* GetMsvcVersionString()
 #define EXPORT_AS_RAW(orig, alt)      EXPORT_RAW(alt "=" orig)
 #define EXPORT_CURRENT_FUNCTION_AS(x) EXPORT_AS_RAW(__FUNCTION__, x)
 #define EXPORT_AS(a, b)               EXPORT_AS_RAW(#a, #b)
-#define ALIAS_RAW(a, b)               __pragma(comment(linker, "/alternatename:" b "=" a))
+#define ALIAS_RAW(a, b)               LINKER_COMMENT("/alternatename:" b "=" a)
 #define ALIAS(a, b)                   ALIAS_RAW(#a, #b)
 #define BREAKPOINT()                  __debugbreak()
 #define ASSUME(x)                     __assume(x)
@@ -99,6 +100,9 @@ extern "C" __forceinline void* MSVC_GetReturnAddress(unsigned long frames)
 		return _ReturnAddress();
 	}
 }
+
+/// TLS isn't usable
+#define thread_local "Don't use the compiler's built-in TLS, it's broken in DLLs and on Windows XP"
 
 /// Get the return address
 #define Plat_GetReturnAddress(...) reinterpret_cast<uptr>(MSVC_GetReturnAddress(__VA_ARGS__ + 0))

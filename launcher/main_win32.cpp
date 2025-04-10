@@ -76,6 +76,7 @@ extern "C"
 
 	__security_init_cookie();
 	RunGlobalConstructors();
+	//__dyn_tls_init(nullptr, DLL_THREAD_ATTACH, nullptr);
 	Base_Init();
 	int result = Base_RunMain(LauncherMain);
 	Base_Shutdown();

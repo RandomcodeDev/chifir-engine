@@ -85,6 +85,9 @@ MAKE_STUB GetConsoleMode
 MAKE_STUB GetStdHandle
 MAKE_STUB SetConsoleMode
 MAKE_STUB WriteConsoleA
+MAKE_STUB TlsAlloc
+MAKE_STUB TlsGetValue
+MAKE_STUB TlsSetValue
 
 ; shell32 stubs
 MAKE_STUB SHGetFolderPathA

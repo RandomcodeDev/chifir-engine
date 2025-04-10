@@ -34,10 +34,6 @@ extern bool g_allocUsable;
 /// Initialized in Base_Init
 extern BaseCpuData_t g_cpuData;
 
-/// Current thread
-extern ATTRIBUTE(thread) IThread* g_currentThread;
-extern ATTRIBUTE(thread) bool g_mainThread;
-
 /// OS allocation
 struct SystemAllocation_t
 {
