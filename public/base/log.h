@@ -57,7 +57,7 @@ class BASEAPI ILogWriter
 #ifdef CH_DEBUG
 		LogLevel::Trace;
 #else
-		LogLevel_t::Info;
+		LogLevel::Info;
 #endif
 
 	/// Indexable with any LogLevel_t value
