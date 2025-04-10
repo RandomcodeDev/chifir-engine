@@ -15,7 +15,8 @@ void CTestApp::Setup(const CVector<CString>& args)
 void CTestApp::GetDependencies(CVector<SystemDependency>& systems, CVector<LibDependency_t>& libs)
 {
 	UNUSED(systems);
-	UNUSED(libs);
+	
+	libs.Add(LIBS, ArraySize(LIBS));
 }
 
 s32 ThreadFunc(void* data)

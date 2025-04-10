@@ -3,6 +3,13 @@
 version = 4
 
 [[package]]
+name = "RustTest"
+version = "0.0.0"
+dependencies = [
+ "chifir",
+]
+
+[[package]]
 name = "chifir"
 version = "0.0.0"
 dependencies = [
@@ -14,10 +21,3 @@ name = "target-lexicon"
 version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dc12939a1c9b9d391e0b7135f72fd30508b73450753e28341fed159317582a77"
-
-[[package]]
-name = "test"
-version = "0.0.0"
-dependencies = [
- "chifir",
-]

@@ -1,11 +1,9 @@
-/// \file Bindings to Base_* functions
-/// \copyright Randomcode Developers
+// \file Bindings to Base_* functions
+// \copyright Randomcode Developers
 
-use core::slice;
 use std::{
-    alloc::{self, AllocError, Layout},
+    alloc::{self, Layout},
     ffi::CString,
-    ptr::{NonNull, null},
 };
 
 #[repr(C)]

@@ -1,5 +1,5 @@
-/// \file Bindings to Plat_* functions
-/// \copyright Randomcode Developers
+// \file Bindings to Plat_* functions
+// \copyright Randomcode Developers
 
 #[link(name = "Base")]
 unsafe extern "C" {

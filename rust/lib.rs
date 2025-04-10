@@ -1,5 +1,5 @@
-/// \file Miscellaneous stuff for bindings to use
-/// \copyright Randomcode Developers
+// \file Miscellaneous stuff for bindings to use
+// \copyright Randomcode Developers
 
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
@@ -34,7 +34,7 @@ mod log_impl {
             #[macro_export]
             macro_rules! $level {
                 ($$($$args:tt)*) => {
-                    $crate::sys::Log::WriteSafe($crate::sys::Log::Level::$level, line!(), false, file!(), $crate::function!(), format!($$($$args)*).as_str())
+                    $crate::sys::Log::WriteSafe($crate::sys::Log::Level::$level, line!(), false, file!(), $crate::function!(), None, u64::MAX, format!($$($$args)*).as_str())
                 };
             }
             pub(crate) use $level;

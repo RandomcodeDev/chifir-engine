@@ -106,6 +106,14 @@ extern "C"
 		/// return nullptr;
 	}
 
+#ifdef __clang__
+	struct _ThrowInfo;
+#endif
+	void __stdcall _CxxThrowException(void* object, _ThrowInfo* throwInfo)
+	{
+		Base_Abort(STATUS_UNHANDLED_EXCEPTION, "Exception from object 0x%016X with throw info 0x%016X", object, throwInfo);
+	}
+
 	int __cdecl _purecall()
 	{
 		/// As far as I can tell, this gets called when a virtual call has no implementation, and normally code to call a handler
@@ -141,10 +149,6 @@ extern "C"
 #pragma section(".CRT$XLZ", long, read)
 	ATTRIBUTE(allocate(".CRT$XLZ")) PIMAGE_TLS_CALLBACK __xl_z = nullptr;
 
-#if defined(_MSC_VER) && !defined(__clang__)
-	[[msvc::no_tls_guard]]
-#endif
-	ATTRIBUTE(thread) bool __tls_guard = false;
 	// these are made by the compiler for individual variables
 #pragma section(".CRT$XDA", long, read)
 	ATTRIBUTE(allocate(".CRT$XDA")) _PVFV __xd_a = nullptr;
@@ -174,6 +178,11 @@ extern "C"
 	};
 #endif
 #pragma data_seg()
+
+#if defined(_MSC_VER) && !defined(__clang__)
+	[[msvc::no_tls_guard]]
+#endif
+	ATTRIBUTE(thread) bool __tls_guard = false;
 
 	void __stdcall __dyn_tls_init(void*, DWORD reason, void*)
 	{

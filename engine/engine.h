@@ -91,5 +91,9 @@ class CEngine: public IEngine
     };
 	static constexpr u32 CLIENT_SYSTEMS_OFFSET = 0;
 
+#ifdef CH_WIN32
+	static constexpr cstr DEFAULT_RHI_BACKEND = "DirectX12";
+#else
 	static constexpr cstr DEFAULT_RHI_BACKEND = "Vulkan";
+#endif
 };

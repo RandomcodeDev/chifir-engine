@@ -1,3 +1,5 @@
+# This file is used by gatherlicenses.py to make a zip/folder that has all the licenses
+
 [d3d12_agility]
 name = "DirectX 12 Agility SDK"
 author = "Microsoft"

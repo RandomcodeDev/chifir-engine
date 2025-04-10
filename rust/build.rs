@@ -1,5 +1,5 @@
-/// \file Build script
-/// \copyright Randomcode Developers
+// \file Build script
+// \copyright Randomcode Developers
 
 use std::{
     env::var,
