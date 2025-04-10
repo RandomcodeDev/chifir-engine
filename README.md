@@ -93,7 +93,7 @@ For the Rust stuff, build the engine, then do `cargo build`.
   - My PS4 is on 11.02, so I'm stuck with shadPS4 for now
 - Xbox One/Series X|S
   - Once UWP support is done, it'll work in the retail dev mode
-  - I don't have a devkit or an OS version supported by the Collateral Damage exploit
+  - I don't have a devkit or an OS version supported by the Collateral Damage exploit, so I can't make a version for GameOS yet
 - Xbox 360
   - I did write some code for it, but eventually I decided that C++03 sucks
   - If I find a way to make a modern compiler target it, I'll add support again
