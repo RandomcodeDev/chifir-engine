@@ -107,7 +107,7 @@ extern "C" RHIAPI IRhiInstance* Rhi_CreateInstance(cstr backendName)
 #else
 	switch (type)
 	{
-	case RhiBackendType_t::Vulkan: {
+	case RhiBackendType::Vulkan: {
 #ifdef CH_VULKAN
 		return CreateVulkanRhiInstance();
 #else
@@ -115,29 +115,29 @@ extern "C" RHIAPI IRhiInstance* Rhi_CreateInstance(cstr backendName)
 #endif
 		return nullptr;
 	}
-	case RhiBackendType_t::DirectX12: {
+	case RhiBackendType::DirectX12: {
 #ifdef CH_DIRECTX12
 		return CreateDx12RhiInstance();
 #else
 		Log_Error("DirectX 12 support not available in this build!");
 #endif
 	}
-	case RhiBackendType_t::DirectX9: {
+	case RhiBackendType::DirectX9: {
 #ifdef CH_DIRECTX9
 		return CreateDx9RhiInstance();
 #else
 		Log_Error("DirectX 9 support not available in this build!");
 #endif
 	}
-	case RhiBackendType_t::OpenGl: {
+	case RhiBackendType::OpenGl: {
 #ifdef CH_OPENGL
 		return CreateOpenGlRhiInstance();
 #else
 		Log_Error("OpenGL support not available in this build!");
 #endif
 	}
-	case RhiBackendType_t::Custom:
-	case RhiBackendType_t::None:
+	case RhiBackendType::Custom:
+	case RhiBackendType::None:
 	default:
 		return nullptr;
 	}

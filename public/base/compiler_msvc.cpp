@@ -181,11 +181,6 @@ extern "C"
 		{
 			__tls_guard = true;
 			RunThreadConstructors();
-
-#ifdef IN_BASE
-			g_currentThread = nullptr;
-			g_mainThread = false;
-#endif
 		}
 	}
 

@@ -59,7 +59,7 @@ static PCWSTR GetEngineDir()
 #else
 extern void Base_Init();
 extern void Base_Shutdown();
-extern int Base_RunMain(int (*main)());
+extern "C" int Base_RunMain(int (*main)());
 #endif
 
 extern "C"
