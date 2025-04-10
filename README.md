@@ -21,9 +21,9 @@ containers too.
 
 ## Build requirements
 
-For every platform, you need [xmake](https://xmake.io).
+For every platform, you need [xmake](https://xmake.io) and a C++17 compiler.
 
-- For Windows, you need Visual Studio 2022 (or any version with C++14 support). You can also build with Clang, but you still
+- For Windows, you need Visual Studio 2022 (or any version with C++17 support). You can also build with Clang, but you still
   need VS. You also (will, in the future) need the GDK to build the x64 version.
 - For Xbox 360, you need the SDK, it's on Internet Archive.
 - For Switch, you need version 15.3.2 of the SDK, the private repo, and my private fork of xmake.
