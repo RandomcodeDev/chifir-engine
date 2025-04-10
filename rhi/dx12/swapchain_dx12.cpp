@@ -33,15 +33,29 @@ bool CDx12RhiSwapChain::Initialize(u32 bufferCount)
 	desc.SampleDesc.Count = 1;
 
 	IDXGISwapChain1* swapChain;
-	HRESULT result = m_device->m_instance->m_factory->CreateSwapChainForHwnd(
-		m_device->m_queue, reinterpret_cast<HWND>(video->GetHandle()), &desc, nullptr, nullptr, &swapChain);
-    if (FAILED(result))
-    {
-        Log_Error("Failed to CreateSwapChainForHwnd failed: HRESULT 0x%08X", result);
-        return false;
-    }
+	HRESULT result = S_OK;
+	cstr function = nullptr;
+	if (Plat_IsUwpApp())
+	{
+		function = "CreateSwapChainForCoreWindow";
+		result = m_device->m_instance->m_factory->CreateSwapChainForCoreWindow(
+			m_device->m_queue, reinterpret_cast<IUnknown*>(video->GetHandle()), &desc, nullptr, &swapChain);
+	}
+	else
+	{
+		function = "CreateSwapChainForHwnd";
+		result = m_device->m_instance->m_factory->CreateSwapChainForHwnd(
+			m_device->m_queue, reinterpret_cast<HWND>(video->GetHandle()), &desc, nullptr, nullptr, &swapChain);
+	}
+	
+	if (FAILED(result))
+	{
+		Log_Error("%s failed: HRESULT 0x%08X", function, result);
+		return false;
+	}
 
-    m_handle = static_cast<IDXGISwapChain4*>(swapChain);
+    swapChain->QueryInterface(&m_handle);
+	swapChain->Release();
 
 	return true;
 }

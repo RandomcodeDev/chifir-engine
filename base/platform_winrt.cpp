@@ -336,7 +336,7 @@ cstr Base_GetWinRtAppData()
 			Base_Quit("Failed to get AppData folder: HRESULT 0x%08X", result);
 		}
 
-		winrt_min::IStorageFolder* folder = nullptr;
+		winrt_min::IStorageItem* folder = nullptr;
 		result = folderUnk->QueryInterface(&folder);
 		if (FAILED(result))
 		{
@@ -352,11 +352,14 @@ cstr Base_GetWinRtAppData()
 
 		UNICODE_STRING pathWStr = {};
 		u32 length = 0;
+		// NUL terminated, but length doesn't include that
 		pathWStr.Buffer = (dwstr)WindowsGetStringRawBuffer(path, &length);
-		pathWStr.Length = length;
-		pathWStr.MaximumLength = length;
+		pathWStr.Length = static_cast<u16>(length * sizeof(wchar_t));
+		pathWStr.MaximumLength = static_cast<u16>((length + 1) * sizeof(wchar_t));
 
-		ANSI_STRING pathStr = RTL_CONSTANT_STRING(s_path);
+		ANSI_STRING pathStr = {};
+		pathStr.Buffer = s_path;
+		pathStr.MaximumLength = sizeof(s_path);
 		RtlUnicodeStringToAnsiString(&pathStr, &pathWStr, FALSE);
 	}
 
