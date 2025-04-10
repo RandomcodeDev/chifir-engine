@@ -257,6 +257,7 @@ struct App: public InspectableBase, public winrt_min::IFrameworkView, public win
 
 	virtual HRESULT __stdcall Initialize(winrt_min::ICoreApplicationView* appView) override
 	{
+		Plat_GetTlsData()->isMainThread = true;
 		return S_OK;
 	}
 
@@ -311,6 +312,8 @@ int Base_RunMainWinRt(int (*main)())
 	s_app = new App();
 	s_app->main = main;
 
+	// this is the "main" thread, but really the one the app runs on is the main one
+	Plat_GetTlsData()->isMainThread = false;
 	CoreApplication->Run(s_app);
 
 	s32 result = s_app->result;

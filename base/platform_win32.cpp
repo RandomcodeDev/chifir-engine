@@ -105,10 +105,7 @@ static void GetConsole()
 static void InitializeTls()
 {
 	g_tlsIndex = TlsAlloc();
-	TlsData* mainTlsData = new TlsData;
-	mainTlsData->currentThread = nullptr;
-	mainTlsData->isMainThread = true;
-	TlsSetValue(g_tlsIndex, mainTlsData);
+	Plat_GetTlsData()->isMainThread = true;
 }
 
 BASEAPI void Plat_Init()

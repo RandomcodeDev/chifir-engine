@@ -113,14 +113,14 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 
 	// first, try bin folder. if that fails (such as when running from the build directory), try same as exe.
 
-	Log_Info("Loading application %s", appName);
+	Log_Debug("Loading application %s", appName);
 	ILibrary* appLib = Base_LoadEngineLibrary(appName);
 	if (!appLib)
 	{
 		Base_Quit("Failed to load application %s!", appName);
 	}
 
-	Log_Info("Initializing application %s", appName);
+	Log_Debug("Initializing application %s", appName);
 	IApplication* app = GetApplication(appLib);
 	if (!app)
 	{
@@ -133,11 +133,11 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	CVector<LibDependency_t> appLibs;
 	app->GetDependencies(appSystems, appLibs);
 
-	Log_Info("Loading libraries for application %s", appName);
+	Log_Debug("Loading libraries for application %s", appName);
 	CVector<ILibrary*> libs;
 	for (ssize i = 0; i < appLibs.Size(); i++)
 	{
-		Log_Info("Loading %s", appLibs[i].name);
+		Log_Debug("Loading %s", appLibs[i].name);
 		ILibrary* lib = Base_LoadEngineLibrary(appLibs[i].name);
 		if (!lib)
 		{
@@ -156,11 +156,11 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 		}
 	}
 
-	Log_Info("Loading systems for application %s", appName);
+	Log_Debug("Loading systems for application %s", appName);
 	CVector<ISystem*> systems;
 	for (ssize i = 0; i < appSystems.Size(); i++)
 	{
-		Log_Info(
+		Log_Debug(
 			"Loading %s, %sversion %u (%s)", appSystems[i].name, appSystems[i].requireExactVersion ? "" : "minimum ",
 			appSystems[i].minimumVersion, appSystems[i].required ? "required" : "optional");
 		ILibrary* lib = Base_LoadEngineLibrary(appSystems[i].name);
@@ -182,7 +182,7 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 
 		if (lib)
 		{
-			Log_Info("Getting interface for %s", appSystems[i].name);
+			Log_Debug("Getting interface for %s", appSystems[i].name);
 			ISystem* system = GetSystem(lib, appSystems[i].minimumVersion, appSystems[i].requireExactVersion);
 			if (!system)
 			{

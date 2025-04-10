@@ -128,17 +128,23 @@ u32 g_tlsIndex;
 
 TlsData* Plat_GetTlsData()
 {
-	return static_cast<TlsData*>(TlsGetValue(g_tlsIndex));
+	TlsData* data = static_cast<TlsData*>(TlsGetValue(g_tlsIndex));
+	if (!data)
+	{
+		data = new TlsData;
+
+		data->currentThread = nullptr;
+		data->isMainThread = false;
+		TlsSetValue(g_tlsIndex, data);
+	}
+
+	return data;
 }
 
 NTSTATUS NTAPI CWindowsThread::ThreadMain(CWindowsThread* thread)
 {
-	TlsData* data = new TlsData;
-
-	data->currentThread = thread;
-	data->isMainThread = false;
-	TlsSetValue(g_tlsIndex, data);
-
+	// calling Plat_GetTlsData for the first time allocates it
+	Plat_GetTlsData()->currentThread = thread;
 	thread->m_result = thread->m_start(thread->m_userData);
 	return thread->m_result;
 }
