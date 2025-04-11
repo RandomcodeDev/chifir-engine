@@ -90,7 +90,7 @@ bool Base_InitWinRt()
 	return true;
 }
 
-#define COMPARE_IID(a, b) (Base_MemCompare(&(a), &(b), sizeof(IID)) == 0)
+#define COMPARE_IID(a, b) (Base_MemCompare(&(a), &(b), SIZEOF(IID)) == 0)
 
 struct UnknownBase: public IUnknown
 {
@@ -150,13 +150,13 @@ struct InspectableBase: public IInspectable, public UnknownBase
 		}
 
 		*iidCount = m_iidCount;
-		*iids = reinterpret_cast<IID*>(CoTaskMemAlloc(*iidCount * sizeof(IID)));
+		*iids = reinterpret_cast<IID*>(CoTaskMemAlloc(*iidCount * SIZEOF(IID)));
 		if (!iids)
 		{
 			return E_OUTOFMEMORY;
 		}
 
-		Base_MemCopy(*iids, m_iids, *iidCount * sizeof(IID));
+		Base_MemCopy(*iids, m_iids, *iidCount * SIZEOF(IID));
 		return S_OK;
 	}
 
@@ -453,12 +453,12 @@ cstr Base_GetWinRtAppData()
 		u32 length = 0;
 		// NUL terminated, but length doesn't include that
 		pathWStr.Buffer = (dwstr)WindowsGetStringRawBuffer(path, &length);
-		pathWStr.Length = static_cast<u16>(length * sizeof(wchar_t));
-		pathWStr.MaximumLength = static_cast<u16>((length + 1) * sizeof(wchar_t));
+		pathWStr.Length = static_cast<u16>(length * SIZEOF(wchar_t));
+		pathWStr.MaximumLength = static_cast<u16>((length + 1) * SIZEOF(wchar_t));
 
 		ANSI_STRING pathStr = {};
 		pathStr.Buffer = s_path;
-		pathStr.MaximumLength = sizeof(s_path);
+		pathStr.MaximumLength = SIZEOF(s_path);
 		RtlUnicodeStringToAnsiString(&pathStr, &pathWStr, FALSE);
 	}
 

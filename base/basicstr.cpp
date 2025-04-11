@@ -15,7 +15,7 @@ BASEAPI ssize Base_StrLength(cstr str, ssize maxSize)
 
 BASEAPI ssize Base_StrLength(cwstr str, ssize maxSize)
 {
-	return (Base_MemFind(str, maxSize < 0 ? SSIZE_MAX : maxSize, L"", sizeof(wchar_t), false) + 1) / sizeof(wchar_t);
+	return (Base_MemFind(str, maxSize < 0 ? SSIZE_MAX : maxSize, L"", SIZEOF(wchar_t), false) + 1) / SIZEOF(wchar_t);
 }
 
 BASEAPI s32 Base_StrCompare(cstr RESTRICT a, cstr RESTRICT b, ssize maxCount, bool caseSensitive)

@@ -39,7 +39,7 @@ typedef CWindowsMutex AllocMutex_t;
 #endif
 
 /// Memory for s_freeMutex, since it can't be allocated
-static u8 s_freeMutexMem[sizeof(AllocMutex_t)];
+static u8 s_freeMutexMem[SIZEOF(AllocMutex_t)];
 
 /// Protects the free list, backed by s_freeMutexMem
 static IMutex* s_freeMutex;
@@ -212,7 +212,7 @@ static void CoalesceAllocations()
 				s_freeMutex->Lock();
 				s_free.Remove(next);
 				s_freeMutex->Unlock();
-				Base_MemSet(&next->data, 0, sizeof(AllocInfo_t));
+				Base_MemSet(&next->data, 0, SIZEOF(AllocInfo_t));
 			}
 		}
 	}

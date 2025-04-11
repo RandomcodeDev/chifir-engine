@@ -22,21 +22,21 @@ CWin32Filesystem::CWin32Filesystem(cstr root) : CBaseRawFilesystem(root)
 	UNICODE_STRING unicodeRoot = {};
 	ConvertPath(m_root, &unicodeRoot);
 	u32 rootLength = RtlGetFullPathName_U(unicodeRoot.Buffer, 0, nullptr, nullptr);
-	rootLength += 4 * sizeof(wchar_t); // for \??\ and NUL
+	rootLength += 4 * SIZEOF(wchar_t); // for \??\ and NUL
 	dwstr fullRoot = Base_Alloc<wchar_t>(rootLength);
 	if (!fullRoot)
 	{
 		Base_Quit("Failed to allocate %u wchars for path %s!", rootLength, m_root);
 	}
 
-	RtlGetFullPathName_U(unicodeRoot.Buffer, rootLength - 4 * sizeof(wchar_t), fullRoot + 4, nullptr);
+	RtlGetFullPathName_U(unicodeRoot.Buffer, rootLength - 4 * SIZEOF(wchar_t), fullRoot + 4, nullptr);
 
 	fullRoot[0] = L'\\';
 	fullRoot[1] = L'?';
 	fullRoot[2] = L'?';
 	fullRoot[3] = L'\\';
 	rootString.Buffer = fullRoot;
-	rootString.Length = static_cast<u16>(rootLength - (1 * sizeof(wchar_t)));
+	rootString.Length = static_cast<u16>(rootLength - (1 * SIZEOF(wchar_t)));
 	rootString.MaximumLength = static_cast<u16>(rootLength);
 
 	// Open or create the root

@@ -47,7 +47,7 @@ void CWindowsMutex::Unlock()
 	NtReleaseMutant(m_handle, nullptr);
 }
 
-#define PS_ATTRIBUTE_LIST_SIZE(n) (sizeof(PS_ATTRIBUTE_LIST) + ((n) - 1) * sizeof(PS_ATTRIBUTE))
+#define PS_ATTRIBUTE_LIST_SIZE(n) (SIZEOF(PS_ATTRIBUTE_LIST) + ((n) - 1) * SIZEOF(PS_ATTRIBUTE))
 
 CWindowsThread::CWindowsThread(ThreadStart_t start, void* userData, cstr name, ssize stackSize, ssize maxStackSize)
 	: m_handle(nullptr), m_id(0), m_result(INT32_MIN), m_name(nullptr), m_start(start), m_userData(userData)
@@ -56,12 +56,12 @@ CWindowsThread::CWindowsThread(ThreadStart_t start, void* userData, cstr name, s
 
 	u8 psAttrBuf[PS_ATTRIBUTE_LIST_SIZE(1)] = {};
 	PPS_ATTRIBUTE_LIST psAttrs = reinterpret_cast<PPS_ATTRIBUTE_LIST>(psAttrBuf);
-	psAttrs->TotalLength = sizeof(PS_ATTRIBUTE_LIST);
+	psAttrs->TotalLength = SIZEOF(PS_ATTRIBUTE_LIST);
 
 	CLIENT_ID clientId = {};
 	PPS_ATTRIBUTE clientIdAttr = &psAttrs->Attributes[0];
 	clientIdAttr->Attribute = PS_ATTRIBUTE_CLIENT_ID;
-	clientIdAttr->Size = sizeof(CLIENT_ID);
+	clientIdAttr->Size = SIZEOF(CLIENT_ID);
 	clientIdAttr->ValuePtr = &clientId;
 
 	OBJECT_ATTRIBUTES objAttrs = {};
@@ -182,7 +182,7 @@ BASEAPI u64 Async_GetCurrentThreadId()
 
 	THREAD_BASIC_INFORMATION info = {};
 	NTSTATUS status =
-		NtQueryInformationThread(NtCurrentThread(), ThreadBasicInformation, &info, sizeof(THREAD_BASIC_INFORMATION), nullptr);
+		NtQueryInformationThread(NtCurrentThread(), ThreadBasicInformation, &info, SIZEOF(THREAD_BASIC_INFORMATION), nullptr);
 	if (!NT_SUCCESS(status))
 	{
 		DbgPrint("Failed to get thread ID for current thread: NTSTATUS 0x%08X\n", status);

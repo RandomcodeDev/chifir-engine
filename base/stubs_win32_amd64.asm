@@ -61,6 +61,7 @@ MAKE_STUB NtQueryFullAttributesFile
 MAKE_STUB NtQueryInformationFile
 MAKE_STUB NtQueryInformationThread
 MAKE_STUB NtQuerySystemInformation
+MAKE_STUB NtQuerySystemInformationEx
 MAKE_STUB NtQueryValueKey
 MAKE_STUB NtRaiseHardError
 MAKE_STUB NtReadFile

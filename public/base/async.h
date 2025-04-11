@@ -74,26 +74,26 @@ extern BASEAPI bool Async_IsMainThread();
 /// Get a thread's ID
 extern BASEAPI u64 Async_GetCurrentThreadId();
 
-#define IS_VALID_ATOMIC(T) (sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8)
+#define IS_VALID_ATOMIC(T) (SIZEOF(T) == 1 || SIZEOF(T) == 2 || SIZEOF(T) == 4 || SIZEOF(T) == 8)
 
 #define ATOMIC_DISPATCH(name, type, params, dispname, args)                                                                      \
 	template <typename T> type Async_Atomic##name params                                                                         \
 	{                                                                                                                            \
 		static_assert(IS_VALID_ATOMIC(T));                                                                                       \
                                                                                                                                  \
-		if constexpr (sizeof(T) == 1)                                                                                            \
+		if constexpr (SIZEOF(T) == 1)                                                                                            \
 		{                                                                                                                        \
 			return Async_Atomic##dispname##8 args;                                                                               \
 		}                                                                                                                        \
-		else if constexpr (sizeof(T) == 2)                                                                                       \
+		else if constexpr (SIZEOF(T) == 2)                                                                                       \
 		{                                                                                                                        \
 			return Async_Atomic##dispname##16 args;                                                                              \
 		}                                                                                                                        \
-		else if constexpr (sizeof(T) == 4)                                                                                       \
+		else if constexpr (SIZEOF(T) == 4)                                                                                       \
 		{                                                                                                                        \
 			return Async_Atomic##dispname##32 args;                                                                              \
 		}                                                                                                                        \
-		else if constexpr (sizeof(T) == 8)                                                                                       \
+		else if constexpr (SIZEOF(T) == 8)                                                                                       \
 		{                                                                                                                        \
 			return Async_AtomicAsync_Atomic##dispname##64 args;                                                                  \
 		}                                                                                                                        \

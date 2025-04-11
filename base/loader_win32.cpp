@@ -61,6 +61,7 @@ MAKE_STUB(NtDelayExecution, __stdcall, @8)
 MAKE_STUB(NtQueryInformationFile, __stdcall, @20)
 MAKE_STUB(NtQueryInformationThread, __stdcall, @20)
 MAKE_STUB(NtQuerySystemInformation, __stdcall, @16)
+MAKE_STUB(NtQuerySystemInformationEx, __stdcall, @24)
 MAKE_STUB(NtQueryValueKey, __stdcall, @24)
 MAKE_STUB(NtRaiseHardError, __stdcall, @0)
 MAKE_STUB(NtReadFile, __stdcall, @36)
@@ -286,6 +287,7 @@ bool Base_InitLoader()
 	GET_FUNCTION(&ntDll, NtQueryInformationFile)
 	GET_FUNCTION(&ntDll, NtQueryInformationThread)
 	GET_FUNCTION(&ntDll, NtQuerySystemInformation)
+	GET_FUNCTION(&ntDll, NtQuerySystemInformationEx)
 	GET_FUNCTION(&ntDll, NtQueryValueKey)
 	GET_FUNCTION(&ntDll, NtReadFile)
 	GET_FUNCTION(&ntDll, NtReleaseMutant)
@@ -300,7 +302,7 @@ bool Base_InitLoader()
 	GET_FUNCTION(&ntDll, RtlUnicodeStringToAnsiString)
 
 	// kernelbase is loaded on more OneCore platforms, and exports the functions the engine cares about
-	ILibrary* kernel32 = Base_LoadLibrary(USER_SHARED_DATA->NtMajorVersion >= 6 ? "kernelbase" : "kernel32");
+	ILibrary* kernel32 = Base_LoadLibrary(AT_LEAST_WINDOWS_VISTA() ? "kernelbase" : "kernel32");
 
 	// kernel32
 	// optional because consoles aren't required

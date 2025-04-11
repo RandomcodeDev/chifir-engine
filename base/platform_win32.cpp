@@ -38,6 +38,7 @@ DECLARE_AVAILABLE(SetConsoleMode);
 
 SYSTEM_BASIC_INFORMATION g_systemInfo;
 SYSTEM_PERFORMANCE_INFORMATION g_systemPerfInfo;
+SYSTEM_BUILD_VERSION_INFORMATION g_buildVerInfo;
 
 static char* s_systemDescription;
 static char* s_hardwareDescription;
@@ -143,16 +144,30 @@ BASEAPI void Plat_Init()
 		{
 			Base_Abort(status, "Failed to get system performance information: NTSTATUS 0x%08X", status);
 		}
+		
+		// Windows 7
+		if (AT_LEAST_WINDOWS_7())
+		{
+			// Full build number
+			ULONG layer = 0;
+			status = NtQuerySystemInformationEx(
+				SystemBuildVersionInformation, &layer, sizeof(ULONG), &g_buildVerInfo,
+				SIZEOF(SYSTEM_BUILD_VERSION_INFORMATION), nullptr);
+			if (!NT_SUCCESS(status))
+			{
+				DbgPrint("Failed to get build version information: NTSTATUS 0x%08X\n", status);
+			}
+		}
 #endif
-
-		// Initialize these in advance
-		(void)Plat_GetSystemDescription();
-		(void)Plat_GetHardwareDescription();
 
 		g_uwp = Base_InitWinRt();
 
 		GetConsole();
 		InitializeTls();
+
+		// Initialize these in advance
+		(void)Plat_GetSystemDescription();
+		(void)Plat_GetHardwareDescription();
 
 		g_platInitialized = true;
 	}
@@ -198,7 +213,7 @@ static cstr GetProductName()
 		u8 keyInfoBuffer[128] = {};
 		KEY_VALUE_FULL_INFORMATION* keyInfo = reinterpret_cast<KEY_VALUE_FULL_INFORMATION*>(keyInfoBuffer);
 		keyInfo->NameLength = ArraySize<ULONG>(valueName);
-		keyInfo->DataLength = ArraySize<ULONG>(keyInfoBuffer) - sizeof(KEY_VALUE_FULL_INFORMATION) - ArraySize<ULONG>(valueName);
+		keyInfo->DataLength = ArraySize<ULONG>(keyInfoBuffer) - SIZEOF(KEY_VALUE_FULL_INFORMATION) - ArraySize<ULONG>(valueName);
 		ULONG length = 0;
 
 		wchar_t nameBuffer[32] = {};
@@ -219,7 +234,7 @@ static cstr GetProductName()
 			goto Done;
 		}
 
-		status = NtQueryValueKey(key, &valueNameStr, KeyValueFullInformation, keyInfo, sizeof(keyInfoBuffer), &length);
+		status = NtQueryValueKey(key, &valueNameStr, KeyValueFullInformation, keyInfo, SIZEOF(keyInfoBuffer), &length);
 		if (!NT_SUCCESS(status))
 		{
 			s_productName = Base_StrClone("Windows");
@@ -256,9 +271,19 @@ BASEAPI cstr Plat_GetSystemDescription()
 #else
 		cstr name = GetProductName();
 		cstr wineVersion = Base_IsWine();
+		dstr version = nullptr;
+		
+		if (AT_LEAST_WINDOWS_7())
+		{
+			//version = Base_StrFormat("%u.%u.%u.%u");
+		}
+		else {
+			version = Base_StrFormat(
+				"%u.%u.%u", USER_SHARED_DATA->NtMajorVersion, USER_SHARED_DATA->NtMinorVersion, USER_SHARED_DATA->NtBuildNumber);
+		}
+		
 		s_systemDescription = Base_StrFormat(
-			"%s %u.%u.%u (reported as %u.%u.%u)%s%s%s%s", name, USER_SHARED_DATA->NtMajorVersion,
-			USER_SHARED_DATA->NtMinorVersion, USER_SHARED_DATA->NtBuildNumber, NtCurrentPeb()->OSMajorVersion,
+			"%s %s (reported as %u.%u.%u)%s%s%s%s", name, version, NtCurrentPeb()->OSMajorVersion,
 			NtCurrentPeb()->OSMinorVersion, NtCurrentPeb()->OSBuildNumber, wineVersion ? " Wine " : "",
 			wineVersion ? wineVersion : "", Base_CheckWoW64() ? " WoW64" : "", Plat_IsUwpApp() ? " UWP" : "");
 #endif

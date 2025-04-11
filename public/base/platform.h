@@ -88,4 +88,17 @@ extern BASEAPI void Plat_BindUwpVideo(UwpVideoInfo& info, const UwpVideoCallback
 
 /// Declare the _Available function for an imported function
 #define DECLARE_AVAILABLE(func) extern "C" BASEAPI bool func##_Available()
+
+/// Get whether the OS is Windows Vista or above
+#define AT_LEAST_WINDOWS_VISTA() (USER_SHARED_DATA->NtMajorVersion >= 6)
+
+/// Get whether the OS is Windows 7 or above
+#define AT_LEAST_WINDOWS_7()                                                                                                     \
+	(USER_SHARED_DATA->NtMajorVersion > 6 || (USER_SHARED_DATA->NtMajorVersion == 6 && USER_SHARED_DATA->NtMinorVersion >= 1))
+
+// Get whether the OS is Windows 10 or above
+#define AT_LEAST_WINDOWS_10() (USER_SHARED_DATA->NtMajorVersion >= 10)
+
+// Get whether the OS is Windows 11 or above
+#define AT_LEAST_WINDOWS_11() (USER_SHARED_DATA->NtMajorVersion > 10 || (USER_SHARED_DATA->NtMajorVersion == 10 && USER_SHARED_DATA->NtBuildNumber >= 22000)
 #endif

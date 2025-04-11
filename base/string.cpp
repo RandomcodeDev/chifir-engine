@@ -49,7 +49,7 @@ void CString::Reserve(ssize size)
 	if (size > m_capacity)
 	{
 		m_capacity = size;
-		m_buffer = static_cast<dstr>(Base_Realloc(m_buffer, m_capacity * sizeof(char)));
+		m_buffer = static_cast<dstr>(Base_Realloc(m_buffer, m_capacity * SIZEOF(char)));
 		ASSERT(m_buffer != nullptr);
 	}
 }
