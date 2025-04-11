@@ -76,7 +76,7 @@ For the Rust stuff, build the engine, then do `cargo build`.
 - Windows
   - Windows is the most actively developed platform
   - Windows XP and later are supported (although the renderer doesn't support DirectX 9 yet)
-  - UWP support is in progress
+  - UWP support seems to work
   - Nothing is statically imported from system libraries, it's all done at runtime
   - Most features are implemented with native functions in `ntdll.dll` that have been around since Windows XP, rather than using `kernel32.dll`
 - Linux

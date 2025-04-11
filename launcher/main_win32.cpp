@@ -32,6 +32,8 @@ ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #pragma comment(linker, "/SUBSYSTEM:" SUBSYSTEM ",5.02")
 #endif
 
+extern "C" ATTRIBUTE(dllimport) int _snwprintf(wchar_t* Buffer, size_t Size, const wchar_t* Format, ...);
+
 #ifndef CH_STATIC
 static PCWSTR GetEngineDir()
 {
