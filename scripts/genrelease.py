@@ -125,27 +125,28 @@ def main(argc, argv):
 	}
 	SYM_EXTS = {"windows": ".pdb", "gdk": ".pdb", "gdkx": ".pdb", "linux": None}
 
-	for f in os.listdir(build_dir):
-		file = path.join(build_dir, f)
-		if path.isfile(file):
-			(name, ext) = path.splitext(f)
-			dest = None
-			syms = None
-			if name == path.splitext(args.game)[0] and ext == EXE_EXTS[plat]:
-				dest = output
-			elif ext == DLL_EXTS[plat]:
-				dest = path.join(output, "bin")
-			elif ext == SYM_EXTS[plat] and args.static:
-				dest = output
+	for root, _, files in os.walk(build_dir):
+		for f in files:
+			file = path.join(root, f)
+			if path.isfile(file):
+				(name, ext) = path.splitext(f)
+				dest = None
+				syms = None
+				if name == path.splitext(args.game)[0] and ext == EXE_EXTS[plat]:
+					dest = output
+				elif ext == DLL_EXTS[plat]:
+					dest = path.join(output, "bin")
+				elif ext == SYM_EXTS[plat] and args.static:
+					dest = output
 
-			syms = path.join(build_dir, f"{name}{SYM_EXTS[plat]}")
+				syms = path.join(build_dir, f"{name}{SYM_EXTS[plat]}")
 
-			if dest != None:
-				print(f"{file} -> {path.join(dest, f)}")
-				shutil.copy(file, dest)
-				if path.exists(syms) and syms != file:
-					print(f"{syms} -> {path.join(dest, path.basename(syms))}")
-					shutil.copy(syms, dest)
+				if dest != None:
+					print(f"{file} -> {path.join(dest, f)}")
+					shutil.copy(file, dest)
+					if path.exists(syms) and syms != file:
+						print(f"{syms} -> {path.join(dest, path.basename(syms))}")
+						shutil.copy(syms, dest)
 
 	if plat == "windows":
 		d3d12_agility = path.join(repo_dir, "external", "d3d12_agility")

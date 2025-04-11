@@ -1,3 +1,6 @@
+/// \file Implements UWP in pure COM, so that I don't have to use the STL or anything
+/// \copyright Randomcode Developers
+
 #include "base/async.h"
 #include "base/base.h"
 
@@ -5,6 +8,8 @@
 
 #ifndef CH_XBOX360
 #include "base/basicstr.h"
+
+using namespace winrt_min;
 
 template <typename T> static HRESULT GetClass(PCWSTR name, T** instance)
 {
@@ -36,9 +41,9 @@ Done:
 	return result;
 }
 
-static winrt_min::ICoreApplication* CoreApplication;
-static winrt_min::IApplicationDataStatics* ApplicationDataStatics;
-static winrt_min::IApplicationData* ApplicationData;
+static ICoreApplication* CoreApplication;
+static IApplicationDataStatics* ApplicationDataStatics;
+static IApplicationData* ApplicationData;
 
 DECLARE_AVAILABLE(RoInitialize);
 DECLARE_AVAILABLE(RoGetActivationFactory);
@@ -64,13 +69,13 @@ bool Base_InitWinRt()
 		return false;
 	}
 
-	result = GetClass(winrt_min::RuntimeClass_CoreApplication, &CoreApplication);
+	result = GetClass(RuntimeClass_CoreApplication, &CoreApplication);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
-	result = GetClass(winrt_min::RuntimeClass_ApplicationData, &ApplicationDataStatics);
+	result = GetClass(RuntimeClass_ApplicationData, &ApplicationDataStatics);
 	if (FAILED(result))
 	{
 		return false;
@@ -87,8 +92,6 @@ bool Base_InitWinRt()
 
 #define COMPARE_IID(a, b) (Base_MemCompare(&(a), &(b), sizeof(IID)) == 0)
 
-// TODO: make refcounting thread safe
-
 struct UnknownBase: public IUnknown
 {
   public:
@@ -97,13 +100,13 @@ struct UnknownBase: public IUnknown
 	}
 	virtual ~UnknownBase() = default;
 
-	virtual ULONG __stdcall AddRef(void) override
+	virtual ULONG STDMETHODCALLTYPE AddRef(void) override
 	{
 		m_refCount++;
 		return m_refCount;
 	}
 
-	virtual ULONG __stdcall Release(void) override
+	virtual ULONG STDMETHODCALLTYPE Release(void) override
 	{
 		if (m_refCount == 1)
 		{
@@ -129,17 +132,17 @@ struct InspectableBase: public IInspectable, public UnknownBase
 	}
 	virtual ~InspectableBase() = default;
 
-	virtual ULONG __stdcall AddRef(void) override
+	virtual ULONG STDMETHODCALLTYPE AddRef(void) override
 	{
 		return UnknownBase::AddRef();
 	}
 
-	virtual ULONG __stdcall Release(void) override
+	virtual ULONG STDMETHODCALLTYPE Release(void) override
 	{
 		return UnknownBase::Release();
 	}
 
-	virtual HRESULT __stdcall GetIids(ULONG* iidCount, IID** iids) override
+	virtual HRESULT STDMETHODCALLTYPE GetIids(ULONG* iidCount, IID** iids) override
 	{
 		if (!iidCount || !iids)
 		{
@@ -157,7 +160,7 @@ struct InspectableBase: public IInspectable, public UnknownBase
 		return S_OK;
 	}
 
-	virtual HRESULT __stdcall GetRuntimeClassName(HSTRING* className) override
+	virtual HRESULT STDMETHODCALLTYPE GetRuntimeClassName(HSTRING* className) override
 	{
 		if (!className)
 		{
@@ -167,7 +170,7 @@ struct InspectableBase: public IInspectable, public UnknownBase
 		return WindowsCreateString(m_className, m_classNameLength, className);
 	}
 
-	virtual HRESULT __stdcall GetTrustLevel(TrustLevel* trustLevel) override
+	virtual HRESULT STDMETHODCALLTYPE GetTrustLevel(TrustLevel* trustLevel) override
 	{
 		if (!trustLevel)
 		{
@@ -186,19 +189,103 @@ struct InspectableBase: public IInspectable, public UnknownBase
 	ULONG m_iidCount;
 };
 
-struct App: public InspectableBase, public winrt_min::IFrameworkView, public winrt_min::IFrameworkViewSource
+#define MAKE_HANDLER_IMPL(name, base, category, invoke, invokeArgs)                                                              \
+	struct name##Handler: public UnknownBase, public base                                                                        \
+	{                                                                                                                            \
+	  public:                                                                                                                    \
+		const UwpVideoCallbacks* callbacks;                                                                                      \
+                                                                                                                                 \
+		name##Handler(const Uwp##category##Callbacks* callbacks) : UnknownBase(), callbacks(callbacks)                           \
+		{                                                                                                                        \
+		}                                                                                                                        \
+		virtual ~name##Handler() = default;                                                                                      \
+                                                                                                                                 \
+		virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject) override                                 \
+		{                                                                                                                        \
+			if (!ppvObject)                                                                                                      \
+			{                                                                                                                    \
+				return E_POINTER;                                                                                                \
+			}                                                                                                                    \
+                                                                                                                                 \
+			if (COMPARE_IID(riid, IID_AnyEventHandler) || COMPARE_IID(riid, __uuidof(IUnknown)))                                 \
+			{                                                                                                                    \
+				*ppvObject = reinterpret_cast<void*>(reinterpret_cast<base*>(this));                                             \
+			}                                                                                                                    \
+			else                                                                                                                 \
+			{                                                                                                                    \
+				*ppvObject = nullptr;                                                                                            \
+			}                                                                                                                    \
+                                                                                                                                 \
+			if (*ppvObject)                                                                                                      \
+			{                                                                                                                    \
+				reinterpret_cast<IUnknown*>(*ppvObject)->AddRef();                                                               \
+				return S_OK;                                                                                                     \
+			}                                                                                                                    \
+			else                                                                                                                 \
+			{                                                                                                                    \
+				return E_NOINTERFACE;                                                                                            \
+			}                                                                                                                    \
+		}                                                                                                                        \
+                                                                                                                                 \
+		virtual ULONG STDMETHODCALLTYPE AddRef(void) override                                                                    \
+		{                                                                                                                        \
+			return UnknownBase::AddRef();                                                                                        \
+		}                                                                                                                        \
+                                                                                                                                 \
+		virtual ULONG STDMETHODCALLTYPE Release(void) override                                                                   \
+		{                                                                                                                        \
+			return UnknownBase::Release();                                                                                       \
+		}                                                                                                                        \
+                                                                                                                                 \
+		virtual s32 STDMETHODCALLTYPE Invoke invokeArgs override                                                                 \
+		{                                                                                                                        \
+			invoke;                                                                                                              \
+			return 0;                                                                                                            \
+		}                                                                                                                        \
+	};
+
+#define MAKE_HANDLER(name, T, category, invoke) MAKE_HANDLER_IMPL(name, EventHandler<T>, category, invoke, (void*, T arg))
+#define MAKE_TYPED_HANDLER(name, S, R, category, invoke)                                                                         \
+	MAKE_HANDLER_IMPL(name, TypedEventHandler<S COMMA R>, category, invoke, (S sender, R args))
+
+MAKE_TYPED_HANDLER(SizeChanged, ICoreWindow*, IWindowSizeChangedEventArgs*, Video, {
+	Size size = {};
+	args->Size(&size);
+	callbacks->OnSizeChanged(size.Width, size.Height, callbacks->user);
+})
+MAKE_TYPED_HANDLER(Closed, ICoreWindow*, void*, Video, callbacks->OnClosed(callbacks->user))
+MAKE_HANDLER(Exiting, void*, Video, callbacks->OnClosed(callbacks->user))
+
+#define ADD_HANDLER(window, handler, token) (window)->handler((handler), &(token));
+
+struct App: public InspectableBase, public IFrameworkView, public IFrameworkViewSource
 {
   public:
 	int (*main)();
 	int result;
-	winrt_min::ICoreWindow* window;
+	ICoreWindow* window;
+	ICoreApplicationView* appView;
+	ICoreApplicationView2* appView2;
+	ICoreDispatcher* dispatcher;
 
-	App() : InspectableBase(NAME, TRUST, IIDS, ArraySize<ULONG>(IIDS))
+	UwpVideoCallbacks videoCallbacks;
+
+	SizeChangedHandler* SizeChanged;
+	winrt_min::EventRegistrationToken sizeChangedToken;
+	ClosedHandler* Closed;
+	winrt_min::EventRegistrationToken closedToken;
+
+	App()
+		: InspectableBase(NAME, TRUST, IIDS, ArraySize<ULONG>(IIDS)), main(nullptr), result(INT32_MIN), window(nullptr),
+		  appView(nullptr), dispatcher(nullptr), videoCallbacks{}, SizeChanged(nullptr), sizeChangedToken{0}, Closed(nullptr),
+		  closedToken{0}
 	{
+		SizeChanged = new SizeChangedHandler(&videoCallbacks);
+		Closed = new ClosedHandler(&videoCallbacks);
 	}
 	virtual ~App() = default;
 
-	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppvObject) override
+	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject) override
 	{
 		if (!ppvObject)
 		{
@@ -206,13 +293,13 @@ struct App: public InspectableBase, public winrt_min::IFrameworkView, public win
 		}
 
 		// https://groups.google.com/g/microsoft.public.win32.programmer.ole/c/5Q-2AC9yk7Q?pli=1
-		if (COMPARE_IID(riid, winrt_min::IID_IFrameworkView) || COMPARE_IID(riid, __uuidof(IUnknown)))
+		if (COMPARE_IID(riid, IID_IFrameworkView) || COMPARE_IID(riid, __uuidof(IUnknown)))
 		{
-			*ppvObject = reinterpret_cast<void*>(static_cast<winrt_min::IFrameworkView*>(this));
+			*ppvObject = reinterpret_cast<void*>(static_cast<IFrameworkView*>(this));
 		}
-		else if (COMPARE_IID(riid, winrt_min::IID_IFrameworkViewSource))
+		else if (COMPARE_IID(riid, IID_IFrameworkViewSource))
 		{
-			*ppvObject = reinterpret_cast<void*>(static_cast<winrt_min::IFrameworkViewSource*>(this));
+			*ppvObject = reinterpret_cast<void*>(static_cast<IFrameworkViewSource*>(this));
 		}
 		else
 		{
@@ -230,52 +317,62 @@ struct App: public InspectableBase, public winrt_min::IFrameworkView, public win
 		}
 	}
 
-	virtual ULONG __stdcall AddRef(void) override
+	virtual ULONG STDMETHODCALLTYPE AddRef(void) override
 	{
 		return InspectableBase::AddRef();
 	}
 
-	virtual ULONG __stdcall Release(void) override
+	virtual ULONG STDMETHODCALLTYPE Release(void) override
 	{
 		return InspectableBase::Release();
 	}
 
-	virtual HRESULT __stdcall GetIids(ULONG* iidCount, IID** iids) override
+	virtual HRESULT STDMETHODCALLTYPE GetIids(ULONG* iidCount, IID** iids) override
 	{
 		return InspectableBase::GetIids(iidCount, iids);
 	}
 
-	virtual HRESULT __stdcall GetRuntimeClassName(HSTRING* className) override
+	virtual HRESULT STDMETHODCALLTYPE GetRuntimeClassName(HSTRING* className) override
 	{
 		return InspectableBase::GetRuntimeClassName(className);
 	}
 
-	virtual HRESULT __stdcall GetTrustLevel(TrustLevel* trustLevel) override
+	virtual HRESULT STDMETHODCALLTYPE GetTrustLevel(TrustLevel* trustLevel) override
 	{
 		return InspectableBase::GetTrustLevel(trustLevel);
 	}
 
-	virtual HRESULT __stdcall Initialize(winrt_min::ICoreApplicationView* appView) override
+	virtual HRESULT STDMETHODCALLTYPE Initialize(ICoreApplicationView* appViewPtr) override
 	{
 		Plat_GetTlsData()->isMainThread = true;
+
+		appView = appViewPtr;
+		appView->AddRef();
+		appView->QueryInterface(&appView2);
+		appView2->Dispatcher(&dispatcher);
+
 		return S_OK;
 	}
 
-	virtual HRESULT __stdcall Load(HSTRING entryPoint) override
+	virtual HRESULT STDMETHODCALLTYPE Load(HSTRING entryPoint) override
 	{
 		return S_OK;
 	}
 
-	virtual HRESULT __stdcall Uninitialize() override
+	virtual HRESULT STDMETHODCALLTYPE Uninitialize() override
 	{
+		window->Release();
+		SizeChanged->Release();
+		Closed->Release();
+		dispatcher->Release();
+		appView2->Release();
+		appView->Release();
 		return S_OK;
 	}
 
-	virtual HRESULT __stdcall Run() override
+	virtual HRESULT STDMETHODCALLTYPE Run() override
 	{
-		winrt_min::ICoreApplicationView* view = nullptr;
-		CoreApplication->GetCurrentView(&view);
-		view->CoreWindow(reinterpret_cast<void**>(&window));
+		appView->CoreWindow(reinterpret_cast<void**>(&window));
 		window->Activate();
 
 		result = main();
@@ -283,13 +380,14 @@ struct App: public InspectableBase, public winrt_min::IFrameworkView, public win
 		return S_OK;
 	}
 
-	virtual HRESULT __stdcall SetWindow(winrt_min::ICoreWindow* window) override
+	virtual HRESULT STDMETHODCALLTYPE SetWindow(ICoreWindow* window) override
 	{
-		this->window = window;
+		ADD_HANDLER(window, SizeChanged, sizeChangedToken);
+		ADD_HANDLER(window, Closed, closedToken);
 		return S_OK;
 	}
 
-	virtual HRESULT __stdcall CreateView(winrt_min::IFrameworkView** viewProvider) override
+	virtual HRESULT STDMETHODCALLTYPE CreateView(IFrameworkView** viewProvider) override
 	{
 		*viewProvider = this;
 		return S_OK;
@@ -301,8 +399,7 @@ struct App: public InspectableBase, public winrt_min::IFrameworkView, public win
 	static const IID IIDS[4];
 };
 
-const IID App::IIDS[] = {
-	winrt_min::IID_IFrameworkView, winrt_min::IID_IFrameworkViewSource, __uuidof(IInspectable), __uuidof(IUnknown)};
+const IID App::IIDS[] = {IID_IFrameworkView, IID_IFrameworkViewSource, __uuidof(IInspectable), __uuidof(IUnknown)};
 
 static App* s_app;
 
@@ -332,13 +429,13 @@ cstr Base_GetWinRtAppData()
 	if (!Base_StrLength(s_path))
 	{
 		IInspectable* folderUnk = nullptr;
-		HRESULT result = ApplicationData->LocalFolder(reinterpret_cast<winrt_min::IStorageFolder**>(&folderUnk));
+		HRESULT result = ApplicationData->LocalFolder(reinterpret_cast<IStorageFolder**>(&folderUnk));
 		if (FAILED(result))
 		{
 			Base_Quit("Failed to get AppData folder: HRESULT 0x%08X", result);
 		}
 
-		winrt_min::IStorageItem* folder = nullptr;
+		IStorageItem* folder = nullptr;
 		result = folderUnk->QueryInterface(&folder);
 		if (FAILED(result))
 		{
@@ -368,9 +465,12 @@ cstr Base_GetWinRtAppData()
 	return s_path;
 }
 
-BASEAPI winrt_min::ICoreWindow* Plat_GetUwpWindow()
+BASEAPI void Plat_BindUwpVideo(UwpVideoInfo& info, const UwpVideoCallbacks& callbacks)
 {
-	return s_app->window;
+	info.window = s_app->window;
+	info.dispatcher = s_app->dispatcher;
+
+	s_app->videoCallbacks = callbacks;
 }
 
 #endif

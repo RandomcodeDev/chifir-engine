@@ -90,6 +90,9 @@ class CWinRtVideoSystem: public IVideoSystem
 	bool m_focused;
 	bool m_closed;
 	f32 m_dpi;
+
+	static bool OnSizeChanged(f32 width, f32 height, void* user);
+	static bool OnClosed(void* user);
 };
 
 #define WINDOW_CLASS "ChifirWindow"

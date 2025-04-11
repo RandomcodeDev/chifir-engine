@@ -33,6 +33,8 @@ bool CDx12RhiDevice::Initialize()
 	if (FAILED(result))
 	{
 		Log_Error("D3D12CreateDevice failed: HRESULT 0x%08X", result);
+		LastNtError() = result;
+		LastNtStatus() = 0;
 		return false;
 	}
 
@@ -45,6 +47,8 @@ bool CDx12RhiDevice::Initialize()
 	if (FAILED(result))
 	{
 		Log_Error("Failed to create direct command queue: HRESULT 0x%08X", result);
+		LastNtError() = result;
+		LastNtStatus() = 0;
 		Destroy();
 		return false;
 	}
@@ -54,6 +58,8 @@ bool CDx12RhiDevice::Initialize()
 	if (FAILED(result))
 	{
 		Log_Error("Failed to create copy command queue: HRESULT 0x%08X", result);
+		LastNtError() = result;
+		LastNtStatus() = 0;
 		Destroy();
 		return false;
 	}
@@ -106,6 +112,8 @@ bool CDx12RhiDevice::GetDeviceInfo(RhiDeviceInfo_t& rhiInfo, Dx12DeviceInfo_t& i
 	if (FAILED(result))
 	{
 		Log_Error("Failed to get adapter description: HRESULT 0x%08X", result);
+		LastNtError() = result;
+		LastNtStatus() = 0;
 		return false;
 	}
 

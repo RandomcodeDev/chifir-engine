@@ -72,7 +72,7 @@ BASEAPI void Plat_WriteConsole(cstr text)
 
 static void GetConsole()
 {
-#ifndef CH_XBOX360
+#if !defined CH_XBOX
 #ifdef CH_WIN32
 	// Get a console
 	bool haveConsole = false;

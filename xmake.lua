@@ -91,7 +91,7 @@ if is_plat("windows") then
 		add_defines("CH_GDK")
 	end
 elseif is_plat("gdkx") then
-	add_defines("CH_GDKX", "CH_GDK", "CH_WIN32", "CH_CONSOLE")
+	add_defines("CH_GDKX", "CH_GDK", "CH_WIN32", "CH_CONSOLE", "CH_XBOX")
 elseif is_plat("linux") then
 	add_defines("CH_LINUX", "CH_UNIX")
 elseif is_plat("switch") then

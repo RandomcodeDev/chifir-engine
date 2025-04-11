@@ -1,5 +1,8 @@
-/// \file Declares WinRT interfaces in a way that doesn't drag in a ton of dynamic symbols
+/// \file Declares WinRT interfaces in a way that doesn't drag in a ton of STL stuff
 /// \copyright Randomcode Developers
+
+/// This file was made by copying stuff from IDL files and manually turning it into valid C++.
+/// It mostly works, but when something is wrong it's excruciating to fix.
 
 #pragma once
 
@@ -10,8 +13,6 @@
 #include "base/compiler.h"
 #include "base/platform.h"
 #include "base/types.h"
-
-// i honestly can't tell if i hate this file or it's beautiful
 
 #include <roapi.h>
 #include <winstring.h>
@@ -24,39 +25,25 @@ struct EventRegistrationToken
 	s64 value;
 };
 
-template <typename T> MIDL_INTERFACE("9DE1C535-6AE1-11E0-84E1-18A905BCC53F") EventHandler: IUnknown
+template <typename T> struct ATTRIBUTE(novtable) EventHandler: public IUnknown
 {
 	virtual s32 STDMETHODCALLTYPE Invoke(void*, T arg) = 0;
 };
 
-#define MAKE_EVENTHANDLER(T)                                                                                                     \
-	const PCWSTR RuntimeClass_EventHandler##T = L"EventHandler`1<" L#T L">";                                                     \
-	const ATTRIBUTE(selectany) IID& IID_EventHandler##T = __uuidof(EventHandler<T>) = 0;
-
-template <typename S, typename R> MIDL_INTERFACE("5A648006-843A-4DA9-865B-9D26E5DFAD7B") TypedEventHandler: IUnknown
+template <typename S, typename R> struct ATTRIBUTE(novtable) TypedEventHandler: public IUnknown
 {
 	virtual s32 STDMETHODCALLTYPE Invoke(S, R) = 0;
 };
 
-#define MAKE_TYPEDEVENTHANDLER(S, R)                                                                                             \
-	const PCWSTR RuntimeClass_TypedEventHandler##S##_##R = L"TypedEventHandler`2<" L#S L", " L#R L">";                           \
-	const ATTRIBUTE(selectany) IID& IID_TypedEventHandler##S##_##R = __uuidof(TypedEventHandler<S, R>) = 0;
+const ATTRIBUTE(selectany) IID& IID_AnyEventHandler = {
+	0x9DE1C535, 0x6AE1, 0x11E0, {0x84, 0xE1, 0x18, 0xA9, 0x05, 0xBC, 0xC5, 0x3F}
+};
 
 #define MAKE_INTERFACE(name, uuid, body)                                                                                         \
 	MIDL_INTERFACE(uuid) name body;                                                                                              \
 	const ATTRIBUTE(selectany) IID& IID_##name = __uuidof(name);
 
 MAKE_INTERFACE(IPropertySet, "8A43ED9F-F4E6-4421-ACF9-1DAB2986820C", : public IInspectable{})
-
-MAKE_INTERFACE(
-	ICoreApplicationView, "638BB2DB-451D-4661-B099-414F34FFB9F1", : public IInspectable {
-		virtual HRESULT STDMETHODCALLTYPE CoreWindow(void** value) = 0;
-		virtual HRESULT STDMETHODCALLTYPE Activated(
-			TypedEventHandler<ICoreApplicationView*, void*> * handler, EventRegistrationToken * token) = 0;
-		virtual HRESULT STDMETHODCALLTYPE Activated(EventRegistrationToken token) = 0;
-		virtual HRESULT STDMETHODCALLTYPE IsMain(bool* value) = 0;
-		virtual HRESULT STDMETHODCALLTYPE IsHosted(bool* value) = 0;
-	})
 
 struct Point
 {
@@ -72,7 +59,13 @@ struct Rect
 	f32 Height;
 };
 
-enum CoreWindowFlowDirection
+struct Size
+{
+	f32 Width;
+	f32 Height;
+};
+
+enum class CoreWindowFlowDirection
 {
 	LeftToRight = 0,
 	RightToLeft = 1
@@ -282,6 +275,17 @@ enum CoreVirtualKeyStates
 };
 
 MAKE_INTERFACE(
+	ICoreWindowEventArgs, "272B1EF3-C633-4DA5-A26C-C6D0F56B29DA", : public IInspectable {
+		virtual HRESULT STDMETHODCALLTYPE Handled(bool value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE Handled(bool* value) = 0;
+	})
+
+MAKE_INTERFACE(
+	IWindowSizeChangedEventArgs, "5A200EC7-0426-47DC-B86C-6F475915E451", : public IInspectable {
+		virtual HRESULT STDMETHODCALLTYPE Size(Size * value) = 0;
+	})
+
+MAKE_INTERFACE(
 	ICoreCursor, "96893ACF-111D-442C-8A77-B87992F8E2D6", : public IInspectable {
 		virtual HRESULT STDMETHODCALLTYPE Id(u32 value) = 0;
 		virtual HRESULT STDMETHODCALLTYPE Type(CoreCursorType * value) = 0;
@@ -307,57 +311,92 @@ MAKE_INTERFACE(
 		virtual HRESULT STDMETHODCALLTYPE GetKeyState(VirtualKey virtualKey, CoreVirtualKeyStates * KeyState) = 0;
 		virtual HRESULT STDMETHODCALLTYPE ReleasePointerCapture() = 0;
 		virtual HRESULT STDMETHODCALLTYPE SetPointerCapture() = 0;
+		virtual HRESULT STDMETHODCALLTYPE Activated(EventRegistrationToken cookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE Activated(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE Activated(EventRegistrationToken cookie) = 0;
+		virtual HRESULT STDMETHODCALLTYPE AutomationProviderRequested(EventRegistrationToken cookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE AutomationProviderRequested(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * cookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE AutomationProviderRequested(EventRegistrationToken cookie) = 0;
+		virtual HRESULT STDMETHODCALLTYPE CharacterReceived(EventRegistrationToken cookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE CharacterReceived(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE CharacterReceived(EventRegistrationToken cookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE Closed(TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE Closed(EventRegistrationToken cookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE InputEnabled(
+		virtual HRESULT STDMETHODCALLTYPE Closed(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE InputEnabled(EventRegistrationToken cookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE KeyDown(TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
+		virtual HRESULT STDMETHODCALLTYPE InputEnabled(
+			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE KeyDown(EventRegistrationToken cookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE KeyUp(TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
+		virtual HRESULT STDMETHODCALLTYPE KeyDown(
+			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE KeyUp(EventRegistrationToken cookie) = 0;
+		virtual HRESULT STDMETHODCALLTYPE KeyUp(
+			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
+		virtual HRESULT STDMETHODCALLTYPE PointerCaptureLost(EventRegistrationToken cookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE PointerCaptureLost(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * cookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE PointerCaptureLost(EventRegistrationToken cookie) = 0;
+		virtual HRESULT STDMETHODCALLTYPE PointerEntered(EventRegistrationToken cookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE PointerEntered(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * cookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE PointerEntered(EventRegistrationToken cookie) = 0;
+		virtual HRESULT STDMETHODCALLTYPE PointerExited(EventRegistrationToken cookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE PointerExited(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * cookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE PointerExited(EventRegistrationToken cookie) = 0;
+		virtual HRESULT STDMETHODCALLTYPE PointerMoved(EventRegistrationToken cookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE PointerMoved(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * cookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE PointerMoved(EventRegistrationToken cookie) = 0;
+		virtual HRESULT STDMETHODCALLTYPE PointerPressed(EventRegistrationToken cookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE PointerPressed(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * cookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE PointerPressed(EventRegistrationToken cookie) = 0;
+		virtual HRESULT STDMETHODCALLTYPE PointerReleased(EventRegistrationToken cookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE PointerReleased(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * cookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE PointerReleased(EventRegistrationToken cookie) = 0;
+		virtual HRESULT STDMETHODCALLTYPE TouchHitTesting(EventRegistrationToken cookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE TouchHitTesting(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE TouchHitTesting(EventRegistrationToken cookie) = 0;
+		virtual HRESULT STDMETHODCALLTYPE PointerWheelChanged(EventRegistrationToken cookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE PointerWheelChanged(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * cookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE PointerWheelChanged(EventRegistrationToken cookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE SizeChanged(
-			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE SizeChanged(EventRegistrationToken cookie) = 0;
+		virtual HRESULT STDMETHODCALLTYPE SizeChanged(
+			TypedEventHandler<ICoreWindow*, IWindowSizeChangedEventArgs*> * handler, EventRegistrationToken * pCookie) = 0;
+		virtual HRESULT STDMETHODCALLTYPE VisibilityChanged(EventRegistrationToken cookie) = 0;
 		virtual HRESULT STDMETHODCALLTYPE VisibilityChanged(
 			TypedEventHandler<ICoreWindow*, void*> * handler, EventRegistrationToken * pCookie) = 0;
-		virtual HRESULT STDMETHODCALLTYPE VisibilityChanged(EventRegistrationToken cookie) = 0;
 	})
 
 const PCWSTR RuntimeClass_CoreWindow = L"Windows.UI.Core.CoreWindow";
+
+enum class CoreProcessEventsOption
+{
+	ProcessOneAndAllPending = 0,
+	ProcessOneIfPresent = 1,
+	ProcessUntilQuit = 2,
+	ProcessAllIfPresent = 3
+};
+
+MAKE_INTERFACE(
+	ICoreDispatcher, "60DB2FA8-B705-4FDE-A7D6-EBBB1891D39E", : public IInspectable {
+		virtual HRESULT STDMETHODCALLTYPE HasThreadAccess(bool* value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE ProcessEvents(CoreProcessEventsOption options) = 0;
+		virtual HRESULT STDMETHODCALLTYPE RunAsync(u32 priority, void* agileCallback, void** asyncAction) = 0;
+		virtual HRESULT STDMETHODCALLTYPE RunIdleAsync(void* agileCallback, void** asyncAction) = 0;
+	})
+
+MAKE_INTERFACE(
+	ICoreApplicationView, "638BB2DB-451D-4661-B099-414F34FFB9F1", : public IInspectable {
+		virtual HRESULT STDMETHODCALLTYPE CoreWindow(void** value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE Activated(
+			TypedEventHandler<ICoreApplicationView*, void*> * handler, EventRegistrationToken * token) = 0;
+		virtual HRESULT STDMETHODCALLTYPE Activated(EventRegistrationToken token) = 0;
+		virtual HRESULT STDMETHODCALLTYPE IsMain(bool* value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE IsHosted(bool* value) = 0;
+	})
+
+// NOT INHERITED FROM ICoreApplicationView
+MAKE_INTERFACE(
+	ICoreApplicationView2, "68EB7ADF-917F-48EB-9AEB-7DE53E086AB1", : public IInspectable {
+		virtual HRESULT STDMETHODCALLTYPE Dispatcher(ICoreDispatcher * *value) = 0;
+	})
 
 MAKE_INTERFACE(
 	IFrameworkView, "FAAB5CD0-8924-45AC-AD0F-A08FAE5D0324", : public IInspectable {
@@ -376,10 +415,10 @@ MAKE_INTERFACE(
 MAKE_INTERFACE(
 	ICoreApplication, "0AACF7A4-5E1D-49DF-8034-FB6A68BC5ED1", : public IInspectable {
 		virtual HRESULT STDMETHODCALLTYPE Id(HSTRING * value) = 0;
-		virtual HRESULT STDMETHODCALLTYPE Suspending(EventHandler<void*> * handler, EventRegistrationToken * token) = 0;
 		virtual HRESULT STDMETHODCALLTYPE Suspending(EventRegistrationToken token) = 0;
-		virtual HRESULT STDMETHODCALLTYPE Resuming(EventHandler<IInspectable*> * handler, EventRegistrationToken * token) = 0;
+		virtual HRESULT STDMETHODCALLTYPE Suspending(EventHandler<void*> * handler, EventRegistrationToken * token) = 0;
 		virtual HRESULT STDMETHODCALLTYPE Resuming(EventRegistrationToken token) = 0;
+		virtual HRESULT STDMETHODCALLTYPE Resuming(EventHandler<IInspectable*> * handler, EventRegistrationToken * token) = 0;
 		virtual HRESULT STDMETHODCALLTYPE Properties(IPropertySet * *value) = 0;
 		virtual HRESULT STDMETHODCALLTYPE GetCurrentView(ICoreApplicationView * *value) = 0;
 		virtual HRESULT STDMETHODCALLTYPE Run(IFrameworkViewSource * viewSource) = 0;
@@ -403,8 +442,7 @@ MAKE_INTERFACE(
 	})
 
 MAKE_INTERFACE(
-	IStorageFolder, "72D1CB78-B3EF-4F75-A80B-6FD9DAE2944B",
-	: public IInspectable {
+	IStorageFolder, "72D1CB78-B3EF-4F75-A80B-6FD9DAE2944B", : public IStorageItem {
 		virtual HRESULT STDMETHODCALLTYPE RenameAsync(HSTRING desiredName, void** operation) = 0;
 		virtual HRESULT STDMETHODCALLTYPE RenameAsync(HSTRING desiredName, UINT32 option, void** operation) = 0;
 		virtual HRESULT STDMETHODCALLTYPE DeleteAsync(void** operation) = 0;
@@ -415,6 +453,7 @@ MAKE_INTERFACE(
 		virtual HRESULT STDMETHODCALLTYPE Attributes(void* value) = 0;
 		virtual HRESULT STDMETHODCALLTYPE DateCreated(void* value) = 0;
 		virtual HRESULT STDMETHODCALLTYPE IsOfType(UINT32 type, BOOLEAN * value) = 0;
+
 		virtual HRESULT STDMETHODCALLTYPE CreateFileAsync(HSTRING desiredName, void** operation) = 0;
 		virtual HRESULT STDMETHODCALLTYPE CreateFileAsync(HSTRING desiredName, UINT32 options, void** operation) = 0;
 		virtual HRESULT STDMETHODCALLTYPE CreateFolderAsync(HSTRING desiredName, void** operation) = 0;

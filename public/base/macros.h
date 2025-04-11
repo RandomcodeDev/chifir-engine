@@ -52,3 +52,6 @@
 
 /// Mark a variable as unused
 #define UNUSED(x) ((void)(x))
+
+/// Allows commas to be used in macro arguments
+#define COMMA ,

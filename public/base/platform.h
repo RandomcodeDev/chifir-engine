@@ -7,15 +7,6 @@
 #include "phnt_wrapper.h"
 #include "win32_aliases.h"
 #include "winrt_min.h"
-
-/// Get the last Win32 error
-#define LastNtError() NtCurrentTeb()->LastErrorValue
-
-/// Get the last NTSTATUS
-#define LastNtStatus() NtCurrentTeb()->LastStatusValue
-
-/// Declare the _Available function for an imported function
-#define DECLARE_AVAILABLE(func) extern "C" BASEAPI bool func##_Available()
 #endif
 
 #include "base.h"
@@ -70,7 +61,31 @@ extern BASEAPI bool Plat_IsUwpApp();
 
 // TODO: similar functions for input and etc
 #if defined IN_BASE || defined IN_VIDEO
-/// Get the CoreWindow for the application
-extern BASEAPI winrt_min::ICoreWindow* Plat_GetUwpWindow();
+struct UwpVideoInfo
+{
+	winrt_min::ICoreWindow* window;
+	winrt_min::ICoreDispatcher* dispatcher;
+	winrt_min::ICoreApplicationView* view;
+};
+
+struct UwpVideoCallbacks
+{
+	void* user;
+
+	bool (*OnSizeChanged)(f32 width, f32 height, void* user);
+	bool (*OnClosed)(void* user);
+};
+
+/// Set up the video system to be able to access the app
+extern BASEAPI void Plat_BindUwpVideo(UwpVideoInfo& info, const UwpVideoCallbacks& callbacks);
 #endif
+
+/// Get the last Win32 error
+#define LastNtError() NtCurrentTeb()->LastErrorValue
+
+/// Get the last NTSTATUS
+#define LastNtStatus() NtCurrentTeb()->LastStatusValue
+
+/// Declare the _Available function for an imported function
+#define DECLARE_AVAILABLE(func) extern "C" BASEAPI bool func##_Available()
 #endif

@@ -213,6 +213,7 @@ LRESULT __stdcall CWin32VideoSystem::WindowProc(HWND window, UINT msg, WPARAM wp
 	}
 	case WM_CLOSE: {
 		videoSystem->m_closed = true;
+		Log_Debug("Window closed");
 		return 0;
 	}
 	}

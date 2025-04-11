@@ -8,8 +8,8 @@
 #include "device_dx12.h"
 #include "instance_dx12.h"
 
-extern "C" DLLEXPORT u32 D3D12SDKVersion = 615;
-extern "C" DLLEXPORT cstr D3D12SDKPath = ".\\bin\\";
+//extern "C" DLLEXPORT u32 D3D12SDKVersion = 615;
+//extern "C" DLLEXPORT cstr D3D12SDKPath = "bin\\";
 
 bool CDx12RhiInstance::LoadDlls()
 {
@@ -22,9 +22,16 @@ bool CDx12RhiInstance::LoadDlls()
 		return false;
 	}
 
+	// This is when support for the Agility SDK was introduced
+	if (USER_SHARED_DATA->NtBuildNumber >= 18363)
+	{
+		Log_Debug("Loading DirectX 12 Agility SDK");
+		Base_LoadEngineLibrary("D3D12Core");
+		Base_LoadEngineLibrary("d3d12SDKLayers");
+	}
+
 	Log_Debug(
-		"Loading DirectX 12 runtime %s.dll, with D3D12SDKVersion=%d and D3D12SDKPath=\"%s\"", D3D12_DLL_NAME, D3D12SDKVersion,
-		D3D12SDKPath);
+		"Loading DirectX 12 runtime %s.dll", D3D12_DLL_NAME);
 	m_d3d12 = Base_LoadLibrary(D3D12_DLL_NAME);
 	if (!m_d3d12)
 	{
@@ -92,6 +99,8 @@ bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
 	if (FAILED(result))
 	{
 		Log_Error("CreateDXGIFactory2 failed: HRESULT 0x%08X", result);
+		LastNtError() = result;
+		LastNtStatus() = 0;
 		Destroy();
 		return false;
 	}

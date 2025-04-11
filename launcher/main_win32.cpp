@@ -2,16 +2,11 @@
 /// \copyright Randomcode Developers
 
 /// Hacky code to load Launcher.dll from the bin directory next to the executable.
-/// It can only use ntdll.dll
+/// It can only use ntdll.dll, and only functions guaranteed to be on Windows XP and later (ntdll does include a subset of the
+/// CRT's code).
 
-#define wcsrchr _wcsrchr
-#define wcsncpy _wcsncpy
-#define wcslen _wcslen
 #include "base/compiler.h"
 #include "phnt_wrapper.h"
-#undef wcsrchr
-#undef wcsncpy
-#undef wcslen
 
 #ifndef CH_DEBUG
 // hinting the nvidia driver to use the dedicated graphics card in an optimus
@@ -36,11 +31,6 @@ ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #else
 #pragma comment(linker, "/SUBSYSTEM:" SUBSYSTEM ",5.02")
 #endif
-
-extern "C" __declspec(dllimport) int _snwprintf(wchar_t* Buffer, size_t BufferCount, const wchar_t* Format, ...);
-extern "C" __declspec(dllimport) size_t wcslen(const wchar_t* Buffer);
-extern "C" __declspec(dllimport) wchar_t* wcsncpy(wchar_t* Destination, const wchar_t* Source, size_t Count);
-extern "C" __declspec(dllimport) const wchar_t* wcsrchr(const wchar_t *str, wchar_t c);
 
 #ifndef CH_STATIC
 static PCWSTR GetEngineDir()
@@ -131,7 +121,7 @@ Load:
 	ANSI_STRING runMainString = RTL_CONSTANT_STRING(runMainName);
 	status = LdrGetProcedureAddress(base, &runMainString, 0, &runMainAddr);
 
-	int (*Base_RunMain)(int (*main)()) = reinterpret_cast<int(*)(int(*)())>(runMainAddr);
+	int (*Base_RunMain)(int (*main)()) = reinterpret_cast<int (*)(int (*)())>(runMainAddr);
 	int (*LauncherMain)() = reinterpret_cast<int (*)()>(launcherMainAddr);
 	int result = Base_RunMain(LauncherMain);
 
