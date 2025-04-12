@@ -27,6 +27,7 @@ extern "C" DLLIMPORT u32* XboxHardwareInfo;
 #else
 DECLARE_AVAILABLE(NtRaiseHardError);
 DECLARE_AVAILABLE(RtlAnsiStringToUnicodeString);
+DECLARE_AVAILABLE(NtQuerySystemInformationEx);
 DECLARE_AVAILABLE(NtTerminateProcess);
 DECLARE_AVAILABLE(AllocConsole);
 DECLARE_AVAILABLE(AttachConsole);
@@ -144,15 +145,14 @@ BASEAPI void Plat_Init()
 		{
 			Base_Abort(status, "Failed to get system performance information: NTSTATUS 0x%08X", status);
 		}
-		
-		// Windows 7
-		if (AT_LEAST_WINDOWS_7())
+
+		if (AT_LEAST_WINDOWS_7() && NtQuerySystemInformationEx_Available())
 		{
 			// Full build number
 			ULONG layer = 0;
 			status = NtQuerySystemInformationEx(
-				SystemBuildVersionInformation, &layer, sizeof(ULONG), &g_buildVerInfo,
-				SIZEOF(SYSTEM_BUILD_VERSION_INFORMATION), nullptr);
+				SystemBuildVersionInformation, &layer, sizeof(ULONG), &g_buildVerInfo, SIZEOF(SYSTEM_BUILD_VERSION_INFORMATION),
+				nullptr);
 			if (!NT_SUCCESS(status))
 			{
 				DbgPrint("Failed to get build version information: NTSTATUS 0x%08X\n", status);
@@ -271,21 +271,25 @@ BASEAPI cstr Plat_GetSystemDescription()
 #else
 		cstr name = GetProductName();
 		cstr wineVersion = Base_IsWine();
+
 		dstr version = nullptr;
-		
-		if (AT_LEAST_WINDOWS_7())
+		// Check if the build version info is valid
+		if (g_buildVerInfo.OsMajorVersion == USER_SHARED_DATA->NtMajorVersion)
 		{
-			//version = Base_StrFormat("%u.%u.%u.%u");
+			version = Base_StrFormat(
+				"%u.%u.%s", g_buildVerInfo.OsMajorVersion, g_buildVerInfo.OsMinorVersion, g_buildVerInfo.NtBuildLabEx);
 		}
-		else {
+		else
+		{
 			version = Base_StrFormat(
 				"%u.%u.%u", USER_SHARED_DATA->NtMajorVersion, USER_SHARED_DATA->NtMinorVersion, USER_SHARED_DATA->NtBuildNumber);
 		}
-		
+
 		s_systemDescription = Base_StrFormat(
-			"%s %s (reported as %u.%u.%u)%s%s%s%s", name, version, NtCurrentPeb()->OSMajorVersion,
-			NtCurrentPeb()->OSMinorVersion, NtCurrentPeb()->OSBuildNumber, wineVersion ? " Wine " : "",
+			"%s %s%s%s%s%s", name, version, wineVersion ? " Wine " : "",
 			wineVersion ? wineVersion : "", Base_CheckWoW64() ? " WoW64" : "", Plat_IsUwpApp() ? " UWP" : "");
+
+		Base_Free(version);
 #endif
 	}
 

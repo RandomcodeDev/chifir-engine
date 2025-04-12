@@ -4,11 +4,11 @@
 /// This file is the reason Base.dll doesn't have an import table. It first locates the base address of ntdll.dll using the
 /// PEB_LDR_DATA structure, then it parses it and finds the address of LdrGetProcedureAddress by searching the export table for a
 /// name that matches its hash. Then, it uses LdrGetProcedureAddress to fill in other stubs of system functions, which are
-/// function pointers that use names the linker expects from an import library, allowing phnt's correct declarations to be used everywhere
-/// without issue. These are basically the same as the import table, but I get to do my own logic for filling them in, so that if
-/// some function is missing from one version and not another, it isn't a fatal startup error that can't be avoided, allowing for
-/// better portability. There are also forwarder functions that are re-exported under the original names so anything else can use them.
-/// In other words, this file just does ntdll's job early in runtime instead of before the engine runs.
+/// function pointers that use names the linker expects from an import library, allowing phnt's correct declarations to be used
+/// everywhere without issue. These are basically the same as the import table, but I get to do my own logic for filling them in,
+/// so that if some function is missing from one version and not another, it isn't a fatal startup error that can't be avoided,
+/// allowing for better portability. There are also forwarder functions that are re-exported under the original names so anything
+/// else can use them. In other words, this file just does ntdll's job early in runtime instead of before the engine runs.
 ///
 /// On Xbox 360, things are different. xboxkrnl.exe and xam.xex export all the important functions exclusively by ordinal,
 /// and are in the XEX format. The reason them only using ordinals isn't an issue is because they don't change between kernel
@@ -56,8 +56,11 @@ MAKE_STUB(NtClose, __stdcall, @4)
 MAKE_STUB(NtCreateFile, __stdcall, @44)
 MAKE_STUB(NtCreateMutant, __stdcall, @16)
 MAKE_STUB(NtCreateKey, __stdcall, @28)
+MAKE_STUB(NtCreateThread, __stdcall, @32)
 MAKE_STUB(NtCreateThreadEx, __stdcall, @44)
 MAKE_STUB(NtDelayExecution, __stdcall, @8)
+MAKE_STUB(NtFreeVirtualMemory, __stdcall, @16)
+MAKE_STUB(NtProtectVirtualMemory, __stdcall, @20)
 MAKE_STUB(NtQueryInformationFile, __stdcall, @20)
 MAKE_STUB(NtQueryInformationThread, __stdcall, @20)
 MAKE_STUB(NtQuerySystemInformation, __stdcall, @16)
@@ -76,6 +79,7 @@ MAKE_STUB(RtlFreeAnsiString, __stdcall, @4)
 MAKE_STUB(RtlFreeHeap, __stdcall, @12)
 MAKE_STUB(RtlFreeUnicodeString, __stdcall, @4)
 MAKE_STUB(RtlGetFullPathName_U, __stdcall, @16)
+MAKE_STUB(RtlInitializeContext, __stdcall, @20)
 MAKE_STUB(RtlUnicodeStringToAnsiString, __stdcall, @12)
 
 // kernel32
@@ -141,9 +145,6 @@ static bool FindNtDll(PPEB_LDR_DATA ldrData)
 
 	return s_ntDllBase != nullptr;
 }
-
-// Somehow the Rtl function for this isn't inline in phnt, I guess it does that thing with the last section or whatever
-#define RVA_TO_VA(base, rva) (reinterpret_cast<const u8*>(base) + (rva))
 
 static u16 GetArchitecture()
 {
@@ -223,8 +224,7 @@ static bool FindLdrGetProcedureAddress()
 }
 #endif
 
-#define GET_FUNCTION_OPTIONAL(lib, name)                                                                                         \
-	STUB_NAME(name) = static_cast<ILibrary*>(lib)->GetSymbol<uptr (*)(...)>(STRINGIZE(name));
+#define GET_FUNCTION_OPTIONAL(lib, name) STUB_NAME(name) = static_cast<ILibrary*>(lib)->GetSymbol<uptr (*)(...)>(STRINGIZE(name));
 #define GET_FUNCTION(lib, name)                                                                                                  \
 	{                                                                                                                            \
 		GET_FUNCTION_OPTIONAL(lib, name)                                                                                         \
@@ -282,12 +282,15 @@ bool Base_InitLoader()
 	GET_FUNCTION(&ntDll, NtCreateFile)
 	GET_FUNCTION(&ntDll, NtCreateMutant)
 	GET_FUNCTION(&ntDll, NtCreateKey)
-	GET_FUNCTION(&ntDll, NtCreateThreadEx)
+	GET_FUNCTION(&ntDll, NtCreateThread)
+	GET_FUNCTION_OPTIONAL(&ntDll, NtCreateThreadEx)
 	GET_FUNCTION(&ntDll, NtDelayExecution)
+	GET_FUNCTION(&ntDll, NtFreeVirtualMemory)
+	GET_FUNCTION(&ntDll, NtProtectVirtualMemory)
 	GET_FUNCTION(&ntDll, NtQueryInformationFile)
 	GET_FUNCTION(&ntDll, NtQueryInformationThread)
 	GET_FUNCTION(&ntDll, NtQuerySystemInformation)
-	GET_FUNCTION(&ntDll, NtQuerySystemInformationEx)
+	GET_FUNCTION_OPTIONAL(&ntDll, NtQuerySystemInformationEx)
 	GET_FUNCTION(&ntDll, NtQueryValueKey)
 	GET_FUNCTION(&ntDll, NtReadFile)
 	GET_FUNCTION(&ntDll, NtReleaseMutant)
@@ -298,6 +301,7 @@ bool Base_InitLoader()
 	GET_FUNCTION(&ntDll, RtlFreeAnsiString)
 	GET_FUNCTION(&ntDll, RtlFreeHeap)
 	GET_FUNCTION(&ntDll, RtlGetFullPathName_U)
+	GET_FUNCTION(&ntDll, RtlInitializeContext)
 	GET_FUNCTION(&ntDll, RtlTimeToTimeFields)
 	GET_FUNCTION(&ntDll, RtlUnicodeStringToAnsiString)
 
@@ -348,17 +352,19 @@ bool Base_InitLoader()
 	GET_FUNCTION_OPTIONAL(user32, UnregisterClassA)
 
 	ILibrary* combase = Base_LoadLibrary("combase");
-	ASSERT(combase != nullptr);
+	if (combase)
+	{
+		GET_FUNCTION_OPTIONAL(combase, CoTaskMemAlloc)
+		GET_FUNCTION_OPTIONAL(combase, RoInitialize)
+		GET_FUNCTION_OPTIONAL(combase, RoUninitialize)
+		GET_FUNCTION_OPTIONAL(combase, RoGetActivationFactory)
+		GET_FUNCTION_OPTIONAL(combase, WindowsCreateString)
+		GET_FUNCTION_OPTIONAL(combase, WindowsDeleteString)
+		GET_FUNCTION_OPTIONAL(combase, WindowsGetStringRawBuffer)
 
-	GET_FUNCTION_OPTIONAL(combase, CoTaskMemAlloc)
-	GET_FUNCTION_OPTIONAL(combase, RoInitialize)
-	GET_FUNCTION_OPTIONAL(combase, RoUninitialize)
-	GET_FUNCTION_OPTIONAL(combase, RoGetActivationFactory)
-	GET_FUNCTION_OPTIONAL(combase, WindowsCreateString)
-	GET_FUNCTION_OPTIONAL(combase, WindowsDeleteString)
-	GET_FUNCTION_OPTIONAL(combase, WindowsGetStringRawBuffer)
+		delete combase;
+	}
 
-	delete combase;
 	delete kernel32;
 	delete shell32;
 	delete user32;
@@ -411,7 +417,7 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 		{
 			Log_Debug("Loading library %s", fileName);
 		}
-		else
+		else if (DbgPrint_Available())
 		{
 			DbgPrint("Loading library %s\n", fileName);
 		}
@@ -433,7 +439,14 @@ BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 		status = LdrLoadDll(nullptr, nullptr, &nameUStr, &handle);
 		if (!NT_SUCCESS(status))
 		{
-			Log_Error("Failed to load library %s: NTSTATUS 0x%08X", fileName, status);
+			if (g_baseInitialized)
+			{
+				Log_Error("Failed to load library %s: NTSTATUS 0x%08X", fileName, status);
+			}
+			else if (DbgPrint_Available())
+			{
+				DbgPrint("Failed to load library %s: NTSTATUS 0x%08X\n", fileName, status);
+			}
 			LastNtStatus() = status;
 			RtlFreeUnicodeString(&nameUStr);
 			return nullptr;
@@ -485,7 +498,14 @@ void* CWindowsLibrary::GetSymbol(cstr name)
 	if (!NT_SUCCESS(status))
 	{
 		LastNtStatus() = status;
-		Log_Error("Failed to get address of symbol %s: NTSTATUS 0x%08X", name, status);
+		if (g_baseInitialized)
+		{
+			Log_Error("Failed to get address of symbol %s: NTSTATUS 0x%08X", name, status);
+		}
+		else if (DbgPrint_Available())
+		{
+			DbgPrint("Failed to get address of symbol %s: NTSTATUS 0x%08X\n", name, status);
+		}
 		return nullptr;
 	}
 

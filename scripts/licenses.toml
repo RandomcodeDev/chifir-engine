@@ -32,6 +32,14 @@ path = "external/phnt"
 license = "external/phnt/LICENSE"
 url = "https://github.com/winsiderss/phnt"
 
+[reactos]
+name = "ReactOS"
+author = "ReactOS Team & Contributors"
+use = "Some functions used to improve Windows support"
+path = "base/*_win32.cpp"
+license = "external/reactos.txt"
+url = "https://reactos.org"
+
 [sdl3]
 name = "SDL3"
 author = "Sam Latinga"

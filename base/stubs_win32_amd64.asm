@@ -54,9 +54,11 @@ MAKE_STUB NtClose
 MAKE_STUB NtCreateFile
 MAKE_STUB NtCreateMutant
 MAKE_STUB NtCreateKey
+MAKE_STUB NtCreateThread
 MAKE_STUB NtCreateThreadEx
 MAKE_STUB NtDelayExecution
 MAKE_STUB NtFreeVirtualMemory
+MAKE_STUB NtProtectVirtualMemory
 MAKE_STUB NtQueryFullAttributesFile
 MAKE_STUB NtQueryInformationFile
 MAKE_STUB NtQueryInformationThread
@@ -76,6 +78,7 @@ MAKE_STUB RtlFreeAnsiString
 MAKE_STUB RtlFreeHeap
 MAKE_STUB RtlFreeUnicodeString
 MAKE_STUB RtlGetFullPathName_U
+MAKE_STUB RtlInitializeContext
 MAKE_STUB RtlTimeToTimeFields
 MAKE_STUB RtlUnicodeStringToAnsiString
 

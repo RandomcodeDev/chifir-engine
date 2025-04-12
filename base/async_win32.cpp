@@ -3,6 +3,9 @@
 #include "base/basicstr.h"
 #include "platform_win32.h"
 
+DECLARE_AVAILABLE(NtQueryInformationThread);
+DECLARE_AVAILABLE(TlsGetValue);
+
 CWindowsMutex::CWindowsMutex() : m_handle(nullptr)
 {
 	NTSTATUS status = NtCreateMutant(&m_handle, MUTANT_ALL_ACCESS, nullptr, FALSE);
@@ -49,11 +52,8 @@ void CWindowsMutex::Unlock()
 
 #define PS_ATTRIBUTE_LIST_SIZE(n) (SIZEOF(PS_ATTRIBUTE_LIST) + ((n) - 1) * SIZEOF(PS_ATTRIBUTE))
 
-CWindowsThread::CWindowsThread(ThreadStart_t start, void* userData, cstr name, ssize stackSize, ssize maxStackSize)
-	: m_handle(nullptr), m_id(0), m_result(INT32_MIN), m_name(nullptr), m_start(start), m_userData(userData)
+void CWindowsThread::CreateVistaThread(ssize stackSize, ssize maxStackSize)
 {
-	ASSERT(stackSize <= maxStackSize);
-
 	u8 psAttrBuf[PS_ATTRIBUTE_LIST_SIZE(1)] = {};
 	PPS_ATTRIBUTE_LIST psAttrs = reinterpret_cast<PPS_ATTRIBUTE_LIST>(psAttrBuf);
 	psAttrs->TotalLength = SIZEOF(PS_ATTRIBUTE_LIST);
@@ -73,10 +73,163 @@ CWindowsThread::CWindowsThread(ThreadStart_t start, void* userData, cstr name, s
 	if (!NT_SUCCESS(status))
 	{
 		Base_Quit(
-			"Failed to create thread with start 0x%016X and user data 0x%016X: NTSTATUS 0x%08X", m_start, m_userData, status);
+			"NtCreateThreadEx with start 0x%016zX and user data 0x%016zX: NTSTATUS 0x%08X", m_start, m_userData, status);
 	}
 
 	m_id = reinterpret_cast<u64>(clientId.UniqueThread);
+}
+
+// Based on ReactOS's BaseCreateStack
+void CWindowsThread::CreateStack(ssize size, ssize maxSize, PINITIAL_TEB InitialTeb)
+{
+	NTSTATUS Status;
+	PIMAGE_NT_HEADERS Headers;
+	ULONG_PTR Stack;
+	BOOLEAN UseGuard;
+	ULONG PageSize, AllocationGranularity, Dummy;
+	SIZE_T MinimumStackCommit, GuardPageSize;
+
+	/* Read page size */
+	PageSize = g_systemInfo.PageSize;
+	AllocationGranularity = g_systemInfo.AllocationGranularity;
+
+	/* Get the Image Headers */
+	auto DosHeader = reinterpret_cast<PIMAGE_DOS_HEADER>(NtCurrentPeb()->ImageBaseAddress);
+	Headers = (PIMAGE_NT_HEADERS)RVA_TO_VA(DosHeader, DosHeader->e_lfanew);
+
+	SIZE_T StackReserve = maxSize;
+	if (StackReserve == 0)
+		StackReserve = Headers->OptionalHeader.SizeOfStackReserve;
+
+	SIZE_T StackCommit = size;
+	if (StackCommit == 0)
+	{
+		StackCommit = Headers->OptionalHeader.SizeOfStackCommit;
+	}
+	/* Check if the commit is higher than the reserve */
+	else if (StackCommit >= StackReserve)
+	{
+		/* Grow the reserve beyond the commit, up to 1MB alignment */
+		StackReserve = ALIGN_UP(StackCommit, 1024 * 1024);
+	}
+
+	/* Align everything to Page Size */
+	StackCommit = ALIGN_UP(StackCommit, PageSize);
+	StackReserve = ALIGN_UP(StackReserve, AllocationGranularity);
+
+	MinimumStackCommit = NtCurrentPeb()->MinimumStackCommit;
+	if ((MinimumStackCommit != 0) && (StackCommit < MinimumStackCommit))
+	{
+		StackCommit = MinimumStackCommit;
+	}
+
+	/* Check if the commit is higher than the reserve */
+	if (StackCommit >= StackReserve)
+	{
+		/* Grow the reserve beyond the commit, up to 1MB alignment */
+		StackReserve = ALIGN_UP(StackCommit, 1024 * 1024);
+	}
+
+	/* Align everything to Page Size */
+	StackCommit = ALIGN_UP(StackCommit, PageSize);
+	StackReserve = ALIGN_UP(StackReserve, AllocationGranularity);
+
+	/* Reserve memory for the stack */
+	Stack = 0;
+	Status = NtAllocateVirtualMemory(NtCurrentProcess(), (PVOID*)&Stack, 0, &StackReserve, MEM_RESERVE, PAGE_READWRITE);
+	if (!NT_SUCCESS(Status))
+	{
+		Base_Quit("Failed to reserve stack: NTSTATUS 0x%08X", Status);
+	}
+
+	/* Now set up some basic Initial TEB Parameters */
+	InitialTeb->StackAllocationBase = (PVOID)Stack;
+	InitialTeb->StackBase = (PVOID)(Stack + StackReserve);
+	InitialTeb->OldInitialTeb.OldStackBase = NULL;
+	InitialTeb->OldInitialTeb.OldStackLimit = NULL;
+
+	/* Update the stack position */
+	Stack += StackReserve - StackCommit;
+
+	/* Check if we can add a guard page */
+	if (StackReserve >= StackCommit + PageSize)
+	{
+		Stack -= PageSize;
+		StackCommit += PageSize;
+		UseGuard = TRUE;
+	}
+	else
+	{
+		UseGuard = FALSE;
+	}
+
+	/* Allocate memory for the stack */
+	Status = NtAllocateVirtualMemory(NtCurrentProcess(), (PVOID*)&Stack, 0, &StackCommit, MEM_COMMIT, PAGE_READWRITE);
+	if (!NT_SUCCESS(Status))
+	{
+		Base_Quit("Failed to allocate stack: NTSTATUS 0x%08X", Status);
+	}
+
+	/* Now set the current Stack Limit */
+	InitialTeb->StackLimit = (PVOID)Stack;
+
+	/* Create a guard page if needed */
+	if (UseGuard)
+	{
+		GuardPageSize = PageSize;
+		Status = NtProtectVirtualMemory(NtCurrentProcess(), (PVOID*)&Stack, &GuardPageSize, PAGE_GUARD | PAGE_READWRITE, &Dummy);
+		if (!NT_SUCCESS(Status))
+		{
+			Base_Quit("Failed to create guard page: NTSTATUS 0x%08X", Status);
+		}
+
+		/* Update the Stack Limit keeping in mind the Guard Page */
+		InitialTeb->StackLimit = (PVOID)((ULONG_PTR)InitialTeb->StackLimit + GuardPageSize);
+	}
+
+	m_stackAlloc = reinterpret_cast<void*>(Stack);
+	m_stackSize = StackReserve;
+}
+
+// Based on ReactOS CreateRemoteThread
+void CWindowsThread::CreateXpThread(ssize stackSize, ssize maxStackSize)
+{
+	CLIENT_ID clientId = {};
+	clientId.UniqueProcess = NtCurrentProcess();
+
+	INITIAL_TEB initialTeb = {};
+	CreateStack(stackSize, maxStackSize, &initialTeb);
+
+	CONTEXT context = {};
+	RtlInitializeContext(NtCurrentProcess(), &context, m_start, m_userData, m_stackAlloc);
+
+	OBJECT_ATTRIBUTES objAttrs = {};
+	InitializeObjectAttributes(&objAttrs, nullptr, 0, nullptr, nullptr);
+
+	NTSTATUS status =
+		NtCreateThread(&m_handle, THREAD_ALL_ACCESS, &objAttrs, NtCurrentProcess(), &clientId, &context, &initialTeb, true);
+	if (!NT_SUCCESS(status))
+	{
+		Base_Quit(
+			"NtCreateThread with start 0x%016zX and user data 0x%016zX failed: NTSTATUS 0x%08X", m_start, m_userData, status);
+	}
+
+	m_id = reinterpret_cast<u64>(clientId.UniqueThread);
+}
+
+CWindowsThread::CWindowsThread(ThreadStart_t start, void* userData, cstr name, ssize stackSize, ssize maxStackSize)
+	: m_handle(nullptr), m_id(0), m_result(INT32_MIN), m_name(nullptr), m_start(start), m_userData(userData)
+{
+	ASSERT(stackSize <= maxStackSize);
+
+	if (AT_LEAST_WINDOWS_VISTA())
+	{
+		CreateVistaThread(stackSize, maxStackSize);
+	}
+	else
+	{
+		CreateXpThread(stackSize, maxStackSize);
+	}
 
 	if (name)
 	{
@@ -86,6 +239,12 @@ CWindowsThread::CWindowsThread(ThreadStart_t start, void* userData, cstr name, s
 
 CWindowsThread::~CWindowsThread()
 {
+	if (m_stackAlloc)
+	{
+		NtFreeVirtualMemory(NtCurrentProcess(), &m_stackAlloc, reinterpret_cast<PSIZE_T>(&m_stackSize), MEM_RELEASE);
+		m_stackAlloc = nullptr;
+	}
+
 	if (m_name)
 	{
 		Base_Free(m_name);
@@ -128,6 +287,11 @@ u32 g_tlsIndex;
 
 TlsData* Plat_GetTlsData()
 {
+	if (!TlsGetValue_Available())
+	{
+		return nullptr;
+	}
+
 	TlsData* data = static_cast<TlsData*>(TlsGetValue(g_tlsIndex));
 	if (!data)
 	{
@@ -173,6 +337,11 @@ BASEAPI bool Async_IsMainThread()
 
 BASEAPI u64 Async_GetCurrentThreadId()
 {
+	if (!NtQueryInformationThread_Available())
+	{
+		return UINT64_MAX;
+	}
+
 	IThread* current = Async_GetCurrentThread();
 	if (current)
 	{

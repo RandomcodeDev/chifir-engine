@@ -72,7 +72,7 @@ void CVulkanRhiDevice::Destroy()
 {
 	if (m_handle)
 	{
-		Log_Debug("Destroying VkDevice 0x%016X", m_handle);
+		Log_Debug("Destroying VkDevice 0x%016zX", m_handle);
 		vkDestroyDevice(m_handle, GetVkAllocationCallbacks());
 		m_handle = VK_NULL_HANDLE;
 	}

@@ -54,7 +54,16 @@ static void InitCpuData()
 	g_cpuData.haveIntSimd128 = true;
 #endif
 	g_cpuData.haveSimd128Compare = (bool)(ecx & (1 << 20));
-	g_cpuData.haveSimd256 = (bool)(ecx & (1 << 28));
+
+	// Windows XP doesn't support AVX, even if the CPU does (i.e. it doesn't enable it in CR0/CR4 or include it in contexts)
+#ifdef CH_WIN32
+	if (AT_LEAST_WINDOWS_VISTA())
+	{
+#endif
+		g_cpuData.haveSimd256 = (bool)(ecx & (1 << 28));
+#ifdef CH_WIN32
+	}
+#endif
 
 	u32 regs[16] = {0}; // 0-3 brand, 4-15 model
 

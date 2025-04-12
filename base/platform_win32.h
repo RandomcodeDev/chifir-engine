@@ -79,14 +79,24 @@ class CWindowsThread: public IThread
 
   private:
   	HANDLE m_handle;
+	void* m_stackAlloc;
+	usize m_stackSize;
 	u64 m_id;
 	s32 m_result;
 	dstr m_name;
 	ThreadStart_t m_start;
 	void* m_userData;
 
+	void CreateVistaThread(ssize stackSize, ssize maxStackSize);
+	void CreateStack(ssize size, ssize maxSize, PINITIAL_TEB initialTeb);
+	void InitContext(PCONTEXT context, ThreadStart_t start, void* param, void* stack);
+	void CreateXpThread(ssize stackSize, ssize maxStackSize);
 	static NTSTATUS NTAPI ThreadMain(CWindowsThread* thread);
 };
+
+extern SYSTEM_BASIC_INFORMATION g_systemInfo;
+extern SYSTEM_PERFORMANCE_INFORMATION g_systemPerfInfo;
+extern SYSTEM_BUILD_VERSION_INFORMATION g_buildVerInfo;
 
 extern bool Base_InitWinRt();
 extern void Base_ShutdownWinRt();
@@ -119,6 +129,9 @@ extern bool g_uwp;
 	EXPORT_RAW(STRINGIZE(x) "_Available")                                                                                        \
 	EXPORT_AS(x##_Forwarder, x)
 #endif
+
+// Somehow the Rtl function for this isn't inline in phnt, I guess it does that thing with the last section or whatever
+#define RVA_TO_VA(base, rva) (reinterpret_cast<const u8*>(base) + (rva))
 
 /// Get the address of NTDLL, find LdrGetProcedureAddress manually, find LdrLoadDll properly, load any other system DLLs/functions
 /// using those
