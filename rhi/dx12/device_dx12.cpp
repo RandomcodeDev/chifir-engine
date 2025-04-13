@@ -7,8 +7,8 @@
 
 #include "rhi/irhidevice.h"
 
-#include "dx12.h"
 #include "device_dx12.h"
+#include "dx12.h"
 #include "instance_dx12.h"
 #include "swapchain_dx12.h"
 
@@ -35,7 +35,18 @@ bool CDx12RhiDevice::Initialize()
 		Log_Error("D3D12CreateDevice failed: HRESULT 0x%08X", result);
 		LastNtError() = result;
 		LastNtStatus() = 0;
+#ifdef DX12_BACKUP_FEATURE_LEVEL
+		result = f_D3D12CreateDevice(m_info.adapter, DX12_BACKUP_FEATURE_LEVEL, IID_PPV_ARGS(&m_handle));
+		if (FAILED(result))
+		{
+			Log_Error("D3D12CreateDevice failed: HRESULT 0x%08X", result);
+			LastNtError() = result;
+			LastNtStatus() = 0;
+			return false;
+		}
+#else
 		return false;
+#endif
 	}
 
 	Log_Debug("Creating command queues");
