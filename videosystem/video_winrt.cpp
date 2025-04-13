@@ -22,6 +22,13 @@ bool CWinRtVideoSystem::Initialize()
 	m_window = info.window;
 	m_dispatcher = info.dispatcher;
 
+	winrt_min::Rect bounds = {};
+	m_window->Bounds(&bounds);
+	m_width = bounds.Width;
+	m_height = bounds.Height;
+	m_x = bounds.X;
+	m_y = bounds.Y;
+
 	return true;
 }
 
