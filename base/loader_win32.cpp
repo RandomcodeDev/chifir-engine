@@ -320,36 +320,43 @@ bool Base_InitLoader()
 	GET_FUNCTION(kernel32, TlsGetValue)
 	GET_FUNCTION(kernel32, TlsSetValue)
 
-	ILibrary* shell32 = Base_LoadLibrary("shell32");
-
 	// shell32
-	GET_FUNCTION_OPTIONAL(shell32, SHGetFolderPathA)
+	ILibrary* shell32 = Base_LoadLibrary("shell32");
+	if (shell32)
+	{
+		GET_FUNCTION_OPTIONAL(shell32, SHGetFolderPathA)
 
-	ILibrary* user32 = Base_LoadLibrary("user32");
-	ASSERT(user32 != nullptr);
+		delete shell32;
+	}
 
 	// user32
-	GET_FUNCTION_OPTIONAL(user32, AdjustWindowRect)
-	GET_FUNCTION_OPTIONAL(user32, ClientToScreen)
-	GET_FUNCTION_OPTIONAL(user32, CreateWindowExA)
-	GET_FUNCTION_OPTIONAL(user32, DefWindowProcA)
-	GET_FUNCTION_OPTIONAL(user32, DestroyWindow)
-	GET_FUNCTION_OPTIONAL(user32, DispatchMessageA)
-	GET_FUNCTION_OPTIONAL(user32, GetClassInfoExA)
-	GET_FUNCTION_OPTIONAL(user32, GetClientRect)
-	GET_FUNCTION_OPTIONAL(user32, GetDpiForWindow)
-	GET_FUNCTION_OPTIONAL(user32, GetSystemMetrics)
-	GET_FUNCTION_OPTIONAL(user32, GetWindowLongPtrA)
-	GET_FUNCTION_OPTIONAL(user32, IsImmersiveProcess)
-	GET_FUNCTION_OPTIONAL(user32, LoadCursorA)
-	GET_FUNCTION_OPTIONAL(user32, PeekMessageA)
-	GET_FUNCTION_OPTIONAL(user32, RegisterClassExA)
-	GET_FUNCTION_OPTIONAL(user32, SetProcessDPIAware)
-	GET_FUNCTION_OPTIONAL(user32, SetWindowLongPtrA)
-	GET_FUNCTION_OPTIONAL(user32, SetWindowTextA)
-	GET_FUNCTION_OPTIONAL(user32, ShowWindow)
-	GET_FUNCTION_OPTIONAL(user32, TranslateMessage)
-	GET_FUNCTION_OPTIONAL(user32, UnregisterClassA)
+	ILibrary* user32 = Base_LoadLibrary("user32");
+	if (user32)
+	{
+		GET_FUNCTION_OPTIONAL(user32, AdjustWindowRect)
+		GET_FUNCTION_OPTIONAL(user32, ClientToScreen)
+		GET_FUNCTION_OPTIONAL(user32, CreateWindowExA)
+		GET_FUNCTION_OPTIONAL(user32, DefWindowProcA)
+		GET_FUNCTION_OPTIONAL(user32, DestroyWindow)
+		GET_FUNCTION_OPTIONAL(user32, DispatchMessageA)
+		GET_FUNCTION_OPTIONAL(user32, GetClassInfoExA)
+		GET_FUNCTION_OPTIONAL(user32, GetClientRect)
+		GET_FUNCTION_OPTIONAL(user32, GetDpiForWindow)
+		GET_FUNCTION_OPTIONAL(user32, GetSystemMetrics)
+		GET_FUNCTION_OPTIONAL(user32, GetWindowLongPtrA)
+		GET_FUNCTION_OPTIONAL(user32, IsImmersiveProcess)
+		GET_FUNCTION_OPTIONAL(user32, LoadCursorA)
+		GET_FUNCTION_OPTIONAL(user32, PeekMessageA)
+		GET_FUNCTION_OPTIONAL(user32, RegisterClassExA)
+		GET_FUNCTION_OPTIONAL(user32, SetProcessDPIAware)
+		GET_FUNCTION_OPTIONAL(user32, SetWindowLongPtrA)
+		GET_FUNCTION_OPTIONAL(user32, SetWindowTextA)
+		GET_FUNCTION_OPTIONAL(user32, ShowWindow)
+		GET_FUNCTION_OPTIONAL(user32, TranslateMessage)
+		GET_FUNCTION_OPTIONAL(user32, UnregisterClassA)
+
+		delete user32;
+	}
 
 	ILibrary* combase = Base_LoadLibrary("combase");
 	if (combase)
@@ -366,8 +373,6 @@ bool Base_InitLoader()
 	}
 
 	delete kernel32;
-	delete shell32;
-	delete user32;
 #endif
 
 	g_loaderInitialized = true;

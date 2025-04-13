@@ -281,9 +281,8 @@ MAKE_INTERFACE(
 	})
 
 MAKE_INTERFACE(
-	IWindowSizeChangedEventArgs, "5A200EC7-0426-47DC-B86C-6F475915E451", : public IInspectable {
-		virtual HRESULT STDMETHODCALLTYPE Size(Size * value) = 0;
-	})
+	IWindowSizeChangedEventArgs,
+	"5A200EC7-0426-47DC-B86C-6F475915E451", : public IInspectable { virtual HRESULT STDMETHODCALLTYPE Size(Size * value) = 0; })
 
 MAKE_INTERFACE(
 	ICoreCursor, "96893ACF-111D-442C-8A77-B87992F8E2D6", : public IInspectable {
@@ -490,5 +489,26 @@ MAKE_INTERFACE(
 	})
 
 const PCWSTR RuntimeClass_ApplicationData = L"Windows.Storage.ApplicationData";
+
+MAKE_INTERFACE(
+	IAppDataPaths, "7301D60A-79A2-48C9-9EC0-3FDA092F79E1", : public IInspectable {
+		virtual HRESULT STDMETHODCALLTYPE Cookies(HSTRING * value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE Desktop(HSTRING * value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE Documents(HSTRING * value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE Favorites(HSTRING * value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE History(HSTRING * value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE InternetCache(HSTRING * value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE LocalAppData(HSTRING * value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE ProgramData(HSTRING * value) = 0;
+		virtual HRESULT STDMETHODCALLTYPE RoamingAppData(HSTRING * value) = 0;
+	})
+
+MAKE_INTERFACE(
+	IAppDataPathsStatics, "D8EB2AFE-A9D9-4B14-B999-E3921379D903", : public IInspectable {
+		virtual HRESULT STDMETHODCALLTYPE GetForUser(void* user, IAppDataPaths** result) = 0;
+		virtual HRESULT STDMETHODCALLTYPE GetDefault(IAppDataPaths** result) = 0;
+	})
+
+const PCWSTR RuntimeClass_AppDataPaths = L"Windows.Storage.AppDataPaths";
 
 } // namespace winrt_min

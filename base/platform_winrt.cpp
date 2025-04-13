@@ -44,6 +44,8 @@ Done:
 static ICoreApplication* CoreApplication;
 static IApplicationDataStatics* ApplicationDataStatics;
 static IApplicationData* ApplicationData;
+static IAppDataPathsStatics* AppDataPathsStatics;
+static IAppDataPaths* AppDataPaths;
 
 DECLARE_AVAILABLE(RoInitialize);
 DECLARE_AVAILABLE(RoGetActivationFactory);
@@ -51,12 +53,12 @@ DECLARE_AVAILABLE(IsImmersiveProcess);
 
 bool Base_InitWinRt()
 {
-	if (!RoInitialize_Available() || !RoGetActivationFactory_Available() || !IsImmersiveProcess_Available())
+	if (!RoInitialize_Available() || !RoGetActivationFactory_Available())
 	{
 		return false;
 	}
 
-	if (!IsImmersiveProcess(NtCurrentProcess()))
+	if (IsImmersiveProcess_Available() && !IsImmersiveProcess(NtCurrentProcess()))
 	{
 		DbgPrint("Not attempting Windows Runtime initialization, not a UWP process\n");
 		return false;
@@ -75,15 +77,16 @@ bool Base_InitWinRt()
 		return false;
 	}
 
-	result = GetClass(RuntimeClass_ApplicationData, &ApplicationDataStatics);
+	result = GetClass(RuntimeClass_AppDataPaths, &AppDataPathsStatics);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
-	result = ApplicationDataStatics->Current(&ApplicationData);
+	result = AppDataPathsStatics->GetDefault(&AppDataPaths);
 	if (FAILED(result))
 	{
+		DbgPrint("Failed to get IAppDataPaths: HRESULT 0x%08X\n", result);
 		return false;
 	}
 
@@ -428,22 +431,8 @@ cstr Base_GetWinRtAppData()
 
 	if (!Base_StrLength(s_path))
 	{
-		IInspectable* folderUnk = nullptr;
-		HRESULT result = ApplicationData->LocalFolder(reinterpret_cast<IStorageFolder**>(&folderUnk));
-		if (FAILED(result))
-		{
-			Base_Quit("Failed to get AppData folder: HRESULT 0x%08X", result);
-		}
-
-		IStorageItem* folder = nullptr;
-		result = folderUnk->QueryInterface(&folder);
-		if (FAILED(result))
-		{
-			Base_Quit("Failed to get IStorageFolder: HRESULT 0x%08X", result);
-		}
-
 		HSTRING path = nullptr;
-		result = folder->Path(&path);
+		HRESULT result = AppDataPaths->LocalAppData(&path);
 		if (FAILED(result))
 		{
 			Base_Quit("Failed to get AppData folder: HRESULT 0x%08X", result);
