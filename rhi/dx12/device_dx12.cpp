@@ -36,6 +36,7 @@ bool CDx12RhiDevice::Initialize()
 		LastNtError() = result;
 		LastNtStatus() = 0;
 #ifdef DX12_BACKUP_FEATURE_LEVEL
+		Log_Debug("Attempting to create ID3D12Device4 with feature level " STRINGIZE_EXPAND(DX12_BACKUP_FEATURE_LEVEL));
 		result = f_D3D12CreateDevice(m_info.adapter, DX12_BACKUP_FEATURE_LEVEL, IID_PPV_ARGS(&m_handle));
 		if (FAILED(result))
 		{
