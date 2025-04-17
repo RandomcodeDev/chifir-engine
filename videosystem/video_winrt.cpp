@@ -24,10 +24,10 @@ bool CWinRtVideoSystem::Initialize()
 
 	winrt_min::Rect bounds = {};
 	m_window->Bounds(&bounds);
-	m_width = bounds.Width;
-	m_height = bounds.Height;
-	m_x = bounds.X;
-	m_y = bounds.Y;
+	m_width = static_cast<u32>(bounds.Width);
+	m_height = static_cast<u32>(bounds.Height);
+	m_x = static_cast<u32>(bounds.X);
+	m_y = static_cast<u32>(bounds.Y);
 
 	return true;
 }

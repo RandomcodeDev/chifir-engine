@@ -35,6 +35,9 @@ then also having functions that check whether the function pointers are null or 
 using the PEB to get `ntdll.dll`'s base address, parsing it, and finding `LdrGetProcedureAddress`, and then using that to get other
 functions normally.
 
+Additionally, UWP is supported dynamically as well. If the engine detects that it's running in a packaged context, then it uses
+WinRT through COM interfaces instead of Win32 for windowing. It still mostly uses functions from `ntdll.dll` otherwise, though.
+
 == Linux
 Linux is supported, but relies on `libc` for timezones, startup, and library loading.
 
