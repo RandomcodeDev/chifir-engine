@@ -2,11 +2,11 @@
 This document outlines the design of the custom-made 3D game engine for False King and subsequent Randomcode Developers games.
 
 == Language
-The engine is being written in C++14, with a custom runtime/container library and almost no libraries, maximizing portability.
+The engine is being written in C++17, with a custom runtime/container library and almost no external libraries, maximizing portability.
 
 == Target platforms
 The engine is designed to be extremely portable. It currently supports Windows and Linux, and will target Xbox Series X|S,
-PlayStation 5, and Nintendo Switch/Switch 2.
+PlayStation 5, and Nintendo Switch/Switch 2, as well as older consoles where possible.
 
 == Benefits for developers
 The engine will be as open source as possible (essentially, anything that I'm legally allowed to open source). It will give me

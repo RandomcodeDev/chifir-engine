@@ -12,7 +12,7 @@ class IMutex
 {
   public:
 	virtual ~IMutex() = default;
-	
+
 	/// Wait indefinitely and lock the mutex
 	virtual void Lock() = 0;
 
@@ -39,7 +39,7 @@ class IThread
 
 	/// Wait for the thread to finish, with an optional millisecond timeout
 	virtual bool Wait(u32 timeout = UINT32_MAX) = 0;
-	
+
 	/// Get whether the thread is alive
 	virtual bool IsAlive() const = 0;
 
@@ -73,6 +73,9 @@ extern BASEAPI bool Async_IsMainThread();
 
 /// Get a thread's ID
 extern BASEAPI u64 Async_GetCurrentThreadId();
+
+/// Yield the current thread's time
+extern BASEAPI void Async_Yield();
 
 #define IS_VALID_ATOMIC(T) (SIZEOF(T) == 1 || SIZEOF(T) == 2 || SIZEOF(T) == 4 || SIZEOF(T) == 8)
 

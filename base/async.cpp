@@ -1,9 +1,10 @@
 #include "base.h"
-#include "platform_unix.h"
 #include "base/async.h"
 
 #ifdef CH_WIN32
 #include "platform_win32.h"
+#elif defined CH_UNIX
+#include "platform_unix.h"
 #endif
 
 BASEAPI IMutex* Async_CreateMutex()

@@ -201,7 +201,7 @@ void CWindowsThread::CreateXpThread(ssize stackSize, ssize maxStackSize)
 	CreateStack(stackSize, maxStackSize, &initialTeb);
 
 	CONTEXT context = {};
-	RtlInitializeContext(NtCurrentProcess(), &context, ThreadMain, m_userData, m_stackAlloc);
+	RtlInitializeContext(NtCurrentProcess(), &context, m_userData, reinterpret_cast<void*>(ThreadMain), m_stackAlloc);
 
 	OBJECT_ATTRIBUTES objAttrs = {};
 	InitializeObjectAttributes(&objAttrs, nullptr, 0, nullptr, nullptr);
@@ -359,4 +359,9 @@ BASEAPI u64 Async_GetCurrentThreadId()
 	}
 
 	return reinterpret_cast<u64>(info.ClientId.UniqueThread);
+}
+
+BASEAPI void Async_Yield()
+{
+	NtYieldExecution();
 }

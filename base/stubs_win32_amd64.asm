@@ -72,6 +72,7 @@ MAKE_STUB NtResumeThread
 MAKE_STUB NtTerminateProcess
 MAKE_STUB NtWaitForSingleObject
 MAKE_STUB NtWriteFile
+MAKE_STUB NtYieldExecution
 MAKE_STUB RtlAnsiStringToUnicodeString
 MAKE_STUB RtlCaptureStackBackTrace
 MAKE_STUB RtlFreeAnsiString
