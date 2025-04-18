@@ -9,7 +9,7 @@
 #include "base/types.h"
 
 /// CPU data
-struct BaseCpuData_t
+struct BaseCpuData
 {
 #ifdef CH_X86
 	char brand[13];   /// GenuineIntel/AuthenticAMD
@@ -32,10 +32,10 @@ extern bool g_platInitialized;
 extern bool g_allocUsable;
 
 /// Initialized in Base_Init
-extern BaseCpuData_t g_cpuData;
+extern BaseCpuData g_cpuData;
 
 /// OS allocation
-struct SystemAllocation_t
+struct SystemAllocation
 {
 	void* memory;
 	ssize used;
@@ -43,16 +43,16 @@ struct SystemAllocation_t
 };
 
 /// Memory info
-struct MemoryInfo_t
+struct MemoryInfo
 {
-	CIntrusiveLinkedList<SystemAllocation_t> allocations;
+	CIntrusiveLinkedList<SystemAllocation> allocations;
 	ssize used;
 	ssize size;
 	ssize totalAllocated;
 	ssize totalFreed;
 };
 
-extern MemoryInfo_t g_memInfo;
+extern MemoryInfo g_memInfo;
 
 /// Initialize the memory allocator
 extern void Base_InitAllocator();
@@ -64,7 +64,7 @@ extern void Base_ShutdownAllocator();
 extern bool Base_GetSystemMemory(ssize size);
 
 /// Release a chunk of memory
-extern void Base_ReleaseSystemMemory(IntrusiveLinkedNode<SystemAllocation_t> alloc);
+extern void Base_ReleaseSystemMemory(IntrusiveLinkedNode<SystemAllocation> alloc);
 
 /// Release all system memory, you shouldn't call this unless you're done with the allocator and any memory it owns
 extern void Base_ReleaseAllMemory();

@@ -52,6 +52,7 @@ target("Base")
         end
     elseif is_plat("linux") then
         add_files(
+            "async_unix.cpp",
             "filesystem_unix.cpp",
             "platform_unix.cpp"
         )

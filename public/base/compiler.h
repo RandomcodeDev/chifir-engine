@@ -7,6 +7,7 @@
 #pragma once
 
 #include <cstdarg>
+#include <new>
 
 #include "macros.h"
 

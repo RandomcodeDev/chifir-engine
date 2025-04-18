@@ -1,4 +1,5 @@
 #include "base.h"
+#include "platform_unix.h"
 #include "base/async.h"
 
 #ifdef CH_WIN32
@@ -11,6 +12,8 @@ BASEAPI IMutex* Async_CreateMutex()
 
 #ifdef CH_WIN32
     return new CWindowsMutex();
+#elif defined CH_UNIX
+    return new CUnixMutex();
 #else
     return nullptr;
 #endif
@@ -22,6 +25,8 @@ BASEAPI IThread* Async_CreateThread(ThreadStart_t start, void* userData, cstr na
 
 #ifdef CH_WIN32
     return new CWindowsThread(start, userData, name, stackSize, maxStackSize);
+#elif defined CH_UNIX
+    return new CUnixThread(start, userData, name, stackSize, maxStackSize);
 #else
     return nullptr;
 #endif

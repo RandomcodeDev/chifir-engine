@@ -52,7 +52,7 @@ bool CUnixFilesystem::Read(cstr path, CVector<u8>& buffer, ssize count, ssize of
 	return true;
 }
 
-FileType_t CUnixFilesystem::GetFileType(cstr path)
+FileType CUnixFilesystem::GetFileType(cstr path)
 {
 	dstr fullPath = Canonicalize(path);
 	struct stat64 st = {};
@@ -60,23 +60,23 @@ FileType_t CUnixFilesystem::GetFileType(cstr path)
 	Base_Free(fullPath);
 	if (st.st_mode & S_IFREG)
 	{
-		return FileType_t::Normal;
+		return FileType::Normal;
 	}
 	else if (st.st_mode & S_IFDIR)
 	{
-		return FileType_t::Directory;
+		return FileType::Directory;
 	}
 	else if (st.st_mode & S_IFLNK)
 	{
-		return FileType_t::Symlink;
+		return FileType::Symlink;
 	}
 	else if ((st.st_mode & S_IFBLK) || (st.st_mode & S_IFCHR))
 	{
-		return FileType_t::Device;
+		return FileType::Device;
 	}
 	else
 	{
-		return FileType_t::Unknown;
+		return FileType::Unknown;
 	}
 }
 

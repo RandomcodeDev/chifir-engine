@@ -50,11 +50,16 @@ BASEAPI void Plat_Init()
 		s64 now = Plat_GetMilliseconds() / 1000;
 		struct tm* local = localtime(&now);
 		g_timeZoneOffset = local->tm_gmtoff;
+
+		g_isMainThread = true;
+
+		g_platInitialized = true;
 	}
 }
 
 BASEAPI void Plat_Shutdown()
 {
+	g_platInitialized = false;
 }
 
 s32 s_argc;
@@ -131,7 +136,7 @@ BASEAPI NORETURN void Base_AbortSafe(s32 error, cstr msg)
 bool Base_GetSystemMemory(ssize size)
 {
 	// Linked list nodes, can contain any size of allocation, but there's a limit to the number of OS allocations
-	static LinkedNode_t<SystemAllocation_t> memoryNodes[64];
+	static IntrusiveLinkedNode<SystemAllocation> memoryNodes[64];
 
 	// Maximize available space by rounding up to page size directly
 	size = AlignUp(size, getpagesize());
@@ -140,7 +145,7 @@ bool Base_GetSystemMemory(ssize size)
 		g_memInfo.allocations.Size() < ArraySize(memoryNodes),
 		"OS allocation nodes exhausted, increase the size of the memory nodes array");
 
-	LinkedNode_t<SystemAllocation_t>* node = &memoryNodes[g_memInfo.allocations.Size()];
+	IntrusiveLinkedNode<SystemAllocation>* node = &memoryNodes[g_memInfo.allocations.Size()];
 	node->data.size = size;
 
 	node->data.memory = reinterpret_cast<void*>(
@@ -269,7 +274,7 @@ BASEAPI u64 Plat_GetMilliseconds()
 #define DAYS_PER_4Y   (365 * 4 + 1)
 
 // https://git.musl-libc.org/cgit/musl/tree/src/time/__secs_to_tm.c
-BASEAPI void Plat_GetDateTime(DateTime_t& time, bool utc)
+BASEAPI void Plat_GetDateTime(DateTime& time, bool utc)
 {
 	long long days, secs, years;
 	int remdays, remsecs, remyears;

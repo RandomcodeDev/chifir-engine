@@ -201,7 +201,7 @@ void CWindowsThread::CreateXpThread(ssize stackSize, ssize maxStackSize)
 	CreateStack(stackSize, maxStackSize, &initialTeb);
 
 	CONTEXT context = {};
-	RtlInitializeContext(NtCurrentProcess(), &context, m_start, m_userData, m_stackAlloc);
+	RtlInitializeContext(NtCurrentProcess(), &context, ThreadMain, m_userData, m_stackAlloc);
 
 	OBJECT_ATTRIBUTES objAttrs = {};
 	InitializeObjectAttributes(&objAttrs, nullptr, 0, nullptr, nullptr);

@@ -19,7 +19,7 @@ constexpr cstr REQUIRED_EXTENSIONS[] = {
 #elif defined CH_SWITCH
 	VK_NN_VI_SURFACE_EXTENSION_NAME,
 #elif defined CH_LINUX
-	VK_KHR_XCB_SURFACE_EXTENSION_NAME,
+	VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME,
 #endif
 #ifdef VULKAN_DEBUG
 	VK_EXT_DEBUG_UTILS_EXTENSION_NAME
@@ -58,7 +58,7 @@ constexpr VkLayerSettingEXT LAYER_SETTINGS[] = {
 	{LAYER_NAME,            "debug_action", VK_LAYER_SETTING_TYPE_STRING_EXT,                                    1,             SETTING_DEBUG_ACTION},
 	{LAYER_NAME,            "report_flags", VK_LAYER_SETTING_TYPE_STRING_EXT, ArraySize<u32>(SETTING_REPORT_FLAGS),             SETTING_REPORT_FLAGS},
 	{LAYER_NAME,    "enable_message_limit", VK_LAYER_SETTING_TYPE_BOOL32_EXT,                                    1,    &SETTING_ENABLE_MESSAGE_LIMIT},
-	{LAYER_NAME, "duplicate_message_limit",  VK_LAYER_SETTING_TYPE_INT32_EXT,                                    1, &SETTING_DUPLICATE_MESSAGE_LIMIT},
+	{LAYER_NAME, "duplicate_message_limit", VK_LAYER_SETTING_TYPE_UINT32_EXT,                                    1, &SETTING_DUPLICATE_MESSAGE_LIMIT},
 	//{LAYER_NAME,				 "enables", VK_LAYER_SETTING_TYPE_STRING_EXT,      ArraySize(SETTING_ENABLES), SETTING_ENABLES},
 	{LAYER_NAME,        "printf_to_stdout", VK_LAYER_SETTING_TYPE_BOOL32_EXT,                                    1,        &SETTING_PRINTF_TO_STDOUT}
 };

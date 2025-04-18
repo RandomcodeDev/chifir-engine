@@ -14,9 +14,11 @@
 
 #ifdef CH_WIN32
 #include "platform_win32.h"
+#elif defined CH_UNIX
+#include "platform_unix.h"
 #endif
 
-MemoryInfo_t g_memInfo;
+MemoryInfo g_memInfo;
 
 /// Signature so header can be found in aligned blocks (also is 'CHFALLOC' in ASCII on little endian)
 static const u64 ALLOC_SIGNATURE = 0x434F4C4C41464843;
@@ -26,7 +28,7 @@ struct AllocInfo_t
 {
 	ssize size; // Includes the size of the AllocNode_t header
 	ssize alignment;
-	IntrusiveLinkedNode<SystemAllocation_t>* systemAllocation;
+	IntrusiveLinkedNode<SystemAllocation>* systemAllocation;
 	u64 signature; // Must equal ALLOC_SIGNATURE
 };
 
@@ -34,6 +36,8 @@ typedef IntrusiveLinkedNode<AllocInfo_t> AllocNode_t;
 
 #ifdef CH_WIN32
 typedef CWindowsMutex AllocMutex_t;
+#elif defined CH_UNIX
+typedef CUnixMutex AllocMutex_t;
 #else
 #error "Unknown mutex type"
 #endif
@@ -61,7 +65,7 @@ void Base_ShutdownAllocator()
 	s_freeMutex->~IMutex();
 }
 
-static s32 FindSystemNode(SystemAllocation_t* alloc, void* data)
+static s32 FindSystemNode(SystemAllocation* alloc, void* data)
 {
 	if (alloc->size - alloc->used >= (ssize)data)
 	{
@@ -83,7 +87,7 @@ static const ssize MAXIMUM_ALIGNMENT = 64;
 /// This finds a system node with the requested size, or allocates a new one of a fixed size, and then makes a new AllocNode_t
 static AllocNode_t* MakeNewNode(ssize size)
 {
-	IntrusiveLinkedNode<SystemAllocation_t>* node = g_memInfo.allocations.Find(FindSystemNode, reinterpret_cast<void*>(size));
+	IntrusiveLinkedNode<SystemAllocation>* node = g_memInfo.allocations.Find(FindSystemNode, reinterpret_cast<void*>(size));
 	if (!node)
 	{
 		ASSERT_MSG_SAFE(Base_GetSystemMemory(SYSTEM_ALLOC_SIZE) != false, "system memory allocator exhausted or not initialized");

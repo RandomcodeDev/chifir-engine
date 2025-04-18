@@ -11,7 +11,7 @@
 bool g_baseInitialized;
 bool g_platInitialized;
 bool g_allocUsable;
-BaseCpuData_t g_cpuData;
+BaseCpuData g_cpuData;
 
 #if defined CH_ORBIS || CH_GDKX
 static void InitCpuData()
@@ -505,10 +505,10 @@ template <> s32 Compare<v128>(const void* RESTRICT a, const void* RESTRICT b, ss
 {
 	ssize count = (remaining / alignment) * alignment;
 	ssize i = 0;
-	const v128* va = static_cast<const v128*>(a);
-	const v128* vb = static_cast<const v128*>(b);
+	const v128* va = reinterpret_cast<const v128*>(reinterpret_cast<uptr>(a) + offset);
+	const v128* vb = reinterpret_cast<const v128*>(reinterpret_cast<uptr>(b) + offset);
 	s32 inequalIdx = 0;
-	for (; i < count && V128ByteEqual(va[offset + i / alignment], vb[offset + i / alignment], inequalIdx); i += alignment)
+	for (; i < count && V128ByteEqual(va[i / alignment], vb[i / alignment], inequalIdx); i += alignment)
 	{
 		remaining -= alignment;
 	}
