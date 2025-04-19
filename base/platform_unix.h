@@ -33,8 +33,8 @@ class CUnixMutex: public IMutex
 	pthread_mutex_t m_handle;
 };
 
-extern thread_local IThread* g_currentThread;
-extern thread_local bool g_isMainThread;
+extern thread_local IThread* t_currentThread;
+extern thread_local bool t_isMainThread;
 
 class CUnixThread: public IThread
 {
@@ -72,6 +72,7 @@ class CUnixThread: public IThread
 
   private:
   	pthread_t m_handle;
+	pthread_attr_t m_attr;
 	bool m_alive;
 	pid_t m_id;
 	s32 m_result;
@@ -79,7 +80,7 @@ class CUnixThread: public IThread
 	ThreadStart_t m_start;
 	void* m_userData;
 
-	static void* ThreadMain(CUnixThread* thread);
+	static void* ThreadMain(void* arg);
 };
 
 class CUnixLibrary: public ILibrary

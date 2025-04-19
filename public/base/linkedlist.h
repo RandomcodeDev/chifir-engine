@@ -50,7 +50,7 @@ template <typename T> class CIntrusiveLinkedList
 	}
 	~CIntrusiveLinkedList()
 	{
-		for (Node_t* current = m_head; current->next != nullptr && current->next != m_tail; current = current->next)
+		for (Node_t* current = m_head; current != nullptr && current->next != nullptr && current->next != m_tail; current = current->next)
 		{
 			if (current->prev)
 			{

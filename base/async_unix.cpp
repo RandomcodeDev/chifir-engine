@@ -2,6 +2,7 @@
 /// \copyright Randomcode Developers
 
 #include <pthread.h>
+#include <sched.h>
 #include <unistd.h>
 
 #include "base.h"
@@ -47,17 +48,10 @@ void CUnixMutex::Unlock()
     pthread_mutex_unlock(&m_handle);
 }
 
-CUnixThread::CUnixThread(ThreadStart_t start, void* userData, cstr name, ssize stackSize, ssize maxStackSize) : m_handle(0), m_alive(false), m_id(-1), m_result(0), m_name(nullptr), m_start(start), m_userData(userData)
+CUnixThread::CUnixThread(ThreadStart_t start, void* userData, cstr name, ssize stackSize, ssize maxStackSize) : m_handle(0), m_attr{}, m_alive(false), m_id(-1), m_result(0), m_name(nullptr), m_start(start), m_userData(userData)
 {
-    pthread_attr_t attr = {};
-    pthread_attr_init(&attr);
-    pthread_attr_setstacksize(&attr, stackSize);
-
-    s32 result = pthread_create(&m_handle, &attr, reinterpret_cast<void*(*)(void*)>(ThreadMain), m_userData);
-    if (result != 0)
-    {
-        Base_Quit("pthread_create failed: error %d", result);
-    }
+    pthread_attr_init(&m_attr);
+    pthread_attr_setstacksize(&m_attr, stackSize);
 
     if (name)
     {
@@ -77,7 +71,11 @@ CUnixThread::~CUnixThread()
 
 void CUnixThread::Run()
 {
-    m_alive = true;
+    s32 result = pthread_create(&m_handle, &m_attr, ThreadMain, this);
+    if (result != 0)
+    {
+        Base_Quit("pthread_create failed: error %d", result);
+    }
 }
 
 bool CUnixThread::Wait(u32 timeout)
@@ -85,11 +83,13 @@ bool CUnixThread::Wait(u32 timeout)
     return pthread_join(m_handle, nullptr) == 0;
 }
 
-thread_local IThread* g_currentThread;
-thread_local bool g_isMainThread;
+thread_local IThread* t_currentThread;
+thread_local bool t_isMainThread;
 
-void* CUnixThread::ThreadMain(CUnixThread* thread)
+void* CUnixThread::ThreadMain(void* arg)
 {
+    auto thread = reinterpret_cast<CUnixThread*>(arg);
+
 #ifdef CH_LINUX
     if (thread->m_name)
     {
@@ -97,15 +97,12 @@ void* CUnixThread::ThreadMain(CUnixThread* thread)
     }
 
     thread->m_id = gettid();
-    g_currentThread = thread;
-    g_isMainThread = false;
 #endif
 
-    // yield until Run() is called
-    while (!thread->m_alive)
-    {
-        sched_yield();
-    }
+    thread->m_alive = true;
+
+    t_currentThread = thread;
+    t_isMainThread = false;
 
     thread->m_result = thread->m_start(thread->m_userData);
 
@@ -114,22 +111,27 @@ void* CUnixThread::ThreadMain(CUnixThread* thread)
 
 BASEAPI IThread* Async_GetCurrentThread()
 {
-    return g_currentThread;
+    return t_currentThread;
 }
 
 BASEAPI bool Async_IsMainThread()
 {
-    return g_isMainThread;
+    return t_isMainThread;
 }
 
 BASEAPI u64 Async_GetCurrentThreadId()
 {
-    if (g_currentThread)
+    if (t_currentThread)
     {
-        return g_currentThread->GetId();
+        return t_currentThread->GetId();
     }
 
 #ifdef CH_LINUX
     return gettid();
 #endif
+}
+
+BASEAPI void Async_Yield()
+{
+    sched_yield();
 }

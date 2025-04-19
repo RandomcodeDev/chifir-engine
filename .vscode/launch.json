@@ -6,7 +6,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/linux/x64/debug/FalseKing",
-      "args": [],
+      "args": ["-app", "TestApp"],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
       "environment": [],

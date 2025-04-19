@@ -46,7 +46,7 @@ class IThread
 	/// Get the result of the thread, if it's finished
 	virtual s32 GetResult() const = 0;
 
-	/// Get the ID of the thread
+	/// Get the ID of the thread, only returns a valid value if IsAlive() is true
 	virtual u64 GetId() const = 0;
 
 	/// Get the system handle for the thread

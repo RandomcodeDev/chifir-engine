@@ -56,11 +56,11 @@ Additionally, when functions are complex, add comments explaining what's happeni
 `base/memory.cpp` and the Windows loader in `base/loader_win32.cpp` are the best example of commenting things so far.
 
 == Naming
-Variables are camel case, prefixed with `m_` for private/protected members, `g_` for globals, and `s_` for static globals, and `f_` for (some)
-function pointers. Types are Pascal case, prefixed with `C` for classes, `CBase` for abstract classes, and `I` for interfaces, and typedefs end
-with `_t`. Functions are Pascal case, with the name of their component and an underscore as a prefix, like `Base_`. Common abbreviations (like str,
-len, max, min, alloc, buf, src, dest, common acronyms) are allowed, but obscure ones should be avoided. Try to balance clearness with succintness
-when naming variables, so they're easier to type but you can still easily recognize them.
+Variables are camel case, prefixed with `m_` for private/protected members, `g_` for globals, `s_` for static globals, `t_` for thread local
+globals/statics, and `f_` for (some) function pointers. Types are Pascal case, prefixed with `C` for classes, `CBase` for abstract classes,
+and `I` for interfaces, and typedefs end with `_t`. Functions are Pascal case, with the name of their component and an underscore as a prefix,
+like `Base_`. Common abbreviations (like str, len, max, min, alloc, buf, src, dest, common acronyms) are allowed, but obscure ones should be
+avoided. Try to balance clearness with succinctness when naming variables, so they're easier to type but you can still easily recognize them.
 
 == Classes vs structs
 Classes do things, structs store data (you can have a destructor in them though). That's the distinction so far.

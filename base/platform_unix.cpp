@@ -51,7 +51,7 @@ BASEAPI void Plat_Init()
 		struct tm* local = localtime(&now);
 		g_timeZoneOffset = local->tm_gmtoff;
 
-		g_isMainThread = true;
+		t_isMainThread = true;
 
 		g_platInitialized = true;
 	}
