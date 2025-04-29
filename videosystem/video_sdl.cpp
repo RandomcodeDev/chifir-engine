@@ -8,6 +8,7 @@
 #include "base/basicstr.h"
 #include "base/log.h"
 #include "video_sdl.h"
+#include "base/platform.h"
 #include "vulkan/vulkan_core.h"
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
@@ -83,7 +84,7 @@ bool CSdlVideoSystem::Update()
 		}
 	}
 
-	return !m_closed;
+	return !m_closed && !Plat_QuitSignalled();
 }
 
 void CSdlVideoSystem::Shutdown()

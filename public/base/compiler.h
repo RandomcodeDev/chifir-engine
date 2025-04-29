@@ -167,12 +167,14 @@ extern void __stdcall RunThreadConstructors();
 #include <immintrin.h>
 #include <x86intrin.h>
 
-#define DEBUG_BREAK __asm__ volatile("int3");
+#define NOMSVC_DEBUG_BREAK __asm__ volatile("int3");
+#elif defined CH_ARM64
+#define NOMSVC_DEBUG_BREAK __asm__ volatile("bkpt");
 #endif
 
 #define ATTRIBUTE(x) __attribute__((x))
 #define ALIAS(a, b)  extern "C" TYPEOF(a) ATTRIBUTE(alias(#a)) b;
-#define BREAKPOINT() DEBUG_BREAK
+#define BREAKPOINT() NOMSVC_DEBUG_BREAK
 #define ASSUME(x)    __builtin_assume(x)
 #define DEFINE_INTRINSIC(x)
 

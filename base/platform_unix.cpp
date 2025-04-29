@@ -1,7 +1,9 @@
 /// \file Unix support
 /// \copyright Randomcode Developers
 
+#include "base/macros.h"
 #include <cerrno>
+#include <csignal>
 #include <cstdlib>
 #include <ctime>
 #include <dlfcn.h>
@@ -11,11 +13,11 @@
 #endif
 
 #include <fcntl.h>
-#include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/user.h>
+#include <unistd.h>
 
 #include "base.h"
 #include "base/base.h"
@@ -32,13 +34,143 @@ dstr g_exeDir;
 
 s64 g_timeZoneOffset;
 
+static bool s_quitSignalled;
+static void SignalHandler(s32 signal, siginfo_t* sigInfo, void* context)
+{
+	cstr baseError = "Unknown error";
+	cstr error = "unknown error";
+
+	// return if things can continue, otherwise break and quit with the error
+
+	switch (signal)
+	{
+	case SIGILL:
+		baseError = "Illegal operation";
+		switch (sigInfo->si_code)
+		{
+		case ILL_ILLOPC:
+			error = "illegal opcode";
+			break;
+		case ILL_ILLOPN:
+			error = "illegal operand";
+			break;
+		case ILL_ILLADR:
+			error = "illegal addressing mode";
+			break;
+		case ILL_ILLTRP:
+			error = "illegal trap";
+			break;
+		case ILL_PRVOPC:
+			error = "privileged opcode";
+			break;
+		case ILL_PRVREG:
+			error = "privileged register";
+			break;
+		case ILL_COPROC:
+			error = "coprocessor error";
+			break;
+		case ILL_BADSTK:
+			error = "internal stack error";
+			break;
+		}
+		break;
+	case SIGSEGV:
+		baseError = "Segmentation fault";
+		switch (sigInfo->si_code)
+		{
+		case SEGV_MAPERR:
+			error = "address not mapped to object";
+			break;
+		case SEGV_ACCERR:
+			error = "invalid permissions for mapped object";
+			break;
+#ifdef PURPL_LINUX
+		case SEGV_BNDERR:
+			ErrorType = "failed bounds checks";
+			break;
+		case SEGV_PKUERR:
+			ErrorType = "access was denied by memory protection keys";
+			break;
+#endif
+		}
+		break;
+	case SIGFPE:
+		baseError = "Arithmetic error";
+		switch (sigInfo->si_code)
+		{
+		case FPE_INTDIV:
+			error = "integer divide by zero";
+			break;
+		case FPE_INTOVF:
+			error = "integer overflow";
+			break;
+		case FPE_FLTDIV:
+			error = "floating-point divide by zero";
+			break;
+		case FPE_FLTOVF:
+			error = "floating-point overflow";
+			break;
+		case FPE_FLTUND:
+			error = "floating-point underflow";
+			break;
+		case FPE_FLTRES:
+			error = "floating-point inexact result";
+			break;
+		case FPE_FLTINV:
+			error = "floating-point invalid operation";
+			break;
+		case FPE_FLTSUB:
+			error = "subscript out of range";
+			break;
+		}
+		break;
+	case SIGBUS:
+		baseError = "Bus error";
+		switch (sigInfo->si_code)
+		{
+		case BUS_ADRALN:
+			error = "invalid address alignment";
+			break;
+		case BUS_ADRERR:
+			error = "nonexistent physical address";
+			break;
+		case BUS_OBJERR:
+			error = "object-specific hardware error";
+			break;
+		case BUS_MCEERR_AR:
+			error = "hardware memory error consumed on a machine check; action required";
+			break;
+		case BUS_MCEERR_AO:
+			error = "hardware memory error detected in process but not consumed; action optional";
+			break;
+		}
+		break;
+	case SIGINT:
+	case SIGQUIT:
+	case SIGTERM:
+		Log_Info("Received quit signal %d, errno %d", signal, sigInfo->si_errno);
+		s_quitSignalled = true;
+		return;
+	case SIGTRAP:
+		Log_Info("Debug trap at 0x%llX, errno %d", reinterpret_cast<u64>(sigInfo->si_addr), sigInfo->si_errno);
+		return;
+	default:
+		Log_Info("Received signal %d", signal);
+		return;
+	}
+
+	Base_Quit(
+		"%s at 0x%llX: error %d: %s (si_code %d)", baseError, reinterpret_cast<u64>(sigInfo->si_addr), sigInfo->si_errno, error,
+		sigInfo->si_code);
+}
+
 BASEAPI void Plat_Init()
 {
 	if (!g_platInitialized)
 	{
 		char exePath[1024];
 
-		readlink("/proc/self/exe", exePath, ArraySize<usize>(exePath));
+		ASSERT_MSG_SAFE(readlink("/proc/self/exe", exePath, ArraySize<usize>(exePath)) > 0, "Failed to get executable path!");
 
 		ssize index = Base_StrFind(exePath, '/', true);
 		g_exeDir = Base_StrClone(exePath, index);
@@ -52,6 +184,18 @@ BASEAPI void Plat_Init()
 		g_timeZoneOffset = local->tm_gmtoff;
 
 		t_isMainThread = true;
+
+		struct sigaction sigAction = {};
+		sigAction.sa_flags = SA_SIGINFO;
+		sigAction.sa_sigaction = SignalHandler;
+		sigaction(SIGILL, &sigAction, NULL);
+		sigaction(SIGSEGV, &sigAction, NULL);
+		sigaction(SIGFPE, &sigAction, NULL);
+		sigaction(SIGBUS, &sigAction, NULL);
+		sigaction(SIGINT, &sigAction, NULL);
+		sigaction(SIGQUIT, &sigAction, NULL);
+		sigaction(SIGTERM, &sigAction, NULL);
+		sigaction(SIGTRAP, &sigAction, NULL);
 
 		g_platInitialized = true;
 	}
@@ -69,6 +213,11 @@ extern "C" BASEAPI void Base_Internal_SetArgs(s32 argc, char* argv[])
 {
 	s_argc = argc;
 	s_argv = argv;
+}
+
+BASEAPI bool Plat_QuitSignalled()
+{
+	return s_quitSignalled;
 }
 
 BASEAPI void Plat_GetArgs(CVector<CString>& args)
@@ -148,8 +297,8 @@ bool Base_GetSystemMemory(ssize size)
 	IntrusiveLinkedNode<SystemAllocation>* node = &memoryNodes[g_memInfo.allocations.Size()];
 	node->data.size = size;
 
-	node->data.memory = reinterpret_cast<void*>(
-		mmap(nullptr, node->data.size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+	node->data.memory =
+		reinterpret_cast<void*>(mmap(nullptr, node->data.size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
 	if (node->data.memory == MAP_FAILED)
 	{
 		return false;

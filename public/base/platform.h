@@ -104,4 +104,6 @@ extern BASEAPI void Plat_BindUwpVideo(UwpVideoInfo& info, const UwpVideoCallback
 
 /// Get whether the OS is Windows 11 or above
 #define AT_LEAST_WINDOWS_11() AT_LEAST_WINDOWS_10_BUILD(22000)
+#elif defined CH_UNIX
+extern BASEAPI bool Plat_QuitSignalled();
 #endif
