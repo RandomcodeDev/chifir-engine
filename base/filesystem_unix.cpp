@@ -1,12 +1,12 @@
 /// \file Unix raw filesystem
 /// \copyright Randomcode Developers
 
-#include <cstring>
 #include <cerrno>
+#include <cstring>
 
 #include <fcntl.h>
-#include <unistd.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include "base/log.h"
 #include "filesystem_unix.h"
@@ -42,9 +42,7 @@ bool CUnixFilesystem::Read(cstr path, CVector<u8>& buffer, ssize count, ssize of
 	close(handle);
 	if (result < 0)
 	{
-		Log_Error(
-			"Failed to read %zu bytes from offset 0x%X in %s/%s: %s", buffer.Size(), offset, m_root, path,
-			strerror(errno));
+		Log_Error("Failed to read %zu bytes from offset 0x%X in %s/%s: %s", buffer.Size(), offset, m_root, path, strerror(errno));
 		buffer.Empty();
 		return false;
 	}
@@ -108,6 +106,7 @@ ssize CUnixFilesystem::Write(cstr path, const void* data, ssize count, bool appe
 		offset += GetSize(handle);
 	}
 
+	lseek64(handle, offset, SEEK_SET);
 	int result = write(handle, data, count);
 	close(handle);
 	if (result < 0)
@@ -130,7 +129,11 @@ bool CUnixFilesystem::CreateDirectory(cstr path)
 int CUnixFilesystem::OpenFile(cstr path, bool writable)
 {
 	dstr fullPath = Canonicalize(path);
-	int handle = open(fullPath, O_CREAT);
+
+	// 644 is user rw, anyone else r
+	int handle =
+		open(fullPath, O_CREAT | (writable ? O_RDWR : O_RDONLY), 644);
+
 	Base_Free(fullPath);
 	return handle;
 }
