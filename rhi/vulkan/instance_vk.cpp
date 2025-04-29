@@ -12,7 +12,6 @@
 
 #include "device_vk.h"
 #include "vulkan.h"
-#include "vulkan/vulkan_core.h"
 #include "instance_vk.h"
 
 constexpr cstr REQUIRED_EXTENSIONS[] = {
@@ -22,6 +21,7 @@ constexpr cstr REQUIRED_EXTENSIONS[] = {
 #elif defined CH_SWITCH
 	VK_NN_VI_SURFACE_EXTENSION_NAME,
 #elif defined CH_LINUX
+	VK_KHR_XLIB_SURFACE_EXTENSION_NAME,
 	VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME,
 #endif
 #ifdef VULKAN_DEBUG

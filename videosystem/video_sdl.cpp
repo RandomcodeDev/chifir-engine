@@ -11,6 +11,7 @@
 #include "vulkan/vulkan_core.h"
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
+#include <SDL3/SDL_video.h>
 
 bool CSdlVideoSystem::Initialize()
 {
@@ -28,7 +29,7 @@ bool CSdlVideoSystem::Initialize()
 	m_y = 0;
 
 	Log_Info("Creating %ux%u window titled %s", m_width, m_height, m_title);
-	m_handle = SDL_CreateWindow(m_title, m_width, m_height, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
+	m_handle = SDL_CreateWindow(m_title, m_width, m_height, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_VULKAN);
 	if (!m_handle)
 	{
 		Log_Error("Failed to create window: %s", SDL_GetError());

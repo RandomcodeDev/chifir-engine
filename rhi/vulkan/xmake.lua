@@ -20,7 +20,7 @@ target("RhiVulkan")
     elseif is_plat("switch") then
         add_defines("VK_USE_PLATFORM_VI_NN")
     else
-        add_defines("VK_USE_PLATFORM_WAYLAND_KHR", "VK_USE_PLATFORM_XCB_KHR")
+        add_defines("VK_USE_PLATFORM_WAYLAND_KHR", "VK_USE_PLATFORM_XLIB_KHR")
     end
 
     add_deps("Base", "CommonFiles", "DllSupport")

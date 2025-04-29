@@ -3,14 +3,12 @@
 
 #pragma once
 
-#include "base/compiler.h"
 #include "base/types.h"
 #include "videosystem/isdlvideosystem.h"
-#include "videosystem/ivideosystem.h"
 
 struct SDL_Window;
 
-class CSdlVideoSystem: public IVideoSystem, public ISdlVideoSystem
+class CSdlVideoSystem: public ISdlVideoSystem
 {
   public:
 	virtual bool Initialize();
