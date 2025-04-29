@@ -9,7 +9,7 @@
 template <typename T, typename I> class IContainer
 {
   public:
-	static const I BAD_INDEX = (I)-1;
+	static constexpr I BAD_INDEX = (I)-1;
 
 	virtual ~IContainer() DEFAULT;
 

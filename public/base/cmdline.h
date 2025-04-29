@@ -14,4 +14,7 @@ class CCommandLine
 	CCommandLine(const CString& cmdline);
 	CCommandLine(s32 argc, cstr* argv);
 	CCommandLine(const CVector<CString>& args);
+
+	template <typename T>
+	T GetArg(cstr name);
 };

@@ -96,9 +96,12 @@ extern BASEAPI void Plat_BindUwpVideo(UwpVideoInfo& info, const UwpVideoCallback
 #define AT_LEAST_WINDOWS_7()                                                                                                     \
 	(USER_SHARED_DATA->NtMajorVersion > 6 || (USER_SHARED_DATA->NtMajorVersion == 6 && USER_SHARED_DATA->NtMinorVersion >= 1))
 
-// Get whether the OS is Windows 10 or above
+/// Get whether the OS is Windows 10 or above
 #define AT_LEAST_WINDOWS_10() (USER_SHARED_DATA->NtMajorVersion >= 10)
 
-// Get whether the OS is Windows 11 or above
-#define AT_LEAST_WINDOWS_11() (USER_SHARED_DATA->NtMajorVersion > 10 || (USER_SHARED_DATA->NtMajorVersion == 10 && USER_SHARED_DATA->NtBuildNumber >= 22000)
+/// Get whether ths OS is at least a specific build of windows 10 or greater
+#define AT_LEAST_WINDOWS_10_BUILD(build) (USER_SHARED_DATA->NtMajorVersion > 10 || (USER_SHARED_DATA->NtMajorVersion == 10 && USER_SHARED_DATA->NtBuildNumber >= (build)))
+
+/// Get whether the OS is Windows 11 or above
+#define AT_LEAST_WINDOWS_11() AT_LEAST_WINDOWS_10_BUILD(22000)
 #endif

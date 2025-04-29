@@ -118,12 +118,43 @@ extern BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT 
 /// Clear memory
 extern BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size);
 
-/// Find a byte in a block of memory
+/// Find a byte in an unsorted block of memory
 extern BASEAPI ssize Base_MemFind(const void* data, ssize size, u8 value, bool reverse = false);
 
-/// Find a sequence of bytes in a block of memory
+/// Find a sequence of bytes in an unsorted block of memory
 extern BASEAPI ssize
 Base_MemFind(const void* RESTRICT data, ssize size, const void* RESTRICT sequence, ssize sequenceSize, bool reverse = false);
+
+/// Find a value in an unsorted block of memory
+template <typename T> static FORCEINLINE ssize Base_MemFind(const T* data, ssize count, const T& value, bool reverse = false)
+{
+	return Base_MemFind(data, count * SIZEOF(T), &value, SIZEOF(T), reverse);
+}
+
+/// Find a value in a sorted list
+extern BASEAPI ssize Base_Search(
+	const void* RESTRICT value, const void* RESTRICT data, ssize count, ssize elemSize,
+	s32 (*compare)(const void* RESTRICT a, const void* RESTRICT b, void* userData), void* userData = nullptr);
+
+/// Find a value in a sorted list
+template <typename T>
+static FORCEINLINE ssize Base_Search(
+	const T& value, const T* data, ssize count, s32 (*compare)(const T& a, const T& b, void* userData), void* userData = nullptr)
+{
+	struct UserData
+	{
+		s32 (*cmp)(const T&, const T&, void*);
+		void* data;
+	} params = {compare, userData};
+
+	auto cmp = [](const void* RESTRICT a, const void* RESTRICT b, void* u) -> s32 {
+		auto param = reinterpret_cast<UserData*>(u);
+		return param->cmp(*reinterpret_cast<const T * RESTRICT>(a), *reinterpret_cast<const T * RESTRICT>(b), param->data);
+	};
+
+	return Base_Search(
+		reinterpret_cast<const void*>(&value), reinterpret_cast<const void*>(data), count, SIZEOF(T), cmp, &params);
+}
 
 /// Allocate aligned memory
 extern BASEAPI ALLOCATOR void* Base_Alloc(ssize size, ssize alignment = 8);

@@ -14,16 +14,10 @@ void CTestApp::Setup(const CVector<CString>& args)
 
 void CTestApp::GetDependencies(CVector<SystemDependency>& systems, CVector<LibDependency_t>& libs)
 {
+	UNUSED(libs);
 	UNUSED(systems);
-	
-	libs.Add(LIBS, ArraySize(LIBS));
-}
 
-s32 ThreadFunc(void* data)
-{
-	Log_Info("Thread running!");
-	*reinterpret_cast<u32*>(data) = 69;
-	return 420;
+	//libs.Add(LIBS, ArraySize(LIBS));
 }
 
 s32 CTestApp::Run(const CVector<ISystem*>& systems)
@@ -32,13 +26,13 @@ s32 CTestApp::Run(const CVector<ISystem*>& systems)
 
 	Log_Info("Running test app");
 
-	u32 test = 0;
-	IThread* thread = Async_CreateThread(ThreadFunc, &test, "Test");
-	Log_Info("Starting thread");
-	thread->Run();
-	Log_Info("Waiting for thread %u", thread->GetId());
-	thread->Wait();
-	Log_Info("Thread returned %d, data = %u", thread->GetResult(), test);
+	u32 values[] = {1, 2, 3, 5, 8, 10, 23, 45, 232};
+	auto cmpInt = [](const u32& a, const u32& b, void* userData) -> s32 {
+		Log_Debug("a=%u b=%u", a, b);
+		return a == b ? 0 : (a < b ? -1 : 1);
+	};
+	ssize index = Base_Search<u32>(23, values, ArraySize(values), cmpInt);
+	Log_Info("Index of 23 is %zd", index);
 
 	return 0;
 }

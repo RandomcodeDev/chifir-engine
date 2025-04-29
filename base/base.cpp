@@ -172,6 +172,35 @@ template <typename T> static FORCEINLINE T Fnv1a(const u8* data, ssize size, T o
 DEFINE_FNV1A_IMPL(32, 0x811c9dc5, 0x01000193)
 DEFINE_FNV1A_IMPL(64, 0xcbf29ce484222325, 0x00000100000001B3)
 
+BASEAPI ssize Base_Search(
+	const void* RESTRICT value, const void* RESTRICT data, ssize count, ssize elemSize,
+	s32 (*compare)(const void* RESTRICT a, const void* RESTRICT b, void* userData), void* userData)
+{
+	ssize min = 0;
+	ssize max = count - 1;
+
+	while (min <= max)
+	{
+		ssize mid = min + (max - min) / 2;
+		const auto cur = reinterpret_cast<void*>(reinterpret_cast<uptr>(data) + mid * elemSize);
+		s32 cmp = compare(cur, value, userData);
+		if (cmp < 0) // cur < value
+		{
+			min = mid + 1;
+		}
+		else if (cmp > 0) // cur > value
+		{
+			max = mid - 1;
+		}
+		else // cur == value
+		{
+			return mid;
+		}
+	}
+
+	return -1;
+}
+
 OPTIMIZE_OFF
 
 template <typename T>

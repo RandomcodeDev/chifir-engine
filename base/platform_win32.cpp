@@ -53,7 +53,7 @@ BASEAPI bool Plat_ConsoleHasColor()
 	return false;
 #else
 	// 10.0.10586 (version 1511) is when the console host got ANSI escape support
-	return USER_SHARED_DATA->NtMajorVersion >= 10 && USER_SHARED_DATA->NtBuildNumber >= 10586;
+	return AT_LEAST_WINDOWS_10_BUILD(10586);
 #endif
 }
 

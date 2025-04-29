@@ -77,3 +77,15 @@ class IRhiRenderTarget: public IRhiImageView
 
     // TODO: add other stuff
 };
+
+/// A depth/stencil target
+class IRhiDepthStencilTarget: public IRhiImageView
+{
+  public:
+    virtual ~IRhiDepthStencilTarget() DEFAULT;
+
+    virtual void Destroy() = 0;
+
+    virtual u32 GetWidth() = 0;
+    virtual u32 GetHeight() = 0;
+};

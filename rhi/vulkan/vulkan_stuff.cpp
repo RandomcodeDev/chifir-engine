@@ -47,14 +47,14 @@ static void VKAPI_CALL VkFree(void* pUserData, void* pMemory)
 
 const VkAllocationCallbacks* GetVkAllocationCallbacks()
 {
-#ifdef CH_SWITCH
+//#ifdef CH_SWITCH
 	// allocations are already overridden globally
 	return nullptr;
-#else
-	static VkAllocationCallbacks s_vkAllocationCallbacks = {nullptr,           VkAlloc, VkRealloc, VkFree, VkAllocNotification,
-															VkFreeNotification};
-	return &s_vkAllocationCallbacks;
-#endif
+//#else
+//	static VkAllocationCallbacks s_vkAllocationCallbacks = {nullptr,           VkAlloc, VkRealloc, VkFree, VkAllocNotification,
+//															VkFreeNotification};
+//	return &s_vkAllocationCallbacks;
+//#endif
 }
 
 VkBool32 VKAPI_CALL VkDebugCallback(

@@ -23,7 +23,7 @@ bool CDx12RhiInstance::LoadDlls()
 	}
 
 	// This is when support for the Agility SDK was introduced
-	//if (USER_SHARED_DATA->NtBuildNumber >= 18363)
+	//if (AT_LEAST_WINDOWS_10_BUILD(18363))
 	//{
 	//	Log_Debug("Loading DirectX 12 Agility SDK");
 	//	Base_LoadEngineLibrary("D3D12Core");
