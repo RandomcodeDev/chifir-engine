@@ -7,9 +7,12 @@
 
 #include "rhi/irhidevice.h"
 
+#include "videosystem/isdlvideosystem.h"
 #include "videosystem/ivideosystem.h"
 
 #include "device_vk.h"
+#include "vulkan.h"
+#include "vulkan/vulkan_core.h"
 #include "instance_vk.h"
 
 constexpr cstr REQUIRED_EXTENSIONS[] = {
@@ -75,9 +78,11 @@ PFN_vkVoidFunction VolkLoadFunction(void* userData, cstr name)
 	return symbol;
 }
 
-bool CVulkanRhiInstance::CreateSurface(u64 handle)
+bool CVulkanRhiInstance::CreateSurface(IVideoSystem* videoSystem)
 {
 #ifdef CH_WIN32
+	u64 handle = videoSystem->GetHandle();
+
 	VkWin32SurfaceCreateInfoKHR createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
 	createInfo.hwnd = reinterpret_cast<HWND>(handle);
@@ -98,6 +103,16 @@ bool CVulkanRhiInstance::CreateSurface(u64 handle)
 	if (result != VK_SUCCESS)
 	{
 		Log_Error("Failed to create surface: %s", GetVkResultString(result));
+		return false;
+	}
+
+	return true;
+#elif defined CH_UNIX
+	auto sdlVideo = reinterpret_cast<ISdlVideoSystem*>(videoSystem);
+	m_surface = reinterpret_cast<VkSurfaceKHR>(sdlVideo->CreateVulkanSurface(reinterpret_cast<u64>(m_instance), GetVkAllocationCallbacks()));
+	if (!m_surface)
+	{
+		// CreateVulkanSurface logs the SDL error
 		return false;
 	}
 
@@ -207,7 +222,7 @@ bool CVulkanRhiInstance::Initialize(IVideoSystem* videoSystem)
 	vkCreateDebugUtilsMessengerEXT(m_instance, &debugCreateInfo, GetVkAllocationCallbacks(), &m_debugMessenger);
 #endif
 
-	if (!CreateSurface(videoSystem->GetHandle()))
+	if (!CreateSurface(videoSystem))
 	{
 		// CreateSurface does its own logging
 		Destroy();

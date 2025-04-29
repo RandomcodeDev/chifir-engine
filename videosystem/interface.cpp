@@ -3,6 +3,7 @@
 
 #include "isystem.h"
 #include "video_null.h"
+#include "video_sdl.h"
 #include "videosystem/ivideosystem.h"
 
 #if defined CH_WIN32 && !defined CH_XBOX360
@@ -10,6 +11,8 @@
 #include "video_winrt.h"
 #elif defined CH_SWITCH
 #include "videosystem/video_switch.h"
+#elif defined CH_UNIX
+#include "video_sdl.h"
 #endif
 
 #ifdef CH_STATIC
@@ -29,6 +32,8 @@ extern "C" DLLEXPORT ISystem* CreateInterface()
 	}
 #elif defined CH_SWITCH
 	return new CSwitchVideoSystem();
+#elif defined CH_UNIX
+	return new CSdlVideoSystem();
 #else
 	return new CNullVideoSystem();
 #endif

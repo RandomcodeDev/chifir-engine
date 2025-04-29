@@ -18,7 +18,7 @@ set_allowedplats(
 )
 
 set_allowedarchs(
-	"x64", "x86", "arm64"
+	"x86_64", "x64", "x86", "arm64"
 )
 
 set_allowedmodes(
@@ -42,10 +42,15 @@ add_sysincludedirs(
 )
 
 add_includedirs(
-	"public",
-	"private/public",
-	"private"
+	"public"
 )
+
+if os.exists("private") then
+	add_includedirs(
+		"private/public",
+		"private"
+	)
+end
 
 function get_toolchain()
 	return get_config("toolchain")
@@ -87,20 +92,21 @@ end
 
 if is_plat("windows") then
 	add_defines("CH_WIN32")
-	if is_arch("x64") then
+	if is_arch("x64", "x86_64") then
 		add_defines("CH_GDK")
 	end
 elseif is_plat("gdkx") then
 	add_defines("CH_GDKX", "CH_GDK", "CH_WIN32", "CH_CONSOLE", "CH_XBOX")
 elseif is_plat("linux") then
 	add_defines("CH_LINUX", "CH_UNIX")
+	add_requires("libsdl3", {system = true})
 elseif is_plat("switch") then
 	add_defines("CH_SWITCH", "CH_CONSOLE")
 elseif is_plat("orbis") then
 	add_defines("CH_ORBIS", "CH_CONSOLE")
 end
 
-if is_arch("x64") then
+if is_arch("x64", "x86_64") then
 	add_defines("CH_AMD64", "CH_X86", "CH_SIMD128", "CH_SIMD256")
 elseif is_arch("x86") then
 	add_defines("CH_IA32", "CH_X86", "CH_SIMD128", "CH_SIMD256")
@@ -183,7 +189,7 @@ if is_plat("windows", "gdkx") then
 	-- /arch:SSE2 is the default for x86, SSE2 is the baseline for AMD64, but for x86, it needs
 	-- to be turned down to IA32 (I'm insane/stupid enough to eventually try to make this run on
 	-- a Pentium, which I do have, or something dumb like that)
-	if is_arch("x64") then
+	if is_arch("x64", "x86_64") then
 		add_linkdirs("public/win32/x64")
 		if is_toolchain("clang-cl") then
 			add_cxflags(
@@ -237,7 +243,7 @@ elseif is_plat("linux", "switch", "orbis") then
 			"-fuse-ld=lld",
 			{ force = true })
 
-		if is_arch("x64") then
+		if is_arch("x64", "x86_64") then
 			add_cxflags(
 				"-march=x86-64-v3",
 				{ force = true })

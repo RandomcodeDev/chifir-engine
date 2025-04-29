@@ -17,7 +17,7 @@ target("RhiDirectX12")
     after_build(function (target)
         if is_plat("windows") then
             agility_dir = "$(scriptdir)/../../external/d3d12_agility/build/native/bin/"
-            if is_arch("x64") then
+            if is_arch("x64", "x86_64") then
                 agility_dir = path.join(agility_dir, "x64/")
             elseif is_arch("x86") then
                 agility_dir = path.join(agility_dir, "win32/")

@@ -1,22 +1,27 @@
-/// \file Stubbed video system
+/// \file SDL video system
 /// \copyright Randomcode Developers
 
 #pragma once
 
 #include "base/compiler.h"
 #include "base/types.h"
+#include "videosystem/isdlvideosystem.h"
 #include "videosystem/ivideosystem.h"
 
-class CNullVideoSystem: public IVideoSystem
+struct SDL_Window;
+
+class CSdlVideoSystem: public IVideoSystem, public ISdlVideoSystem
 {
   public:
 	virtual bool Initialize();
 	virtual bool Update();
 	virtual void Shutdown();
 
+    virtual u64 CreateVulkanSurface(u64 instance, const void* allocCallbacks);
+
 	virtual cstr GetName() const
 	{
-		return "Null Video";
+		return "SDL Video";
 	}
 
 	virtual u32 GetVersion() const
@@ -43,12 +48,12 @@ class CNullVideoSystem: public IVideoSystem
 
 	virtual u32 GetX() const
 	{
-		return m_x;
+		return static_cast<u32>(m_x);
 	}
 
 	virtual u32 GetY() const
 	{
-		return m_y;
+		return static_cast<u32>(m_y);
 	}
 
 	virtual bool Resized() const
@@ -72,12 +77,12 @@ class CNullVideoSystem: public IVideoSystem
 	}
 
   private:
-	void* m_handle;
+	SDL_Window* m_handle;
 	dstr m_title;
 	u32 m_width;
 	u32 m_height;
-	u32 m_x;
-	u32 m_y;
+	s32 m_x;
+	s32 m_y;
 	bool m_resized;
 	bool m_focused;
 	bool m_closed;

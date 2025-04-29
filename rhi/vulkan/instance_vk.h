@@ -37,5 +37,5 @@ class CVulkanRhiInstance: public IRhiInstance
 
 	CVector<VulkanDeviceInfo_t> m_devices;
 
-	bool CreateSurface(u64 handle);
+	bool CreateSurface(IVideoSystem* videoSystem);
 };

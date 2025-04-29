@@ -16,6 +16,9 @@ target("VideoSystem")
         add_files("video_win32.cpp", "video_winrt.cpp")
     elseif is_plat("switch") then
         add_files("../private/videosystem/video_switch.cpp")
+    elseif is_plat("linux") then
+        add_files("video_sdl.cpp")
+        add_packages("libsdl3")
     end
 
     add_deps("Base", "CommonFiles", "DllSupport")
