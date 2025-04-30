@@ -19,6 +19,7 @@
 /.vscode/c_cpp_properties.json
 *cache*
 *.zip
+external/winsdk
 
 /config.lua
 

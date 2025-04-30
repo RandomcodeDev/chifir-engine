@@ -42,7 +42,8 @@ add_sysincludedirs(
 )
 
 add_includedirs(
-	"public"
+	"public",
+	"$(buildir)/config"
 )
 
 if os.exists("private") then
@@ -67,14 +68,21 @@ function is_toolchain(...)
 	return false
 end
 
+includes("toolchains/windows-cross.lua")
+
 if os.exists("config.lua") then
 	includes("config.lua")
 else
 	includes("config.default.lua")
 end
-add_defines("GAME_NAME=\"" .. game_name .. "\"")
-add_defines("GAME_DISPLAY_NAME=\"" .. game_display_name .. "\"")
-add_defines("REPO_NAME=\"" .. repo_name .. "\"")
+
+set_configvar("GAME_NAME", game_name)
+set_configvar("GAME_DISPLAY_NAME", game_display_name)
+set_configvar("REPO_NAME", repo_name)
+set_configvar("SWITCH_TITLE_ID", switch_title_id)
+
+set_configdir("$(buildir)/config")
+add_configfiles("public/config.h.in")
 
 vulkan = is_plat("windows", "linux", "switch")
 if vulkan then
@@ -211,6 +219,26 @@ if is_plat("windows", "gdkx") then
 	add_ldflags(
 		"/nodefaultlib", -- further prevent C runtime
 		{ force = true })
+	-- windows cross compilation requires the real sdk, mingw doesn't work with phnt and gcc is garbage
+	if not is_host("windows") and os.exists("external/winsdk") then
+		add_defines("CH_WIN32_CROSSCOMPILE")
+		add_sysincludedirs(
+			"external/winsdk/include/clang",
+			"external/winsdk/include/msvc",
+			"external/winsdk/include/ucrt",
+			"external/winsdk/include/um",
+			"external/winsdk/include/shared",
+			"external/winsdk/include/winrt"
+		)
+		add_linkdirs(
+			"external/winsdk/lib/um"
+		)
+		add_cxflags(
+			"/X",
+			"-clang:-ffreestanding",
+			"-clang:-Wno-ignored-pragma-intrinsic"
+		)
+	end
 elseif is_plat("linux", "switch", "orbis") then
 	add_cxflags(
 		"-fms-extensions",

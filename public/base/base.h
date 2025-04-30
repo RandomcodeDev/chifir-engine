@@ -4,6 +4,7 @@
 #pragma once
 
 #include "compiler.h"
+#include "config.h"
 #include "dll.h"
 #include "macros.h"
 #include "types.h"

@@ -464,6 +464,9 @@ static s32 Compare(const void* RESTRICT a, const void* RESTRICT b, ssize offset,
 
 #ifdef CH_X86
 // https://github.com/WojciechMula/simd-string/blob/master/memcmp.cpp
+#ifdef __clang__
+__attribute__((target("sse4")))
+#endif
 static bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 {
 	static const u8 mode = _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_EACH | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;

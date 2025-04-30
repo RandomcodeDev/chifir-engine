@@ -5,6 +5,7 @@
 #include "base/log.h"
 #include "vulkan.h"
 
+#if 0
 static void VKAPI_CALL
 VkAllocNotification(void* pUserData, usize size, VkInternalAllocationType allocationType, VkSystemAllocationScope allocationScope)
 {
@@ -44,6 +45,7 @@ static void VKAPI_CALL VkFree(void* pUserData, void* pMemory)
 		Base_Free(pMemory);
 	}
 }
+#endif
 
 const VkAllocationCallbacks* GetVkAllocationCallbacks()
 {

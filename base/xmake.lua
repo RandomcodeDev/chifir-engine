@@ -6,7 +6,9 @@ target("Base")
 
     add_defines("IN_BASE")
 
-    add_headerfiles("**.h", "../private/base/**.h", "../public/base/**.h")
+    add_includedirs("$(scriptdir)")
+
+    add_headerfiles("**.h", "../private/base/**.h", "../public/base/**.h", "**.inc")
     add_files(
         "async.cpp",
         "base.cpp",
@@ -40,16 +42,29 @@ target("Base")
             "../public/base/compiler_msvc.cpp"
         )
 
-        if is_arch("x64", "x86_64") then
-			add_headerfiles("../public/base/compiler_msvc_amd64.asm", "stubs_win32_amd64.asm")
-            add_files("../public/base/compiler_msvc_amd64.asm", "stubs_win32_amd64.asm")
-        elseif is_arch("x86") then
-			add_headerfiles("../public/base/compiler_msvc_x86.asm", "stubs_win32_x86.asm")
-            add_files("../public/base/compiler_msvc_x86.asm", "stubs_win32_x86.asm")
-        elseif is_arch("arm64") then
-			add_headerfiles("../public/base/compiler_msvc_arm64.asm", "stubs_win32_arm64.asm")
-            add_files("../public/base/compiler_msvc_arm64.asm", "stubs_win32_arm64.asm")
-        end
+		if is_host("windows") then
+	        if is_arch("x64", "x86_64") then
+				add_headerfiles("../public/base/compiler_msvc_amd64.asm", "stubs_win32_amd64.asm")
+			    add_files("../public/base/compiler_msvc_amd64.asm", "stubs_win32_amd64.asm")
+	        elseif is_arch("x86") then
+				add_headerfiles("../public/base/compiler_msvc_x86.asm", "stubs_win32_x86.asm")
+	            add_files("../public/base/compiler_msvc_x86.asm", "stubs_win32_x86.asm")
+	        elseif is_arch("arm64") then
+				add_headerfiles("../public/base/compiler_msvc_arm64.asm", "stubs_win32_arm64.asm")
+	            add_files("../public/base/compiler_msvc_arm64.asm", "stubs_win32_arm64.asm")
+		    end
+		else
+			if is_arch("x64", "x86_64") then
+				add_headerfiles("../public/base/compiler_msvc_amd64.S", "stubs_win32_amd64.S")
+			    add_files("../public/base/compiler_msvc_amd64.S", "stubs_win32_amd64.S")
+	        elseif is_arch("x86") then
+				add_headerfiles("../public/base/compiler_msvc_x86.S", "stubs_win32_x86.S")
+	            add_files("../public/base/compiler_msvc_x86.S", "stubs_win32_x86.S")
+	        elseif is_arch("arm64") then
+				add_headerfiles("../public/base/compiler_msvc_arm64.S", "stubs_win32_arm64.S")
+	            add_files("../public/base/compiler_msvc_arm64.S", "stubs_win32_arm64.S")
+		    end
+		end
     elseif is_plat("linux") then
         add_files(
             "async_unix.cpp",
@@ -84,11 +99,19 @@ target("CommonFiles")
     if is_plat("windows", "gdkx") then
         add_files("../public/base/compiler_msvc.cpp")
 
-        if is_arch("x64", "x86_64") then
-            add_files("../public/base/compiler_msvc_amd64.asm")
-        elseif is_arch("x86") then
-            add_files("../public/base/compiler_msvc_x86.asm")
-        end
+		if is_host("windows") then
+			if is_arch("x64", "x86_64") then
+		        add_files("../public/base/compiler_msvc_amd64.asm")
+	        elseif is_arch("x86") then
+			    add_files("../public/base/compiler_msvc_x86.asm")
+		    end
+		else
+			if is_arch("x64", "x86_64") then
+		        add_files("../public/base/compiler_msvc_amd64.S")
+	        elseif is_arch("x86") then
+			    add_files("../public/base/compiler_msvc_x86.S")
+		    end
+		end
     end
 target_end()
 

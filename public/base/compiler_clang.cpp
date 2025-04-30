@@ -18,6 +18,9 @@ extern "C"
 		Base_AbortSafe(ABORT_RELEVANT_ERROR, "Pure virtual call");
 	}
 
+	typedef long long __m128i_clang __attribute__((__vector_size__(16), __aligned__(16)));
+	typedef char __v16qi __attribute__((__vector_size__(16)));
+
 #ifndef CH_SWITCH
 	void __cxa_atexit()
 	{

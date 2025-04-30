@@ -42,8 +42,8 @@ Done:
 }
 
 static ICoreApplication* CoreApplication;
-static IApplicationDataStatics* ApplicationDataStatics;
-static IApplicationData* ApplicationData;
+//static IApplicationDataStatics* ApplicationDataStatics;
+//static IApplicationData* ApplicationData;
 static IAppDataPathsStatics* AppDataPathsStatics;
 static IAppDataPaths* AppDataPaths;
 
@@ -212,7 +212,7 @@ struct InspectableBase: public IInspectable, public UnknownBase
                                                                                                                                  \
 			if (COMPARE_IID(riid, IID_AnyEventHandler) || COMPARE_IID(riid, __uuidof(IUnknown)))                                 \
 			{                                                                                                                    \
-				*ppvObject = reinterpret_cast<void*>(reinterpret_cast<base*>(this));                                             \
+				*ppvObject = reinterpret_cast<void*>(static_cast<base*>(this));                                                  \
 			}                                                                                                                    \
 			else                                                                                                                 \
 			{                                                                                                                    \

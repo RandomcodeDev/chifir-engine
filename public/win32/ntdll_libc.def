@@ -4,3 +4,5 @@ EXPORTS
 	wcslen
 	wcsncpy
 	wcsrchr
+	memset
+	memcpy
