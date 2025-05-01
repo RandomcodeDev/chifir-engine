@@ -27,7 +27,12 @@ ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #ifdef CH_XBOX360
 #pragma comment(linker, "/SUBSYSTEM:XBOX,2.00")
 #elif defined CH_IA32
+#ifdef __clang__
+#pragma comment(linker, "/SUBSYSTEM:" SUBSYSTEM ",5.00")
+#else
+// MSVC silently defaults to 6.0
 #pragma comment(linker, "/SUBSYSTEM:" SUBSYSTEM ",5.01")
+#endif
 #else
 #pragma comment(linker, "/SUBSYSTEM:" SUBSYSTEM ",5.02")
 #endif

@@ -6,7 +6,7 @@ target("Base")
 
     add_defines("IN_BASE")
 
-    add_includedirs("$(scriptdir)")
+    add_includedirs(".")
 
     add_headerfiles("**.h", "../private/base/**.h", "../public/base/**.h", "**.inc")
     add_files(
@@ -27,7 +27,7 @@ target("Base")
         "../public/base/libc.cpp"
     )
 
-    if is_toolchain("clang", "nx-clang", "orbis-clang", "clang-cl") then
+    if is_toolchain("clang", "llvm", "nx-clang", "orbis-clang", "clang-cl") then
         add_files("../public/base/compiler_clang.cpp")
     end
 
@@ -87,12 +87,14 @@ target_end()
 target("CommonFiles")
     set_kind("static")
 
+    add_includedirs(".")
+
     add_files(
         "../public/base/memoverride.cpp",
         "../public/base/libc.cpp"
     )
 
-    if is_toolchain("clang", "nx-clang", "orbis-clang", "clang-cl") then
+    if is_toolchain("clang", "llvm", "nx-clang", "orbis-clang", "clang-cl") then
         add_files("../public/base/compiler_clang.cpp")
     end
 

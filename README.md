@@ -17,19 +17,19 @@ The engine doesn't use the CRT or STL at all (where possible, meaning not at all
 which does improve portability, especially between Windows versions. Some performance-critical functions are written to use
 SIMD if the current CPU supports it (on x86, it's all dynamically enabled based on `cpuid` instead of being done at compile
 time). I also wrote my own allocator that works pretty well, but I'm sure I'll have to optimize it eventually. I have my own
-containers too.
+containers too. I have limited experience with SIMD and writing an allocator, so I'm sure there's room for improvement.
 
 ## Build requirements
 
 For every platform, you need [xmake](https://xmake.io) and a C++17 compiler.
 
 - For Windows, you need Visual Studio 2022 (or any version with C++17 support). You can also build with Clang, but you still
-  need VS. You also (will, in the future) need the GDK to build the x64 version.
+  need VS. You also (will, in the future) need the GDK to build the x64 version. There is support for cross compiling, using
+  Clang and the Windows SDK/MSVC headers.
 - For Xbox 360, you need the SDK, it's on Internet Archive.
 - For Switch, you need version 15.3.2 of the SDK, the private repo, and my private fork of xmake.
 - For PS4, you need version 8.008 of the SDK, the private repo, and my private fork of xmake.
-- For Linux, you need Clang and glibc. GCC isn't supported and isn't a priority (maybe I'll add support for MinGW so I can
-  cross compile for Windows).
+- For Linux, you need Clang and glibc. GCC isn't supported and isn't a priority, especially MinGW.
 
 There are Rust bindings in progress, you need the `nightly` toolchain for them.
 
@@ -68,6 +68,26 @@ Next, run `xmake config` with these flags (you have to pass all of them or it wi
   - `nx-clang` Nintendo Switch SDK version of Clang and LLVM (use this for `switch`)
   - `orbis-clang` PS4 Clang (use this for `orbis`)
 - `--vs` Sets the Visual Studio version to generate wrapper projects for (optional)
+
+To cross compile for Windows, make a folder in `external` called `winsdk` with symlinks like this (these instructions could be wrong):
+```
+external/winsdk
+|- include
+|\-- msvc     ->    <MSVC install path>/Include
+| |- shared   ->    <Windows SDK install path>/Include/<version>/shared
+| |- ucrt     ->    <Windows SDK install path>/Include/<version>/ucrt
+| |- um       ->    <Windows SDK install path>/Include/<version>/um
+|  \ winrt    ->    <Windows SDK install path>/Include/<version>/winrt
+|
+|- lib
+|\-- um       ->   <Windows SDK install path>/Lib/<version>/<target arch>/um
+```
+
+[This](https://github.com/Jake-Shadle/xwin) tool lets you conveniently download the Windows SDK and MSVC headers.
+After that, just do this to configure:
+```
+xmake f -p <windows or gdkx> -a <x64 or x86> -m <mode> -k <static or shared> --toolchain=windows-cross
+```
 
 For the Rust stuff, build the engine, then do `cargo build`.
 

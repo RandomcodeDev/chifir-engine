@@ -124,11 +124,21 @@ end
 
 if is_mode("debug") then
 	add_defines("CH_DEBUG")
-	set_symbols("debug")
+	if is_toolchain("msvc") then
+		add_cxflags("/Z7")
+		add_ldflags("/debug")
+	else
+		set_symbols("debug")
+	end
 	set_optimize("none")
 elseif is_mode("release") then
 	add_defines("CH_RELEASE")
-	set_symbols("debug")
+	if is_toolchain("msvc") then
+		add_cxflags("/Z7")
+		add_ldflags("/debug")
+	else
+		set_symbols("debug")
+	end
 	set_optimize("fastest")
 	set_strip("all")
 elseif is_mode("retail") then

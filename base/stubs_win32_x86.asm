@@ -16,6 +16,7 @@ MAKE_STUB MACRO name, paramSize
 	PUBLIC @CatStr(_STUB_, name)
 	@CatStr(_STUB_, name) DD 0
 	.CODE
+	PUBLIC @CatStr(name, _Forwarder)
 	@CatStr(name, _Forwarder) PROC
 		jmp [DWORD PTR @CatStr(_STUB_, name)]
 	@CatStr(name, _Forwarder) ENDP
@@ -44,6 +45,6 @@ MAKE_STUB_LOCAL MACRO name, paramSize
 	@CatStr(_, name, paramSize) ENDP
 ENDM
 
-INCLUDE "stubs_win32_x86.inc"
+INCLUDE <stubs_win32_x86.inc>
 
 END

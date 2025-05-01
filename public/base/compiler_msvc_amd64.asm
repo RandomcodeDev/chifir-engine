@@ -16,8 +16,7 @@ _fltused DD 9875h
 
 .CODE
 
-Base_AbortSafe TEXTEQU <?Base_AbortSafe@@YAXHPEBD@Z>
-EXTERN Base_AbortSafe : PROC
+EXTERN Base_AbortSafeC : PROC
 
 IFDEF CH_STATIC
 EXTERN __chkstk_Forwarder : PROC
@@ -41,7 +40,7 @@ Fail:
 	mov r9, __security_cookie
 	mov ecx, 0C0000409h
 	lea rdx, [errorMsg]
-	call Base_AbortSafe
+	call Base_AbortSafeC
 __security_check_cookie ENDP
 
 PUBLIC __GSHandlerCheck
