@@ -42,6 +42,7 @@ toolchain("windows-cross")
 			toolchain:add("asflags", march)
 		end
 
+		toolchain:add("shflags", "/subsystem:CONSOLE,5.00")
 	
         -- add bin search library for loading some dependent .dll files windows
         local bindir = toolchain:bindir()

@@ -172,18 +172,24 @@ bool Base_CheckWoW64()
 	return GetArchitecture() != ((PIMAGE_NT_HEADERS)RVA_TO_VA(&__ImageBase, __ImageBase.e_lfanew))->FileHeader.Machine;
 }
 
-cstr Base_IsWine()
+cstr Base_GetWineVersion()
 {
 	static cstr (*wine_get_version)() = nullptr;
+	static bool isWine = true;
 	static cstr wine_version = nullptr;
 
-	if (!wine_get_version)
+	if (!wine_get_version && isWine)
 	{
 		char name[] = "wine_get_version";
 		ANSI_STRING nameStr = RTL_CONSTANT_STRING(name);
 		if (NT_SUCCESS(LdrGetProcedureAddress(s_ntDllBase, &nameStr, 0, reinterpret_cast<void**>(&wine_get_version))))
 		{
 			wine_version = wine_get_version();
+			isWine = true;
+		}
+		else
+		{
+			isWine = false;
 		}
 	}
 

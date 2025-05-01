@@ -197,6 +197,11 @@ extern "C" BASEAPI int Base_RunMain(int (*main)())
 	}
 }
 
+BASEAPI bool Plat_IsWine()
+{
+	return Base_GetWineVersion() != nullptr;
+}
+
 BASEAPI bool Plat_IsUwpApp()
 {
 	return g_uwp;
@@ -270,7 +275,7 @@ BASEAPI cstr Plat_GetSystemDescription()
 			XboxKrnlVersion[7]);
 #else
 		cstr name = GetProductName();
-		cstr wineVersion = Base_IsWine();
+		cstr wineVersion = Base_GetWineVersion();
 
 		dstr version = nullptr;
 		// Check if the build version info is valid

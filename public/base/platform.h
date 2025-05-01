@@ -56,6 +56,9 @@ extern BASEAPI cstr Plat_GetEngineDir();
 extern BASEAPI cstr Plat_GetEnvironment(cstr name);
 
 #ifdef CH_WIN32
+/// Get whether the engine is running in Wine (if you use this for shady stuff you suck)
+extern BASEAPI bool Plat_IsWine();
+
 /// Get whether the engine is running as a UWP app or not
 extern BASEAPI bool Plat_IsUwpApp();
 

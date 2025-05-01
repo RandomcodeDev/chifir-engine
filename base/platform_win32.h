@@ -113,13 +113,20 @@ extern bool g_uwp;
 #define STUB_AVAILABLE(x)   STUB_AVAILABLE_2(x)
 #define STUB_NAME_2(x)      STUB_##x
 #define STUB_NAME(x)        STUB_NAME_2(x)
+#ifdef CH_WIN32_CROSSCOMPILE
+#define FORWARDER_PREFIX "_"
+#define EXPORT_PREFIX "_"
+#else
+#define FORWARDER_PREFIX ""
+#define EXPORT_PREFIX "_"
+#endif
 /// x86 is the only name mangled architecture
 #ifdef CH_IA32
 #define MAKE_STUB(x, callingConv, ...)                                                                                           \
 	extern "C" uptr (*STUB_NAME(x))(...);                                                                                        \
 	extern "C" BASEAPI bool STUB_AVAILABLE(x)();                                                                                 \
 	EXPORT_RAW("_" STRINGIZE(x) "_Available")                                                                                    \
-	EXPORT_AS_RAW(STRINGIZE(x) "_Forwarder", "_" STRINGIZE(x) #__VA_ARGS__)
+	EXPORT_AS_RAW(FORWARDER_PREFIX STRINGIZE(x) "_Forwarder", EXPORT_PREFIX STRINGIZE(x) #__VA_ARGS__)
 #elif defined CH_XBOX360
 #define MAKE_STUB(x, ...) extern "C" BASEAPI bool STUB_AVAILABLE(x)() EXPORT_RAW(STRINGIZE(x) "_Available")
 #else
@@ -137,7 +144,7 @@ extern bool g_uwp;
 /// using those
 extern bool Base_InitLoader();
 extern bool Base_CheckWoW64();
-extern cstr Base_IsWine();
+extern cstr Base_GetWineVersion();
 
 extern bool g_loaderInitialized;
 

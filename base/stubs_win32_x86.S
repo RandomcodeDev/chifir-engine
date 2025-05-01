@@ -13,8 +13,8 @@ _STUB_\name:
     .long 0
 
     .text
-	.globl \name\()_Forwarder
-\name\()_Forwarder:
+	.globl _\name\()_Forwarder
+_\name\()_Forwarder:
     jmp DWORD PTR _STUB_\name
 
     .globl _\name\()_Available

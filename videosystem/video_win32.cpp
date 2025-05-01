@@ -14,7 +14,7 @@ bool CWin32VideoSystem::Initialize()
 
 	Log_Info("Initializing Win32 video system");
 
-	if (SetProcessDPIAware_Available())
+	if (SetProcessDPIAware_Available() && !Plat_IsWine()) // wine doesn't support SetProcessDPIAware
 	{
 		Log_Info("Setting DPI awareness");
 		if (!SetProcessDPIAware())
@@ -70,11 +70,11 @@ bool CWin32VideoSystem::RegisterWindowClass()
 	wndClass.cbSize = SIZEOF(WNDCLASSEXA);
 
 	// Check if the class is already registered
-	if (GetClassInfoExA(m_hinstance, WINDOW_CLASS, &wndClass))
-	{
-		Log_Debug("GetClassInfoExA(\"" WINDOW_CLASS "\") returned true, assuming window class is already registered");
-		return true;
-	}
+//	if (GetClassInfoExA(m_hinstance, WINDOW_CLASS, &wndClass))
+//	{
+//		Log_Debug("GetClassInfoExA(\"" WINDOW_CLASS "\") returned true, assuming window class is already registered");
+//		return true;
+//	}
 
 	Log_Debug("Registering " WINDOW_CLASS " window class");
 
@@ -87,6 +87,7 @@ bool CWin32VideoSystem::RegisterWindowClass()
 	wndClass.hCursor = LoadCursorA(nullptr, (cstr)IDC_ARROW);
 	if (!RegisterClassExA(&wndClass))
 	{
+		// TODO: detect an already-registered class
 		Log_Error("Failed to register window class: Win32 error %d (0x%X)", LastNtError(), LastNtError());
 		return false;
 	}
