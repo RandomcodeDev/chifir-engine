@@ -81,7 +81,7 @@ bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
 	}
 
 	Log_Debug("Getting address of CreateDXGIFactory2");
-	auto f_CreateDXGIFactory2 = m_dxgi->GetSymbol<HRESULT(WINAPI*)(UINT, REFIID iid, void** factory)>("CreateDXGIFactory2");
+	auto f_CreateDXGIFactory2 = m_dxgi->GetSymbol<decltype(CreateDXGIFactory2)*>("CreateDXGIFactory2");
 	if (!f_CreateDXGIFactory2)
 	{
 		Log_Error("Failed to get CreateDXGIFactory2");

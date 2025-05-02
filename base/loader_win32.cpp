@@ -175,26 +175,40 @@ bool Base_CheckWoW64()
 
 cstr Base_GetWineVersion()
 {
-	static cstr (*wine_get_version)() = nullptr;
-	static bool isWine = true;
-	static cstr wine_version = nullptr;
+	static cstr (*wine_get_build_id)() = nullptr;
+	static void (*wine_get_host_version)(cstr* name, cstr* version) = nullptr;
+	static bool checked = false;
+	static bool wine = false;
+	static char wineVersion[64];
 
-	if (!wine_get_version && isWine)
+	if (!checked)
 	{
-		char name[] = "wine_get_version";
-		ANSI_STRING nameStr = RTL_CONSTANT_STRING(name);
-		if (NT_SUCCESS(LdrGetProcedureAddress(s_ntDllBase, &nameStr, 0, reinterpret_cast<void**>(&wine_get_version))))
+		CWindowsLibrary ntDllWin("ntdll.dll", s_ntDllBase);
+		ILibrary* ntDll = &ntDllWin;
+		wine_get_build_id = ntDll->GetSymbol<decltype(wine_get_build_id)>("wine_get_build_id");
+		wine_get_host_version = ntDll->GetSymbol<decltype(wine_get_host_version)>("wine_get_host_version");
+
+		wine = wine_get_build_id != nullptr;
+		if (!wine)
 		{
-			wine_version = wine_get_version();
-			isWine = true;
+			return nullptr;
 		}
-		else
-		{
-			isWine = false;
-		}
+
+		cstr host = nullptr;
+		cstr hostVersion = nullptr;
+		wine_get_host_version(&host, &hostVersion);
+		Base_StrFormat(
+			wineVersion, ArraySize(wineVersion), "%s on %s %s", wine_get_build_id(), host, hostVersion);
+
+		checked = true;
 	}
 
-	return wine_version;
+	if (wine)
+	{
+		return wineVersion;
+	}
+
+	return nullptr;
 }
 
 static bool FindLdrGetProcedureAddress()

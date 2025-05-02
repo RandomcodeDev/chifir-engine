@@ -19,9 +19,7 @@ CDx12RhiDevice::CDx12RhiDevice(CDx12RhiInstance* instance, const Dx12DeviceInfo_
 bool CDx12RhiDevice::Initialize()
 {
 	Log_Debug("Getting address of D3D12CreateDevice in %s.dll", CDx12RhiInstance::D3D12_DLL_NAME);
-	auto f_D3D12CreateDevice =
-		m_instance->m_d3d12->GetSymbol<HRESULT(WINAPI*)(IUnknown * adapter, D3D_FEATURE_LEVEL, const GUID iid, void** device)>(
-			"D3D12CreateDevice");
+	auto f_D3D12CreateDevice = m_instance->m_d3d12->GetSymbol<decltype(D3D12CreateDevice)*>("D3D12CreateDevice");
 	if (!f_D3D12CreateDevice)
 	{
 		Log_Error("Failed to get address of D3D12CreateDevice!");
