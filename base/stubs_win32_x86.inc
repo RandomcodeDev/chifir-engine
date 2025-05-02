@@ -1,5 +1,7 @@
 MAKE_STUB _chkstk,
+
 MAKE_STUB DbgPrint,
+
 MAKE_STUB LdrAddRefDll, @8
 MAKE_STUB LdrAddDllDirectory, @8
 MAKE_STUB LdrGetDllHandle, @16
@@ -7,6 +9,7 @@ MAKE_STUB LdrGetProcedureAddress, @16
 MAKE_STUB LdrLoadDll, @16
 MAKE_STUB LdrUnloadDll, @4
 MAKE_STUB NtAllocateVirtualMemory, @24
+
 MAKE_STUB NtClose, @4
 MAKE_STUB NtCreateFile, @44
 MAKE_STUB NtCreateKey, @28
@@ -31,6 +34,7 @@ MAKE_STUB NtWaitForSingleObject, @12
 MAKE_STUB NtWriteFile, @36
 MAKE_STUB NtYieldExecution, @0
 
+MAKE_STUB RtlAddVectoredExceptionHandler, @8
 MAKE_STUB RtlAnsiStringToUnicodeString, @12
 MAKE_STUB RtlCaptureStackBackTrace, @16
 MAKE_STUB RtlFreeAnsiString, @4

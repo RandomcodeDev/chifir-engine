@@ -26,6 +26,7 @@ extern "C" DLLIMPORT u8* XboxKrnlVersion;
 extern "C" DLLIMPORT u32* XboxHardwareInfo;
 #else
 DECLARE_AVAILABLE(NtRaiseHardError);
+DECLARE_AVAILABLE(RtlAddVectoredExceptionHandler);
 DECLARE_AVAILABLE(RtlAnsiStringToUnicodeString);
 DECLARE_AVAILABLE(NtQuerySystemInformationEx);
 DECLARE_AVAILABLE(NtTerminateProcess);
@@ -110,6 +111,8 @@ static void InitializeTls()
 	Plat_GetTlsData()->isMainThread = true;
 }
 
+static LONG __stdcall ExceptionHandler(PEXCEPTION_POINTERS info);
+
 BASEAPI void Plat_Init()
 {
 	if (!g_platInitialized)
@@ -127,6 +130,11 @@ BASEAPI void Plat_Init()
 		if (!Base_InitLoader())
 		{
 			Base_AbortSafe(LastNtStatus(), "Failed to initialize dynamic loader");
+		}
+
+		if (RtlAddVectoredExceptionHandler_Available())
+		{
+			RtlAddVectoredExceptionHandler(true, ExceptionHandler);
 		}
 
 #ifndef CH_XBOX360
@@ -183,6 +191,115 @@ BASEAPI void Plat_Shutdown()
 	{
 		Base_Free(s_hardwareDescription);
 	}
+}
+
+static ULONG HardError(PCUNICODE_STRING msg, NTSTATUS status, HARDERROR_RESPONSE_OPTION option = OptionAbortRetryIgnore)
+{
+	wchar_t title[] = L"Fatal error!";
+	UNICODE_STRING titleStr = RTL_CONSTANT_STRING(title);
+	ULONG_PTR params[] = {
+		reinterpret_cast<ULONG_PTR>(msg), reinterpret_cast<ULONG_PTR>(&titleStr), MB_ABORTRETRYIGNORE | MB_ICONERROR, INFINITE};
+	ULONG response = 0;
+	NtRaiseHardError(
+		HARDERROR_OVERRIDE_ERRORMODE | STATUS_SERVICE_NOTIFICATION, (ULONG)ARRAYSIZE(params), 0b0011, params, option, &response);
+
+	return response;
+}
+
+static LONG __stdcall ExceptionHandler(PEXCEPTION_POINTERS info)
+{
+#define X(code, ...)                                                                                                             \
+	case code:                                                                                                                   \
+		codeStr = #code;                                                                                               \
+		{                                                                                                                        \
+			__VA_ARGS__                                                                                                          \
+		}                                                                                                                        \
+		break;
+
+	cstr codeStr = "UNKNOWN";
+	cstr errorType = nullptr;
+	uptr address = 0;
+	char buffer[1024];
+	wchar_t wbuffer[1024];
+
+	if (info->ExceptionRecord->NumberParameters > 1)
+	{
+		switch (info->ExceptionRecord->ExceptionInformation[0])
+		{
+		case 0:
+			errorType = "read";
+			break;
+		case 1:
+			errorType = "write";
+			break;
+		case 8:
+			errorType = "execute";
+			break;
+		}
+
+		address = info->ExceptionRecord->ExceptionInformation[1];
+	}
+
+	switch (info->ExceptionRecord->ExceptionCode)
+	{
+		X(EXCEPTION_ACCESS_VIOLATION)
+		X(EXCEPTION_ARRAY_BOUNDS_EXCEEDED)
+		X(EXCEPTION_BREAKPOINT)
+		X(EXCEPTION_DATATYPE_MISALIGNMENT)
+		X(EXCEPTION_FLT_DENORMAL_OPERAND)
+		X(EXCEPTION_FLT_DIVIDE_BY_ZERO)
+		X(EXCEPTION_FLT_INEXACT_RESULT)
+		X(EXCEPTION_FLT_INVALID_OPERATION)
+		X(EXCEPTION_FLT_OVERFLOW)
+		X(EXCEPTION_FLT_STACK_CHECK)
+		X(EXCEPTION_FLT_UNDERFLOW)
+		X(EXCEPTION_ILLEGAL_INSTRUCTION)
+		X(EXCEPTION_IN_PAGE_ERROR)
+		X(EXCEPTION_INT_DIVIDE_BY_ZERO)
+		X(EXCEPTION_INT_OVERFLOW)
+		X(EXCEPTION_NONCONTINUABLE_EXCEPTION)
+		X(EXCEPTION_PRIV_INSTRUCTION)
+		X(EXCEPTION_SINGLE_STEP)
+		X(EXCEPTION_STACK_OVERFLOW)
+	default:
+		return EXCEPTION_CONTINUE_EXECUTION;
+	}
+
+	uptr pc = 0;
+	uptr sp = 0;
+#ifdef CH_AMD64
+	pc = info->ContextRecord->Rip;
+	sp = info->ContextRecord->Rsp;
+#elif defined CH_IA32
+	pc = info->ContextRecord->Eip;
+	sp = info->ContextRecord->Esp;
+#endif
+
+	ANSI_STRING str = {};
+	str.Buffer = buffer;
+	str.Length = Base_StrFormat(
+					 buffer, ArraySize(buffer), "Caught exception: %s (%s 0x%016llX): pc=0x%016llX sp=0x%016llX", codeStr,
+					 errorType ? errorType : "", address, pc, sp) -
+				 1;
+	str.MaximumLength = sizeof(buffer);
+
+	UNICODE_STRING ustr = {};
+	ustr.Buffer = wbuffer;
+	ustr.MaximumLength = sizeof(wbuffer);
+	RtlAnsiStringToUnicodeString(&ustr, &str, false);
+
+	switch (HardError(&ustr, STATUS_UNHANDLED_EXCEPTION, OptionOk))
+	{
+	case ResponseAbort:
+		NtTerminateProcess(NtCurrentProcess(), STATUS_UNHANDLED_EXCEPTION);
+		UNREACHABLE();
+	case ResponseRetry:
+		BREAKPOINT();
+	default:
+	case ResponseIgnore:
+		return EXCEPTION_CONTINUE_EXECUTION;
+	}
+#undef X
 }
 
 extern "C" BASEAPI int Base_RunMain(int (*main)())
@@ -291,8 +408,8 @@ BASEAPI cstr Plat_GetSystemDescription()
 		}
 
 		s_systemDescription = Base_StrFormat(
-			"%s %s%s%s%s%s", name, version, wineVersion ? " Wine " : "",
-			wineVersion ? wineVersion : "", Base_CheckWoW64() ? " WoW64" : "", Plat_IsUwpApp() ? " UWP" : "");
+			"%s %s%s%s%s%s", name, version, wineVersion ? " Wine " : "", wineVersion ? wineVersion : "",
+			Base_CheckWoW64() ? " WoW64" : "", Plat_IsUwpApp() ? " UWP" : "");
 
 		Base_Free(version);
 #endif
@@ -355,18 +472,15 @@ BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)
 		messageStr.MaximumLength = messageStr.Length + 1;
 		RtlAnsiStringToUnicodeString(&messageUStr, &messageStr, true);
 
-		wchar_t title[] = L"Fatal error!";
-		UNICODE_STRING titleStr = RTL_CONSTANT_STRING(title);
-		ULONG_PTR params[] = {
-			reinterpret_cast<ULONG_PTR>(&messageUStr), reinterpret_cast<ULONG_PTR>(&titleStr), MB_ABORTRETRYIGNORE | MB_ICONERROR,
-			INFINITE};
-		ULONG response = 0;
-		NtRaiseHardError(
-			HARDERROR_OVERRIDE_ERRORMODE | STATUS_SERVICE_NOTIFICATION, ArraySize<u32>(params), 0b0011, params,
-			OptionAbortRetryIgnore, &response);
-		if (response == ResponseRetry)
+		switch (HardError(&messageUStr, code))
 		{
+		case ResponseRetry:
 			BREAKPOINT();
+		default:
+		case ResponseIgnore:
+		case ResponseAbort:
+			NtTerminateProcess(NtCurrentProcess(), code);
+			UNREACHABLE();
 		}
 	}
 

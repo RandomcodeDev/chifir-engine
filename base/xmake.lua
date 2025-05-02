@@ -47,7 +47,7 @@ target("Base")
 				add_headerfiles("../public/base/compiler_msvc_amd64.asm", "stubs_win32_amd64.asm")
 			    add_files("../public/base/compiler_msvc_amd64.asm", "stubs_win32_amd64.asm")
 	        elseif is_arch("x86") then
-				add_headerfiles("../public/base/compiler_msvc_x86.asm", "stubs_win32_x86.asm")
+				add_headerfiles("../public/base/compiler_msvc_x86.asm", "stubs_win32_x86.asm", "stubs_win32_x86.inc")
 	            add_files("../public/base/compiler_msvc_x86.asm", "stubs_win32_x86.asm")
 	        elseif is_arch("arm64") then
 				add_headerfiles("../public/base/compiler_msvc_arm64.asm", "stubs_win32_arm64.asm")
@@ -58,7 +58,7 @@ target("Base")
 				add_headerfiles("../public/base/compiler_msvc_amd64.S", "stubs_win32_amd64.S")
 			    add_files("../public/base/compiler_msvc_amd64.S", "stubs_win32_amd64.S")
 	        elseif is_arch("x86") then
-				add_headerfiles("../public/base/compiler_msvc_x86.S", "stubs_win32_x86.S")
+				add_headerfiles("../public/base/compiler_msvc_x86.S", "stubs_win32_x86.S", "stubs_win32_x86.inc")
 	            add_files("../public/base/compiler_msvc_x86.S", "stubs_win32_x86.S")
 	        elseif is_arch("arm64") then
 				add_headerfiles("../public/base/compiler_msvc_arm64.S", "stubs_win32_arm64.S")

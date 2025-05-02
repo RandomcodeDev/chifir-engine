@@ -42,7 +42,9 @@ ENDM
 
 ; ntdll stubs
 MAKE_STUB __chkstk
+
 MAKE_STUB DbgPrint
+
 MAKE_STUB LdrAddRefDll
 MAKE_STUB LdrAddDllDirectory
 MAKE_STUB LdrGetDllHandle
@@ -50,6 +52,7 @@ MAKE_STUB LdrGetProcedureAddress
 MAKE_STUB LdrLoadDll
 MAKE_STUB LdrUnloadDll
 MAKE_STUB NtAllocateVirtualMemory
+
 MAKE_STUB NtClose
 MAKE_STUB NtCreateFile
 MAKE_STUB NtCreateMutant
@@ -73,6 +76,8 @@ MAKE_STUB NtTerminateProcess
 MAKE_STUB NtWaitForSingleObject
 MAKE_STUB NtWriteFile
 MAKE_STUB NtYieldExecution
+
+MAKE_STUB RtlAddVectoredExceptionHandler
 MAKE_STUB RtlAnsiStringToUnicodeString
 MAKE_STUB RtlCaptureStackBackTrace
 MAKE_STUB RtlFreeAnsiString

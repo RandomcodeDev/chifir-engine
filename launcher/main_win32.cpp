@@ -44,7 +44,7 @@ static NORETURN void Die(const wchar_t* msg, NTSTATUS status)
 	UNICODE_STRING messageStr = {};
 	messageStr.Buffer = CONST_CAST(wchar_t*, msg);
 	messageStr.Length = static_cast<WORD>(wcslen(msg) * sizeof(wchar_t));
-	messageStr.MaximumLength = messageStr.Length + 1;
+	messageStr.MaximumLength = messageStr.Length + sizeof(wchar_t);
 
 	wchar_t title[] = L"Fatal error!";
 	UNICODE_STRING titleStr = RTL_CONSTANT_STRING(title);
