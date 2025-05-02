@@ -30,7 +30,7 @@ ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #ifdef __clang__
 #pragma comment(linker, "/SUBSYSTEM:" SUBSYSTEM ",5.00")
 #else
-// MSVC silently defaults to 6.0
+// MSVC silently defaults to 6.0 if you specify 5.00 or lower
 #pragma comment(linker, "/SUBSYSTEM:" SUBSYSTEM ",5.01")
 #endif
 #else
@@ -38,6 +38,26 @@ ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #endif
 
 extern "C" ATTRIBUTE(dllimport) int _snwprintf(wchar_t* Buffer, size_t Size, const wchar_t* Format, ...);
+
+static NORETURN void Die(const wchar_t* msg, NTSTATUS status)
+{
+	UNICODE_STRING messageStr = {};
+	messageStr.Buffer = CONST_CAST(wchar_t*, msg);
+	messageStr.Length = static_cast<WORD>(wcslen(msg) * sizeof(wchar_t));
+	messageStr.MaximumLength = messageStr.Length + 1;
+
+	wchar_t title[] = L"Fatal error!";
+	UNICODE_STRING titleStr = RTL_CONSTANT_STRING(title);
+	ULONG_PTR params[] = {
+		reinterpret_cast<ULONG_PTR>(&messageStr), reinterpret_cast<ULONG_PTR>(&titleStr), MB_ABORTRETRYIGNORE | MB_ICONERROR,
+		INFINITE};
+	ULONG response = 0;
+	NtRaiseHardError(
+		HARDERROR_OVERRIDE_ERRORMODE | STATUS_SERVICE_NOTIFICATION, (ULONG)ARRAYSIZE(params), 0b0011, params,
+		OptionAbortRetryIgnore, &response);
+
+	NtTerminateProcess(NtCurrentProcess(), status);
+}
 
 #ifndef CH_STATIC
 static PCWSTR GetEngineDir()
@@ -62,8 +82,7 @@ extern "C" int Base_RunMain(int (*main)());
 extern "C"
 #ifndef CH_XBOX360
 #ifndef CH_RETAIL
-	void
-	mainCRTStartup()
+	void __stdcall mainCRTStartup()
 #else
 	void __stdcall WinMainCRTStartup()
 #endif
@@ -95,7 +114,7 @@ Load:
 		// TODO: figure out how to display an error
 		if (triedSameDir)
 		{
-			NtTerminateProcess(NtCurrentProcess(), status);
+			Die(L"Couldn't find Launcher.dll!", status);
 		}
 		else
 		{
@@ -111,7 +130,7 @@ Load:
 	status = LdrGetProcedureAddress(launcher, &launcherMainString, 0, &launcherMainAddr);
 	if (!NT_SUCCESS(status))
 	{
-		NtTerminateProcess(NtCurrentProcess(), status);
+			Die(L"Couldn't get LauncherMain in Launcher.dll!", status);
 	}
 
 	void* base = nullptr;
@@ -120,7 +139,7 @@ Load:
 	status = LdrGetDllHandle(nullptr, nullptr, &baseString, &base);
 	if (!NT_SUCCESS(status))
 	{
-		NtTerminateProcess(NtCurrentProcess(), status);
+			Die(L"Couldn't find Base.dll!", status);
 	}
 
 	void* runMainAddr = nullptr;
