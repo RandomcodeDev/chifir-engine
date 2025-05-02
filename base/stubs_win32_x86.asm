@@ -16,10 +16,10 @@ MAKE_STUB MACRO name, paramSize
 	PUBLIC @CatStr(_STUB_, name)
 	@CatStr(_STUB_, name) DD 0
 	.CODE
-	PUBLIC @CatStr(name, _Forwarder)
-	@CatStr(name, _Forwarder) PROC
+	PUBLIC @CatStr(_, name, paramSize)
+	@CatStr(_, name, paramSize) PROC
 		jmp [DWORD PTR @CatStr(_STUB_, name)]
-	@CatStr(name, _Forwarder) ENDP
+	@CatStr(_, name, paramSize) ENDP
 	PUBLIC @CatStr(_, name, _Available)
 	@CatStr(_, name, _Available) PROC
 		push ebp

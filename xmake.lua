@@ -230,9 +230,15 @@ if is_plat("windows", "gdkx") then
 			"external/winsdk/include/shared",
 			"external/winsdk/include/winrt"
 		)
-		add_linkdirs(
-			"external/winsdk/lib/um"
-		)
+		if is_arch("x86_64", "x64") then
+			add_linkdirs(
+				"external/winsdk/lib/um/x64"
+			)
+		elseif is_arch("x86") then
+			add_linkdirs(
+				"external/winsdk/lib/um/x86"
+			)
+		end
 		add_cxflags(
 			"/X",
 			"-clang:-ffreestanding",

@@ -44,7 +44,7 @@ target("Base")
 
 		if is_host("windows") then
 	        if is_arch("x64", "x86_64") then
-				add_headerfiles("../public/base/compiler_msvc_amd64.asm", "stubs_win32_amd64.asm")
+				add_headerfiles("../public/base/compiler_msvc_amd64.asm", "stubs_win32_amd64.asm", "stubs_win32_amd64.inc")
 			    add_files("../public/base/compiler_msvc_amd64.asm", "stubs_win32_amd64.asm")
 	        elseif is_arch("x86") then
 				add_headerfiles("../public/base/compiler_msvc_x86.asm", "stubs_win32_x86.asm", "stubs_win32_x86.inc")
@@ -55,7 +55,7 @@ target("Base")
 		    end
 		else
 			if is_arch("x64", "x86_64") then
-				add_headerfiles("../public/base/compiler_msvc_amd64.S", "stubs_win32_amd64.S")
+				add_headerfiles("../public/base/compiler_msvc_amd64.S", "stubs_win32_amd64.S", "stubs_win32_amd64.inc")
 			    add_files("../public/base/compiler_msvc_amd64.S", "stubs_win32_amd64.S")
 	        elseif is_arch("x86") then
 				add_headerfiles("../public/base/compiler_msvc_x86.S", "stubs_win32_x86.S", "stubs_win32_x86.inc")

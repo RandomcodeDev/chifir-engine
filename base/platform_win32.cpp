@@ -132,7 +132,7 @@ BASEAPI void Plat_Init()
 			Base_AbortSafe(LastNtStatus(), "Failed to initialize dynamic loader");
 		}
 
-		if (RtlAddVectoredExceptionHandler_Available())
+		if (!Plat_IsWine() && RtlAddVectoredExceptionHandler_Available())
 		{
 			RtlAddVectoredExceptionHandler(true, ExceptionHandler);
 		}

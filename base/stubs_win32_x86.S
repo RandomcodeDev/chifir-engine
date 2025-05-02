@@ -13,8 +13,8 @@ _STUB_\name:
     .long 0
 
     .text
-	.globl _\name\()_Forwarder
-_\name\()_Forwarder:
+	.globl _\name\paramSize
+_\name\paramSize:
     jmp DWORD PTR _STUB_\name
 
     .globl _\name\()_Available
@@ -31,14 +31,6 @@ _\name\()_Available:
     mov eax, 1
     pop ebp
     ret
-.endm
-
-.macro MAKE_STUB_LOCAL name paramSize
-    MAKE_STUB \name \paramSize
-    .text
-	.globl _\name\paramSize
-_\name\paramSize:
-    jmp DWORD PTR _STUB_\name
 .endm
 
 #include "stubs_win32_x86.inc"

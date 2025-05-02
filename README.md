@@ -77,10 +77,10 @@ external/winsdk
 | |- shared   ->    <Windows SDK install path>/Include/<version>/shared
 | |- ucrt     ->    <Windows SDK install path>/Include/<version>/ucrt
 | |- um       ->    <Windows SDK install path>/Include/<version>/um
-|  \ winrt    ->    <Windows SDK install path>/Include/<version>/winrt
+| \- winrt    ->    <Windows SDK install path>/Include/<version>/winrt
 |
 |- lib
-|\-- um       ->   <Windows SDK install path>/Lib/<version>/<target arch>/um
+|\-- um       ->   <Windows SDK install path>/Lib/<version>/um
 ```
 
 [This](https://github.com/Jake-Shadle/xwin) tool lets you conveniently download the Windows SDK and MSVC headers.
@@ -102,7 +102,7 @@ For the Rust stuff, build the engine, then do `cargo build`.
 - Linux
   - Linux is usually mostly up to date with Windows
   - glibc is the only libc I've tested with
-  - I haven't decided how to deal with X11/Wayland yet
+  - Uses SDL for windowing, because X11 and Wayland are annoying
   - Only Clang is supported, GCC is a weird compiler and I don't like it
 - Nintendo Switch
   - Mostly works, crashes in Vulkan init code

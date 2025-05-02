@@ -83,6 +83,6 @@ MAKE_STUB CoTaskMemAlloc, @4
 MAKE_STUB RoInitialize, @4
 MAKE_STUB RoUninitialize, @0
 MAKE_STUB RoGetActivationFactory, @12
-MAKE_STUB_LOCAL WindowsCreateString, @12
-MAKE_STUB_LOCAL WindowsDeleteString, @4
-MAKE_STUB_LOCAL WindowsGetStringRawBuffer, @8
+MAKE_STUB WindowsCreateString, @12
+MAKE_STUB WindowsDeleteString, @4
+MAKE_STUB WindowsGetStringRawBuffer, @8

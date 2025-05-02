@@ -57,6 +57,7 @@ static NORETURN void Die(const wchar_t* msg, NTSTATUS status)
 		OptionAbortRetryIgnore, &response);
 
 	NtTerminateProcess(NtCurrentProcess(), status);
+	UNREACHABLE();
 }
 
 #ifndef CH_STATIC

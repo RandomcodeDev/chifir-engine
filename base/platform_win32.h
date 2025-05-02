@@ -126,7 +126,7 @@ extern bool g_uwp;
 	extern "C" uptr (*STUB_NAME(x))(...);                                                                                        \
 	extern "C" BASEAPI bool STUB_AVAILABLE(x)();                                                                                 \
 	EXPORT_RAW("_" STRINGIZE(x) "_Available")                                                                                    \
-	EXPORT_AS_RAW(FORWARDER_PREFIX STRINGIZE(x) "_Forwarder", EXPORT_PREFIX STRINGIZE(x) #__VA_ARGS__)
+	EXPORT_RAW(EXPORT_PREFIX STRINGIZE(x) #__VA_ARGS__)
 #elif defined CH_XBOX360
 #define MAKE_STUB(x, ...) extern "C" BASEAPI bool STUB_AVAILABLE(x)() EXPORT_RAW(STRINGIZE(x) "_Available")
 #else
