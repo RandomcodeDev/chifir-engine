@@ -13,8 +13,6 @@
 #include "base/string.h"
 #include "base/types.h"
 #include "base/vector.h"
-#include "phnt.h"
-#include "phnt_ntdef.h"
 #include "platform_win32.h"
 
 DECLARE_AVAILABLE(DbgPrint);
@@ -193,7 +191,7 @@ BASEAPI void Plat_Shutdown()
 	}
 }
 
-static ULONG HardError(PCUNICODE_STRING msg, NTSTATUS status, HARDERROR_RESPONSE_OPTION option = OptionAbortRetryIgnore)
+static ULONG HardError(PCUNICODE_STRING msg, HARDERROR_RESPONSE_OPTION option = OptionAbortRetryIgnore)
 {
 	wchar_t title[] = L"Fatal error!";
 	UNICODE_STRING titleStr = RTL_CONSTANT_STRING(title);
@@ -278,9 +276,8 @@ static LONG __stdcall ExceptionHandler(PEXCEPTION_POINTERS info)
 	ANSI_STRING str = {};
 	str.Buffer = buffer;
 	str.Length = Base_StrFormat(
-					 buffer, ArraySize(buffer), "Caught exception: %s (%s 0x%016llX): pc=0x%016llX sp=0x%016llX", codeStr,
-					 errorType ? errorType : "", address, pc, sp) -
-				 1;
+					 buffer, ArraySize(buffer), "Caught exception: %s (%s 0x%016zX): pc=0x%016zX sp=0x%016zX", codeStr,
+					 errorType ? errorType : "", address, pc, sp);
 	str.MaximumLength = sizeof(buffer);
 
 	UNICODE_STRING ustr = {};
@@ -288,7 +285,7 @@ static LONG __stdcall ExceptionHandler(PEXCEPTION_POINTERS info)
 	ustr.MaximumLength = sizeof(wbuffer);
 	RtlAnsiStringToUnicodeString(&ustr, &str, false);
 
-	switch (HardError(&ustr, STATUS_UNHANDLED_EXCEPTION, OptionOk))
+	switch (HardError(&ustr, OptionOk))
 	{
 	case ResponseAbort:
 		NtTerminateProcess(NtCurrentProcess(), STATUS_UNHANDLED_EXCEPTION);
@@ -472,7 +469,7 @@ BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)
 		messageStr.MaximumLength = messageStr.Length + 1;
 		RtlAnsiStringToUnicodeString(&messageUStr, &messageStr, true);
 
-		switch (HardError(&messageUStr, code))
+		switch (HardError(&messageUStr))
 		{
 		case ResponseRetry:
 			BREAKPOINT();

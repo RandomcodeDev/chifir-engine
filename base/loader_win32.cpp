@@ -1,19 +1,23 @@
 /// \file Windows loader implementation
 /// \copyright Randomcode Developers
 
-/// This file is the reason Base.dll doesn't have an import table. It first locates the base address of ntdll.dll using the
-/// PEB_LDR_DATA structure, then it parses it and finds the address of LdrGetProcedureAddress by searching the export table for a
-/// name that matches its hash. Then, it uses LdrGetProcedureAddress to fill in other stubs of system functions, which are
-/// function pointers that use names the linker expects from an import library, allowing phnt's correct declarations to be used
-/// everywhere without issue. These are basically the same as the import table, but I get to do my own logic for filling them in,
-/// so that if some function is missing from one version and not another, it isn't a fatal startup error that can't be avoided,
-/// allowing for better portability. There are also forwarder functions that are re-exported under the original names so anything
-/// else can use them. In other words, this file just does ntdll's job early in runtime instead of before the engine runs.
+/// This file is the reason Base.dll doesn't have an import table. It locates the base address of ntdll.dll using the
+/// PEB_LDR_DATA structure, then it parses it and finds the address of LdrGetProcedureAddress by searching the export
+/// table for a name that matches its hash. Then, it uses LdrGetProcedureAddress to fill in other stubs of system
+/// functions, which are function pointers that use names the linker expects from an import library, allowing phnt's
+/// correct declarations to be used everywhere without issue.
 ///
-/// On Xbox 360, things are different. xboxkrnl.exe and xam.xex export all the important functions exclusively by ordinal,
-/// and are in the XEX format. The reason them only using ordinals isn't an issue is because they don't change between kernel
-/// versions, and it's no longer updated, so that can't change. This means that the logic of this file mostly doesn't apply to the
-/// 360. Because I don't know how the kernel does things, I've decided that just linking to it is a much better idea.
+/// These are basically the same as the import table, but I get to do my own logic for filling them in, so that if some
+/// function is missing from one version and not another, it isn't a fatal startup error that can't be avoided, allowing
+/// for better portability. There are also forwarder functions that are re-exported under the original names so anything
+/// else can use them. In other words, this file just does ntdll's job early in runtime instead of before the engine
+/// runs.
+///
+/// On Xbox 360, things are different. xboxkrnl.exe and xam.xex export all the important functions exclusively by
+/// ordinal, and are in the XEX format. The reason them only using ordinals isn't an issue is because they don't change
+/// between kernel versions, and it's no longer updated, so that can't change. This means that the logic of this file
+/// mostly doesn't apply to the 360. Because I don't know how the kernel does things, I've decided that just linking to
+/// it is a much better idea.
 
 #include "base.h"
 #include "base/base.h"
@@ -197,8 +201,7 @@ cstr Base_GetWineVersion()
 		cstr host = nullptr;
 		cstr hostVersion = nullptr;
 		wine_get_host_version(&host, &hostVersion);
-		Base_StrFormat(
-			wineVersion, ArraySize(wineVersion), "%s on %s %s", wine_get_build_id(), host, hostVersion);
+		Base_StrFormat(wineVersion, ArraySize(wineVersion), "%s on %s %s", wine_get_build_id(), host, hostVersion);
 
 		checked = true;
 	}
