@@ -1,5 +1,5 @@
 /// \file Compiler-specific defines.
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 /// In general, anything non-standard should be behind a common macro, so that if in the future some compiler doesn't have
 /// it, it can be replaced more easily. Macros can be defined in a common place if MSVC and Clang both support the keyword.

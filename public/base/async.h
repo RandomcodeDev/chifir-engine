@@ -1,5 +1,5 @@
 /// \file Asynchronous support (threads, sync objects, atomics, etc)
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #pragma once
 

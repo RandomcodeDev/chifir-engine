@@ -1,4 +1,4 @@
 // \file Bindings to Async_* functions
-// \copyright Randomcode Developers
+// \copyright 2025 Randomcode Developers
 
 

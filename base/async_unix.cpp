@@ -1,5 +1,5 @@
 /// \file Implements Unix async support
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include <pthread.h>
 #include <sched.h>

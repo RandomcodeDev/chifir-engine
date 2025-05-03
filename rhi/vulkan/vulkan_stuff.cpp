@@ -1,5 +1,5 @@
 /// \file Vulkan utility functions
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "base/async.h"
 #include "base/log.h"

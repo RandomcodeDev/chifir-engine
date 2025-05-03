@@ -1,5 +1,5 @@
 /// \file libc overrides for libraries
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "base.h"
 #include "basicstr.h"

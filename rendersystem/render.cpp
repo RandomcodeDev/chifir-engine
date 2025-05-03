@@ -1,5 +1,5 @@
 /// \file Render system implementation
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "base/basicstr.h"
 #include "base/log.h"

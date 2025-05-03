@@ -1,5 +1,5 @@
 /// \file RHI library interface
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 /// Honestly, some of the ifdefs in this file are really ugly
 

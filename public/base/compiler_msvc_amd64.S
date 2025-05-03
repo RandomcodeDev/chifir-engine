@@ -1,5 +1,5 @@
 # \file MSVC AMD64 freestanding support (GNU syntax)
-# \copyright Randomcode Developers
+# \copyright 2025 Randomcode Developers
 
 .intel_syntax noprefix
 

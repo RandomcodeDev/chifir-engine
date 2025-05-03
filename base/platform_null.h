@@ -1,5 +1,5 @@
 /// \file <PLATFORM NAME> support
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #pragma once
 
@@ -18,7 +18,7 @@ class CNullMutex: public IMutex
   public:
 	CNullMutex();
 	virtual ~CNullMutex();
-	
+
 	virtual void Lock();
 	virtual bool TryLock(u32 timeout);
 	virtual void Unlock();
@@ -40,10 +40,10 @@ class CUnixThread: public IThread
   public:
 	CUnixThread(ThreadStart_t start, void* userData, cstr name, ssize stackSize, ssize maxStackSize);
 	virtual ~CUnixThread();
-	
+
 	virtual void Run();
 	virtual bool Wait(u32 timeout);
-	
+
 	virtual bool IsAlive() const
 	{
 		return m_alive;

@@ -1,5 +1,5 @@
 /// \file Windows launcher
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 /// Hacky code to load Launcher.dll from the bin directory next to the executable.
 /// It can only use ntdll.dll, and only functions guaranteed to be on Windows XP and later (ntdll does include a subset of the

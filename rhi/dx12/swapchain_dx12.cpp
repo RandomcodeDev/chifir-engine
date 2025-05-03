@@ -1,5 +1,5 @@
 /// \file DirectX 12 swap chain implementation
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "base/log.h"
 
@@ -47,7 +47,7 @@ bool CDx12RhiSwapChain::Initialize(u32 bufferCount)
 		result = m_device->m_instance->m_factory->CreateSwapChainForHwnd(
 			m_device->m_queue, reinterpret_cast<HWND>(video->GetHandle()), &desc, nullptr, nullptr, &swapChain);
 	}
-	
+
 	if (FAILED(result))
 	{
 		Log_Error("%s failed: HRESULT 0x%08X", function, result);

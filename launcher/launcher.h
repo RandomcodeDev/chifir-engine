@@ -1,5 +1,5 @@
 /// \file Internal definitions for the launcher
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #pragma once
 

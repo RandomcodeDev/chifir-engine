@@ -1,5 +1,5 @@
 /// \file Logging system
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #pragma once
 
@@ -27,10 +27,14 @@ struct LogMessage
 	bool isAddress; /// Whether location should be displayed in hex
 	cstr file;
 	cstr function;
-	cstr message;
 	cstr threadName;
 	u64 threadId;
 	DateTime time;
+	cstr message;
+	cstr formatted;
+	ssize formattedLength;
+	cstr formattedColor;
+	ssize formattedColorLength;
 };
 
 /// Log writer interface
@@ -52,6 +56,9 @@ class BASEAPI ILogWriter
 
   protected:
 	friend void BASEAPI Log_Write(const LogMessage& message);
+	friend void BASEAPI Log_Write(
+		LogLevel level, uptr location, bool isAddress, cstr file, cstr function, cstr threadName, u64 threadId, cstr message,
+		...);
 
 	LogLevel m_minLevel =
 #ifdef CH_DEBUG
@@ -125,9 +132,3 @@ extern BASEAPI void Log_Write(
 #define Log_Warning(...)    Log_Message(Warning, __VA_ARGS__)
 #define Log_Error(...)      Log_Message(Error, __VA_ARGS__)
 #define Log_FatalError(...) Log_Message(FatalError, __VA_ARGS__)
-
-/// Produces printf arguments for the given log message. `color` decides whether ANSI escapes are used.
-#define LOG_FORMAT(color, msg)                                                                                                   \
-	(msg).isAddress ? "[%s] [%s] [%s %llu] [%s!0x%zX %s] %s\r\n" : "[%s] [%s] [%s %llu] [%s:%zu %s] %s\r\n",                   \
-		(color) ? LEVEL_COLORED_NAMES[s32((msg).level)] : LEVEL_NAMES[s32((msg).level)], Base_FormatDateTime((msg).time).Data(), \
-		(msg).threadName, (msg).threadId, (msg).file, (msg).location, (msg).function, (msg).message

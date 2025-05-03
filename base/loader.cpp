@@ -1,5 +1,5 @@
 /// \file Loader helper functions
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "base/loader.h"
 #include "base/log.h"

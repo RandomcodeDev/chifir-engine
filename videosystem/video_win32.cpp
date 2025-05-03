@@ -1,5 +1,5 @@
 /// \file WinRT video system
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "video_win32.h"
 #include "base/base.h"

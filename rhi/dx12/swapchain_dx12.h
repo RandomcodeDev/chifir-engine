@@ -1,5 +1,5 @@
 /// \file DirectX 12 swap chain implementation
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #pragma once
 

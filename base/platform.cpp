@@ -1,5 +1,5 @@
 /// \file Platform-independent higher level platform functions
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "base.h"
 #include "base/base.h"

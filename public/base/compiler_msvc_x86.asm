@@ -1,5 +1,5 @@
 ; \file MSVC IA-32 freestanding support
-; \copyright Randomcode Developers
+; \copyright 2025 Randomcode Developers
 
 .386
 .MODEL FLAT

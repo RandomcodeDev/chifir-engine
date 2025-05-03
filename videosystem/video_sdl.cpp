@@ -1,5 +1,5 @@
 /// \file SDL video system
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "SDL3/SDL.h"
 #include "SDL3/SDL_vulkan.h"

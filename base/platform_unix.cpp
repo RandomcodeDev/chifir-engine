@@ -1,5 +1,5 @@
 /// \file Unix support
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "base/macros.h"
 #include <cerrno>

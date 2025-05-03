@@ -1,5 +1,5 @@
 /// \file Windows support
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include <ntstatus.h>
 #include <shlobj.h>
@@ -61,12 +61,12 @@ BASEAPI void Plat_WriteConsole(cstr text)
 #ifdef CH_XBOX360
 	DbgPrint("%s", text);
 #else
-	u32 length = static_cast<u32>(Base_StrLength(text));
+	DWORD length = static_cast<DWORD>(Base_StrLength(text));
 	// WriteConsole is only necessary before Windows 7 or 8, in one of those they reworked the
 	// console to allow NtWriteFile to work. Before that, it was pure CSR calls.
 	if (WriteConsoleA_Available() && GetStdHandle_Available())
 	{
-		WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), text, length, nullptr, nullptr);
+		WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), text, length, &length, nullptr);
 	}
 #endif
 }
@@ -548,7 +548,7 @@ BASEAPI void CDbgPrintLogWriter::Write(const LogMessage& message)
 {
 	if (DbgPrint_Available())
 	{
-		DbgPrint(LOG_FORMAT(false, message));
+		DbgPrint("%s", message.formatted);
 	}
 }
 

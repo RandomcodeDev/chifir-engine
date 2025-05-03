@@ -1,5 +1,5 @@
 /// \file MSVC freestanding support
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 /// Implements/stubs everything MSVC asks for, like the security cookie, GS handling, RTC stuff
 /// This is basically because it's too hard to separate the runtime from certain compiler builtins,

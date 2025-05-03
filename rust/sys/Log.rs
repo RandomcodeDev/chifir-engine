@@ -1,5 +1,5 @@
 // \file Bindings to Log_* functions
-// \copyright Randomcode Developers
+// \copyright 2025 Randomcode Developers
 
 use std::{ffi::CString, ptr};
 

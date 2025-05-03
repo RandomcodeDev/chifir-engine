@@ -1,5 +1,5 @@
 /// \file sys module
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 pub mod Base;
 pub mod Log;

@@ -1,5 +1,5 @@
 ; \file Xbox 360 function stubs
-; \copyright Randomcode Developers
+; \copyright 2025 Randomcode Developers
 
 TITLE Xbox 360 function stubs
 

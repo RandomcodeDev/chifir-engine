@@ -1,5 +1,5 @@
 /// \file Launcher implementation
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "base/filesystem.h"
 #include "base/loader.h"
@@ -93,7 +93,7 @@ extern "C" LAUNCHERAPI s32 LauncherMain()
 	app->Setup(args);
 #else
 	cstr appName = "Engine";
-	
+
 	// TODO: add proper argument parsing
 	for (ssize i = 0; i < args.Size(); i++)
 	{

@@ -1,5 +1,5 @@
 /// \file Generic hash map implementation
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #pragma once
 

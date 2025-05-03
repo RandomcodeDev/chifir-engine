@@ -1,5 +1,5 @@
 /// \file Dynamic loading API
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #pragma once
 
@@ -26,6 +26,9 @@ class ILibrary
 	/// Get the library's base address
 	virtual uptr GetBase() = 0;
 };
+
+// Get a known function
+#define GET_SYMBOL(lib, func) ((lib)->GetSymbol<decltype(func)*>(#func))
 
 struct LibDependency_t
 {

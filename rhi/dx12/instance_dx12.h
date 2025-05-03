@@ -1,5 +1,5 @@
 /// \file DirectX 12 instance implementation
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #pragma once
 
@@ -31,7 +31,7 @@ class CDx12RhiInstance: public IRhiInstance
 
 	static constexpr cstr DXGI_DLL_NAME =
 #ifdef CH_GDKX
-		"d3d12_xs";
+		"dxgi_xs";
 #else
 		"dxgi";
 #endif

@@ -1,5 +1,5 @@
 /// \file Declares WinRT interfaces in a way that doesn't drag in a ton of STL stuff
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 /// This file was made by copying stuff from IDL files and manually turning it into valid C++.
 /// It mostly works, but when something is wrong it's excruciating to fix.

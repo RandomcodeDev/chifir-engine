@@ -1,5 +1,5 @@
 /// \file Logging
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "base/log.h"
 #include "base/async.h"
@@ -49,18 +49,13 @@ BASEAPI void CFileLogWriter::Write(const LogMessage& message)
 {
 	if (m_filesystem->IsWriteSafe())
 	{
-		dstr formatted = nullptr;
-		formatted = Base_StrFormat(LOG_FORMAT(false, message));
-		m_filesystem->Write(m_filename, formatted, Base_StrLength(formatted));
-		Base_Free(formatted);
+		m_filesystem->Write(m_filename, message.formatted, message.formattedLength);
 	}
 }
 
 BASEAPI void CConsoleLogWriter::Write(const LogMessage& message)
 {
-	dstr fullMessage = Base_StrFormat(LOG_FORMAT(Plat_ConsoleHasColor(), message));
-	Plat_WriteConsole(fullMessage);
-	Base_Free(fullMessage);
+	Plat_WriteConsole(Plat_ConsoleHasColor() ? message.formattedColor : message.formatted);
 }
 
 BASEAPI void Log_AddWriter(ILogWriter* writer)
@@ -122,10 +117,10 @@ BASEAPI void Log_Write(
 							  isAddress,
 							  file,
 							  function,
-							  formatted,
 							  threadName,
 							  threadId,
-							  time};
+							  time,
+							  formatted};
 	ssize pos = Base_StrFind(file, REPO_NAME, true);
 	if (pos >= 0)
 	{
@@ -133,7 +128,22 @@ BASEAPI void Log_Write(
 		messageData.file = file + pos + 14;
 	}
 
+	// preformat for every writer to save memory etc
+	dstr fullFormatted = Base_StrFormat(messageData.isAddress ? "[%s] [%s] [%s %llu] [%s!0x%zX %s] %s\r\n" : "[%s] [%s] [%s %llu] [%s:%zu %s] %s\r\n",
+		ILogWriter::LEVEL_NAMES[s32(messageData.level)], Base_FormatDateTime(messageData.time).Data(),
+		messageData.threadName, messageData.threadId, messageData.file, messageData.location, messageData.function, messageData.message);
+	dstr fullFormattedColor = Base_StrFormat(messageData.isAddress ? "[%s] [%s] [%s %llu] [%s!0x%zX %s] %s\r\n" : "[%s] [%s] [%s %llu] [%s:%zu %s] %s\r\n",
+		ILogWriter::LEVEL_COLORED_NAMES[s32(messageData.level)], Base_FormatDateTime(messageData.time).Data(),
+		messageData.threadName, messageData.threadId, messageData.file, messageData.location, messageData.function, messageData.message);
+
+	messageData.formatted = fullFormatted;
+	messageData.formattedLength = Base_StrLength(fullFormatted);
+	messageData.formattedColor = fullFormattedColor;
+	messageData.formattedColorLength = Base_StrLength(fullFormattedColor);
+
 	Log_Write(messageData);
 
+	Base_Free(fullFormattedColor);
+	Base_Free(fullFormatted);
 	Base_Free(formatted);
 }

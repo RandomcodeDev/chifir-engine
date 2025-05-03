@@ -1,5 +1,5 @@
 ; \file ARM64 Windows function stubs
-; \copyright Randomcode Developers
+; \copyright 2025 Randomcode Developers
 
 MACRO
 MAKE_STUB $name

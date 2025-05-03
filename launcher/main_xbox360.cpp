@@ -1,5 +1,5 @@
 /// \file Xbox 360 launcher
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "base/base.h"
 

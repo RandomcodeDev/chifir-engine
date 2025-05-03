@@ -1,5 +1,5 @@
 /// \file Shared library startup/shutdown
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "base/platform.h"
 

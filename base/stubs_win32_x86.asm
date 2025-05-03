@@ -1,5 +1,5 @@
 ; \file IA-32 Windows function stubs
-; \copyright Randomcode Developers
+; \copyright 2025 Randomcode Developers
 
 .386
 .MODEL FLAT

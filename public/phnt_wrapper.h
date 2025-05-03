@@ -1,5 +1,5 @@
 /// \file Fixes phnt on xbox 360
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #pragma once
 

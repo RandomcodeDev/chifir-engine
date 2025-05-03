@@ -1,5 +1,5 @@
 /// \file WinRT video system
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "video_winrt.h"
 #include "base/base.h"
@@ -9,7 +9,7 @@
 bool CWinRtVideoSystem::Initialize()
 {
 	UwpVideoInfo info = {};
-	
+
 	UwpVideoCallbacks callbacks = {
 		this,
 
@@ -55,7 +55,7 @@ void CWinRtVideoSystem::SetTitle(cstr newTitle)
 bool CWinRtVideoSystem::OnSizeChanged(f32 width, f32 height, void* user)
 {
 	auto videoSystem = reinterpret_cast<CWinRtVideoSystem*>(user);
-	
+
 	if (width != videoSystem->m_width || height != videoSystem->m_height)
 	{
 		Log_Trace("Window resized from %ux%u to %.0fx%.0f", videoSystem->m_width, videoSystem->m_height, width, height);

@@ -1,5 +1,5 @@
 /// \file Raw filesystem
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "filesystem_raw.h"
 #ifdef CH_WIN32

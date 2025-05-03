@@ -1,5 +1,5 @@
 /// \file DirectX 12 instance implementation
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "base/log.h"
 
@@ -47,7 +47,7 @@ void CDx12RhiInstance::EnableDebugLayer()
 {
 	// success of everything here is optional, just don't crash
 	Log_Debug("Getting address of D3D12GetDebugInterface");
-	auto f_D3D12GetDebugInterface = m_d3d12->GetSymbol<HRESULT(WINAPI*)(REFIID iid, void** debug)>("D3D12GetDebugInterface");
+	auto f_D3D12GetDebugInterface = GET_SYMBOL(m_d3d12, D3D12GetDebugInterface);
 	if (f_D3D12GetDebugInterface)
 	{
 		ID3D12Debug6* debug;
@@ -81,7 +81,7 @@ bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
 	}
 
 	Log_Debug("Getting address of CreateDXGIFactory2");
-	auto f_CreateDXGIFactory2 = m_dxgi->GetSymbol<decltype(CreateDXGIFactory2)*>("CreateDXGIFactory2");
+	auto f_CreateDXGIFactory2 = GET_SYMBOL(m_dxgi, CreateDXGIFactory2);
 	if (!f_CreateDXGIFactory2)
 	{
 		Log_Error("Failed to get CreateDXGIFactory2");

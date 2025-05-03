@@ -1,5 +1,5 @@
 /// \file Unix launcher
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include <cassert>
 #include <cerrno>

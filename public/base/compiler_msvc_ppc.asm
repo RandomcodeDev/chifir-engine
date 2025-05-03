@@ -1,5 +1,5 @@
 ; \file MSVC Xbox 360 freestanding support
-; \copyright Randomcode Developers
+; \copyright 2025 Randomcode Developers
 
 TITLE MSVC PowerPC support
 

@@ -1,5 +1,5 @@
 # \file IA-32 Windows function stubs (GNU syntax)
-# \copyright Randomcode Developers
+# \copyright 2025 Randomcode Developers
 
 .intel_syntax noprefix
 

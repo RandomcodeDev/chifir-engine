@@ -1,5 +1,5 @@
 /// \file Windows raw filesystem
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "base.h"
 #include "filesystem_win32.h"

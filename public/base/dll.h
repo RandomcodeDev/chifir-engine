@@ -1,5 +1,5 @@
 /// \file Definitions for importing/exporting functions from shared libraries
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #pragma once
 

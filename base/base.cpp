@@ -1,5 +1,5 @@
 /// \file Miscellaneous functions (Mem*, Quit) and initialization/shutdown
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "base.h"
 #include "base/base.h"

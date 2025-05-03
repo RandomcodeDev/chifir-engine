@@ -1,5 +1,5 @@
 /// \file Undefines Win32 aliases for ANSI/Unicode functions, so things don't get weirdly named for DLLs
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #pragma once
 

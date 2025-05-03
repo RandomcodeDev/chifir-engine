@@ -1,5 +1,5 @@
 ; \file MSVC AMD64 freestanding support
-; \copyright Randomcode Developers
+; \copyright 2025 Randomcode Developers
 
 TITLE MSVC AMD64 support
 

@@ -1,5 +1,5 @@
 /// \file Unix raw filesystem
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include <cerrno>
 #include <cstring>

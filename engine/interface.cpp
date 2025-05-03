@@ -1,5 +1,5 @@
 /// \file DLL interface for engine
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #include "engine.h"
 #include "iapplication.h"

@@ -1,5 +1,5 @@
 /// \file Windows support
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 #pragma once
 
@@ -47,10 +47,10 @@ class CWindowsThread: public IThread
   public:
 	CWindowsThread(ThreadStart_t start, void* userData, cstr name, ssize stackSize, ssize maxStackSize);
 	virtual ~CWindowsThread();
-	
+
 	virtual void Run();
 	virtual bool Wait(u32 timeout);
-	
+
 	virtual bool IsAlive() const
 	{
 		return m_handle != nullptr;

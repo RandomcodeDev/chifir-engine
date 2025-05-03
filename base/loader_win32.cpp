@@ -1,5 +1,5 @@
 /// \file Windows loader implementation
-/// \copyright Randomcode Developers
+/// \copyright 2025 Randomcode Developers
 
 /// This file is the reason Base.dll doesn't have an import table. It locates the base address of ntdll.dll using the
 /// PEB_LDR_DATA structure, then it parses it and finds the address of LdrGetProcedureAddress by searching the export
@@ -179,8 +179,6 @@ bool Base_CheckWoW64()
 
 cstr Base_GetWineVersion()
 {
-	static cstr (*wine_get_build_id)() = nullptr;
-	static void (*wine_get_host_version)(cstr* name, cstr* version) = nullptr;
 	static bool checked = false;
 	static bool wine = false;
 	static char wineVersion[64];
@@ -189,10 +187,10 @@ cstr Base_GetWineVersion()
 	{
 		CWindowsLibrary ntDllWin("ntdll.dll", s_ntDllBase);
 		ILibrary* ntDll = &ntDllWin;
-		wine_get_build_id = ntDll->GetSymbol<decltype(wine_get_build_id)>("wine_get_build_id");
-		wine_get_host_version = ntDll->GetSymbol<decltype(wine_get_host_version)>("wine_get_host_version");
+		auto f_wine_get_build_id = ntDll->GetSymbol<cstr (*)()>("wine_get_build_id");
+		auto f_wine_get_host_version = ntDll->GetSymbol<void (*)(cstr*, cstr*)>("wine_get_host_version");
 
-		wine = wine_get_build_id != nullptr;
+		wine = f_wine_get_build_id != nullptr;
 		if (!wine)
 		{
 			return nullptr;
@@ -200,8 +198,8 @@ cstr Base_GetWineVersion()
 
 		cstr host = nullptr;
 		cstr hostVersion = nullptr;
-		wine_get_host_version(&host, &hostVersion);
-		Base_StrFormat(wineVersion, ArraySize(wineVersion), "%s on %s %s", wine_get_build_id(), host, hostVersion);
+		f_wine_get_host_version(&host, &hostVersion);
+		Base_StrFormat(wineVersion, ArraySize(wineVersion), "%s on %s %s", f_wine_get_build_id(), host, hostVersion);
 
 		checked = true;
 	}
@@ -240,7 +238,7 @@ static bool FindLdrGetProcedureAddress()
 		u64 hash = Base_Fnv1a64(name, Base_StrLength(name));
 		if (hash == TARGET_HASH) // To get around collisions
 		{
-			STUB_NAME(LdrGetProcedureAddress) = (uptr(*)(...))RVA_TO_VA(s_ntDllBase, functions[ordinals[i]]);
+			STUB_NAME(LdrGetProcedureAddress) = (uptr (*)(...))RVA_TO_VA(s_ntDllBase, functions[ordinals[i]]);
 			break;
 		}
 	}
