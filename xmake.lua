@@ -18,7 +18,10 @@ set_allowedplats(
 )
 
 set_allowedarchs(
-	"x86_64", "x64", "x86", "arm64"
+	"windows|x64", "gdkx|x64", "orbis|x64",
+	"linux|x86_64",
+	"windows|x86", "linux|x86",
+	"windows|arm64", "linux|arm64", "switch|arm64"
 )
 
 set_allowedmodes(

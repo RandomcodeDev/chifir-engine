@@ -193,7 +193,7 @@ BASEAPI s64 Base_ParseInt(cstr str, ssize* endOffset)
 
 	u32 base = 10;
 	ssize len = Base_StrLength(str);
-	if (len > start + 2)
+	if (str[start] == '0' && len > start + 2)
 	{
 		switch (str[start + 1])
 		{
