@@ -30,12 +30,13 @@ class CDx9RhiInstance: public IRhiInstance
 	virtual IRhiDevice* CreateDevice(const RhiDeviceInfo_t& info);
 
   private:
-	friend class CDx12RhiDevice;
-	friend class CDx12RhiSwapChain;
+	friend class CDx9RhiDevice;
+	friend class CDx9RhiSwapChain;
 
 	IVideoSystem* m_videoSystem;
 	ILibrary* m_d3d9Dll;
     IDirect3D9* m_d3d9;
+	CVector<Dx9DeviceInfo_t> m_devices;
 
 	/// Loads d3d9.dll
 	bool LoadDlls();

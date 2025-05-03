@@ -502,11 +502,19 @@ CWindowsLibrary::CWindowsLibrary(cstr name, void* base) : m_name(nullptr), m_bas
 
 CWindowsLibrary::~CWindowsLibrary()
 {
-	// unloading the library doesn't serve much purpose
-
 	if (m_name)
 	{
 		Base_Free(m_name);
+	}
+}
+
+void CWindowsLibrary::Unload()
+{
+	if (m_base)
+	{
+		Log_Debug("Unloading DLL 0x%016zX", reinterpret_cast<uptr>(m_base));
+		LdrUnloadDll(m_base);
+		m_base = nullptr;
 	}
 }
 

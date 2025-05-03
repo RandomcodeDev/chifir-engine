@@ -33,19 +33,23 @@ RHIAPI cstr Rhi_GetBackendName(RhiBackendType backend)
 RHIAPI RhiBackendType Rhi_GetBackendTypeByName(cstr name)
 {
 	// TODO: case insensitive, once it's done
-	if (Base_StrCompare(name, "Vulkan") == 0 || Base_StrCompare(name, "vk") == 0)
+	if (Base_StrCompare(name, "Vulkan", SSIZE_MAX, false) == 0 || Base_StrCompare(name, "vk", SSIZE_MAX, false) == 0)
 	{
 		return RhiBackendType::Vulkan;
 	}
-	else if (Base_StrCompare(name, "DirectX12") == 0 || Base_StrCompare(name, "dx12") == 0 || Base_StrCompare(name, "d3d12") == 0)
+	else if (
+		Base_StrCompare(name, "DirectX12", SSIZE_MAX, false) == 0 || Base_StrCompare(name, "dx12", SSIZE_MAX, false) == 0 ||
+		Base_StrCompare(name, "d3d12", SSIZE_MAX, false) == 0)
 	{
 		return RhiBackendType::DirectX12;
 	}
-	else if (Base_StrCompare(name, "DirectX9") == 0 || Base_StrCompare(name, "dx9") == 0 || Base_StrCompare(name, "d3d9") == 0)
+	else if (
+		Base_StrCompare(name, "DirectX9", SSIZE_MAX, false) == 0 || Base_StrCompare(name, "dx9", SSIZE_MAX, false) == 0 ||
+		Base_StrCompare(name, "d3d9", SSIZE_MAX, false) == 0)
 	{
 		return RhiBackendType::DirectX9;
 	}
-	else if (Base_StrCompare(name, "OpenGL") == 0 || Base_StrCompare(name, "gl") == 0)
+	else if (Base_StrCompare(name, "OpenGL", SSIZE_MAX, false) == 0 || Base_StrCompare(name, "gl", SSIZE_MAX, false) == 0)
 	{
 		return RhiBackendType::OpenGl;
 	}

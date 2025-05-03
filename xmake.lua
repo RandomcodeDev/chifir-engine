@@ -94,6 +94,11 @@ if directx then
 	add_defines("CH_DIRECTX", "CH_DIRECTX12")
 end
 
+directx9 = directx and not is_plat("gdkx")
+if directx9 then
+	add_defines("CH_DIRECTX9")
+end
+
 if is_kind("static") then
 	add_defines("CH_STATIC")
 end

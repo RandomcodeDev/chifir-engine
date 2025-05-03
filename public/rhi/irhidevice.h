@@ -50,7 +50,7 @@ class IRhiDevice
 	/// Destroy the device
 	virtual void Destroy() = 0;
 
-	/// Create a swap chain
+	/// Create a swap chain. The buffer count is only a suggestion, and more or less may be created.
 	virtual IRhiSwapChain* CreateSwapChain(u32 bufferCount) = 0;
 
 	/// Create a command list

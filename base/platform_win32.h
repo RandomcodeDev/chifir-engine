@@ -154,6 +154,8 @@ class CWindowsLibrary: public ILibrary
 	CWindowsLibrary(cstr name, void* base);
 	~CWindowsLibrary();
 
+	virtual void Unload();
+
 	void* GetSymbol(cstr name);
 
 	cstr GetName()

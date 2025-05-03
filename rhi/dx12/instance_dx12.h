@@ -17,7 +17,7 @@ class IVideoSystem;
 class CDx12RhiInstance: public IRhiInstance
 {
   public:
-	CDx12RhiInstance() : m_dxgi(nullptr), m_factory(nullptr), m_hwnd(nullptr)
+	CDx12RhiInstance() : m_dxgi(nullptr), m_factory(nullptr)
 	{
 	}
 	~CDx12RhiInstance() DEFAULT;
@@ -50,7 +50,6 @@ class CDx12RhiInstance: public IRhiInstance
 	ILibrary* m_dxgi;
 	ILibrary* m_d3d12;
 	IDXGIFactory6* m_factory;
-	HWND m_hwnd;
 	CVector<Dx12DeviceInfo_t> m_devices;
 
 	/// Loads dxgi.dll and d3d12.dll

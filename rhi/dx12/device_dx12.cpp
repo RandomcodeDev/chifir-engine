@@ -81,21 +81,21 @@ void CDx12RhiDevice::Destroy()
 {
 	if (m_copyQueue)
 	{
-		Log_Debug("Releasing copy queue 0x%016X", m_copyQueue);
+		Log_Debug("Releasing copy queue 0x%016zX", m_copyQueue);
 		m_copyQueue->Release();
 		m_copyQueue = nullptr;
 	}
 
 	if (m_queue)
 	{
-		Log_Debug("Releasing direct queue 0x%016X", m_queue);
+		Log_Debug("Releasing direct queue 0x%016zX", m_queue);
 		m_queue->Release();
 		m_queue = nullptr;
 	}
 
 	if (m_handle)
 	{
-		Log_Debug("Releasing ID3D12Device4 0x%016X", m_handle);
+		Log_Debug("Releasing ID3D12Device4 0x%016zX", m_handle);
 		m_handle->Release();
 		m_handle = nullptr;
 	}

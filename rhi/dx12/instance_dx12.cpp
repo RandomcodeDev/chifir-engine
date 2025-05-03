@@ -99,7 +99,7 @@ bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
 	if (FAILED(result))
 	{
 		Log_Error("CreateDXGIFactory2 failed: HRESULT 0x%08X", result);
-		LastNtError() = result;
+		LastNtError() = result; // for Base_Abort to understand
 		LastNtStatus() = 0;
 		Destroy();
 		return false;
@@ -116,17 +116,21 @@ void CDx12RhiInstance::Destroy()
 {
 	if (m_factory)
 	{
-		Log_Debug("Releasing IDXGIFactory6 0x%016X", reinterpret_cast<uptr>(m_factory));
+		Log_Debug("Releasing IDXGIFactory6 0x%016zX", reinterpret_cast<uptr>(m_factory));
 		m_factory->Release();
 		m_factory = nullptr;
 	}
+
 	if (m_d3d12)
 	{
 		delete m_d3d12;
+		m_d3d12 = nullptr;
 	}
+
 	if (m_dxgi)
 	{
 		delete m_dxgi;
+		m_dxgi = nullptr;
 	}
 }
 

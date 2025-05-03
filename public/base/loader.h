@@ -11,6 +11,9 @@ class ILibrary
   public:
 	virtual ~ILibrary() DEFAULT;
 
+	/// Unload the library
+	virtual void Unload() = 0;
+
 	/// Get a symbol as a particular type of pointer
 	template <typename T> T GetSymbol(cstr name)
 	{
