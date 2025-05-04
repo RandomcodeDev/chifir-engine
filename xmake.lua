@@ -143,7 +143,7 @@ elseif is_plat("scarlett") then
 	add_defines("CH_SCARLETT", "CH_GDK", "CH_WIN32", "CH_CONSOLE")
 elseif is_plat("linux") then
 	add_defines("CH_LINUX", "CH_UNIX")
-	add_requires("libsdl3", {system = true})
+	add_requires("libsdl3")
 elseif is_plat("nx") then
 	add_defines("CH_NX", "CH_CONSOLE")
 elseif is_plat("orbis") then
