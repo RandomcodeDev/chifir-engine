@@ -127,7 +127,7 @@ extern BASEAPI ssize
 Base_MemFind(const void* RESTRICT data, ssize size, const void* RESTRICT sequence, ssize sequenceSize, bool reverse = false);
 
 /// Find a value in an unsorted block of memory
-template <typename T> static FORCEINLINE ssize Base_MemFind(const T* data, ssize count, const T& value, bool reverse = false)
+template <typename T> static ssize Base_MemFind(const T* data, ssize count, const T& value, bool reverse = false)
 {
 	return Base_MemFind(data, count * SIZEOF(T), &value, SIZEOF(T), reverse);
 }
@@ -139,7 +139,7 @@ extern BASEAPI ssize Base_Search(
 
 /// Find a value in a sorted list
 template <typename T>
-static FORCEINLINE ssize Base_Search(
+static ssize Base_Search(
 	const T& value, const T* data, ssize count, s32 (*compare)(const T& a, const T& b, void* userData), void* userData = nullptr)
 {
 	struct UserData

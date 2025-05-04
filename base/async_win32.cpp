@@ -8,7 +8,13 @@ DECLARE_AVAILABLE(TlsGetValue);
 
 CWindowsMutex::CWindowsMutex() : m_handle(nullptr)
 {
-	NTSTATUS status = NtCreateMutant(&m_handle, MUTANT_ALL_ACCESS, nullptr, FALSE);
+	NTSTATUS status = NtCreateMutant(
+		&m_handle, MUTANT_ALL_ACCESS, nullptr
+#ifndef CH_XBOX
+		,
+		FALSE
+#endif
+	);
 	if (!NT_SUCCESS(status))
 	{
 		Base_Quit("Failed to create mutant: NTSTATUS 0x%08X", status);
@@ -50,6 +56,7 @@ void CWindowsMutex::Unlock()
 	NtReleaseMutant(m_handle, nullptr);
 }
 
+#ifndef CH_XBOX
 #define PS_ATTRIBUTE_LIST_SIZE(n) (SIZEOF(PS_ATTRIBUTE_LIST) + ((n) - 1) * SIZEOF(PS_ATTRIBUTE))
 
 void CWindowsThread::CreateVistaThread(ssize stackSize, ssize maxStackSize)
@@ -72,12 +79,12 @@ void CWindowsThread::CreateVistaThread(ssize stackSize, ssize maxStackSize)
 		this, THREAD_CREATE_FLAGS_CREATE_SUSPENDED, 0, stackSize, maxStackSize, psAttrs);
 	if (!NT_SUCCESS(status))
 	{
-		Base_Quit(
-			"NtCreateThreadEx with start 0x%016zX and user data 0x%016zX: NTSTATUS 0x%08X", m_start, m_userData, status);
+		Base_Quit("NtCreateThreadEx with start 0x%016zX and user data 0x%016zX: NTSTATUS 0x%08X", m_start, m_userData, status);
 	}
 
 	m_id = reinterpret_cast<u64>(clientId.UniqueThread);
 }
+#endif
 
 // Based on ReactOS's BaseCreateStack
 void CWindowsThread::CreateStack(ssize size, ssize maxSize, PINITIAL_TEB InitialTeb)

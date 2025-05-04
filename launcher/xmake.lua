@@ -7,7 +7,7 @@ target("LauncherMain")
 
     add_private_launcher_settings()
 
-    if is_plat("windows", "scarlett") then
+    if is_plat("windows", "scarlett", "xbox") then
         add_files("main_win32.cpp")
         if not is_kind("static") then
 			-- see public/win32/readme.txt

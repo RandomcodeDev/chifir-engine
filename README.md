@@ -54,6 +54,7 @@ Next, run `xmake config` with these flags (you have to pass all of them or it wi
   - `x64` AMD64, supported on `windows`, `linux`, `scarlett`, `orbis`
   - `x86` IA-32, supported on `windows` and `linux`
   - `arm64` ARM64, supported on `linux` and `nx`
+  - `arm64-v8a` ARM64, supported on `linux`
 - `-m` sets the build mode (required):
   - `debug` lots of logs, symbols, no optimization, debugging features
   - `release` reasonable amount of logs, symbols, full optimization, debugging features

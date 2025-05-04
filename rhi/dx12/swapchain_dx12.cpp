@@ -35,6 +35,7 @@ bool CDx12RhiSwapChain::Initialize(u32 bufferCount)
 	IDXGISwapChain1* swapChain;
 	HRESULT result = S_OK;
 	cstr function = nullptr;
+#ifdef CH_UWP
 	if (Plat_IsUwpApp())
 	{
 		function = "CreateSwapChainForCoreWindow";
@@ -42,6 +43,7 @@ bool CDx12RhiSwapChain::Initialize(u32 bufferCount)
 			m_device->m_queue, reinterpret_cast<IUnknown*>(video->GetHandle()), &desc, nullptr, &swapChain);
 	}
 	else
+#endif
 	{
 		function = "CreateSwapChainForHwnd";
 		result = m_device->m_instance->m_factory->CreateSwapChainForHwnd(

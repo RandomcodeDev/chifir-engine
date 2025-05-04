@@ -31,16 +31,19 @@ target("Base")
         add_files("../public/base/compiler_clang.cpp")
     end
 
-    if is_plat("windows", "scarlett") then
+    if is_plat("windows", "scarlett", "xbox") then
         add_files(
             "args_win32.cpp",
 			"async_win32.cpp",
             "filesystem_win32.cpp",
             "loader_win32.cpp",
             "platform_win32.cpp",
-            "platform_winrt.cpp",
             "../public/base/compiler_msvc.cpp"
         )
+
+        if is_plat("windows") then
+            add_files("platform_winrt.cpp")
+        end
 
 		if is_host("windows") then
 	        if is_arch("x64", "x86_64") then

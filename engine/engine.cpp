@@ -13,14 +13,16 @@
 CEngine::CEngine() : m_state(EngineState_t::Uninitialized), m_headless(false), m_renderSystem(nullptr), m_videoSystem(nullptr)
 {
 #ifdef CH_WIN32
-#ifdef CH_IA32
+#if defined CH_IA32 && defined CH_UWP
 	if (Plat_IsUwpApp())
-	{
 #endif
+	{
 		m_rhiBackendName = "DirectX12";
-#ifdef CH_IA32
 	}
+#ifdef CH_IA32
+#ifdef CH_UWP
 	else
+#endif
 	{
 		// for legacy support
 		m_rhiBackendName = "DirectX9";

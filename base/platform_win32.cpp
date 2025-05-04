@@ -1,10 +1,6 @@
 /// \file Windows support
 /// \copyright 2025 Randomcode Developers
 
-#include <ntstatus.h>
-#include <shlobj.h>
-#include <winuser.h>
-
 #include "base.h"
 #include "base/basicstr.h"
 #include "base/compiler.h"
@@ -130,10 +126,12 @@ BASEAPI void Plat_Init()
 			Base_AbortSafe(LastNtStatus(), "Failed to initialize dynamic loader");
 		}
 
+#ifndef CH_XBOX
 		if (!Plat_IsWine() && RtlAddVectoredExceptionHandler_Available())
 		{
 			RtlAddVectoredExceptionHandler(true, ExceptionHandler);
 		}
+#endif
 
 #ifndef CH_XENON
 		// Properly determine the page size just in case, and get other info
@@ -387,6 +385,7 @@ BASEAPI cstr Plat_GetSystemDescription()
 			"Xbox 360 (kernel %u.%u.%u.%u)", XboxKrnlVersion[0] << 16 | XboxKrnlVersion[1],
 			XboxKrnlVersion[2] << 16 | XboxKrnlVersion[3], XboxKrnlVersion[4] << 16 | XboxKrnlVersion[5], XboxKrnlVersion[6],
 			XboxKrnlVersion[7]);
+#elif defined CH_XBOX
 #else
 		cstr name = GetProductName();
 		cstr wineVersion = Base_GetWineVersion();

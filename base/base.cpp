@@ -21,6 +21,11 @@ static void InitCpuData()
 	g_cpuData.haveSimd128Compare = true;
 	g_cpuData.haveSimd256 = true;
 }
+#elif defined CH_XBOX
+static void InitCpuData()
+{
+	g_cpuData.haveSimd128 = true;
+}
 #elif defined CH_X86
 static void CpuId(u32& eax, u32& ebx, u32& ecx, u32& edx)
 {
@@ -150,7 +155,7 @@ BASEAPI NORETURN void Base_Quit(cstr message, ...)
 	Base_AbortSafe(ABORT_RELEVANT_ERROR, formatted);
 }
 
-template <typename T> static FORCEINLINE T Fnv1a(const u8* data, ssize size, T offsetBasis, T prime)
+template <typename T> static T Fnv1a(const u8* data, ssize size, T offsetBasis, T prime)
 {
 	T hash = offsetBasis;
 	for (ssize i = 0; i < size; i++)
@@ -462,7 +467,7 @@ static s32 Compare(const void* RESTRICT a, const void* RESTRICT b, ssize offset,
 	return 0;
 }
 
-#ifdef CH_X86
+#if defined CH_X86 && defined CH_SIMD128_COMPARE
 // https://github.com/WojciechMula/simd-string/blob/master/memcmp.cpp
 #ifdef __clang__
 __attribute__((target("sse4")))
@@ -532,7 +537,7 @@ static FORCEINLINE bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 }
 #endif
 
-#if CH_SIMD128
+#if CH_SIMD128_COMPARE
 template <> s32 Compare<v128>(const void* RESTRICT a, const void* RESTRICT b, ssize offset, ssize& remaining, ssize alignment)
 {
 	ssize count = (remaining / alignment) * alignment;
@@ -601,8 +606,7 @@ BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssiz
 			return comparison;
 		}
 
-		// _mm_cmpestr* aren't builtins in Clang, and I don't know how to deal with that on Windows
-#if defined CH_SIMD128
+#ifdef CH_SIMD128_COMPARE
 		if (alignment == 16 && remaining >= alignment)
 		{
 			comparison = Compare<v128>(a, b, size - remaining, remaining, alignment);

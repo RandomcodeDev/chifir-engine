@@ -20,6 +20,7 @@
 *cache*
 *.zip
 external/winsdk
+external/xbox
 
 /config.lua
 

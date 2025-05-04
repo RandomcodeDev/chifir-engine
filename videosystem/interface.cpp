@@ -6,7 +6,7 @@
 #include "video_sdl.h"
 #include "videosystem/ivideosystem.h"
 
-#if defined CH_WIN32 && !defined CH_XENON
+#if defined CH_WIN32 && !defined CH_XENON && !defined CH_XBOX
 #include "video_win32.h"
 #include "video_winrt.h"
 #elif defined CH_NX
@@ -21,12 +21,14 @@ ISystem* CreateVideoSystem()
 extern "C" DLLEXPORT ISystem* CreateInterface()
 #endif
 {
-#if defined CH_WIN32 && !defined CH_XENON
+#if defined CH_WIN32 && !defined CH_XENON && !defined CH_XBOX
+#ifdef CH_UWP
 	if (Plat_IsUwpApp())
 	{
 		return new CWinRtVideoSystem();
 	}
 	else
+#endif
 	{
 		return new CWin32VideoSystem();
 	}

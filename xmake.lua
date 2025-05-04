@@ -10,8 +10,10 @@ add_rules(
 set_project("chifir-engine")
 set_version("0.0.0", { build = "%Y%m%d%H%M%S" })
 
+-- platforms, architectures, and modes
+
 set_allowedplats(
-	"windows", "scarlett",
+	"windows", "scarlett", "xbox",
 	"linux",
 	"nx",
 	"orbis"
@@ -20,8 +22,8 @@ set_allowedplats(
 set_allowedarchs(
 	"windows|x64", "scarlett|x64", "orbis|x64",
 	"linux|x86_64",
-	"windows|x86", "linux|x86",
-	"windows|arm64", "linux|arm64", "switch|arm64"
+	"windows|x86", "xbox|x86", "linux|x86",
+	"windows|arm64", "linux|arm64", "linux|arm64-v8a", "nx|arm64"
 )
 
 set_allowedmodes(
@@ -30,19 +32,41 @@ set_allowedmodes(
 	"retail"
 )
 
-if is_plat("nx", "orbis") then
+if is_plat("xbox", "nx", "orbis") then
 	set_kind("static")
 end
+
+-- main include directories
 
 add_sysincludedirs(
 	"external",
 	"external/directx",
-	"external/phnt",
 	"external/stb",
 	"external/volk",
-	"external/vulkan",
-	"public/xbox"
+	"external/vulkan"
 )
+
+if is_plat("xbox") then
+	add_sysincludedirs(
+		"public/xbox",
+		"external/xbox/public/sdk/inc"
+	)
+else
+	add_sysincludedirs(
+		"external/phnt"
+	)
+end
+
+if is_plat("windows") and not is_host("windows") then
+	add_sysincludedirs(
+		"external/winsdk/include/clang",
+		"external/winsdk/include/msvc",
+		"external/winsdk/include/ucrt",
+		"external/winsdk/include/um",
+		"external/winsdk/include/shared",
+		"external/winsdk/include/winrt"
+	)
+end
 
 add_includedirs(
 	"public",
@@ -79,6 +103,8 @@ else
 	includes("config.default.lua")
 end
 
+-- preprocessor stuff
+
 set_configvar("GAME_NAME", game_name)
 set_configvar("GAME_DISPLAY_NAME", game_display_name)
 set_configvar("REPO_NAME", repo_name)
@@ -97,7 +123,7 @@ if directx then
 	add_defines("CH_DIRECTX", "CH_DIRECTX12")
 end
 
-directx9 = directx and not is_plat("scarlett")
+directx9 = is_plat("windows")
 if directx9 then
 	add_defines("CH_DIRECTX9")
 end
@@ -107,12 +133,14 @@ if is_kind("static") then
 end
 
 if is_plat("windows") then
-	add_defines("CH_WIN32")
+	add_defines("CH_WIN32", "CH_UWP")
 	if is_arch("x64", "x86_64") then
 		add_defines("CH_GDK")
 	end
+elseif is_plat("xbox") then
+	add_defines("CH_XBOX", "CH_WIN32", "CH_CONSOLE")
 elseif is_plat("scarlett") then
-	add_defines("CH_SCARLETT", "CH_GDK", "CH_WIN32", "CH_CONSOLE", "CH_XBOX")
+	add_defines("CH_SCARLETT", "CH_GDK", "CH_WIN32", "CH_CONSOLE")
 elseif is_plat("linux") then
 	add_defines("CH_LINUX", "CH_UNIX")
 	add_requires("libsdl3", {system = true})
@@ -123,11 +151,14 @@ elseif is_plat("orbis") then
 end
 
 if is_arch("x64", "x86_64") then
-	add_defines("CH_AMD64", "CH_X86", "CH_SIMD128", "CH_SIMD256")
+	add_defines("CH_AMD64", "CH_X86", "CH_SIMD128", "CH_SIMD256", "CH_SIMD128_COMPARE", "_AMD64_")
 elseif is_arch("x86") then
-	add_defines("CH_IA32", "CH_X86", "CH_SIMD128", "CH_SIMD256")
-elseif is_arch("arm64") then
-	add_defines("CH_ARM64", "CH_SIMD128", "CH_SIMD256")
+	add_defines("CH_IA32", "CH_X86", "CH_SIMD128", "_X86_")
+	if is_plat("windows", "scarlett") then
+		add_defines("CH_SIMD256", "CH_SIMD128_COMPARE")
+	end
+elseif is_arch("arm64", "arm64-v8a") then
+	add_defines("CH_ARM64", "CH_SIMD128", "CH_SIMD256", "CH_SIMD128_COMPARE", "_ARM64_")
 end
 
 if is_mode("debug") then
@@ -146,7 +177,7 @@ elseif is_mode("retail") then
 	set_strip("all")
 end
 
-if is_arch("x64", "x86", "arm64") then
+if is_arch("x64", "x86", "arm64", "arm64-v8a") then
 	add_defines("CH_LITTLE_ENDIAN")
 else
 	add_defines("CH_BIG_ENDIAN")
@@ -162,12 +193,14 @@ end
 
 add_private_settings()
 
+-- make msvcrt and glibc behave
 add_defines("_GNU_SOURCE", "_CRT_SECURE_NO_WARNINGS")
 
 set_languages("gnu17", "gnuxx17")
 set_warnings("all", "error")
 
-if is_plat("windows", "scarlett") then
+-- compiler/linker flags to make this ungodly nightmare work
+if is_plat("windows", "scarlett", "xbox") then
 	set_exceptions("none")
 
 	add_cxflags(
@@ -227,17 +260,10 @@ if is_plat("windows", "scarlett") then
 	add_ldflags(
 		"/nodefaultlib", -- further prevent C runtime
 		{ force = true })
+
 	-- windows cross compilation requires the real sdk, mingw doesn't work with phnt and gcc is garbage
-	if not is_host("windows") and os.exists("external/winsdk") then
+	if not is_host("windows") then
 		add_defines("CH_WIN32_CROSSCOMPILE")
-		add_sysincludedirs(
-			"external/winsdk/include/clang",
-			"external/winsdk/include/msvc",
-			"external/winsdk/include/ucrt",
-			"external/winsdk/include/um",
-			"external/winsdk/include/shared",
-			"external/winsdk/include/winrt"
-		)
 		if is_arch("x86_64", "x64") then
 			add_linkdirs(
 				"external/winsdk/lib/um/x64"
@@ -252,6 +278,12 @@ if is_plat("windows", "scarlett") then
 			"-clang:-ffreestanding",
 			"-clang:-Wno-ignored-pragma-intrinsic"
 		)
+	elseif is_plat("xbox") then
+		add_cxflags(
+			"/arch:SSE",
+			"/X",
+			"/wd5040", -- dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+		{force = true})
 	end
 elseif is_plat("linux", "nx", "orbis") then
 	add_cxflags(
@@ -271,7 +303,7 @@ elseif is_plat("linux", "nx", "orbis") then
 		"-Wno-frame-address",
 		{ force = true })
 
-	if is_arch("arm64") then
+	if is_arch("arm64", "arm64-v8a") then
 		add_cxflags(
 			"-mfloat-abi=hard",
 			{ force = true })

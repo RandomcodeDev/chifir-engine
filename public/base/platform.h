@@ -4,9 +4,18 @@
 #pragma once
 
 #ifdef CH_WIN32
+#ifdef CH_XBOX
+#include <nt.h>
+#include <ntrtl.h>
+#include <xtl.h>
+#else
 #include "phnt_wrapper.h"
-#include "win32_aliases.h"
+#include <shlobj.h>
+#ifdef CH_UWP
 #include "winrt_min.h"
+#endif
+#endif
+#include "win32_aliases.h"
 #endif
 
 #include "base.h"
@@ -59,11 +68,13 @@ extern BASEAPI cstr Plat_GetEnvironment(cstr name);
 /// Get whether the engine is running in Wine (if you use this for shady stuff you suck)
 extern BASEAPI bool Plat_IsWine();
 
+#ifdef CH_UWP
 /// Get whether the engine is running as a UWP app or not
 extern BASEAPI bool Plat_IsUwpApp();
 
 // TODO: similar functions for input and etc
 #if defined IN_BASE || defined IN_VIDEO
+
 struct UwpVideoInfo
 {
 	winrt_min::ICoreWindow* window;
@@ -82,6 +93,7 @@ struct UwpVideoCallbacks
 /// Set up the video system to be able to access the app
 extern BASEAPI void Plat_BindUwpVideo(UwpVideoInfo& info, const UwpVideoCallbacks& callbacks);
 #endif
+#endif
 
 /// Get the last Win32 error
 #define LastNtError() NtCurrentTeb()->LastErrorValue
@@ -92,18 +104,36 @@ extern BASEAPI void Plat_BindUwpVideo(UwpVideoInfo& info, const UwpVideoCallback
 /// Declare the _Available function for an imported function
 #define DECLARE_AVAILABLE(func) extern "C" BASEAPI bool func##_Available()
 
+#ifdef CH_XBOX
+#define NT_MAJOR_VERSION 5
+#define NT_MINOR_VERSION 0
+#define NT_BUILD_NUMBER 4400
+#else
+/// Major version of running NT
+#define NT_MAJOR_VERSION (USER_SHARED_DATA->NtMajorVersion)
+
+/// Minor version of running NT
+#define NT_MINOR_VERSION (USER_SHARED_DATA->NtMinorVersion)
+
+/// Build number of running NT
+#define NT_BUILD_NUMBER (USER_SHARED_DATA->NtBuildNumber)
+#endif
+
+/// Get whether the OS is Windows XP or above
+#define AT_LEAST_WINDOWS_XP() (NT_MAJOR_VERSION > 5 || (NT_MAJOR_VERSION == 5 && NT_MINOR_VERSION >= 1))
+
 /// Get whether the OS is Windows Vista or above
-#define AT_LEAST_WINDOWS_VISTA() (USER_SHARED_DATA->NtMajorVersion >= 6)
+#define AT_LEAST_WINDOWS_VISTA() (NT_MAJOR_VERSION >= 6)
 
 /// Get whether the OS is Windows 7 or above
 #define AT_LEAST_WINDOWS_7()                                                                                                     \
-	(USER_SHARED_DATA->NtMajorVersion > 6 || (USER_SHARED_DATA->NtMajorVersion == 6 && USER_SHARED_DATA->NtMinorVersion >= 1))
+	(NT_MAJOR_VERSION > 6 || (NT_MAJOR_VERSION == 6 && NT_MINOR_VERSION >= 1))
 
 /// Get whether the OS is Windows 10 or above
-#define AT_LEAST_WINDOWS_10() (USER_SHARED_DATA->NtMajorVersion >= 10)
+#define AT_LEAST_WINDOWS_10() (NT_MAJOR_VERSION >= 10)
 
 /// Get whether ths OS is at least a specific build of windows 10 or greater
-#define AT_LEAST_WINDOWS_10_BUILD(build) (USER_SHARED_DATA->NtMajorVersion > 10 || (USER_SHARED_DATA->NtMajorVersion == 10 && USER_SHARED_DATA->NtBuildNumber >= (build)))
+#define AT_LEAST_WINDOWS_10_BUILD(build) (NT_MAJOR_VERSION > 10 || (NT_MAJOR_VERSION == 10 && NT_BUILD_NUMBER >= (build)))
 
 /// Get whether the OS is Windows 11 or above
 #define AT_LEAST_WINDOWS_11() AT_LEAST_WINDOWS_10_BUILD(22000)

@@ -14,6 +14,7 @@ BASEAPI void Plat_GetArgs(CVector<CString>& args)
 
 	static CVector<CString> s_args;
 
+#ifndef CH_XBOX
 	if (!s_args.Size())
 	{
 		u32 argc;
@@ -220,6 +221,7 @@ BASEAPI void Plat_GetArgs(CVector<CString>& args)
 		Base_Free(cmdline);
 		RtlFreeAnsiString(&ansiCmdline);
 	}
+#endif
 
 	args.Empty();
 	args.Add(s_args);

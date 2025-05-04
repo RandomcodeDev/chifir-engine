@@ -40,7 +40,6 @@ static constexpr const char* GetMsvcVersionString()
 #ifdef CH_XENON
 #include <VectorIntrinsics.h>
 #elif defined CH_X86
-// intrinsics are a
 #if defined __clang__ && !defined CH_WIN32_CROSSCOMPILE
 #include <x86intrin.h>
 #else
@@ -96,11 +95,8 @@ extern "C" __forceinline void* MSVC_GetReturnAddress(unsigned long frames)
 		RtlCaptureStackBackTrace(frames + 1, 1, &address, nullptr);
 		return address;
 	}
-	else
-	{
-		// best that can be done
-		return _ReturnAddress();
-	}
+
+	return nullptr;
 }
 
 /// TLS isn't usable
