@@ -31,7 +31,7 @@ target("Base")
         add_files("../public/base/compiler_clang.cpp")
     end
 
-    if is_plat("windows", "gdkx") then
+    if is_plat("windows", "scarlett") then
         add_files(
             "args_win32.cpp",
 			"async_win32.cpp",
@@ -71,7 +71,7 @@ target("Base")
             "filesystem_unix.cpp",
             "platform_unix.cpp"
         )
-    elseif is_plat("switch") then
+    elseif is_plat("nx") then
         add_files(
             "../private/base/filesystem_switch.cpp",
             "../private/base/platform_switch.cpp"
@@ -98,7 +98,7 @@ target("CommonFiles")
         add_files("../public/base/compiler_clang.cpp")
     end
 
-    if is_plat("windows", "gdkx") then
+    if is_plat("windows", "scarlett") then
         add_files("../public/base/compiler_msvc.cpp")
 
 		if is_host("windows") then

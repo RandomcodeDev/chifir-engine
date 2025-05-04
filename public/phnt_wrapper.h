@@ -4,7 +4,7 @@
 #pragma once
 
 #define PHNT_MODE PHNT_MODE_USER
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 #define PHNT_VERSION PHNT_WIN2K
 // _Very_ questionable wrapper that I made by copying definitions that probably don't quite work
 #include "phnt_xbox.h"
@@ -14,7 +14,7 @@
 #include <evntrace.h>
 #endif
 // These are publicly declared in the 360 SDK, so phnt's definitions aren't allowed
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 #define RtlLockHeap                              RtlLockHeap_phnt
 #define RtlUnlockHeap                            RtlUnlockHeap_phnt
 #define RtlAllocateHeap                          RtlAllocateHeap_phnt
@@ -34,7 +34,7 @@
 
 #include "phnt.h"
 
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 #undef RtlLockHeap
 #undef RtlUnlockHeap
 #undef RtlAllocateHeap

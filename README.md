@@ -47,25 +47,25 @@ Next, run `xmake config` with these flags (you have to pass all of them or it wi
 - `-p` sets the platform (required):
   - `windows` Windows/PC GDK
   - `linux` Linux
-  - `gdkx` Xbox One/Series X|S (private)
-  - `switch` Nintendo Switch (private)
+  - `scarlett` Xbox One/Series X|S (private)
+  - `nx` Nintendo Switch (private)
   - `orbis` PlayStation 4 (private)
 - `-a` sets the architecture (required):
-  - `x64` AMD64, supported on `windows`, `linux`, `gdkx`, `orbis`
+  - `x64` AMD64, supported on `windows`, `linux`, `scarlett`, `orbis`
   - `x86` IA-32, supported on `windows` and `linux`
-  - `arm64` ARM64, supported on `linux` and `switch`
+  - `arm64` ARM64, supported on `linux` and `nx`
 - `-m` sets the build mode (required):
   - `debug` lots of logs, symbols, no optimization, debugging features
   - `release` reasonable amount of logs, symbols, full optimization, debugging features
   - `retail` reasonable amount of logs, no symbols, full optimization
 - `-k` sets whether to build static or dynamic libraries (required):
-  - `static` everything is statically linked, supported on `windows`, `linux`, `gdkx`, `switch`, `orbis`
-  - `shared` everything is dynamically linked (preferred), supported on `windows`, `linux`, `gdkx`
+  - `static` everything is statically linked, supported on `windows`, `linux`, `scarlett`, `nx`, `orbis`
+  - `shared` everything is dynamically linked (preferred), supported on `windows`, `linux`, `scarlett`
 - `--toolchain` sets what compiler/linker to use (required)
-  - `msvc` MSVC is the most functional toolchain for `windows`/`gdkx`
-  - `clang-cl` Clang usually works for `windows`/`gdkx`, but it breaks sometimes
+  - `msvc` MSVC is the most functional toolchain for `windows`/`scarlett`
+  - `clang-cl` Clang usually works for `windows`/`scarlett`, but it breaks sometimes
   - `clang`/`llvm` Clang is the only supported compiler on `linux`
-  - `nx-clang` Nintendo Switch SDK version of Clang and LLVM (use this for `switch`)
+  - `nx-clang` Nintendo Switch SDK version of Clang and LLVM (use this for `nx`)
   - `orbis-clang` PS4 Clang (use this for `orbis`)
 - `--vs` Sets the Visual Studio version to generate wrapper projects for (optional)
 
@@ -86,7 +86,7 @@ external/winsdk
 [This](https://github.com/Jake-Shadle/xwin) tool lets you conveniently download the Windows SDK and MSVC headers.
 After that, just do this to configure:
 ```
-xmake f -p <windows or gdkx> -a <x64 or x86> -m <mode> -k <static or shared> --toolchain=windows-cross
+xmake f -p <windows or scarlett> -a <x64 or x86> -m <mode> -k <static or shared> --toolchain=windows-cross
 ```
 
 For the Rust stuff, build the engine, then do `cargo build`.

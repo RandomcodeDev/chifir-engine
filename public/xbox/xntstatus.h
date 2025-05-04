@@ -689,13 +689,13 @@ Notes:
 #define STATUS_RING_SIGNAL_OPPOSITE_ENDPOINT ((NTSTATUS)0x00000214L)
 
 //
-// MessageId: STATUS_OPLOCK_SWITCHED_TO_NEW_HANDLE
+// MessageId: STATUS_OPLOCK_NXED_TO_NEW_HANDLE
 //
 // MessageText:
 //
 // The oplock that was associated with this handle is now associated with a different handle.
 //
-#define STATUS_OPLOCK_SWITCHED_TO_NEW_HANDLE ((NTSTATUS)0x00000215L)
+#define STATUS_OPLOCK_NXED_TO_NEW_HANDLE ((NTSTATUS)0x00000215L)
 
 //
 // MessageId: STATUS_OPLOCK_HANDLE_CLOSED
@@ -8841,13 +8841,13 @@ Notes:
 #define STATUS_ACCESS_DISABLED_NO_SAFER_UI_BY_POLICY ((NTSTATUS)0xC0000372L)
 
 //
-// MessageId: STATUS_FAILED_STACK_SWITCH
+// MessageId: STATUS_FAILED_STACK_NX
 //
 // MessageText:
 //
 // The system was not able to allocate enough memory to perform a stack switch.
 //
-#define STATUS_FAILED_STACK_SWITCH ((NTSTATUS)0xC0000373L)
+#define STATUS_FAILED_STACK_NX ((NTSTATUS)0xC0000373L)
 
 //
 // MessageId: STATUS_HEAP_CORRUPTION
@@ -12284,14 +12284,14 @@ Notes:
 
 --*/
 //
-// MessageId: STATUS_CANNOT_SWITCH_RUNLEVEL
+// MessageId: STATUS_CANNOT_NX_RUNLEVEL
 //
 // MessageText:
 //
 // The requested run level switch cannot be completed successfully since
 // one or more services refused to stop or restart.
 //
-#define STATUS_CANNOT_SWITCH_RUNLEVEL ((NTSTATUS)0xC000A141L)
+#define STATUS_CANNOT_NX_RUNLEVEL ((NTSTATUS)0xC000A141L)
 
 //
 // MessageId: STATUS_INVALID_RUNLEVEL_SETTING
@@ -12304,14 +12304,14 @@ Notes:
 #define STATUS_INVALID_RUNLEVEL_SETTING ((NTSTATUS)0xC000A142L)
 
 //
-// MessageId: STATUS_RUNLEVEL_SWITCH_TIMEOUT
+// MessageId: STATUS_RUNLEVEL_NX_TIMEOUT
 //
 // MessageText:
 //
 // The requested run level switch cannot be completed successfully since
 // one or more services will not stop or restart within the specified timeout.
 //
-#define STATUS_RUNLEVEL_SWITCH_TIMEOUT ((NTSTATUS)0xC000A143L)
+#define STATUS_RUNLEVEL_NX_TIMEOUT ((NTSTATUS)0xC000A143L)
 
 //
 // MessageId: STATUS_SERVICES_FAILED_AUTOSTART
@@ -12323,22 +12323,22 @@ Notes:
 #define STATUS_SERVICES_FAILED_AUTOSTART ((NTSTATUS)0x4000A144L)
 
 //
-// MessageId: STATUS_RUNLEVEL_SWITCH_AGENT_TIMEOUT
+// MessageId: STATUS_RUNLEVEL_NX_AGENT_TIMEOUT
 //
 // MessageText:
 //
 // A run level switch agent did not respond within the specified timeout.
 //
-#define STATUS_RUNLEVEL_SWITCH_AGENT_TIMEOUT ((NTSTATUS)0xC000A145L)
+#define STATUS_RUNLEVEL_NX_AGENT_TIMEOUT ((NTSTATUS)0xC000A145L)
 
 //
-// MessageId: STATUS_RUNLEVEL_SWITCH_IN_PROGRESS
+// MessageId: STATUS_RUNLEVEL_NX_IN_PROGRESS
 //
 // MessageText:
 //
 // A run level switch is currently in progress.
 //
-#define STATUS_RUNLEVEL_SWITCH_IN_PROGRESS ((NTSTATUS)0xC000A146L)
+#define STATUS_RUNLEVEL_NX_IN_PROGRESS ((NTSTATUS)0xC000A146L)
 
 /*++
 

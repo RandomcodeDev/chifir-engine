@@ -12,9 +12,9 @@ target("VideoSystem")
         "video_null.cpp"
     )
 
-    if is_plat("windows", "gdkx") then
+    if is_plat("windows", "scarlett") then
         add_files("video_win32.cpp", "video_winrt.cpp")
-    elseif is_plat("switch") then
+    elseif is_plat("nx") then
         add_files("../private/videosystem/video_switch.cpp")
     elseif is_plat("linux") then
         add_files("video_sdl.cpp")

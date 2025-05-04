@@ -48,7 +48,7 @@ typedef double f64;
 #ifdef CH_X86
 typedef __m128 v128;
 typedef __m256 v256;
-#elif defined CH_XBOX360
+#elif defined CH_XENON
 typedef __vector4 v128;
 #elif defined CH_ARM64
 typedef float32x2_t v128;

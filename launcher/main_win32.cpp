@@ -24,7 +24,7 @@ ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #define SUBSYSTEM "WINDOWS"
 #endif
 
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 #pragma comment(linker, "/SUBSYSTEM:XBOX,2.00")
 #elif defined CH_IA32
 #ifdef __clang__
@@ -81,7 +81,7 @@ extern "C" int Base_RunMain(int (*main)());
 #endif
 
 extern "C"
-#ifndef CH_XBOX360
+#ifndef CH_XENON
 #ifndef CH_RETAIL
 	void __stdcall mainCRTStartup()
 #else

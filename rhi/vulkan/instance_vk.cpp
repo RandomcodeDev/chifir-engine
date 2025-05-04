@@ -18,7 +18,7 @@ constexpr cstr REQUIRED_EXTENSIONS[] = {
 	VK_KHR_SURFACE_EXTENSION_NAME,
 #ifdef CH_WIN32
 	VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
-#elif defined CH_SWITCH
+#elif defined CH_NX
 	VK_NN_VI_SURFACE_EXTENSION_NAME,
 #elif defined CH_LINUX
 	VK_KHR_XLIB_SURFACE_EXTENSION_NAME,
@@ -30,7 +30,7 @@ constexpr cstr REQUIRED_EXTENSIONS[] = {
 };
 
 constexpr cstr REQUIRED_LAYERS[] = {
-#ifdef CH_SWITCH
+#ifdef CH_NX
 	"VK_LAYER_NN_vi_swapchain",
 #endif
 #ifdef VULKAN_DEBUG
@@ -38,7 +38,7 @@ constexpr cstr REQUIRED_LAYERS[] = {
 #endif
 	nullptr};
 
-#if defined VULKAN_DEBUG && !defined CH_SWITCH
+#if defined VULKAN_DEBUG && !defined CH_NX
 constexpr cstr LAYER_NAME = "VK_LAYER_KHRONOS_validation";
 
 constexpr VkBool32 SETTING_VALIDATE_CORE = VK_TRUE;
@@ -187,7 +187,7 @@ bool CVulkanRhiInstance::Initialize(IVideoSystem* videoSystem)
 	debugCreateInfo.pfnUserCallback = VkDebugCallback;
 	instanceCreateInfo.pNext = &debugCreateInfo;
 
-#ifndef CH_SWITCH
+#ifndef CH_NX
 	VkLayerSettingsCreateInfoEXT layerSettingsCreateInfo = {};
 	layerSettingsCreateInfo.sType = VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT;
 	layerSettingsCreateInfo.pSettings = LAYER_SETTINGS;

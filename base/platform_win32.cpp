@@ -18,7 +18,7 @@
 DECLARE_AVAILABLE(DbgPrint);
 DECLARE_AVAILABLE(NtAllocateVirtualMemory);
 DECLARE_AVAILABLE(RtlTimeToTimeFields);
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 extern "C" DLLIMPORT void __stdcall XamTerminateTitle();
 extern "C" DLLIMPORT u8* XboxKrnlVersion;
 extern "C" DLLIMPORT u32* XboxHardwareInfo;
@@ -48,7 +48,7 @@ bool g_uwp;
 
 BASEAPI bool Plat_ConsoleHasColor()
 {
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 	return false;
 #else
 	// 10.0.10586 (version 1511) is when the console host got ANSI escape support
@@ -58,7 +58,7 @@ BASEAPI bool Plat_ConsoleHasColor()
 
 BASEAPI void Plat_WriteConsole(cstr text)
 {
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 	DbgPrint("%s", text);
 #else
 	DWORD length = static_cast<DWORD>(Base_StrLength(text));
@@ -116,7 +116,7 @@ BASEAPI void Plat_Init()
 	if (!g_platInitialized)
 	{
 		// This is to allow the loader to use memory allocation for library names
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 		// 64K pages are the default
 		g_systemInfo.PageSize = 0x10000;
 #else
@@ -135,7 +135,7 @@ BASEAPI void Plat_Init()
 			RtlAddVectoredExceptionHandler(true, ExceptionHandler);
 		}
 
-#ifndef CH_XBOX360
+#ifndef CH_XENON
 		// Properly determine the page size just in case, and get other info
 		NTSTATUS status =
 			NtQuerySystemInformation(SystemBasicInformation, &g_systemInfo, SIZEOF(SYSTEM_BASIC_INFORMATION), nullptr);
@@ -382,7 +382,7 @@ BASEAPI cstr Plat_GetSystemDescription()
 {
 	if (!s_systemDescription)
 	{
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 		s_systemDescription = Base_StrFormat(
 			"Xbox 360 (kernel %u.%u.%u.%u)", XboxKrnlVersion[0] << 16 | XboxKrnlVersion[1],
 			XboxKrnlVersion[2] << 16 | XboxKrnlVersion[3], XboxKrnlVersion[4] << 16 | XboxKrnlVersion[5], XboxKrnlVersion[6],
@@ -417,7 +417,7 @@ BASEAPI cstr Plat_GetSystemDescription()
 
 BASEAPI cstr Plat_GetHardwareDescription()
 {
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 	s_hardwareDescription = Base_StrFormat("XboxHardwareInfo 0x%X%X", XboxHardwareInfo[0], XboxHardwareInfo[1]);
 #else
 #ifdef CH_X86
@@ -481,7 +481,7 @@ BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)
 		}
 	}
 
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 	XamTerminateTitle();
 #else
 	if (NtTerminateProcess_Available())
@@ -554,7 +554,7 @@ BASEAPI void CDbgPrintLogWriter::Write(const LogMessage& message)
 
 static u64 GetSysTime(s64* timeZoneBias = nullptr)
 {
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 	// idk
 #else
 	LARGE_INTEGER time;

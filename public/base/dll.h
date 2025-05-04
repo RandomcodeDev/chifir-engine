@@ -8,7 +8,7 @@
 #ifdef CH_WIN32
 #define DLLEXPORT ATTRIBUTE(dllexport)
 #define DLLIMPORT ATTRIBUTE(dllimport)
-#elif defined CH_LINUX || defined CH_SWITCH
+#elif defined CH_LINUX || defined CH_NX
 #define DLLEXPORT ATTRIBUTE(visibility("default"))
 #define DLLIMPORT
 #else

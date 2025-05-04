@@ -41,7 +41,7 @@ MAKE_STUB(NtAllocateVirtualMemory, __stdcall, @24)
 MAKE_STUB(NtFreeVirtualMemory, __stdcall, @16)
 MAKE_STUB(RtlTimeToTimeFields, __stdcall, @8)
 
-#ifndef CH_XBOX360
+#ifndef CH_XENON
 // These are desktop/OneCore things
 
 // ntdll
@@ -140,7 +140,7 @@ MAKE_STUB(WindowsDeleteString, __stdcall, @4)
 MAKE_STUB(WindowsGetStringRawBuffer, __stdcall, @8)
 #endif
 
-#ifndef CH_XBOX360
+#ifndef CH_XENON
 static bool FindNtDll(PPEB_LDR_DATA ldrData)
 {
 	// On desktop NTDLL is always the first image initialized, no matter what (there is no logical reason this would change)
@@ -267,7 +267,7 @@ bool Base_InitLoader()
 		return true;
 	}
 
-#ifndef CH_XBOX360
+#ifndef CH_XENON
 	if (!FindNtDll(NtCurrentPeb()->Ldr))
 	{
 		return false;
@@ -408,13 +408,13 @@ bool Base_InitLoader()
 BASEAPI ILibrary* Base_LoadLibrary(cstr name)
 {
 	static const cstr DLL_EXT =
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 		".xex";
 #else
 		".dll";
 #endif
 
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 	if (g_allocUsable)
 	{
 		dstr fileName = Base_StrFormat("%s%s", name, DLL_EXT);
@@ -520,7 +520,7 @@ void CWindowsLibrary::Unload()
 
 void* CWindowsLibrary::GetSymbol(cstr name)
 {
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 	void* sym = GetProcAddress(reinterpret_cast<HMODULE>(m_base), name);
 	LastNtStatus() = LastNtError();
 	return sym;

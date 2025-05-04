@@ -83,7 +83,7 @@ def main(argc, argv):
 	args = parser.parse_args(argv[1:])
 
 	plat = python_platform_to_xmake(args.plat)
-	if plat not in ["windows", "gdk", "gdkx", "linux"]:
+	if plat not in ["windows", "gdk", "scarlett", "linux"]:
 		print(
 			f"genrelease is not designed for {plat}, there's probably another one specific to it (makensp, etc)"
 		)
@@ -116,14 +116,14 @@ def main(argc, argv):
 	os.mkdir(path.join(output, "bin"))
 
 	# only Windows, Xbox, and Linux are non-static
-	EXE_EXTS = {"windows": ".exe", "gdk": ".exe", "gdkx": ".exe", "linux": None}
+	EXE_EXTS = {"windows": ".exe", "gdk": ".exe", "scarlett": ".exe", "linux": None}
 	DLL_EXTS = {
 		"windows": ".dll",
 		"gdk": ".dll",
-		"gdkx": ".dll",
+		"scarlett": ".dll",
 		"linux": ".so",
 	}
-	SYM_EXTS = {"windows": ".pdb", "gdk": ".pdb", "gdkx": ".pdb", "linux": None}
+	SYM_EXTS = {"windows": ".pdb", "gdk": ".pdb", "scarlett": ".pdb", "linux": None}
 
 	for root, _, files in os.walk(build_dir):
 		for f in files:
@@ -171,7 +171,7 @@ def main(argc, argv):
 							os.mkdir(dest)
 						shutil.copy(file, path.join(dest, f))
 
-	if plat in ["gdk", "gdkx"]:
+	if plat in ["gdk", "scarlett"]:
 		gdk_meta = path.join(repo_dir, "public", "gdk")
 		for root, _, files in os.walk(gdk_meta):
 			for f in files:

@@ -6,7 +6,7 @@
 
 #include "platform_win32.h"
 
-#ifndef CH_XBOX360
+#ifndef CH_XENON
 #include "base/basicstr.h"
 
 using namespace winrt_min;

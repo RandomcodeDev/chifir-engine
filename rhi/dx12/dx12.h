@@ -11,7 +11,7 @@
 
 #include "base/platform.h"
 
-#ifdef CH_GDKX
+#ifdef CH_SCARLETT
 #define DX12_TARGET_FEATURE_LEVEL D3D_FEATURE_LEVEL_12_2
 #else
 #define DX12_TARGET_FEATURE_LEVEL D3D_FEATURE_LEVEL_12_1

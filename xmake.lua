@@ -11,14 +11,14 @@ set_project("chifir-engine")
 set_version("0.0.0", { build = "%Y%m%d%H%M%S" })
 
 set_allowedplats(
-	"windows", "gdkx",
+	"windows", "scarlett",
 	"linux",
-	"switch",
+	"nx",
 	"orbis"
 )
 
 set_allowedarchs(
-	"windows|x64", "gdkx|x64", "orbis|x64",
+	"windows|x64", "scarlett|x64", "orbis|x64",
 	"linux|x86_64",
 	"windows|x86", "linux|x86",
 	"windows|arm64", "linux|arm64", "switch|arm64"
@@ -30,7 +30,7 @@ set_allowedmodes(
 	"retail"
 )
 
-if is_plat("switch", "orbis") then
+if is_plat("nx", "orbis") then
 	set_kind("static")
 end
 
@@ -82,22 +82,22 @@ end
 set_configvar("GAME_NAME", game_name)
 set_configvar("GAME_DISPLAY_NAME", game_display_name)
 set_configvar("REPO_NAME", repo_name)
-set_configvar("SWITCH_TITLE_ID", switch_title_id)
+set_configvar("NX_TITLE_ID", nx_title_id)
 
 set_configdir("$(buildir)/config")
 add_configfiles("public/config.h.in")
 
-vulkan = is_plat("windows", "linux", "switch")
+vulkan = is_plat("windows", "linux", "nx")
 if vulkan then
 	add_defines("CH_VULKAN")
 end
 
-directx = is_plat("windows", "gdkx")
+directx = is_plat("windows", "scarlett")
 if directx then
 	add_defines("CH_DIRECTX", "CH_DIRECTX12")
 end
 
-directx9 = directx and not is_plat("gdkx")
+directx9 = directx and not is_plat("scarlett")
 if directx9 then
 	add_defines("CH_DIRECTX9")
 end
@@ -111,13 +111,13 @@ if is_plat("windows") then
 	if is_arch("x64", "x86_64") then
 		add_defines("CH_GDK")
 	end
-elseif is_plat("gdkx") then
-	add_defines("CH_GDKX", "CH_GDK", "CH_WIN32", "CH_CONSOLE", "CH_XBOX")
+elseif is_plat("scarlett") then
+	add_defines("CH_SCARLETT", "CH_GDK", "CH_WIN32", "CH_CONSOLE", "CH_XBOX")
 elseif is_plat("linux") then
 	add_defines("CH_LINUX", "CH_UNIX")
 	add_requires("libsdl3", {system = true})
-elseif is_plat("switch") then
-	add_defines("CH_SWITCH", "CH_CONSOLE")
+elseif is_plat("nx") then
+	add_defines("CH_NX", "CH_CONSOLE")
 elseif is_plat("orbis") then
 	add_defines("CH_ORBIS", "CH_CONSOLE")
 end
@@ -167,7 +167,7 @@ add_defines("_GNU_SOURCE", "_CRT_SECURE_NO_WARNINGS")
 set_languages("gnu17", "gnuxx17")
 set_warnings("all", "error")
 
-if is_plat("windows", "gdkx") then
+if is_plat("windows", "scarlett") then
 	set_exceptions("none")
 
 	add_cxflags(
@@ -196,7 +196,7 @@ if is_plat("windows", "gdkx") then
 		{ force = true })
 
 	-- Modern Xbox is all AMD
-	if is_plat("gdkx") then
+	if is_plat("scarlett") then
 		add_cxflags(
 			"/favor:AMD64",
 			{ force = true })
@@ -253,7 +253,7 @@ if is_plat("windows", "gdkx") then
 			"-clang:-Wno-ignored-pragma-intrinsic"
 		)
 	end
-elseif is_plat("linux", "switch", "orbis") then
+elseif is_plat("linux", "nx", "orbis") then
 	add_cxflags(
 		"-fms-extensions",
 		"-fno-threadsafe-statics",

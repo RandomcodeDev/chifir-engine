@@ -30,13 +30,13 @@ class CDx12RhiInstance: public IRhiInstance
 	virtual IRhiDevice* CreateDevice(const RhiDeviceInfo_t& info);
 
 	static constexpr cstr DXGI_DLL_NAME =
-#ifdef CH_GDKX
+#ifdef CH_SCARLETT
 		"dxgi_xs";
 #else
 		"dxgi";
 #endif
 	static constexpr cstr D3D12_DLL_NAME =
-#ifdef CH_GDKX
+#ifdef CH_SCARLETT
 		"d3d12_xs";
 #else
 		"d3d12";

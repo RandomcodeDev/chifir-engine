@@ -9,7 +9,7 @@ CWin32Filesystem::CWin32Filesystem(cstr root) : CBaseRawFilesystem(root)
 {
 	ASSERT_MSG(g_platInitialized != false, "Call Base_Init first!");
 
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 	m_rootHandle = CreateFileA(
 		m_root, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0, FILE_OPEN_IF,
 		FILE_ATTRIBUTE_DIRECTORY, nullptr);
@@ -146,7 +146,7 @@ FileType CWin32Filesystem::GetFileType(cstr path)
 	{
 		type = FileType::Directory;
 	}
-#ifndef CH_XBOX360
+#ifndef CH_XENON
 	else if (info.FileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
 	{
 		type = FileType::Symlink;

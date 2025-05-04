@@ -37,7 +37,7 @@ static constexpr const char* GetMsvcVersionString()
 
 // Clang works either way
 #if defined _MSC_VER && defined CH_WIN32
-#ifdef CH_XBOX360
+#ifdef CH_XENON
 #include <VectorIntrinsics.h>
 #elif defined CH_X86
 // intrinsics are a

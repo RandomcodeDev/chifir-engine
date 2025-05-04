@@ -17,4 +17,4 @@ repo_name = "chifir-engine"
 
 -- Also has to be changed in private/public/Application.nmeta, and probably somewhere else (you'll probably notice)
 -- TODO: move this somewhere private? since it's a placeholder that's used by secret code, it probably should be
-switch_title_id = "0100694203488000"
+nx_title_id = "0100694203488000"

@@ -17,7 +17,7 @@ target("RhiVulkan")
 
     if is_plat("windows") then
         add_defines("VK_USE_PLATFORM_WIN32_KHR")
-    elseif is_plat("switch") then
+    elseif is_plat("nx") then
         add_defines("VK_USE_PLATFORM_VI_NN")
     else
         add_defines("VK_USE_PLATFORM_WAYLAND_KHR", "VK_USE_PLATFORM_XLIB_KHR")

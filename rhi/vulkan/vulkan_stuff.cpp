@@ -49,7 +49,7 @@ static void VKAPI_CALL VkFree(void* pUserData, void* pMemory)
 
 const VkAllocationCallbacks* GetVkAllocationCallbacks()
 {
-//#ifdef CH_SWITCH
+//#ifdef CH_NX
 	// allocations are already overridden globally
 	return nullptr;
 //#else

@@ -13,7 +13,7 @@ bool g_platInitialized;
 bool g_allocUsable;
 BaseCpuData g_cpuData;
 
-#if defined CH_ORBIS || CH_GDKX
+#if defined CH_ORBIS || CH_SCARLETT
 static void InitCpuData()
 {
 	g_cpuData.haveSimd128 = true;
@@ -94,7 +94,7 @@ static void InitCpuData()
 		Base_StrTrim(g_cpuData.name);
 	}
 }
-#elif defined CH_XBOX360
+#elif defined CH_XENON
 static void InitCpuData()
 {
 	g_cpuData.haveSimd128 = true;
@@ -473,7 +473,7 @@ static bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 	inequalIdx = _mm_cmpestri(*reinterpret_cast<const __m128i*>(&a), 16, *reinterpret_cast<const __m128i*>(&b), 16, mode);
 	return !_mm_cmpestrc(*reinterpret_cast<const __m128i*>(&a), 16, *reinterpret_cast<const __m128i*>(&b), 16, mode);
 }
-#elif defined CH_XBOX360
+#elif defined CH_XENON
 static bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 {
 	u32 cr = 0;

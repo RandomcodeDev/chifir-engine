@@ -6,7 +6,7 @@
 #include "filesystem_win32.h"
 #elif defined CH_UNIX
 #include "filesystem_unix.h"
-#elif defined CH_SWITCH
+#elif defined CH_NX
 #include "base/filesystem_switch.h"
 #endif
 
@@ -41,7 +41,7 @@ BASEAPI IWritableFilesystem* Base_CreateRawFilesystem(cstr path)
 	return new CWin32Filesystem(path);
 #elif defined CH_UNIX
 	return new CUnixFilesystem(path);
-#elif defined CH_SWITCH
+#elif defined CH_NX
 	return new CSwitchFilesystem(path);
 #else
 	(void)path;

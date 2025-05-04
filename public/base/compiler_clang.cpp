@@ -21,7 +21,7 @@ extern "C"
 	typedef long long __m128i_clang __attribute__((__vector_size__(16), __aligned__(16)));
 	typedef char __v16qi __attribute__((__vector_size__(16)));
 
-#ifndef CH_SWITCH
+#ifndef CH_NX
 	void __cxa_atexit()
 	{
 	}
