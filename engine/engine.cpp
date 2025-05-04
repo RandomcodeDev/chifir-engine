@@ -10,10 +10,25 @@
 #include "rhi/rhi.h"
 #include "videosystem/ivideosystem.h"
 
-CEngine::CEngine()
-	: m_state(EngineState_t::Uninitialized), m_headless(false), m_rhiBackendName(DEFAULT_RHI_BACKEND), m_renderSystem(nullptr),
-	  m_videoSystem(nullptr)
+CEngine::CEngine() : m_state(EngineState_t::Uninitialized), m_headless(false), m_renderSystem(nullptr), m_videoSystem(nullptr)
 {
+#ifdef CH_WIN32
+#ifdef CH_IA32
+	if (Plat_IsUwpApp())
+	{
+#endif
+		m_rhiBackendName = "DirectX12";
+#ifdef CH_IA32
+	}
+	else
+	{
+		// for legacy support
+		m_rhiBackendName = "DirectX9";
+	}
+#endif
+#else
+	m_rhiBackendName = "Vulkan";
+#endif
 }
 
 CEngine::~CEngine()

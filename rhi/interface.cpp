@@ -67,7 +67,7 @@ extern IRhiInstance* CreateVulkanRhiInstance();
 extern IRhiInstance* CreateDx12RhiInstance();
 #endif
 #ifdef CH_DIRECTX9
-// extern IRhiInstance* CreateDx9Instance();
+extern IRhiInstance* CreateDx9Instance();
 #endif
 #ifdef CH_OPENGL
 // extern IRhiInstance* CreateOpenGlInstance();

@@ -90,15 +90,4 @@ class CEngine: public IEngine
         {"RenderSystem", IRenderSystem::VERSION, true, false}
     };
 	static constexpr u32 CLIENT_SYSTEMS_OFFSET = 0;
-
-	static constexpr cstr DEFAULT_RHI_BACKEND =
-#ifdef CH_WIN32
-#ifdef CH_IA32
-		"DirectX9";
-#else
-		"DirectX12";
-#endif
-#else
-		"Vulkan";
-#endif
 };
