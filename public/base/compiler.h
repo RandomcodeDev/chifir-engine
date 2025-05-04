@@ -166,7 +166,7 @@ extern void __stdcall RunThreadConstructors();
 
 #define NOMSVC_DEBUG_BREAK __asm__ volatile("int3");
 #elif defined CH_ARM64
-#define NOMSVC_DEBUG_BREAK __asm__ volatile("brk");
+#define NOMSVC_DEBUG_BREAK __asm__ volatile("brk #0");
 #endif
 
 #define ATTRIBUTE(x) __attribute__((x))
