@@ -87,14 +87,16 @@ class CNullLibrary: public ILibrary
 	CNullLibrary(cstr name, void* base);
 	~CNullLibrary();
 
-	void* GetSymbol(cstr name);
+	virtual void Unload();
 
-	cstr GetName()
+	virtual void* GetSymbol(cstr name);
+
+	virtual cstr GetName()
 	{
 		return m_name;
 	}
 
-	uptr GetBase()
+	virtual uptr GetBase()
 	{
 		return reinterpret_cast<uptr>(m_base);
 	}

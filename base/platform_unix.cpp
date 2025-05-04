@@ -344,7 +344,15 @@ CUnixLibrary::~CUnixLibrary()
 	{
 		Base_Free(m_name);
 	}
-	dlclose(m_base);
+}
+
+void CUnixLibrary::Unload()
+{
+	if (m_base)
+	{
+		dlclose(m_base);
+		m_base = nullptr;
+	}
 }
 
 void* CUnixLibrary::GetSymbol(cstr name)

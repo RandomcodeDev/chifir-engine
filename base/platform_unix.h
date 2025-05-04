@@ -89,14 +89,16 @@ class CUnixLibrary: public ILibrary
 	CUnixLibrary(cstr name, void* base);
 	~CUnixLibrary();
 
-	void* GetSymbol(cstr name);
+	virtual void Unload();
 
-	cstr GetName()
+	virtual void* GetSymbol(cstr name);
+
+	virtual cstr GetName()
 	{
 		return m_name;
 	}
 
-	uptr GetBase()
+	virtual uptr GetBase()
 	{
 		return reinterpret_cast<uptr>(m_base);
 	}
