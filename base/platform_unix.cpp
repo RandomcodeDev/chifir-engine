@@ -84,12 +84,12 @@ static void SignalHandler(s32 signal, siginfo_t* sigInfo, void* context)
 		case SEGV_ACCERR:
 			error = "invalid permissions for mapped object";
 			break;
-#ifdef PURPL_LINUX
+#ifdef CH_LINUX
 		case SEGV_BNDERR:
-			ErrorType = "failed bounds checks";
+			error = "failed bounds checks";
 			break;
 		case SEGV_PKUERR:
-			ErrorType = "access was denied by memory protection keys";
+			error = "access was denied by memory protection keys";
 			break;
 #endif
 		}
@@ -179,7 +179,7 @@ BASEAPI void Plat_Init()
 			Base_AbortSafe(ABORT_RELEVANT_ERROR, "Failed to get executable directory!");
 		}
 
-		s64 now = Plat_GetMilliseconds() / 1000;
+		time_t now = Plat_GetMilliseconds() / 1000;
 		struct tm* local = localtime(&now);
 		g_timeZoneOffset = local->tm_gmtoff;
 

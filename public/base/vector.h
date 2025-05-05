@@ -106,7 +106,7 @@ template <typename T> class CVector: public IContainer<T, ssize>
 		/// Append by default
 		if (index == BAD_INDEX || index > m_size)
 		{
-		new (&m_buffer[m_size - 1]) T;
+			new (&m_buffer[m_size - 1]) T;
 			m_buffer[m_size - 1] = object;
 			return m_size - 1;
 		}

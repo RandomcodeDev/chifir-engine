@@ -24,9 +24,9 @@ class CUnixMutex: public IMutex
 	virtual bool TryLock(u32 timeout);
 	virtual void Unlock();
 
-	virtual uptr GetHandle() const
+	virtual u64 GetHandle() const
 	{
-		return reinterpret_cast<uptr>(&m_handle);
+		return reinterpret_cast<u64>(&m_handle);
 	}
 
   private:
@@ -60,9 +60,9 @@ class CUnixThread: public IThread
 		return m_id;
 	}
 
-	virtual uptr GetHandle() const
+	virtual u64 GetHandle() const
 	{
-		return reinterpret_cast<uptr>(m_handle);
+		return reinterpret_cast<u64>(&m_handle);
 	}
 
 	virtual cstr GetName() const
@@ -100,7 +100,7 @@ class CUnixLibrary: public ILibrary
 
 	virtual uptr GetBase()
 	{
-		return reinterpret_cast<uptr>(m_base);
+		return reinterpret_cast<u64>(m_base);
 	}
 
   private:

@@ -62,7 +62,10 @@ BASEAPI void Log_AddWriter(ILogWriter* writer)
 {
 	if (writer)
 	{
+		ASSERT_MSG(s_logMutex != nullptr, "Call Base_Init first!");
+		s_logMutex->Lock();
 		s_writers.Add(writer);
+		s_logMutex->Unlock();
 	}
 }
 

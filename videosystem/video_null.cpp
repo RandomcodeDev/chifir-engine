@@ -10,7 +10,7 @@ bool CNullVideoSystem::Initialize()
 {
 	Log_Debug("Initializing null video system");
 
-	m_title = Base_StrClone(GAME_NAME);
+	m_title = Base_StrClone(GAME_DISPLAY_NAME);
 	if (!m_title)
 	{
 		return false;

@@ -27,10 +27,10 @@
       "visualizerFile": "${workspaceFolder}/public/Chifir.natvis"
     },
     {
-      "name": "(Linux Static) Launch",
+      "name": "(Linux 32-bit) Launch",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/linux/x64/debug_static/FalseKing",
+      "program": "${workspaceFolder}/build/linux/x86/debug/FalseKing",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
@@ -64,34 +64,10 @@
       "visualizerFile": "${workspaceFolder}/public/Chifir.natvis"
     },
     {
-      "name": "(GDK Static) Launch",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/windows/x64/debug_static/FalseKing.exe",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${fileDirname}",
-      "environment": [],
-      "console": "internalConsole",
-      "visualizerFile": "${workspaceFolder}/public/Chifir.natvis"
-    },
-    {
       "name": "(WinXP) Launch",
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/windows/x86/debug/FalseKing.exe",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${fileDirname}",
-      "environment": [],
-      "console": "internalConsole",
-      "visualizerFile": "${workspaceFolder}/public/Chifir.natvis"
-    },
-    {
-      "name": "(WinXP Static) Launch",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/windows/x86/debug_static/FalseKing.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
