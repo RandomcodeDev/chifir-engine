@@ -35,7 +35,7 @@ There are Rust bindings in progress, you need the `nightly` toolchain for them.
 
 You can get a semi-accurate line count with this command if you have tokei installed:
 ```sh
-tokei -t="C,C++,C Header,Python,Lua,Assembly" -e external -e public/xbox
+tokei -t="C,C++,C Header,Python,Lua,Assembly,Rust" -e external -e public/xbox
 ```
 
 ## Build instructions
@@ -96,7 +96,7 @@ For the Rust stuff, build the engine, then do `cargo build`.
 
 - Windows
   - Windows is the most actively developed platform
-  - Windows XP and later are supported (although the renderer doesn't support DirectX 9 yet)
+  - Windows XP and later are supported
   - UWP support seems to work
   - Nothing is statically imported from system libraries, it's all done at runtime
   - Most features are implemented with native functions in `ntdll.dll` that have been around since Windows XP, rather than using `kernel32.dll`

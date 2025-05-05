@@ -5,6 +5,7 @@
 #include "base/base.h"
 #include "base/basicstr.h"
 #include "base/log.h"
+#include "base/platform.h"
 
 extern "C" bool SetProcessDPIAware_Available();
 
@@ -44,7 +45,7 @@ bool CWin32VideoSystem::Update()
 		DispatchMessageA(&msg);
 	}
 
-	return !m_closed;
+	return !m_closed && !Plat_QuitSignalled();
 }
 
 void CWin32VideoSystem::Shutdown()

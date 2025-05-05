@@ -23,14 +23,16 @@ class BASEAPI CString
 	CString(cstr data, ssize size = SSIZE_MAX);
 
 	/// Avoid this, it's expensive
-	CString(const CString& other) : m_buffer(nullptr), m_size(0), m_capacity(0)
+	CString(const CString& other) : CString(other.Data(), other.Size())
 	{
-		*this = other;
 	}
 
 	/// Move another string into this one
-	CString(const CString&& other) : m_buffer(other.m_buffer), m_size(other.m_size), m_capacity(other.m_capacity)
+	CString(CString&& other) : m_buffer(other.m_buffer), m_size(other.m_size), m_capacity(other.m_capacity)
 	{
+		other.m_buffer = nullptr;
+		other.m_size = 0;
+		other.m_capacity = 0;
 	}
 
 	~CString();
@@ -75,7 +77,7 @@ class BASEAPI CString
 	void Delete(ssize index = BAD_INDEX, ssize count = 1);
 
 	/// Empty the string
-	void Clear()
+	void Empty()
 	{
 		Resize(0);
 	}
@@ -223,7 +225,7 @@ class BASEAPI CString
 
 	void Terminate()
 	{
-		if (m_size > 0)
+		if (m_buffer && m_size > 0)
 		{
 			m_buffer[m_size - 1] = 0;
 		}

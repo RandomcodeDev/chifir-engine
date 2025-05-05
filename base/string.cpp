@@ -1,6 +1,7 @@
 /// \file Dynamic string
 /// \copyright 2025 Randomcode Developers
 
+#include "base/base.h"
 #include "base/basicstr.h"
 #include "base/string.h"
 #include "base/vector.h"
@@ -15,6 +16,19 @@ CString::CString(cstr data, ssize size) : m_buffer(nullptr), m_size(0), m_capaci
 
 CString& CString::operator=(const CString& other)
 {
+	if (this->m_buffer == other.m_buffer)
+	{
+		return *this;
+	}
+
+	if (m_buffer)
+	{
+		Base_Free(m_buffer);
+	}
+
+	m_size = 0;
+	m_capacity = 0;
+
 	Resize(other.Length());
 	Base_MemCopy(m_buffer, other.Data(), m_size - 1);
 	Terminate();

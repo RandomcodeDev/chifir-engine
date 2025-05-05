@@ -23,7 +23,7 @@ class IMutex
 	virtual void Unlock() = 0;
 
 	/// Get the system handle for the mutex
-	virtual uptr GetHandle() const = 0;
+	virtual u64 GetHandle() const = 0;
 };
 
 extern BASEAPI IMutex* Async_CreateMutex();
@@ -50,7 +50,7 @@ class IThread
 	virtual u64 GetId() const = 0;
 
 	/// Get the system handle for the thread
-	virtual uptr GetHandle() const = 0;
+	virtual u64 GetHandle() const = 0;
 
 	/// Get the name of the thread
 	virtual cstr GetName() const = 0;

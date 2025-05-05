@@ -34,6 +34,9 @@ extern bool g_allocUsable;
 /// Initialized in Base_Init
 extern BaseCpuData g_cpuData;
 
+/// Whether a quit was signalled by a Ctrl-C or something
+extern bool g_quitSignalled;
+
 /// OS allocation
 struct SystemAllocation
 {
