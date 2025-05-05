@@ -15,7 +15,7 @@ DECLARE_AVAILABLE(DbgPrint);
 DECLARE_AVAILABLE(NtAllocateVirtualMemory);
 DECLARE_AVAILABLE(RtlTimeToTimeFields);
 #ifdef CH_XENON
-extern "C" DLLIMPORT void __stdcall XamTerminateTitle();
+extern "C" DLLIMPORT void WINAPI XamTerminateTitle();
 extern "C" DLLIMPORT u8* XboxKrnlVersion;
 extern "C" DLLIMPORT u32* XboxHardwareInfo;
 #else
@@ -30,6 +30,7 @@ DECLARE_AVAILABLE(GetConsoleMode);
 DECLARE_AVAILABLE(GetStdHandle);
 DECLARE_AVAILABLE(WriteConsoleA);
 DECLARE_AVAILABLE(SetConsoleMode);
+DECLARE_AVAILABLE(SetConsoleCtrlHandler);
 #endif
 
 SYSTEM_BASIC_INFORMATION g_systemInfo;
@@ -105,7 +106,8 @@ static void InitializeTls()
 	Plat_GetTlsData()->isMainThread = true;
 }
 
-static LONG __stdcall ExceptionHandler(PEXCEPTION_POINTERS info);
+static LONG WINAPI ExceptionHandler(PEXCEPTION_POINTERS info);
+static BOOL WINAPI ConsoleCtrlHandler(DWORD signal);
 
 BASEAPI void Plat_Init()
 {
@@ -130,6 +132,11 @@ BASEAPI void Plat_Init()
 		if (!Plat_IsWine() && RtlAddVectoredExceptionHandler_Available())
 		{
 			RtlAddVectoredExceptionHandler(true, ExceptionHandler);
+		}
+		
+		if (SetConsoleCtrlHandler_Available())
+		{
+			SetConsoleCtrlHandler(ConsoleCtrlHandler, true);
 		}
 #endif
 
@@ -202,7 +209,7 @@ static ULONG HardError(PCUNICODE_STRING msg, HARDERROR_RESPONSE_OPTION option = 
 	return response;
 }
 
-static LONG __stdcall ExceptionHandler(PEXCEPTION_POINTERS info)
+static LONG WINAPI ExceptionHandler(PEXCEPTION_POINTERS info)
 {
 #define X(code, ...)                                                                                                             \
 	case code:                                                                                                                   \
@@ -236,7 +243,7 @@ static LONG __stdcall ExceptionHandler(PEXCEPTION_POINTERS info)
 		address = info->ExceptionRecord->ExceptionInformation[1];
 	}
 
-	switch (info->ExceptionRecord->ExceptionCode)
+	switch (static_cast<NTSTATUS>(info->ExceptionRecord->ExceptionCode))
 	{
 		X(EXCEPTION_ACCESS_VIOLATION)
 		X(EXCEPTION_ARRAY_BOUNDS_EXCEEDED)
@@ -295,6 +302,17 @@ static LONG __stdcall ExceptionHandler(PEXCEPTION_POINTERS info)
 		return EXCEPTION_CONTINUE_EXECUTION;
 	}
 #undef X
+}
+
+static BOOL WINAPI ConsoleCtrlHandler(DWORD signal)
+{
+	if (signal == CTRL_C_EVENT)
+	{
+		Log_Info("Caught Ctrl-C");
+		g_quitSignalled = true;
+	}
+
+	return true;
 }
 
 extern "C" BASEAPI int Base_RunMain(int (*main)())

@@ -15,6 +15,8 @@ CDx9RhiSwapChain::CDx9RhiSwapChain(CDx9RhiDevice* device) : m_device(device)
 
 bool CDx9RhiSwapChain::Initialize(u32 bufferCount)
 {
+    Log_Debug("Getting IDirect3D9SwapChain9 and setting buffer count to %u", bufferCount);
+
     m_bufferCount = bufferCount;
 
     auto& presentParams = m_device->m_presentParams;

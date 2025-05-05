@@ -64,6 +64,9 @@ extern BASEAPI cstr Plat_GetEngineDir();
 /// Get an environment variable
 extern BASEAPI cstr Plat_GetEnvironment(cstr name);
 
+/// Get whether a Ctrl-C or similar quit signal was received
+extern BASEAPI bool Plat_QuitSignalled();
+
 #ifdef CH_WIN32
 /// Get whether the engine is running in Wine (if you use this for shady stuff you suck)
 extern BASEAPI bool Plat_IsWine();
@@ -137,6 +140,4 @@ extern BASEAPI void Plat_BindUwpVideo(UwpVideoInfo& info, const UwpVideoCallback
 
 /// Get whether the OS is Windows 11 or above
 #define AT_LEAST_WINDOWS_11() AT_LEAST_WINDOWS_10_BUILD(22000)
-#elif defined CH_UNIX
-extern BASEAPI bool Plat_QuitSignalled();
 #endif

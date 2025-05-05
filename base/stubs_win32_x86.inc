@@ -50,6 +50,7 @@ MAKE_STUB AttachConsole, @4
 MAKE_STUB GetConsoleMode, @8
 MAKE_STUB GetStdHandle, @4
 MAKE_STUB SetConsoleMode, @8
+MAKE_STUB SetConsoleCtrlHandler, @8
 MAKE_STUB TlsAlloc, @0
 MAKE_STUB TlsGetValue, @4
 MAKE_STUB TlsSetValue, @8

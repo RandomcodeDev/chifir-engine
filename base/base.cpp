@@ -12,6 +12,7 @@ bool g_baseInitialized;
 bool g_platInitialized;
 bool g_allocUsable;
 BaseCpuData g_cpuData;
+bool g_quitSignalled;
 
 #if defined CH_ORBIS || CH_SCARLETT
 static void InitCpuData()
@@ -153,6 +154,11 @@ BASEAPI NORETURN void Base_Quit(cstr message, ...)
 	// this is a guess, since this function has no knowledge of the engine's paths, just where it probably initialized it to
 	Log_FatalError("Check the log in (probably) %s", Plat_GetSaveLocation());
 	Base_AbortSafe(ABORT_RELEVANT_ERROR, formatted);
+}
+
+BASEAPI bool Plat_QuitSignalled()
+{
+	return g_quitSignalled;
 }
 
 template <typename T> static T Fnv1a(const u8* data, ssize size, T offsetBasis, T prime)

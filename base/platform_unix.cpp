@@ -34,7 +34,6 @@ dstr g_exeDir;
 
 s64 g_timeZoneOffset;
 
-static bool s_quitSignalled;
 static void SignalHandler(s32 signal, siginfo_t* sigInfo, void* context)
 {
 	cstr baseError = "Unknown error";
@@ -149,7 +148,7 @@ static void SignalHandler(s32 signal, siginfo_t* sigInfo, void* context)
 	case SIGQUIT:
 	case SIGTERM:
 		Log_Info("Received quit signal %d, errno %d", signal, sigInfo->si_errno);
-		s_quitSignalled = true;
+		g_quitSignalled = true;
 		return;
 	case SIGTRAP:
 		Log_Info("Debug trap at 0x%llX, errno %d", reinterpret_cast<u64>(sigInfo->si_addr), sigInfo->si_errno);
@@ -213,11 +212,6 @@ extern "C" BASEAPI void Base_Internal_SetArgs(s32 argc, char* argv[])
 {
 	s_argc = argc;
 	s_argv = argv;
-}
-
-BASEAPI bool Plat_QuitSignalled()
-{
-	return s_quitSignalled;
 }
 
 BASEAPI void Plat_GetArgs(CVector<CString>& args)

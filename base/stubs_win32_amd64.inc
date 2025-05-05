@@ -50,6 +50,7 @@ MAKE_STUB AttachConsole
 MAKE_STUB GetConsoleMode
 MAKE_STUB GetStdHandle
 MAKE_STUB SetConsoleMode
+MAKE_STUB SetConsoleCtrlHandler
 MAKE_STUB WriteConsoleA
 MAKE_STUB TlsAlloc
 MAKE_STUB TlsGetValue
