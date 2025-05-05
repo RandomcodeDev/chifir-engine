@@ -49,7 +49,8 @@ add_sysincludedirs(
 if is_plat("xbox") then
 	add_sysincludedirs(
 		"public/xbox",
-		"external/xbox/public/sdk/inc"
+		"external/xbox/public/sdk/inc",
+		"external/xbox/public/sdk/inc/crt"
 	)
 else
 	add_sysincludedirs(

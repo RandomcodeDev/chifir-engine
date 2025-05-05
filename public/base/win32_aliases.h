@@ -1,6 +1,11 @@
-/// \file Undefines Win32 aliases for ANSI/Unicode functions, so things don't get weirdly named for DLLs
+/// \file Undefines conflicting Win32 Unicode/ANSI aliases, and defines wrapper macros for weird versions of Windows headers
 /// \copyright 2025 Randomcode Developers
 
 #pragma once
 
 #undef CreateDirectory
+
+#ifdef CH_XBOX
+#define Nt
+#else
+#endif

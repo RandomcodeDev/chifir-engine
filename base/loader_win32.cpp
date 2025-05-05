@@ -154,6 +154,9 @@ static bool FindNtDll(PPEB_LDR_DATA ldrData)
 
 static u16 GetArchitecture()
 {
+#ifdef CH_XBOX
+	return IMAGE_FILE_MACHINE_I386;
+#else
 	switch (USER_SHARED_DATA->NativeProcessorArchitecture)
 	{
 	case PROCESSOR_ARCHITECTURE_AMD64:
@@ -170,11 +173,16 @@ static u16 GetArchitecture()
 		break;
 	}
 	return 0;
+#endif
 }
 
 bool Base_CheckWoW64()
 {
+#ifdef CH_XBOX
+	return false;
+#else
 	return GetArchitecture() != ((PIMAGE_NT_HEADERS)RVA_TO_VA(&__ImageBase, __ImageBase.e_lfanew))->FileHeader.Machine;
+#endif
 }
 
 cstr Base_GetWineVersion()

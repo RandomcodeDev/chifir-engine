@@ -555,6 +555,8 @@ static u64 GetSysTime(s64* timeZoneBias = nullptr)
 {
 #ifdef CH_XENON
 	// idk
+#elif defined CH_XBOX
+	// idk
 #else
 	LARGE_INTEGER time;
 	do

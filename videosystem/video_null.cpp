@@ -16,8 +16,13 @@ bool CNullVideoSystem::Initialize()
 		return false;
 	}
 
+#ifdef CH_XBOX
+	m_width = 640; // TODO: does it support 16:9?
+	m_height = 480;
+#else
 	m_width = 1280;
 	m_height = 720;
+#endif
 	m_x = 0;
 	m_y = 0;
 	m_resized = false;

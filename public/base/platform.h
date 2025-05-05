@@ -8,6 +8,10 @@
 #include <nt.h>
 #include <ntrtl.h>
 #include <xtl.h>
+
+#define RTL_CONSTANT_STRING(s) { sizeof((s)) - sizeof((s)[0]), sizeof((s)), (s) }
+#define RTL_CONSTANT_OBJECT_ATTRIBUTES(n, a) { sizeof(OBJECT_ATTRIBUTES), nullptr, (n), (a), nullptr, nullptr }
+#define STATUS_STACK_BUFFER_OVERRUN 0xC0000409
 #else
 #include "phnt_wrapper.h"
 #include <shlobj.h>
