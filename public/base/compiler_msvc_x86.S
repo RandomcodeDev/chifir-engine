@@ -20,10 +20,12 @@ __fltused: .long 0x9875
 .extern _Base_AbortSafeC
 
 .ifdef CH_STATIC
+.ifndef CH_XBOX
 .extern _chkstk_Forwarder
 .globl __chkstk
 __chkstk:
 	jmp _chkstk_Forwarder
+.endif
 .endif
 
 .globl @__security_check_cookie@4

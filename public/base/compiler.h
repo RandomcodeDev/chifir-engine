@@ -36,7 +36,7 @@ static constexpr const char* GetMsvcVersionString()
 #endif
 
 // Clang works either way
-#if defined _MSC_VER && defined CH_WIN32
+#if defined _MSC_VER
 #ifdef CH_XENON
 #include <VectorIntrinsics.h>
 #elif defined CH_X86
@@ -161,8 +161,6 @@ extern void __stdcall RunThreadConstructors();
 #else
 #ifdef CH_X86
 #include <cpuid.h>
-#include <immintrin.h>
-#include <x86intrin.h>
 
 #define NOMSVC_DEBUG_BREAK __asm__ volatile("int3");
 #elif defined CH_ARM64

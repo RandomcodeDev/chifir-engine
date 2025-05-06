@@ -64,7 +64,12 @@ extern "C"
 
 	NORETURN void __cdecl __report_rangecheckfailure()
 	{
-		Base_AbortSafe(STATUS_STACK_BUFFER_OVERRUN, "Range check failure");
+#ifdef STATUS_STACK_BUFFER_OVERRUN
+                s32 code = STATUS_STACK_BUFFER_OVERRUN;
+#else
+                s32 code = 0xDEADBEEF;
+#endif
+		Base_AbortSafe(code, "Range check failure");
 	}
 
 	/// TODO: figure these out

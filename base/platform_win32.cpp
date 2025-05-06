@@ -133,7 +133,7 @@ BASEAPI void Plat_Init()
 		{
 			RtlAddVectoredExceptionHandler(true, ExceptionHandler);
 		}
-		
+
 		if (SetConsoleCtrlHandler_Available())
 		{
 			SetConsoleCtrlHandler(ConsoleCtrlHandler, true);
@@ -194,6 +194,8 @@ BASEAPI void Plat_Shutdown()
 	{
 		Base_Free(s_hardwareDescription);
 	}
+
+	g_platInitialized = false;
 }
 
 static ULONG HardError(PCUNICODE_STRING msg, HARDERROR_RESPONSE_OPTION option = OptionAbortRetryIgnore)
@@ -441,7 +443,7 @@ BASEAPI cstr Plat_GetHardwareDescription()
 	s64 freeMemory = g_systemPerfInfo.AvailablePages * static_cast<s64>(g_systemInfo.PageSize);
 	s64 physicalMemory = g_systemInfo.NumberOfPhysicalPages * static_cast<s64>(g_systemInfo.PageSize);
 
-	// TODO: do stuff with the funny numbers instead of relying on the CPU name being given directly
+	// TODO: do stuff with the funny numbers (family/stepping/idk) instead of relying on the CPU name being given directly
 	s_hardwareDescription = Base_StrFormat(
 		"%s %s with %s of RAM (%s free)", g_cpuData.brand, g_cpuData.haveName ? g_cpuData.name : "Unknown",
 		Base_FormatSize(physicalMemory).Data(), Base_FormatSize(freeMemory).Data());
@@ -507,7 +509,7 @@ BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)
 	}
 #endif
 
-	ASSUME(0);
+	UNREACHABLE();
 }
 
 bool Base_GetSystemMemory(ssize size)
@@ -571,11 +573,6 @@ BASEAPI void CDbgPrintLogWriter::Write(const LogMessage& message)
 
 static u64 GetSysTime(s64* timeZoneBias = nullptr)
 {
-#ifdef CH_XENON
-	// idk
-#elif defined CH_XBOX
-	// idk
-#else
 	LARGE_INTEGER time;
 	do
 	{
@@ -594,7 +591,6 @@ static u64 GetSysTime(s64* timeZoneBias = nullptr)
 	}
 
 	return time.QuadPart;
-#endif
 }
 
 BASEAPI u64 Plat_GetMilliseconds()

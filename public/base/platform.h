@@ -4,22 +4,21 @@
 #pragma once
 
 #ifdef CH_WIN32
-#ifdef CH_XBOX
-#include <nt.h>
-#include <ntrtl.h>
-#include <xtl.h>
-
-#define RTL_CONSTANT_STRING(s) { sizeof((s)) - sizeof((s)[0]), sizeof((s)), (s) }
-#define RTL_CONSTANT_OBJECT_ATTRIBUTES(n, a) { sizeof(OBJECT_ATTRIBUTES), nullptr, (n), (a), nullptr, nullptr }
-#define STATUS_STACK_BUFFER_OVERRUN 0xC0000409
-#else
 #include "phnt_wrapper.h"
 #include <shlobj.h>
 #ifdef CH_UWP
 #include "winrt_min.h"
 #endif
-#endif
 #include "win32_aliases.h"
+#elif defined CH_XBOX
+#ifndef CH_XENON
+#include <nt.h>
+#include <ntrtl.h>
+#endif
+#include <xtl.h>
+#include <xbdm.h>
+#elif defined CH_UNIX
+#include <unistd.h>
 #endif
 
 #include "base.h"
@@ -71,6 +70,14 @@ extern BASEAPI cstr Plat_GetEnvironment(cstr name);
 /// Get whether a Ctrl-C or similar quit signal was received
 extern BASEAPI bool Plat_QuitSignalled();
 
+#if defined CH_WIN32 || defined CH_XBOX
+/// Get the last Win32 error
+#define LastNtError() NtCurrentTeb()->LastErrorValue
+
+/// Get the last NTSTATUS
+#define LastNtStatus() NtCurrentTeb()->LastStatusValue
+#endif
+
 #ifdef CH_WIN32
 /// Get whether the engine is running in Wine (if you use this for shady stuff you suck)
 extern BASEAPI bool Plat_IsWine();
@@ -102,20 +109,9 @@ extern BASEAPI void Plat_BindUwpVideo(UwpVideoInfo& info, const UwpVideoCallback
 #endif
 #endif
 
-/// Get the last Win32 error
-#define LastNtError() NtCurrentTeb()->LastErrorValue
-
-/// Get the last NTSTATUS
-#define LastNtStatus() NtCurrentTeb()->LastStatusValue
-
 /// Declare the _Available function for an imported function
 #define DECLARE_AVAILABLE(func) extern "C" BASEAPI bool func##_Available()
 
-#ifdef CH_XBOX
-#define NT_MAJOR_VERSION 5
-#define NT_MINOR_VERSION 0
-#define NT_BUILD_NUMBER 4400
-#else
 /// Major version of running NT
 #define NT_MAJOR_VERSION (USER_SHARED_DATA->NtMajorVersion)
 
@@ -124,7 +120,6 @@ extern BASEAPI void Plat_BindUwpVideo(UwpVideoInfo& info, const UwpVideoCallback
 
 /// Build number of running NT
 #define NT_BUILD_NUMBER (USER_SHARED_DATA->NtBuildNumber)
-#endif
 
 /// Get whether the OS is Windows XP or above
 #define AT_LEAST_WINDOWS_XP() (NT_MAJOR_VERSION > 5 || (NT_MAJOR_VERSION == 5 && NT_MINOR_VERSION >= 1))

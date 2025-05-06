@@ -13,11 +13,31 @@
 #include "base/platform.h"
 #include "base/types.h"
 
-class CNullMutex: public IMutex
+typedef struct _XBOX_KRNL_VERSION {
+    USHORT Major;
+    USHORT Minor;
+    USHORT Build;
+    USHORT Qfe;
+} XBOX_KRNL_VERSION, *PXBOX_KRNL_VERSION;
+
+extern "C" DLLIMPORT PXBOX_KRNL_VERSION XboxKrnlVersion;
+
+typedef struct _XBOX_HARDWARE_INFO {
+    ULONG Flags;
+    UCHAR GpuRevision;
+    UCHAR McpRevision;
+    UCHAR reserved[2];
+} XBOX_HARDWARE_INFO, *PXBOX_HARDWARE_INFO;
+
+extern "C" DLLIMPORT PXBOX_HARDWARE_INFO XboxHardwareInfo;
+
+#define XBOX_HW_FLAG_DEVKIT_KERNEL 0x0000002
+
+class CXboxMutex: public IMutex
 {
   public:
-	CNullMutex();
-	virtual ~CNullMutex();
+	CXboxMutex();
+	virtual ~CXboxMutex();
 
 	virtual void Lock();
 	virtual bool TryLock(u32 timeout);
@@ -29,14 +49,27 @@ class CNullMutex: public IMutex
 	}
 
   private:
-	void* m_handle;
+	HANDLE m_handle;
 };
 
-class CNullThread: public IThread
+struct TlsData
+{
+	IThread* currentThread;
+	bool isMainThread;
+};
+
+#ifdef CH_XENON
+extern u32 g_tlsIndex;
+#endif
+
+/// Get the TLS data for this thread
+extern TlsData* Plat_GetTlsData();
+
+class CXboxThread: public IThread
 {
   public:
-	CNullThread(ThreadStart_t start, void* userData, cstr name, ssize stackSize, ssize maxStackSize);
-	virtual ~CNullThread();
+	CXboxThread(ThreadStart_t start, void* userData, cstr name, ssize stackSize, ssize maxStackSize);
+	virtual ~CXboxThread();
 
 	virtual void Run();
 	virtual bool Wait(u32 timeout);
@@ -75,14 +108,14 @@ class CNullThread: public IThread
 	ThreadStart_t m_start;
 	void* m_userData;
 
-	static void* ThreadMain(CNullThread* thread);
+	static NTSTATUS WINAPI ThreadMain(CXboxThread* thread);
 };
 
-class CNullLibrary: public ILibrary
+class CXboxLibrary: public ILibrary
 {
   public:
-	CNullLibrary(cstr name, void* base);
-	~CNullLibrary();
+	CXboxLibrary(cstr name, void* base);
+	~CXboxLibrary();
 
 	virtual void Unload();
 

@@ -49,6 +49,7 @@ add_sysincludedirs(
 if is_plat("xbox") then
 	add_sysincludedirs(
 		"public/xbox",
+		"external/xbox/private/inc",
 		"external/xbox/public/sdk/inc",
 		"external/xbox/public/sdk/inc/crt"
 	)
@@ -139,7 +140,7 @@ if is_plat("windows") then
 		add_defines("CH_GDK")
 	end
 elseif is_plat("xbox") then
-	add_defines("CH_XBOX", "CH_WIN32", "CH_CONSOLE")
+	add_defines("CH_XBOX", "CH_CONSOLE")
 elseif is_plat("scarlett") then
 	add_defines("CH_SCARLETT", "CH_GDK", "CH_WIN32", "CH_CONSOLE")
 elseif is_plat("linux") then
@@ -285,6 +286,14 @@ if is_plat("windows", "scarlett", "xbox") then
 			"/X",
 			"/wd5040", -- dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
 		{force = true})
+
+		add_ldflags(
+			"/FORCE:MULTIPLE",
+		{force = true})
+
+		add_linkdirs(
+			"external/xbox/public/sdk/lib/i386"
+		)
 	end
 elseif is_plat("linux", "nx", "orbis") then
 	add_cxflags(

@@ -12,13 +12,24 @@
 #include "base/types.h"
 #include "base/vector.h"
 
+static dstr s_systemDescription;
+static dstr s_hardwareDescription;
 
 BASEAPI void Plat_Init()
 {
+	if (!g_platInitialized)
+	{
+		g_allocUsable = true;
+		g_platInitialized = true;
+	}
 }
 
 BASEAPI void Plat_Shutdown()
 {
+	if (g_platInitialized)
+	{
+		g_platInitialized = false;
+	}
 }
 
 BASEAPI void Plat_GetArgs(CVector<CString>& args)
@@ -44,7 +55,7 @@ BASEAPI NORETURN void Base_AbortSafe(s32 error, cstr msg)
 bool Base_GetSystemMemory(ssize size)
 {
 	// Linked list nodes, can contain any size of allocation, but there's a limit to the number of OS allocations
-	static LinkedNode_t<SystemAllocation_t> memoryNodes[64];
+	static IntrusiveLinkedNode<SystemAllocation> memoryNodes[64];
 }
 
 BASEAPI ILibrary* Base_LoadLibrary(cstr name)
@@ -56,6 +67,10 @@ CNullLibrary::CNullLibrary(cstr name, void* base) : m_name(Base_StrClone(name)),
 }
 
 CNullLibrary::~CNullLibrary()
+{
+}
+
+void CNullLibrary::Unload()
 {
 }
 
@@ -87,6 +102,6 @@ BASEAPI u64 Plat_GetMilliseconds()
 {
 }
 
-BASEAPI void Plat_GetDateTime(DateTime_t& time, bool utc)
+BASEAPI void Plat_GetDateTime(DateTime& time, bool utc)
 {
 }

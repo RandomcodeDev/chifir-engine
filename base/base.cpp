@@ -245,7 +245,22 @@ static void X86RepMovsb(void* RESTRICT dest, const void* RESTRICT src, ssize siz
 #ifdef __clang__
 	__asm__("rep movsb" : "+D"(dest), "+S"(src), "+c"(size) : : "memory");
 #else
-	__movsb(static_cast<u8*>(dest), static_cast<const u8*>(src), static_cast<usize>(size));
+#ifdef CH_XBOX
+	__asm {
+		push edi
+		push esi
+
+		mov edi, dword ptr [ebp + 8]
+		mov esi, dword ptr [ebp + 12]
+		mov ecx, dword ptr [ebp + 16]
+		rep movsb
+
+		pop esi
+		pop edi
+	}
+#else
+	__movsb(static_cast<u8*>(dest), value, static_cast<usize>(size));
+#endif
 #endif
 }
 #endif
@@ -367,7 +382,20 @@ static void X86RepStosb(void* dest, u8 value, ssize size)
 #ifdef __clang__
 	__asm__("rep stosb" : "+D"(dest), "+c"(size) : "a"(value) : "memory");
 #else
+#ifdef CH_XBOX
+	__asm {
+		push edi
+
+		mov edi, dword ptr [ebp + 8]
+		mov ecx, dword ptr [ebp + 16]
+		mov al, byte ptr [ebp + 12]
+		rep stosb
+
+		pop edi
+	}
+#else
 	__stosb(static_cast<u8*>(dest), value, static_cast<usize>(size));
+#endif
 #endif
 }
 #endif

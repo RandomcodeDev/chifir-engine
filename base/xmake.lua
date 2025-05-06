@@ -31,7 +31,7 @@ target("Base")
         add_files("../public/base/compiler_clang.cpp")
     end
 
-    if is_plat("windows", "scarlett", "xbox") then
+    if is_plat("windows", "scarlett") then
         add_files(
             "args_win32.cpp",
 			"async_win32.cpp",
@@ -68,6 +68,12 @@ target("Base")
 	            add_files("../public/base/compiler_msvc_arm64.S", "stubs_win32_arm64.S")
 		    end
 		end
+	elseif is_plat("xbox") then
+		add_files(
+			"async_xbox.cpp",
+			"filesystem_xbox.cpp",
+			"platform_xbox.cpp"
+		)
     elseif is_plat("linux") then
         add_files(
             "async_unix.cpp",
@@ -76,8 +82,8 @@ target("Base")
         )
     elseif is_plat("nx") then
         add_files(
-            "../private/base/filesystem_switch.cpp",
-            "../private/base/platform_switch.cpp"
+            "../private/base/filesystem_nx.cpp",
+            "../private/base/platform_nx.cpp"
         )
     elseif is_plat("orbis") then
         add_files(

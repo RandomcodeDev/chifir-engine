@@ -14,6 +14,8 @@
 
 #ifdef CH_WIN32
 #include "platform_win32.h"
+#elif defined CH_XBOX
+#include "platform_xbox.h"
 #elif defined CH_UNIX
 #include "platform_unix.h"
 #endif
@@ -36,6 +38,8 @@ typedef IntrusiveLinkedNode<AllocInfo_t> AllocNode_t;
 
 #ifdef CH_WIN32
 typedef CWindowsMutex AllocMutex_t;
+#elif defined CH_XBOX
+typedef CXboxMutex AllocMutex_t;
 #elif defined CH_UNIX
 typedef CUnixMutex AllocMutex_t;
 #else

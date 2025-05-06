@@ -14,6 +14,8 @@ target("VideoSystem")
 
     if is_plat("windows", "scarlett") then
         add_files("video_win32.cpp", "video_winrt.cpp")
+	elseif is_plat("xbox") then
+		add_files("video_xbox.cpp")
     elseif is_plat("nx") then
         add_files("../private/videosystem/video_switch.cpp")
     elseif is_plat("linux") then
