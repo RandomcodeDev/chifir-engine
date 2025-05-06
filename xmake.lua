@@ -289,6 +289,8 @@ if is_plat("windows", "scarlett", "xbox") then
 
 		add_ldflags(
 			"/FORCE:MULTIPLE",
+			"/MAP",
+			"/SAFESEH:NO",
 		{force = true})
 
 		add_linkdirs(

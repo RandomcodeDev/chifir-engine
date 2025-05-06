@@ -68,18 +68,14 @@ CXboxThread::~CXboxThread()
 
 	if (m_handle)
 	{
-		NtClose(m_handle);
+		CloseHandle(m_handle);
 		m_handle = nullptr;
 	}
 }
 
 void CXboxThread::Run()
 {
-	NTSTATUS status = NtResumeThread(m_handle, nullptr);
-	if (!NT_SUCCESS(status))
-	{
-		Base_Quit("Failed to resume thread 0x%016X: NTSTATUS 0x%08X", m_handle, status);
-	}
+	ResumeThread(m_handle);
 }
 
 bool CXboxThread::Wait(u32 timeout)

@@ -15,6 +15,7 @@
 
 static dstr s_systemDescription;
 static dstr s_hardwareDescription;
+static char s_savePath[MAX_PATH + 1];
 
 BASEAPI void Plat_Init()
 {
@@ -26,6 +27,12 @@ BASEAPI void Plat_Init()
 		g_tlsIndex = TlsAlloc();
 #endif
 		Plat_GetTlsData()->isMainThread = true;
+
+		DWORD error = XCreateSaveGame("U:\\", L"FalseKing", OPEN_ALWAYS, 0, s_savePath, ArraySize(s_savePath));
+		if (error != ERROR_SUCCESS)
+		{
+			Base_Quit("Failed to create save game: Win32 error %d", error);
+		}
 
 		g_platInitialized = true;
 	}
@@ -185,7 +192,7 @@ BASEAPI void Plat_WriteConsole(cstr message)
 
 BASEAPI cstr Plat_GetSaveLocation()
 {
-	return "U:\\";
+	return s_savePath;
 }
 
 BASEAPI cstr Plat_GetEngineDir()

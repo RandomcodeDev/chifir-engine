@@ -5,6 +5,10 @@
 
 #include "launcher.h"
 
+#ifdef CH_XENON
+#pragma comment(linker, "/SUBSYSTEM:XBOX,2.00")
+#endif
+
 int main()
 {
 	extern int LauncherMain();
