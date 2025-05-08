@@ -159,8 +159,13 @@ ssize CXboxFilesystem::Write(cstr path, const void* data, ssize count, bool appe
 
 bool CXboxFilesystem::CreateDirectory(cstr path)
 {
-	(void)path;
-	return false;
+	if (!CreateDirectoryA(path, nullptr))
+	{
+		Log_Error("Failed to create directory %s/%s: Win32 error %d", m_root, path, GetLastError());
+		return false;
+	}
+
+	return true;
 }
 
 HANDLE CXboxFilesystem::OpenFile(cstr path, bool writable)

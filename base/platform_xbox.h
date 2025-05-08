@@ -100,7 +100,7 @@ class CXboxThread: public IThread
 	}
 
   private:
-  	void* m_handle;
+  	HANDLE m_handle;
 	bool m_alive;
 	u64 m_id;
 	s32 m_result;

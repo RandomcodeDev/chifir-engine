@@ -17,6 +17,7 @@
 #endif
 #include <xtl.h>
 #include <xbdm.h>
+#include "win32_aliases.h"
 #elif defined CH_UNIX
 #include <unistd.h>
 #endif

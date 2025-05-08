@@ -3,6 +3,8 @@
 
 #ifdef CH_WIN32
 #include "platform_win32.h"
+#elif defined CH_XBOX
+#include "platform_xbox.h"
 #elif defined CH_UNIX
 #include "platform_unix.h"
 #endif
@@ -26,6 +28,8 @@ BASEAPI IThread* Async_CreateThread(ThreadStart_t start, void* userData, cstr na
 
 #ifdef CH_WIN32
     return new CWindowsThread(start, userData, name, stackSize, maxStackSize);
+#elif defined CH_XBOX
+    return new CXboxThread(start, userData, name, stackSize, maxStackSize);
 #elif defined CH_UNIX
     return new CUnixThread(start, userData, name, stackSize, maxStackSize);
 #else

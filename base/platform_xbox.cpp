@@ -15,7 +15,7 @@
 
 static dstr s_systemDescription;
 static dstr s_hardwareDescription;
-static char s_savePath[MAX_PATH + 1];
+static char s_titleDataDrive[3];
 
 BASEAPI void Plat_Init()
 {
@@ -28,7 +28,7 @@ BASEAPI void Plat_Init()
 #endif
 		Plat_GetTlsData()->isMainThread = true;
 
-		DWORD error = XCreateSaveGame("U:\\", L"FalseKing", OPEN_ALWAYS, 0, s_savePath, ArraySize(s_savePath));
+		DWORD error = XMountAlternateTitleA("T:\\", 0, &s_titleDataDrive[0]);
 		if (error != ERROR_SUCCESS)
 		{
 			Base_Quit("Failed to create save game: Win32 error %d", error);
@@ -51,6 +51,8 @@ BASEAPI void Plat_Shutdown()
 		{
 			Base_Free(s_hardwareDescription);
 		}
+
+		XUnmountAlternateTitleA(s_titleDataDrive[0]);
 
 		g_platInitialized = false;
 	}
@@ -192,12 +194,12 @@ BASEAPI void Plat_WriteConsole(cstr message)
 
 BASEAPI cstr Plat_GetSaveLocation()
 {
-	return s_savePath;
+	return s_titleDataDrive;
 }
 
 BASEAPI cstr Plat_GetEngineDir()
 {
-	return "T:\\";
+	return "D:\\";
 }
 
 BASEAPI cstr Plat_GetEnvironment(cstr name)

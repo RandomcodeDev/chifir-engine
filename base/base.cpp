@@ -259,7 +259,7 @@ static void X86RepMovsb(void* RESTRICT dest, const void* RESTRICT src, ssize siz
 		pop edi
 	}
 #else
-	__movsb(static_cast<u8*>(dest), value, static_cast<usize>(size));
+	__movsb(static_cast<u8*>(dest), static_cast<const u8*>(src), static_cast<usize>(size));
 #endif
 #endif
 }
