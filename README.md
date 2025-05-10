@@ -21,6 +21,11 @@ containers too. I have limited experience with SIMD and writing an allocator, so
 
 ## Build requirements
 
+First, clone the repo recursively:
+```sh
+git clone --recursive https://github.com/RandomcodeDev/chifir-engine
+```
+
 For every platform, you need [xmake](https://xmake.io) and a C++17 compiler.
 
 - For Windows, you need Visual Studio 2022 (or any version with C++17 support). You can also build with Clang, but you still
