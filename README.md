@@ -25,6 +25,10 @@ First, clone the repo recursively:
 ```sh
 git clone --recursive https://github.com/RandomcodeDev/chifir-engine
 ```
+or, if you already cloned it:
+```sh
+git submodule update --init --recursive
+```
 
 For every platform, you need [xmake](https://xmake.io) and a C++17 compiler.
 
