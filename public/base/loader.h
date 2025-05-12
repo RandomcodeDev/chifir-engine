@@ -15,13 +15,15 @@ class ILibrary
 	virtual void Unload() = 0;
 
 	/// Get a symbol as a particular type of pointer
-	template <typename T> T GetSymbol(cstr name)
+	/// optional controls whether errors are logged as warnings or not
+	template <typename T> T GetSymbol(cstr name, bool optional = false)
 	{
-		return reinterpret_cast<T>(reinterpret_cast<uptr>(GetSymbol(name)));
+		return reinterpret_cast<T>(reinterpret_cast<uptr>(GetSymbol(name, optional)));
 	}
 
 	/// Get a symbol
-	virtual void* GetSymbol(cstr name) = 0;
+	/// optional controls whether errors are logged as warnings or not
+	virtual void* GetSymbol(cstr name, bool optional = false) = 0;
 
 	/// Get a library's name
 	virtual cstr GetName() = 0;

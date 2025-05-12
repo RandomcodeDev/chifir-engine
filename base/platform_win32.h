@@ -160,7 +160,7 @@ class CWindowsLibrary: public ILibrary
 
 	virtual void Unload();
 
-	void* GetSymbol(cstr name);
+	void* GetSymbol(cstr name, bool optional);
 
 	cstr GetName()
 	{

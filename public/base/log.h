@@ -121,14 +121,14 @@ extern BASEAPI void Log_Write(
 
 #ifdef CH_RETAIL
 #define Log_Message(level, ...)                                                                                                  \
-	Log_Write(LogLevel::level, __LINE__, false, __FILE__, FUNCTION_NAME, nullptr, UINT64_MAX, __VA_ARGS__)
+	Log_Write(level, __LINE__, false, __FILE__, FUNCTION_NAME, nullptr, UINT64_MAX, __VA_ARGS__)
 #else
 #define Log_Message(level, ...)                                                                                                  \
-	Log_Write(LogLevel::level, __LINE__, false, __FILE__, FUNCTION_SIGNATURE, nullptr, UINT64_MAX, __VA_ARGS__)
+	Log_Write(level, __LINE__, false, __FILE__, FUNCTION_SIGNATURE, nullptr, UINT64_MAX, __VA_ARGS__)
 #endif
-#define Log_Trace(...)      Log_Message(Trace, __VA_ARGS__)
-#define Log_Debug(...)      Log_Message(Debug, __VA_ARGS__)
-#define Log_Info(...)       Log_Message(Info, __VA_ARGS__)
-#define Log_Warning(...)    Log_Message(Warning, __VA_ARGS__)
-#define Log_Error(...)      Log_Message(Error, __VA_ARGS__)
-#define Log_FatalError(...) Log_Message(FatalError, __VA_ARGS__)
+#define Log_Trace(...)      Log_Message(LogLevel::Trace, __VA_ARGS__)
+#define Log_Debug(...)      Log_Message(LogLevel::Debug, __VA_ARGS__)
+#define Log_Info(...)       Log_Message(LogLevel::Info, __VA_ARGS__)
+#define Log_Warning(...)    Log_Message(LogLevel::Warning, __VA_ARGS__)
+#define Log_Error(...)      Log_Message(LogLevel::Error, __VA_ARGS__)
+#define Log_FatalError(...) Log_Message(LogLevel::FatalError, __VA_ARGS__)

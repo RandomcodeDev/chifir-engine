@@ -349,9 +349,16 @@ void CUnixLibrary::Unload()
 	}
 }
 
-void* CUnixLibrary::GetSymbol(cstr name)
+void* CUnixLibrary::GetSymbol(cstr name, bool optional)
 {
-	return dlsym(m_base, name);
+	void* sym = dlsym(m_base, name);
+	if (!sym)
+	{
+		Log_Message(optional ? LogLevel::Warning : LogLevel::Error, "Failed to get symbol %s: %d", name, errno);
+		return nullptr;
+	}
+
+	return sym;
 }
 
 BASEAPI bool Plat_ConsoleHasColor()

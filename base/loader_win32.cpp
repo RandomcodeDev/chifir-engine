@@ -196,8 +196,8 @@ cstr Base_GetWineVersion()
 	{
 		CWindowsLibrary ntDllWin("ntdll.dll", s_ntDllBase);
 		ILibrary* ntDll = &ntDllWin;
-		auto f_wine_get_build_id = ntDll->GetSymbol<cstr (*)()>("wine_get_build_id");
-		auto f_wine_get_host_version = ntDll->GetSymbol<void (*)(cstr*, cstr*)>("wine_get_host_version");
+		auto f_wine_get_build_id = ntDll->GetSymbol<cstr (*)()>("wine_get_build_id", true);
+		auto f_wine_get_host_version = ntDll->GetSymbol<void (*)(cstr*, cstr*)>("wine_get_host_version", true);
 
 		wine = f_wine_get_build_id != nullptr;
 		if (!wine)
@@ -256,10 +256,11 @@ static bool FindLdrGetProcedureAddress()
 }
 #endif
 
-#define GET_FUNCTION_OPTIONAL(lib, name) STUB_NAME(name) = static_cast<ILibrary*>(lib)->GetSymbol<uptr (*)(...)>(STRINGIZE(name));
+#define GET_FUNCTION_OPTIONAL(lib, name)                                                                                         \
+	STUB_NAME(name) = static_cast<ILibrary*>(lib)->GetSymbol<uptr (*)(...)>(STRINGIZE(name), true);
 #define GET_FUNCTION(lib, name)                                                                                                  \
 	{                                                                                                                            \
-		GET_FUNCTION_OPTIONAL(lib, name)                                                                                         \
+		STUB_NAME(name) = static_cast<ILibrary*>(lib)->GetSymbol<uptr (*)(...)>(STRINGIZE(name));                                \
 		if (!STUB_AVAILABLE(name)())                                                                                             \
 		{                                                                                                                        \
 			Base_Abort(LastNtStatus(), "Failed to get " STRINGIZE(name) " from " #lib ": NTSTATUS 0x%08X", LastNtStatus());      \
@@ -528,7 +529,7 @@ void CWindowsLibrary::Unload()
 	}
 }
 
-void* CWindowsLibrary::GetSymbol(cstr name)
+void* CWindowsLibrary::GetSymbol(cstr name, bool optional)
 {
 #ifdef CH_XENON
 	void* sym = GetProcAddress(reinterpret_cast<HMODULE>(m_base), name);
@@ -548,7 +549,9 @@ void* CWindowsLibrary::GetSymbol(cstr name)
 		LastNtStatus() = status;
 		if (g_baseInitialized)
 		{
-			Log_Error("Failed to get address of symbol %s: NTSTATUS 0x%08X", name, status);
+			Log_Message(
+				optional ? LogLevel::Warning : LogLevel::Error, "Failed to get address of symbol %s: NTSTATUS 0x%08X", name,
+				status);
 		}
 		else if (DbgPrint_Available())
 		{
