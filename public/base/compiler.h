@@ -184,16 +184,6 @@ extern void __stdcall RunThreadConstructors();
 #define BYTESWAP64(x) __builtin_bswap64(x)
 #endif
 
-#if __cplusplus < 201100L
-/// Because = default is invalid in C++03
-#define DEFAULT                                                                                                                  \
-	{                                                                                                                            \
-	}
-#else
-/// Because = default is invalid in C++03
-#define DEFAULT = default
-#endif
-
 /// MSVC and Clang/GCC understand all of these equally
 
 #define TYPEOF(x) __typeof__(x)

@@ -19,7 +19,7 @@ class CRenderSystem: public IRenderSystem
 	CRenderSystem()
 	{
 	}
-	virtual ~CRenderSystem() DEFAULT;
+	virtual ~CRenderSystem() = default;
 
 	virtual bool Initialize(IVideoSystem* videoSystem, cstr backendName);
 	virtual void Shutdown();

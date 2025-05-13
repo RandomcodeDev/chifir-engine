@@ -26,7 +26,7 @@ enum class FileType : s32
 class IFilesystem
 {
   public:
-	virtual ~IFilesystem() DEFAULT;
+	virtual ~IFilesystem() = default;
 
 	/// Get the size of a file
 	virtual ssize GetSize(cstr path) = 0;
@@ -54,7 +54,7 @@ class IFilesystem
 class IDirIter
 {
   public:
-	virtual ~IDirIter() DEFAULT;
+	virtual ~IDirIter() = default;
 
 	/// Get the path of this entry
 	virtual cstr GetPath() = 0;
@@ -67,7 +67,7 @@ class IDirIter
 class IWritableFilesystem: public IFilesystem
 {
   public:
-	virtual ~IWritableFilesystem() DEFAULT;
+	virtual ~IWritableFilesystem() = default;
 
 	/// Write a file
 	virtual ssize Write(cstr path, const void* data, ssize count, bool append = true, ssize offset = 0) = 0;

@@ -15,7 +15,7 @@
 class IRhiSwapChain
 {
   public:
-    virtual ~IRhiSwapChain() DEFAULT;
+    virtual ~IRhiSwapChain() = default;
 
     /// Destroy the swap chain
     virtual void Destroy() = 0;

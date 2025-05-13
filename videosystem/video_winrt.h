@@ -15,7 +15,7 @@ class CWinRtVideoSystem: public IVideoSystem
 		  m_closed(false), m_dpi(1.0)
 	{
 	}
-	~CWinRtVideoSystem() DEFAULT;
+	~CWinRtVideoSystem() = default;
 
 	virtual bool Initialize();
 	virtual bool Update();

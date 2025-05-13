@@ -5,8 +5,8 @@
 class CTestApp: public IApplication
 {
   public:
-	CTestApp() DEFAULT;
-	~CTestApp() DEFAULT;
+	CTestApp() = default;
+	~CTestApp() = default;
 
 	virtual void Setup(const CVector<CString>& args);
 	virtual void GetDependencies(CVector<SystemDependency>& systems, CVector<LibDependency_t>& libs);

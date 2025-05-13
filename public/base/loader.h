@@ -9,7 +9,7 @@
 class ILibrary
 {
   public:
-	virtual ~ILibrary() DEFAULT;
+	virtual ~ILibrary() = default;
 
 	/// Unload the library
 	virtual void Unload() = 0;

@@ -11,7 +11,7 @@ template <typename T, typename I> class IContainer
   public:
 	static constexpr I BAD_INDEX = (I)-1;
 
-	virtual ~IContainer() DEFAULT;
+	virtual ~IContainer() = default;
 
 	/// Get the size
 	virtual ssize Size() const = 0;

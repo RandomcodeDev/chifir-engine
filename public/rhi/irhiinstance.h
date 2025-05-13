@@ -16,7 +16,7 @@ class IVideoSystem;
 class IRhiInstance
 {
   public:
-	virtual ~IRhiInstance() DEFAULT;
+	virtual ~IRhiInstance() = default;
 
 	/// Initializes the instance, must be called before the instance is used
 	virtual bool Initialize(IVideoSystem* videoSystem) = 0;

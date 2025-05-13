@@ -28,7 +28,7 @@ struct VulkanDeviceInfo_t
 
 	CVector<VkExtensionProperties> extensionProperties;
 
-	VulkanDeviceInfo_t() DEFAULT;
+	VulkanDeviceInfo_t() = default;
 };
 
 class CVulkanRhiInstance;

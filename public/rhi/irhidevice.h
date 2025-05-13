@@ -9,13 +9,11 @@
 #include "base/vector.h"
 
 #include "irhibuffer.h"
+#include "irhicommandlist.h"
 #include "irhiimage.h"
 #include "irhiswapchain.h"
 #include "rhi.h"
 
-class IRhiCommandList;
-enum class RhiCommandListFlags_t;
-class IRhiFence;
 class IRhiPipelineState;
 struct RhiPipelineStateDesc_t;
 
@@ -45,7 +43,7 @@ struct RhiDeviceInfo_t
 class IRhiDevice
 {
   public:
-	virtual ~IRhiDevice() DEFAULT;
+	virtual ~IRhiDevice() = default;
 
 	/// Destroy the device
 	virtual void Destroy() = 0;

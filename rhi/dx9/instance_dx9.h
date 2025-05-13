@@ -20,7 +20,7 @@ class CDx9RhiInstance: public IRhiInstance
 	CDx9RhiInstance() : m_d3d9Dll(nullptr), m_d3d9(nullptr)
 	{
 	}
-	~CDx9RhiInstance() DEFAULT;
+	~CDx9RhiInstance() = default;
 
 	virtual bool Initialize(IVideoSystem* videoSystem);
 	virtual void Destroy();

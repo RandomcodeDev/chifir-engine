@@ -10,7 +10,7 @@
 class IEngine: public IApplication
 {
   public:
-	virtual ~IEngine() DEFAULT;
+	virtual ~IEngine() = default;
 
 	virtual void Setup(const CVector<CString>& args) = 0;
 	virtual void GetDependencies(CVector<SystemDependency>& systems, CVector<LibDependency_t>& libs) = 0;

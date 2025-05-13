@@ -106,9 +106,10 @@ For the Rust stuff, build the engine, then do `cargo build`.
 - Windows
   - Windows is the most actively developed platform
   - Windows XP and later are supported
+  - I'm working on getting Windows 2000 to work
   - UWP support seems to work
   - Nothing is statically imported from system libraries, it's all done at runtime
-  - Most features are implemented with native functions in `ntdll.dll` that have been around since Windows XP, rather than using `kernel32.dll`
+  - Most features are implemented with native functions in `ntdll.dll` that have been around since Windows 2000/XP, rather than using `kernel32.dll`
 - Linux
   - Linux is usually mostly up to date with Windows
   - glibc is the only libc I've tested with
@@ -128,6 +129,10 @@ For the Rust stuff, build the engine, then do `cargo build`.
   - I did write some code for it, but eventually I decided that C++03 sucks
   - If I find a way to make a modern compiler target it, I'll add support again
   - Will require DirectX 9, similar to Windows XP
+- Original Xbox
+  - x86-based, so modern compilers work
+  - Binaries crash or something, not sure where
+  - Will require DirectX 8 (yikes)
 
 ## External dependencies
 See [`scripts/licenses.toml`](scripts/licenses.toml)

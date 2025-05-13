@@ -12,7 +12,7 @@
 class IRhiSemaphore
 {
   public:
-	virtual ~IRhiSemaphore() DEFAULT;
+	virtual ~IRhiSemaphore() = default;
 
 	// Destroy the semaphore
 	virtual void Destroy() = 0;

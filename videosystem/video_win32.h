@@ -15,7 +15,7 @@ class CWin32VideoSystem: public IVideoSystem
 		  m_x(0), m_y(0), m_resized(false), m_focused(false), m_closed(false), m_dpi(1.0)
 	{
 	}
-	~CWin32VideoSystem() DEFAULT;
+	~CWin32VideoSystem() = default;
 
 	virtual bool Initialize();
 	virtual bool Update();

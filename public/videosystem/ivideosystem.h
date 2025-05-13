@@ -13,7 +13,7 @@
 class IVideoSystem: public ISystem
 {
   public:
-	virtual ~IVideoSystem() DEFAULT;
+	virtual ~IVideoSystem() = default;
 
 	/// Set up an output for rendering
 	virtual bool Initialize() = 0;

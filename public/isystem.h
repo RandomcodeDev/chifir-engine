@@ -20,7 +20,7 @@ struct SystemDependency
 class ISystem
 {
   public:
-	virtual ~ISystem() DEFAULT;
+	virtual ~ISystem() = default;
 
 	/// Initialize the system
 	virtual bool Initialize() = 0;

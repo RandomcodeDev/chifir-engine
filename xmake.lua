@@ -264,7 +264,7 @@ if is_plat("windows", "scarlett", "xbox") then
 		"/nodefaultlib", -- further prevent C runtime
 		{ force = true })
 
-	-- windows cross compilation requires the real sdk, mingw doesn't work with phnt and gcc is garbage
+	-- windows cross compilation requires the real sdk, mingw's headers don't work with phnt and gcc is garbage
 	if not is_host("windows") then
 		add_defines("CH_WIN32_CROSSCOMPILE")
 		if is_arch("x86_64", "x64") then

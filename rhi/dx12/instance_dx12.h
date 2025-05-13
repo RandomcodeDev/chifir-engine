@@ -20,7 +20,7 @@ class CDx12RhiInstance: public IRhiInstance
 	CDx12RhiInstance() : m_dxgi(nullptr), m_factory(nullptr)
 	{
 	}
-	~CDx12RhiInstance() DEFAULT;
+	~CDx12RhiInstance() = default;
 
 	virtual bool Initialize(IVideoSystem* videoSystem);
 	virtual void Destroy();

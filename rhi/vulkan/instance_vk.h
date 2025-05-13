@@ -20,7 +20,7 @@ class CVulkanRhiInstance: public IRhiInstance
 	CVulkanRhiInstance() : m_vulkanLib(nullptr), m_instance(VK_NULL_HANDLE), m_debugMessenger(VK_NULL_HANDLE), m_surface(VK_NULL_HANDLE)
 	{
 	}
-	~CVulkanRhiInstance() DEFAULT;
+	~CVulkanRhiInstance() = default;
 
 	virtual bool Initialize(IVideoSystem* videoSystem);
 	virtual void Destroy();

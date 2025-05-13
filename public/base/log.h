@@ -41,7 +41,7 @@ struct LogMessage
 class BASEAPI ILogWriter
 {
   public:
-	virtual ~ILogWriter() DEFAULT;
+	virtual ~ILogWriter() = default;
 
 	/// Write a message
 	virtual void Write(const LogMessage& message) = 0;

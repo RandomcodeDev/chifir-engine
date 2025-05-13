@@ -14,7 +14,7 @@ class IVideoSystem;
 class IRenderSystem: public ISystem
 {
   public:
-	virtual ~IRenderSystem() DEFAULT;
+	virtual ~IRenderSystem() = default;
 
 	/// Initialize the render system
 	virtual bool Initialize(IVideoSystem* videoSystem, cstr backendName) = 0;

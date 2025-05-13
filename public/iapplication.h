@@ -14,7 +14,7 @@
 class IApplication
 {
   public:
-	virtual ~IApplication() DEFAULT;
+	virtual ~IApplication() = default;
 
 	/// Prepare the application to run
 	virtual void Setup(const CVector<CString>& args) = 0;
