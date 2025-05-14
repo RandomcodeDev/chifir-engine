@@ -10,6 +10,7 @@ target("Base")
 
     add_headerfiles("**.h", "../private/base/**.h", "../public/base/**.h", "**.inc")
     add_files(
+    	"allocator.cpp",
         "async.cpp",
         "base.cpp",
         "basicstr.cpp",

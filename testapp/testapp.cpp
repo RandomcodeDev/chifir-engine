@@ -1,5 +1,5 @@
 #include "testapp.h"
-#include "base/async.h"
+#include "base/allocator.h"
 #include "base/log.h"
 #include "base/string.h"
 
@@ -26,13 +26,9 @@ s32 CTestApp::Run(const CVector<ISystem*>& systems)
 
 	Log_Info("Running test app");
 
-	u32 values[] = {1, 2, 3, 5, 8, 10, 23, 45, 232};
-	auto cmpInt = [](const u32& a, const u32& b, void* userData) -> s32 {
-		Log_Debug("a=%u b=%u", a, b);
-		return a == b ? 0 : (a < b ? -1 : 1);
-	};
-	ssize index = Base_Search<u32>(23, values, ArraySize(values), cmpInt);
-	Log_Info("Index of 23 is %zd", index);
+	CArenaAllocator allocator(32);
+	int* ints = (int*)allocator.Alloc(4 * sizeof(int));
+	allocator.Free(ints, 4 * sizeof(int));
 
 	return 0;
 }

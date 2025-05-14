@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "commandlist_dx9.h"
+#include "rhi/irhicommandlist.h"
 #include "rhi/irhidevice.h"
 #include "rhi/rhi.h"
 
@@ -11,8 +13,8 @@
 struct Dx9DeviceInfo_t
 {
 	u32 adapter;
-    D3DADAPTER_IDENTIFIER9 identifier;
-    D3DDISPLAYMODE mode;
+	D3DADAPTER_IDENTIFIER9 identifier;
+	D3DDISPLAYMODE mode;
 };
 
 class CDx9RhiInstance;
@@ -24,7 +26,7 @@ class CDx9RhiDevice: public IRhiDevice
 
 	virtual IRhiSwapChain* CreateSwapChain(u32 bufferCount);
 
-	virtual IRhiCommandList* CreateCommandList(RhiCommandListFlags_t flags)
+	virtual IRhiCommandList* CreateCommandList(RhiCommandListFlags flags, ssize bufferSize)
 	{
 		UNUSED(flags);
 		return nullptr;
@@ -43,7 +45,8 @@ class CDx9RhiDevice: public IRhiDevice
 	}
 
 	virtual IRhiImage* CreateImage2d(
-		u32 width, u32 height, u32 mipLevels, RhiMemoryLocation location, RhiImageType type, RhiImageFormat format, RhiImageUsage usage);
+		u32 width, u32 height, u32 mipLevels, RhiMemoryLocation location, RhiImageType type, RhiImageFormat format,
+		RhiImageUsage usage);
 	virtual IRhiImageView* CreateImageView(IRhiImage* image);
 	virtual IRhiRenderTarget* CreateRenderTarget(IRhiImageView* imageView);
 
@@ -53,10 +56,19 @@ class CDx9RhiDevice: public IRhiDevice
 		return nullptr;
 	}
 
+	virtual void ExecuteCommandList(IRhiCommandList* cmdList)
+	{
+		ExecuteCommandLists(&cmdList, 1);
+	}
+
+	virtual void ExecuteCommandLists(IRhiCommandList** cmdLists, ssize count);
+
   private:
+	// TODO: proper getters, this is ugly
 	friend class CDx9RhiInstance;
 	friend class CDx9RhiSwapChain;
-    friend class CDx9RhiImage;
+	friend class CDx9RhiImage;
+	friend class CDx9RhiCommandList;
 
 	CDx9RhiInstance* m_instance;
 	Dx9DeviceInfo_t m_info;
@@ -64,7 +76,7 @@ class CDx9RhiDevice: public IRhiDevice
 	D3DPRESENT_PARAMETERS m_presentParams;
 	CVector<Dx9DeviceInfo_t> m_devices;
 
-    static constexpr u32 MAX_CREATE_ATTEMPTS = 3;
+	static constexpr u32 MAX_CREATE_ATTEMPTS = 3;
 
 	CDx9RhiDevice(CDx9RhiInstance* instance, const Dx9DeviceInfo_t& info);
 	bool Initialize();

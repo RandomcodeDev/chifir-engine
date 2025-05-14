@@ -23,7 +23,7 @@ class CDx12RhiDevice: public IRhiDevice
 
 	virtual IRhiSwapChain* CreateSwapChain(u32 bufferCount);
 
-	virtual IRhiCommandList* CreateCommandList(RhiCommandListFlags_t flags)
+	virtual IRhiCommandList* CreateCommandList(RhiCommandListFlags flags, ssize bufferSize)
 	{
 		UNUSED(flags);
 		return nullptr;
@@ -41,7 +41,8 @@ class CDx12RhiDevice: public IRhiDevice
 		return nullptr;
 	}
 	virtual IRhiImage* CreateImage2d(
-		u32 width, u32 height, u32 depth, RhiMemoryLocation location, RhiImageType type, RhiImageFormat format, RhiImageUsage usage)
+		u32 width, u32 height, u32 depth, RhiMemoryLocation location, RhiImageType type, RhiImageFormat format,
+		RhiImageUsage usage)
 	{
 		UNUSED(width);
 		UNUSED(height);
@@ -53,18 +54,29 @@ class CDx12RhiDevice: public IRhiDevice
 	}
 	virtual IRhiImageView* CreateImageView(IRhiImage* image)
 	{
-        UNUSED(image);
-        return nullptr;
+		UNUSED(image);
+		return nullptr;
 	}
 	virtual IRhiRenderTarget* CreateRenderTarget(IRhiImageView* imageView)
 	{
-        UNUSED(imageView);
-        return nullptr;
+		UNUSED(imageView);
+		return nullptr;
 	}
 	virtual IRhiPipelineState* CreatePipelineState(const RhiPipelineStateDesc_t& desc)
 	{
 		UNUSED(desc);
 		return nullptr;
+	}
+
+	virtual void ExecuteCommandList(IRhiCommandList* cmdList)
+	{
+		ExecuteCommandLists(&cmdList, 1);
+	}
+
+	virtual void ExecuteCommandLists(IRhiCommandList** cmdLists, ssize count)
+	{
+		UNUSED(cmdLists);
+		UNUSED(count);
 	}
 
   private:

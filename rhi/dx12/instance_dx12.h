@@ -25,6 +25,11 @@ class CDx12RhiInstance: public IRhiInstance
 	virtual bool Initialize(IVideoSystem* videoSystem);
 	virtual void Destroy();
 
+	virtual u64 GetHandle()
+	{
+		return reinterpret_cast<u64>(m_factory);
+	}
+
 	virtual void GetDeviceInfo(CVector<RhiDeviceInfo_t>& info);
 
 	virtual IRhiDevice* CreateDevice(const RhiDeviceInfo_t& info);

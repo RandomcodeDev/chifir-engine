@@ -9,7 +9,7 @@
 #include "rhi.h"
 
 // ID3D12Fence/VkSemaphore
-class IRhiSemaphore
+class IRhiSemaphore: public IRhiBaseObject
 {
   public:
 	virtual ~IRhiSemaphore() = default;

@@ -5,12 +5,14 @@
 #include "base/log.h"
 #include "base/platform.h"
 
+#include "rhi/irhicommandlist.h"
 #include "rhi/irhidevice.h"
 
 #include "videosystem/ivideosystem.h"
 
-#include "device_dx9.h"
 #include "dx9.h"
+#include "device_dx9.h"
+#include "image_dx9.h"
 #include "instance_dx9.h"
 #include "swapchain_dx9.h"
 
@@ -85,14 +87,34 @@ IRhiImage* CDx9RhiDevice::CreateImage2d(
 	u32 width, u32 height, u32 mipLevels, RhiMemoryLocation location, RhiImageType type, RhiImageFormat format,
 	RhiImageUsage usage)
 {
+	CDx9RhiImage* image = new CDx9RhiImage(this, width, height, mipLevels, location, format, usage);
+	if (!image->Initialize())
+	{
+		delete image;
+		return nullptr;
+	}
+
+	return image;
 }
 
 IRhiImageView* CDx9RhiDevice::CreateImageView(IRhiImage* image)
 {
+	return nullptr; //new CDx9RhiImageView(this, image);
 }
 
 IRhiRenderTarget* CDx9RhiDevice::CreateRenderTarget(IRhiImageView* imageView)
 {
+	return new CDx9RhiRenderTarget(this, reinterpret_cast<CDx9RhiImageView*>(imageView));
+}
+
+void CDx9RhiDevice::ExecuteCommandLists(IRhiCommandList** cmdLists, ssize count)
+{
+	m_handle->BeginScene();
+	for (ssize i = 0; i < count; i++)
+	{
+		cmdLists[i]->Execute();
+	}
+	m_handle->EndScene();
 }
 
 bool CDx9RhiDevice::GetDeviceInfo(IDirect3D9* d3d9, RhiDeviceInfo_t& rhiInfo, Dx9DeviceInfo_t& info, u32 adapter)

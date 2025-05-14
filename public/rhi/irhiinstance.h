@@ -13,7 +13,7 @@
 class IVideoSystem;
 
 /// Represents a DXGI factory, a VkInstance, or whatever ungodly thing legacy APIs use (GL context, LPDIRECT3D9, etc)
-class IRhiInstance
+class IRhiInstance: public IRhiBaseObject
 {
   public:
 	virtual ~IRhiInstance() = default;

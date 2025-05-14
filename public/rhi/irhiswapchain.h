@@ -12,7 +12,7 @@
 #include "rhi.h"
 
 /// Represents an IDXGISwapChain3, a VkSwapchainKHR, or similar
-class IRhiSwapChain
+class IRhiSwapChain: public IRhiBaseObject
 {
   public:
     virtual ~IRhiSwapChain() = default;

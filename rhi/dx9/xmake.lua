@@ -8,7 +8,9 @@ target("RhiDirectX9")
 
     add_headerfiles("**.h")
     add_files(
+    	"commandlist_dx9.cpp",
         "device_dx9.cpp",
+        "dx9_stuff.cpp",
         "image_dx9.cpp",
         "instance_dx9.cpp",
         "swapchain_dx9.cpp"

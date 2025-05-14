@@ -12,7 +12,7 @@
 
 class CDx9RhiDevice;
 
-class CDx9RhiSwapChain: public IRhiSwapChain
+class CDx9RhiSwapChain: public IRhiSwapChain, CDx9RhiBaseObject<IDirect3DSwapChain9>
 {
   public:
 	virtual void Destroy();
@@ -27,8 +27,6 @@ class CDx9RhiSwapChain: public IRhiSwapChain
   private:
 	friend class CDx9RhiDevice;
 
-	CDx9RhiDevice* m_device;
-	IDirect3DSwapChain9* m_handle;
 	CVector<IRhiRenderTarget*> m_buffers;
     u32 m_bufferCount;
 

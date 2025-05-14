@@ -6,7 +6,8 @@
 #include "base/compiler.h"
 #include "base/types.h"
 
-#include "rhi/irhibuffer.h"
+#include "irhibuffer.h"
+#include "rhi.h"
 
 /// The number of dimensions in an image
 enum class RhiImageType
@@ -40,7 +41,7 @@ enum class RhiImageUsage
 };
 
 /// Represents a VkImage or an ID3D12Resource used as an image
-class IRhiImage
+class IRhiImage: public IRhiBaseObject
 {
   public:
 	virtual ~IRhiImage() = default;
@@ -54,10 +55,12 @@ class IRhiImage
 	virtual u32 GetWidth() = 0;
 	virtual u32 GetHeight() = 0;
 	virtual u32 GetDepth() = 0;
+
+	virtual u32 GetMipLevels() = 0;
 };
 
 /// A view of an image (VkImageView or a shader resource view)
-class IRhiImageView
+class IRhiImageView: public IRhiBaseObject
 {
   public:
 	virtual ~IRhiImageView() = default;

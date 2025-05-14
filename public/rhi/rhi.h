@@ -4,6 +4,7 @@
 #pragma once
 
 #include "base/compiler.h"
+#include "base/dll.h"
 #include "base/types.h"
 
 #ifdef CH_STATIC
@@ -24,6 +25,16 @@ enum class RhiBackendType : s32
 	DirectX9,
 	OpenGl,
 	Custom,
+};
+
+class IRhiBaseObject
+{
+  public:
+	virtual ~IRhiBaseObject() = default;
+
+	virtual void Destroy() = 0;
+
+	//virtual u64 GetHandle() = 0;
 };
 
 extern RHIAPI cstr Rhi_GetBackendName(RhiBackendType backend);

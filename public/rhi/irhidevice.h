@@ -52,7 +52,7 @@ class IRhiDevice
 	virtual IRhiSwapChain* CreateSwapChain(u32 bufferCount) = 0;
 
 	/// Create a command list
-	virtual IRhiCommandList* CreateCommandList(RhiCommandListFlags_t flags) = 0;
+	virtual IRhiCommandList* CreateCommandList(RhiCommandListFlags flags, ssize bufferSize = 4 * 1024) = 0;
 
 	/// Create a fence
 	virtual IRhiFence* CreateFence(u64 initialValue = 0) = 0;
@@ -73,4 +73,7 @@ class IRhiDevice
 
 	/// Create a pipeline state
 	virtual IRhiPipelineState* CreatePipelineState(const RhiPipelineStateDesc_t& desc) = 0;
+
+	/// Execute a command list
+	virtual void ExecuteCommandList(IRhiCommandList* cmdList) = 0;
 };
