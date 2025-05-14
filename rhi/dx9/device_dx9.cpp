@@ -29,7 +29,7 @@ bool CDx9RhiDevice::Initialize()
 	m_presentParams.BackBufferCount = 1;
 	m_presentParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	m_presentParams.Windowed = true;
-    m_presentParams.hDeviceWindow = reinterpret_cast<HWND>(video->GetHandle());
+	m_presentParams.hDeviceWindow = reinterpret_cast<HWND>(video->GetHandle());
 	m_presentParams.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 
 	// try multiple times, it's possible that it will fix things
@@ -81,6 +81,20 @@ IRhiSwapChain* CDx9RhiDevice::CreateSwapChain(u32 bufferCount)
 	return swapChain;
 }
 
+IRhiImage* CDx9RhiDevice::CreateImage2d(
+	u32 width, u32 height, u32 mipLevels, RhiMemoryLocation location, RhiImageType type, RhiImageFormat format,
+	RhiImageUsage usage)
+{
+}
+
+IRhiImageView* CDx9RhiDevice::CreateImageView(IRhiImage* image)
+{
+}
+
+IRhiRenderTarget* CDx9RhiDevice::CreateRenderTarget(IRhiImageView* imageView)
+{
+}
+
 bool CDx9RhiDevice::GetDeviceInfo(IDirect3D9* d3d9, RhiDeviceInfo_t& rhiInfo, Dx9DeviceInfo_t& info, u32 adapter)
 {
 	Log_Debug("Getting information for adapter %u", adapter);
@@ -101,7 +115,7 @@ bool CDx9RhiDevice::GetDeviceInfo(IDirect3D9* d3d9, RhiDeviceInfo_t& rhiInfo, Dx
 	rhiInfo.name = info.identifier.Description;
 
 	// this basically only matters in vulkan, but still fill it out
-	rhiInfo.deviceType = RhiDeviceType_t::Discrete;
+	rhiInfo.deviceType = RhiDeviceType::Discrete;
 
 	rhiInfo.vendorId = info.identifier.VendorId;
 	rhiInfo.deviceId = info.identifier.DeviceId;

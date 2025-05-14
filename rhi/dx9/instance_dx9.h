@@ -32,6 +32,7 @@ class CDx9RhiInstance: public IRhiInstance
   private:
 	friend class CDx9RhiDevice;
 	friend class CDx9RhiSwapChain;
+    friend class CDx9RhiImage;
 
 	IVideoSystem* m_videoSystem;
 	ILibrary* m_d3d9Dll;

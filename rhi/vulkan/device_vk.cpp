@@ -94,9 +94,9 @@ static void ConvertDeviceInfo(
 	RhiDeviceInfo_t& info, ssize index, const VkPhysicalDeviceProperties& properties,
 	const VkPhysicalDeviceMemoryProperties& memoryProperties)
 {
-	static const RhiDeviceType_t DEVICE_TYPES[] = {
-		RhiDeviceType_t::Other, RhiDeviceType_t::Integrated, RhiDeviceType_t::Discrete, RhiDeviceType_t::Other,
-		RhiDeviceType_t::Software};
+	static const RhiDeviceType DEVICE_TYPES[] = {
+		RhiDeviceType::Other, RhiDeviceType::Integrated, RhiDeviceType::Discrete, RhiDeviceType::Other,
+		RhiDeviceType::Software};
 
 	info.name = properties.deviceName;
 

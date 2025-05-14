@@ -140,7 +140,7 @@ bool CDx12RhiDevice::GetDeviceInfo(RhiDeviceInfo_t& rhiInfo, Dx12DeviceInfo_t& i
 	rhiInfo.handle = i;
 
 	// this basically only matters in vulkan, but still fill it out
-	rhiInfo.deviceType = (info.desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) ? RhiDeviceType_t::Software : RhiDeviceType_t::Discrete;
+	rhiInfo.deviceType = (info.desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) ? RhiDeviceType::Software : RhiDeviceType::Discrete;
 
 	rhiInfo.vendorId = info.desc.VendorId;
 	rhiInfo.deviceId = info.desc.DeviceId;

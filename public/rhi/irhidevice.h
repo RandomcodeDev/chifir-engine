@@ -17,7 +17,7 @@
 class IRhiPipelineState;
 struct RhiPipelineStateDesc_t;
 
-enum class RhiDeviceType_t
+enum class RhiDeviceType
 {
 	Integrated,
 	Discrete,
@@ -29,7 +29,7 @@ struct RhiDeviceInfo_t
 {
 	CString name;
 
-	RhiDeviceType_t deviceType;
+	RhiDeviceType deviceType;
 
 	u32 vendorId;
 	u32 deviceId;
@@ -59,11 +59,17 @@ class IRhiDevice
 
 	/// Create a buffer
 	virtual IRhiBuffer* CreateBuffer(
-		ssize size, RhiMemoryLocation_t location, RhiMemoryUsage_t usage) = 0;
+		ssize size, RhiMemoryLocation location, RhiMemoryUsage usage) = 0;
 
-	/// Create an image
-	virtual IRhiImage* CreateImage(
-		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType type, RhiImageFormat format) = 0;
+	/// Create a 2D image
+	virtual IRhiImage* CreateImage2d(
+		u32 width, u32 height, u32 mipLevels, RhiMemoryLocation location, RhiImageType type, RhiImageFormat format, RhiImageUsage usage) = 0;
+
+    /// Create an image view
+    virtual IRhiImageView* CreateImageView(IRhiImage* image) = 0;
+
+    /// Create a render target
+    virtual IRhiRenderTarget* CreateRenderTarget(IRhiImageView* imageView) = 0;
 
 	/// Create a pipeline state
 	virtual IRhiPipelineState* CreatePipelineState(const RhiPipelineStateDesc_t& desc) = 0;

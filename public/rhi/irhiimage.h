@@ -13,7 +13,7 @@ enum class RhiImageType
 {
 	Image1d,
 	Image2d,
-	Image3d
+    Image3d
 };
 
 /// The format of an image
@@ -31,6 +31,14 @@ enum class RhiImageFormat
 	D24Float,    // 24-bit depth, float
 };
 
+/// Image usage
+enum class RhiImageUsage
+{
+    Texture = 1 << 0,
+    ColorTarget = 1 << 1,
+    DepthStencilTarget = 1 << 2,
+};
+
 /// Represents a VkImage or an ID3D12Resource used as an image
 class IRhiImage
 {
@@ -41,6 +49,7 @@ class IRhiImage
 
 	virtual RhiImageType GetType() = 0;
 	virtual RhiImageFormat GetFormat() = 0;
+    virtual RhiImageUsage GetUsage() = 0;
 
 	virtual u32 GetWidth() = 0;
 	virtual u32 GetHeight() = 0;
@@ -48,7 +57,7 @@ class IRhiImage
 };
 
 /// A view of an image (VkImageView or a shader resource view)
-class IRhiImageView: public IRhiImage
+class IRhiImageView
 {
   public:
 	virtual ~IRhiImageView() = default;
@@ -57,6 +66,10 @@ class IRhiImageView: public IRhiImage
 
 	// Get the image this is a view of, if it's controlled by the RHI
 	virtual IRhiImage* GetImage() = 0;
+
+	virtual RhiImageType GetType() = 0;
+	virtual RhiImageFormat GetFormat() = 0;
+    virtual RhiImageUsage GetUsage() = 0;
 
 	virtual u32 GetWidth() = 0;
 	virtual u32 GetHeight() = 0;
@@ -70,6 +83,11 @@ class IRhiRenderTarget: public IRhiImageView
 	virtual ~IRhiRenderTarget() = default;
 
 	virtual void Destroy() = 0;
+
+	virtual IRhiImage* GetImage() = 0;
+
+	virtual RhiImageType GetType() = 0;
+	virtual RhiImageFormat GetFormat() = 0;
 
 	virtual u32 GetWidth() = 0;
 	virtual u32 GetHeight() = 0;
@@ -85,6 +103,11 @@ class IRhiDepthStencilTarget: public IRhiImageView
 	virtual ~IRhiDepthStencilTarget() = default;
 
 	virtual void Destroy() = 0;
+
+	virtual IRhiImage* GetImage() = 0;
+
+	virtual RhiImageType GetType() = 0;
+	virtual RhiImageFormat GetFormat() = 0;
 
 	virtual u32 GetWidth() = 0;
 	virtual u32 GetHeight() = 0;

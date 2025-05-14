@@ -33,15 +33,15 @@ class CDx12RhiDevice: public IRhiDevice
 		UNUSED(initialValue);
 		return nullptr;
 	}
-	virtual IRhiBuffer* CreateBuffer(ssize size, RhiMemoryLocation_t location, RhiMemoryUsage_t usage)
+	virtual IRhiBuffer* CreateBuffer(ssize size, RhiMemoryLocation location, RhiMemoryUsage usage)
 	{
 		UNUSED(size);
 		UNUSED(location);
 		UNUSED(usage);
 		return nullptr;
 	}
-	virtual IRhiImage* CreateImage(
-		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType type, RhiImageFormat format)
+	virtual IRhiImage* CreateImage2d(
+		u32 width, u32 height, u32 depth, RhiMemoryLocation location, RhiImageType type, RhiImageFormat format, RhiImageUsage usage)
 	{
 		UNUSED(width);
 		UNUSED(height);
@@ -50,6 +50,16 @@ class CDx12RhiDevice: public IRhiDevice
 		UNUSED(type);
 		UNUSED(format);
 		return nullptr;
+	}
+	virtual IRhiImageView* CreateImageView(IRhiImage* image)
+	{
+        UNUSED(image);
+        return nullptr;
+	}
+	virtual IRhiRenderTarget* CreateRenderTarget(IRhiImageView* imageView)
+	{
+        UNUSED(imageView);
+        return nullptr;
 	}
 	virtual IRhiPipelineState* CreatePipelineState(const RhiPipelineStateDesc_t& desc)
 	{

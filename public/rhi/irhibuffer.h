@@ -3,6 +3,12 @@
 
 #pragma once
 
-enum class RhiMemoryLocation_t;
-enum class RhiMemoryUsage_t;
+enum class RhiMemoryLocation
+{
+    Host,
+    Device,
+    Shared
+};
+
+enum class RhiMemoryUsage;
 class IRhiBuffer;

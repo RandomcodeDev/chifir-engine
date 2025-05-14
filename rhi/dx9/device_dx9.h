@@ -34,24 +34,19 @@ class CDx9RhiDevice: public IRhiDevice
 		UNUSED(initialValue);
 		return nullptr;
 	}
-	virtual IRhiBuffer* CreateBuffer(ssize size, RhiMemoryLocation_t location, RhiMemoryUsage_t usage)
+	virtual IRhiBuffer* CreateBuffer(ssize size, RhiMemoryLocation location, RhiMemoryUsage usage)
 	{
 		UNUSED(size);
 		UNUSED(location);
 		UNUSED(usage);
 		return nullptr;
 	}
-	virtual IRhiImage* CreateImage(
-		u32 width, u32 height, u32 depth, RhiMemoryLocation_t location, RhiImageType type, RhiImageFormat format)
-	{
-		UNUSED(width);
-		UNUSED(height);
-		UNUSED(depth);
-		UNUSED(location);
-		UNUSED(type);
-		UNUSED(format);
-		return nullptr;
-	}
+
+	virtual IRhiImage* CreateImage2d(
+		u32 width, u32 height, u32 mipLevels, RhiMemoryLocation location, RhiImageType type, RhiImageFormat format, RhiImageUsage usage);
+	virtual IRhiImageView* CreateImageView(IRhiImage* image);
+	virtual IRhiRenderTarget* CreateRenderTarget(IRhiImageView* imageView);
+
 	virtual IRhiPipelineState* CreatePipelineState(const RhiPipelineStateDesc_t& desc)
 	{
 		UNUSED(desc);
@@ -61,6 +56,7 @@ class CDx9RhiDevice: public IRhiDevice
   private:
 	friend class CDx9RhiInstance;
 	friend class CDx9RhiSwapChain;
+    friend class CDx9RhiImage;
 
 	CDx9RhiInstance* m_instance;
 	Dx9DeviceInfo_t m_info;
