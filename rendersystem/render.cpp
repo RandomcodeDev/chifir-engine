@@ -4,6 +4,7 @@
 #include "base/basicstr.h"
 #include "base/log.h"
 
+#include "rhi/irhicommandlist.h"
 #include "rhi/irhidevice.h"
 #include "rhi/irhiinstance.h"
 
@@ -97,6 +98,8 @@ bool CRenderSystem::ChangeDevice(u32 index)
 
 	m_swapChain->GetBuffers(m_swapChainBuffers);
 
+	m_commandList = m_device->CreateCommandList(RhiCommandListFlags::None);
+
 	return true;
 }
 
@@ -105,9 +108,20 @@ void CRenderSystem::BeginFrame()
 	if (m_videoSystem->Resized())
 	{
 		m_swapChain->ResizeBuffers();
+		m_swapChain->GetBuffers(m_swapChainBuffers);
 	}
+
+	m_commandList->BeginCommands();
+	auto targetIndex = m_swapChain->GetFrameIndex();
+	auto target = m_swapChainBuffers[targetIndex];
+
+	m_commandList->SetRenderTarget(0, target);
+	m_commandList->Clear(0xFF0000FF);
 }
 
 void CRenderSystem::EndFrame()
 {
+	m_commandList->EndCommands();
+	m_device->ExecuteCommandList(m_commandList);
+	m_swapChain->Present();
 }

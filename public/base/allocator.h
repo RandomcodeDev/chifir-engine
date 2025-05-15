@@ -30,7 +30,7 @@ class BASEAPI IAllocator
 class BASEAPI CArenaAllocator: public IAllocator
 {
   public:
-	CArenaAllocator(void* arena, ssize size) : m_arena(), m_arenaSize(size), m_arenaOffset(0), m_ownMemory(false)
+	CArenaAllocator(void* arena, ssize size) : m_arena(static_cast<u8*>(arena)), m_arenaSize(size), m_arenaOffset(0), m_ownMemory(false)
 	{
 	}
 	CArenaAllocator(ssize size) : CArenaAllocator(new u8[size], size)

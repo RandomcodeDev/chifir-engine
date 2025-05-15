@@ -3,6 +3,7 @@
 
 // Commands are stored as their type, followed by a custom struct. In Execute, they're handled and an offset in the buffer is
 
+#include "dx9.h"
 #include "rhi/irhiimage.h"
 
 #include "commandlist_dx9.h"
@@ -18,7 +19,6 @@
 		u32* type = reinterpret_cast<u32*>(m_allocator.Alloc(sizeof(u32)));                                                      \
 		*type = Dx9##name##Command;                                                                                              \
 		auto data = static_cast<CommandData_t*>(m_allocator.Alloc(sizeof(CommandData_t)));                                       \
-		UNUSED(data);                                                                                                            \
 		{                                                                                                                        \
 			__VA_ARGS__                                                                                                          \
 		}                                                                                                                        \
@@ -27,7 +27,7 @@
 #define HANDLE_COMMAND(name, ...)                                                                                                \
 	case Dx9##name##Command: {                                                                                                   \
 		using CommandData_t = Dx9##name##CommandData_t;                                                                          \
-		auto data = reinterpret_cast<const CommandData_t*>(buffer + offset);                                                     \
+		__VA_OPT__(auto data = reinterpret_cast<const CommandData_t*>(buffer + offset);)                                         \
 		offset += sizeof(CommandData_t);                                                                                         \
 		{                                                                                                                        \
 			__VA_ARGS__                                                                                                          \
@@ -46,7 +46,7 @@ DECLARE_COMMAND(
 		data->index = index;
 		data->target = reinterpret_cast<CDx9RhiRenderTarget*>(target);
 	})
-DECLARE_COMMAND(SetDepthStencilTarget, { CDx9RhiRenderTarget* target; }, (IRhiDepthStencilTarget * target))
+DECLARE_COMMAND(SetDepthStencilTarget, { CDx9RhiRenderTarget* target; }, (IRhiDepthStencilTarget * target), { UNUSED(data); })
 DECLARE_COMMAND(
 	Clear,
 	{
@@ -56,7 +56,7 @@ DECLARE_COMMAND(
 	},
 	(u32 color, f32 depth, u8 stencil),
 	{
-		data->color = color;
+		data->color = RgbaToArgb(color);
 		data->depth = depth;
 		data->stencil = stencil;
 	})
@@ -102,5 +102,5 @@ bool CDx9RhiCommandList::Execute()
 
 	m_mutex->Unlock();
 
-    return true;
+	return true;
 }

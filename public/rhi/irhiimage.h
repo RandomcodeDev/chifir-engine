@@ -14,7 +14,7 @@ enum class RhiImageType
 {
 	Image1d,
 	Image2d,
-    Image3d
+	Image3d
 };
 
 /// The format of an image
@@ -29,15 +29,16 @@ enum class RhiImageFormat
 	Rg16Unorm,   // 16-bit color, uint normalized
 	Rgb24Unorm,  // 24-bit color, uint normalized
 	Rgba32Unorm, // 32-bit color, uint normalized
-	D24Float,    // 24-bit depth, float
+	D24S8Float,  // 24-bit depth, float, 8 bit stencil, uint
+	Unknown
 };
 
 /// Image usage
 enum class RhiImageUsage
 {
-    Texture = 1 << 0,
-    ColorTarget = 1 << 1,
-    DepthStencilTarget = 1 << 2,
+	Texture = 1 << 0,
+	ColorTarget = 1 << 1,
+	DepthStencilTarget = 1 << 2,
 };
 
 /// Represents a VkImage or an ID3D12Resource used as an image
@@ -50,7 +51,7 @@ class IRhiImage: public IRhiBaseObject
 
 	virtual RhiImageType GetType() = 0;
 	virtual RhiImageFormat GetFormat() = 0;
-    virtual RhiImageUsage GetUsage() = 0;
+	virtual RhiImageUsage GetUsage() = 0;
 
 	virtual u32 GetWidth() = 0;
 	virtual u32 GetHeight() = 0;
@@ -72,7 +73,7 @@ class IRhiImageView: public IRhiBaseObject
 
 	virtual RhiImageType GetType() = 0;
 	virtual RhiImageFormat GetFormat() = 0;
-    virtual RhiImageUsage GetUsage() = 0;
+	virtual RhiImageUsage GetUsage() = 0;
 
 	virtual u32 GetWidth() = 0;
 	virtual u32 GetHeight() = 0;

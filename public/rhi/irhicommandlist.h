@@ -18,7 +18,7 @@ class IRhiCommandList: public IRhiBaseObject
 
 	virtual void Destroy() = 0;
 
-	/// Lock the command buffer for recording on this thread
+	/// Lock and clear the command buffer for recording on this thread
 	virtual void BeginCommands() = 0;
 
 	/// Unlock the command buffer
@@ -33,6 +33,7 @@ class IRhiCommandList: public IRhiBaseObject
 
 enum class RhiCommandListFlags
 {
+	None
 };
 
 class IRhiFence

@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include "base/compiler.h"
+#include "rhi/irhibuffer.h"
+#include "rhi/irhiimage.h"
 #ifdef CH_DEBUG
 #define D3D_DEBUG_INFO
 #endif
@@ -45,3 +48,14 @@ template <typename H, typename P = CDx9RhiDevice> class CDx9RhiBaseObject: publi
 	P* m_parent;
 	H* m_handle;
 };
+
+static constexpr u32 RgbaToArgb(u32 rgba)
+{
+	// rotate a from end to start
+	return ROTR32(rgba, 8);
+}
+
+extern D3DPOOL GetPoolForMemoryLocation(RhiMemoryLocation location);
+extern DWORD GetUsageForImageUsage(RhiImageUsage usage);
+extern D3DFORMAT GetDx9Format(RhiImageFormat format);
+extern RhiImageFormat GetRhiFormat(D3DFORMAT format);

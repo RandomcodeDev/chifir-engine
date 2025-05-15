@@ -5,6 +5,7 @@
 
 #include "rendersystem/irendersystem.h"
 
+#include "rhi/irhicommandlist.h"
 #include "rhi/irhidevice.h"
 #include "rhi/irhiimage.h"
 #include "rhi/irhiinstance.h"
@@ -35,4 +36,5 @@ class CRenderSystem: public IRenderSystem
 	IRhiDevice* m_device;
 	IRhiSwapChain* m_swapChain;
 	CVector<IRhiRenderTarget*> m_swapChainBuffers;
+	IRhiCommandList* m_commandList;
 };

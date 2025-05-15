@@ -144,6 +144,14 @@ extern "C" __forceinline void* MSVC_GetReturnAddress(unsigned long frames)
 #define BYTESWAP32(x) _byteswap_ulong(x)
 #define BYTESWAP64(x) _byteswap_uint64(x)
 
+#define ROTL16(x, y) _rotl16((x), (y))
+#define ROTL32(x, y) _rotl((x), (y))
+#define ROTL64(x, y) _rotl64((x), (y))
+
+#define ROTR16(x, y) _rotr16((x), (y))
+#define ROTR32(x, y) _rotr((x), (y))
+#define ROTR64(x, y) _rotr64((x), (y))
+
 /// Initialize the stack security cookie, local to the current DLL/EXE
 extern "C" void __cdecl __security_init_cookie();
 
