@@ -49,7 +49,7 @@ template <typename H, typename P = CDx9RhiDevice> class CDx9RhiBaseObject: publi
 	H* m_handle;
 };
 
-static constexpr u32 RgbaToArgb(u32 rgba)
+static FORCEINLINE u32 RgbaToArgb(u32 rgba)
 {
 	// rotate a from end to start
 	return ROTR32(rgba, 8);

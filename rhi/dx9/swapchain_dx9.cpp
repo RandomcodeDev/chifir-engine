@@ -43,10 +43,23 @@ void CDx9RhiSwapChain::ResizeBuffers()
 {
 	auto& presentParams = m_parent->m_presentParams;
 	presentParams.BackBufferCount = m_bufferCount;
+	auto videoSystem = m_parent->m_parent->m_videoSystem;
+	presentParams.BackBufferWidth = videoSystem->GetWidth();
+	presentParams.BackBufferHeight = videoSystem->GetHeight();
 
 	Log_Debug(
 		"Resizing swap chain to %u %ux%u buffer(s)", presentParams.BackBufferCount, presentParams.BackBufferWidth,
 		presentParams.BackBufferHeight);
+
+	for (ssize i = 0; i < m_buffers.Size(); i++)
+	{
+		if (m_buffers[i])
+		{
+            m_buffers[i]->Destroy();
+			delete m_buffers[i];
+			m_buffers[i] = nullptr;
+		}
+	}
 
 	m_parent->m_handle->Reset(&presentParams);
 	m_parent->m_handle->GetSwapChain(0, &m_handle);
@@ -58,7 +71,11 @@ void CDx9RhiSwapChain::ResizeBuffers()
 	for (ssize i = 0; i < m_buffers.Size(); i++)
 	{
 		IDirect3DSurface9* surface = nullptr;
-		m_handle->GetBackBuffer(i, D3DBACKBUFFER_TYPE_MONO, &surface);
+		HRESULT result = m_handle->GetBackBuffer(i, D3DBACKBUFFER_TYPE_MONO, &surface);
+		if (FAILED(result))
+		{
+			Base_Quit("Failed to get backbuffer %zd: HRESULT 0x%08X", i, result);
+		}
 		m_buffers[i] = new CDx9RhiRenderTarget(m_parent, surface);
 	}
 }

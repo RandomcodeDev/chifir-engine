@@ -198,7 +198,7 @@ add_private_settings()
 -- make msvcrt and glibc behave
 add_defines("_GNU_SOURCE", "_CRT_SECURE_NO_WARNINGS")
 
-set_languages("gnu17", "gnuxx17")
+set_languages("gnu17", "gnuxx20")
 set_warnings("all", "error")
 
 -- compiler/linker flags to make this ungodly nightmare work
@@ -211,6 +211,7 @@ if is_plat("windows", "scarlett", "xbox") then
 		"/GR-",                -- no RTTI
 		"/Zc:__cplusplus",
 		"/Zc:threadSafeInit-", -- idk how to implement this, just gonna do it the old fashioned way
+        "/Zc:preprocessor",    -- for __VA_OPT__
 
 		"/wd4201",             -- nameless struct
 		"/wd4324",             -- structure padded due to alignment specifier

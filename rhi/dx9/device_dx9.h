@@ -67,7 +67,6 @@ class CDx9RhiDevice: public IRhiDevice, CDx9RhiBaseObject<IDirect3DDevice9, CDx9
 	friend class CDx9RhiCommandList;
 
 	Dx9DeviceInfo_t m_info;
-	IDirect3DDevice9* m_handle;
 	D3DPRESENT_PARAMETERS m_presentParams;
 	CVector<Dx9DeviceInfo_t> m_devices;
 
