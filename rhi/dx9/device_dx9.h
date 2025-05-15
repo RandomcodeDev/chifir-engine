@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "commandlist_dx9.h"
 #include "rhi/irhicommandlist.h"
 #include "rhi/irhidevice.h"
 #include "rhi/rhi.h"
@@ -19,18 +18,15 @@ struct Dx9DeviceInfo_t
 
 class CDx9RhiInstance;
 
-class CDx9RhiDevice: public IRhiDevice
+class CDx9RhiDevice: public IRhiDevice, CDx9RhiBaseObject<IDirect3DDevice9, CDx9RhiInstance>
 {
   public:
 	virtual void Destroy();
 
 	virtual IRhiSwapChain* CreateSwapChain(u32 bufferCount);
 
-	virtual IRhiCommandList* CreateCommandList(RhiCommandListFlags flags, ssize bufferSize)
-	{
-		UNUSED(flags);
-		return nullptr;
-	}
+	virtual IRhiCommandList* CreateCommandList(RhiCommandListFlags flags, ssize bufferSize);
+
 	virtual IRhiFence* CreateFence(u64 initialValue = 0)
 	{
 		UNUSED(initialValue);
@@ -70,7 +66,6 @@ class CDx9RhiDevice: public IRhiDevice
 	friend class CDx9RhiImage;
 	friend class CDx9RhiCommandList;
 
-	CDx9RhiInstance* m_instance;
 	Dx9DeviceInfo_t m_info;
 	IDirect3DDevice9* m_handle;
 	D3DPRESENT_PARAMETERS m_presentParams;
@@ -83,9 +78,4 @@ class CDx9RhiDevice: public IRhiDevice
 
 	/// Get information about a device. Returns false if the device isn't usable.
 	static bool GetDeviceInfo(IDirect3D9* d3d9, RhiDeviceInfo_t& rhiInfo, Dx9DeviceInfo_t& info, u32 adapter);
-
-	CDx9RhiInstance* GetInstance()
-	{
-		return m_instance;
-	}
 };

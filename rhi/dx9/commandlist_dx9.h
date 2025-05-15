@@ -13,12 +13,21 @@
 
 class CDx9RhiDevice;
 
-class CDx9RhiCommandList: public IRhiCommandList
+class CDx9RhiCommandList: public IRhiCommandList, CDx9RhiBaseObject<void>
 {
   public:
 	~CDx9RhiCommandList() = default;
 
-	virtual void Destroy();
+	virtual void Destroy()
+	{
+		if (m_mutex)
+		{
+			delete m_mutex;
+			m_mutex = nullptr;
+		}
+
+		m_allocator.Reset();
+	}
 
 	virtual void BeginCommands();
 	virtual void EndCommands();
@@ -34,10 +43,11 @@ class CDx9RhiCommandList: public IRhiCommandList
 	IMutex* m_mutex;
 	CArenaAllocator m_allocator;
 
-	CDx9RhiCommandList(ssize bufferSize) : m_mutex(Async_CreateMutex()), m_allocator(bufferSize)
+	CDx9RhiCommandList(CDx9RhiDevice* device, ssize bufferSize)
+		: CDx9RhiBaseObject(device), m_mutex(Async_CreateMutex()), m_allocator(bufferSize)
 	{
 	}
 
 	void HandleCommand(u32 type, const u8* buffer, ssize& offset);
 	bool Execute();
-}
+};

@@ -10,19 +10,20 @@
 
 #include "videosystem/ivideosystem.h"
 
+#include "commandlist_dx9.h"
 #include "dx9.h"
 #include "device_dx9.h"
 #include "image_dx9.h"
 #include "instance_dx9.h"
 #include "swapchain_dx9.h"
 
-CDx9RhiDevice::CDx9RhiDevice(CDx9RhiInstance* instance, const Dx9DeviceInfo_t& info) : m_instance(instance), m_info(info)
+CDx9RhiDevice::CDx9RhiDevice(CDx9RhiInstance* instance, const Dx9DeviceInfo_t& info) : CDx9RhiBaseObject(instance), m_info(info)
 {
 }
 
 bool CDx9RhiDevice::Initialize()
 {
-	IVideoSystem* video = m_instance->m_videoSystem;
+	IVideoSystem* video = m_parent->m_videoSystem;
 
 	Base_MemSet(&m_presentParams, 0, sizeof(D3DPRESENT_PARAMETERS));
 	m_presentParams.BackBufferWidth = video->GetWidth();
@@ -43,7 +44,7 @@ bool CDx9RhiDevice::Initialize()
 			deviceType = D3DDEVTYPE_REF;
 		}
 		Log_Debug("Creating IDirect3DDevice9 with device type %u (attempt %u/%u)", deviceType, attempts + 1, MAX_CREATE_ATTEMPTS);
-		HRESULT result = m_instance->m_d3d9->CreateDevice(
+		HRESULT result = m_parent->m_d3d9->CreateDevice(
 			m_info.adapter, deviceType, m_presentParams.hDeviceWindow, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &m_presentParams,
 			&m_handle);
 		if (FAILED(result))
@@ -83,6 +84,11 @@ IRhiSwapChain* CDx9RhiDevice::CreateSwapChain(u32 bufferCount)
 	return swapChain;
 }
 
+IRhiCommandList* CDx9RhiDevice::CreateCommandList(RhiCommandListFlags flags, ssize bufferSize)
+{
+    return new CDx9RhiCommandList(this, bufferSize);
+}
+
 IRhiImage* CDx9RhiDevice::CreateImage2d(
 	u32 width, u32 height, u32 mipLevels, RhiMemoryLocation location, RhiImageType type, RhiImageFormat format,
 	RhiImageUsage usage)
@@ -112,7 +118,7 @@ void CDx9RhiDevice::ExecuteCommandLists(IRhiCommandList** cmdLists, ssize count)
 	m_handle->BeginScene();
 	for (ssize i = 0; i < count; i++)
 	{
-		cmdLists[i]->Execute();
+		reinterpret_cast<CDx9RhiCommandList*>(cmdLists[i])->Execute();
 	}
 	m_handle->EndScene();
 }

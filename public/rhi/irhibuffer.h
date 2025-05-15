@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include "base/compiler.h"
+#include "base/types.h"
+
 enum class RhiMemoryLocation
 {
     Host,

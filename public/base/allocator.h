@@ -52,6 +52,12 @@ class BASEAPI CArenaAllocator: public IAllocator
 	/// Usually better to throw out the whole allocator.
 	virtual void Free(void* block, ssize size);
 
+	/// Reset the allocator
+	void Reset()
+	{
+		m_arenaOffset = 0;
+	}
+
 	/// Get the base of the arena
 	void* GetBase()
 	{

@@ -6,6 +6,7 @@
 #include "rhi/irhiimage.h"
 
 #include "commandlist_dx9.h"
+#include "device_dx9.h"
 #include "image_dx9.h"
 
 #define DECLARE_COMMAND(name, dataBody, params, ...)                                                                             \
@@ -46,7 +47,30 @@ DECLARE_COMMAND(
 		data->target = reinterpret_cast<CDx9RhiRenderTarget*>(target);
 	})
 DECLARE_COMMAND(SetDepthStencilTarget, { CDx9RhiRenderTarget* target; }, (IRhiDepthStencilTarget * target))
-DECLARE_COMMAND(Clear, { u32 color; }, (u32 color), { data->color = color; })
+DECLARE_COMMAND(
+	Clear,
+	{
+		u32 color;
+		f32 depth;
+		u8 stencil;
+	},
+	(u32 color, f32 depth, u8 stencil),
+	{
+		data->color = color;
+		data->depth = depth;
+		data->stencil = stencil;
+	})
+
+void CDx9RhiCommandList::BeginCommands()
+{
+	m_mutex->Lock();
+	m_allocator.Reset();
+}
+
+void CDx9RhiCommandList::EndCommands()
+{
+	m_mutex->Unlock();
+}
 
 void CDx9RhiCommandList::HandleCommand(u32 type, const u8* buffer, ssize& offset)
 {
@@ -55,6 +79,7 @@ void CDx9RhiCommandList::HandleCommand(u32 type, const u8* buffer, ssize& offset
 	switch (type)
 	{
 		HANDLE_COMMAND(SetRenderTarget, { device->SetRenderTarget(data->index, data->target->GetHandle()); })
+		HANDLE_COMMAND(Clear, { device->Clear(0, nullptr, D3DCLEAR_TARGET, data->color, data->depth, data->stencil); })
 	}
 }
 
@@ -76,4 +101,6 @@ bool CDx9RhiCommandList::Execute()
 	}
 
 	m_mutex->Unlock();
+
+    return true;
 }

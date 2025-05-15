@@ -28,7 +28,7 @@ class IRhiCommandList: public IRhiBaseObject
 	virtual void SetDepthStencilTarget(IRhiDepthStencilTarget* target) = 0;
 
 	// TODO: vector4 overload?
-	virtual void Clear(u32 color = 0, f32 depth = 0.0, u8 stencil) = 0;
+	virtual void Clear(u32 color = 0, f32 depth = 0.0, u8 stencil = 1) = 0;
 };
 
 enum class RhiCommandListFlags
