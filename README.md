@@ -35,6 +35,7 @@ For every platform, you need [xmake](https://xmake.io) and a C++17 compiler.
 - For Windows, you need Visual Studio 2022 (or any version with C++17 support). You can also build with Clang, but you still
   need VS. You also (will, in the future) need the GDK to build the x64 version. There is support for cross compiling, using
   Clang and the Windows SDK/MSVC headers.
+- For the original Xbox, you need the SDK or the source code, either is easy to find (SDK untested).
 - For Xbox 360, you need the SDK, it's on Internet Archive.
 - For Switch, you need version 15.3.2 of the SDK, the private repo, and my private fork of xmake.
 - For PS4, you need version 8.008 of the SDK, the private repo, and my private fork of xmake.
@@ -99,6 +100,11 @@ After that, just do this to configure:
 xmake f -p <windows or scarlett> -a <x64 or x86> -m <mode> -k <static or shared> --toolchain=windows-cross
 ```
 
+For Xbox, just symlink the source code (the folder with `private` and `public`) into `external/xbox` and do this:
+```
+xmake f -p xbox -a x86 -m <mode> --toolchain=xbox-cross
+```
+
 For the Rust stuff, build the engine, then do `cargo build`.
 
 ## Supported platforms
@@ -132,7 +138,7 @@ For the Rust stuff, build the engine, then do `cargo build`.
 - Original Xbox
   - x86-based, so modern compilers work
   - Binaries crash or something, not sure where
-  - Will require DirectX 8 (yikes)
+  - Uses DirectX 8 (so far basically copied and pasted from the D3D9 backend)
 
 ## External dependencies
 See [`scripts/licenses.toml`](scripts/licenses.toml)

@@ -36,8 +36,6 @@ bool CDx8RhiDevice::Initialize()
     m_presentParams.FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_ONE_OR_IMMEDIATE;
 #else
     m_presentParams.Windowed = true;
-    m_presentParams.hDeviceWindow = reinterpret_cast<HWND>(video->GetHandle());
-    m_presentParams.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 #endif
 
 	// try multiple times, it's possible that it will fix things
@@ -55,7 +53,12 @@ bool CDx8RhiDevice::Initialize()
 		if (FAILED(result))
 		{
 			Log_Error("IDirect3D8::CreateDevice failed: HRESULT 0x%08X", result);
+#ifdef CH_XBOX
 			SetLastError(result);
+#else
+			LastNtError() = result;
+			LastNtStatus() = 0;
+#endif
 			Log_Debug("Retrying in case present parameters were fixed");
 			continue;
 		}
