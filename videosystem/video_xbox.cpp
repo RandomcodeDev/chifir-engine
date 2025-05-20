@@ -9,7 +9,7 @@
 
 bool CXboxVideoSystem::Initialize()
 {
-	Log_Debug("Initializing null video system");
+	Log_Debug("Initializing Xbox video system");
 
 	m_title = Base_StrClone(GAME_DISPLAY_NAME);
 	if (!m_title)
@@ -17,8 +17,9 @@ bool CXboxVideoSystem::Initialize()
 		return false;
 	}
 
+    // TODO: get video settings
 #ifdef CH_XBOX
-	m_width = 640; // TODO: does it support 16:9?
+	m_width = 640;
 	m_height = 480;
 #else
 	m_width = 1280;
@@ -42,7 +43,7 @@ bool CXboxVideoSystem::Update()
 void CXboxVideoSystem::Shutdown()
 {
 	Base_Free(m_title);
-	Log_Debug("Shutting down null video system");
+	Log_Debug("Shutting down Xbox video system");
 }
 
 void CXboxVideoSystem::SetTitle(cstr newTitle)

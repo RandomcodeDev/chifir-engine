@@ -86,7 +86,7 @@ BASEAPI void Plat_WriteConsole(cstr message)
 {
 }
 
-BASEAPI cstr Plat_GetSaveLocation()
+BASEAPI cstr Plat_GetDataLocation()
 {
 }
 

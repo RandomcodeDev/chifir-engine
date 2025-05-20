@@ -23,6 +23,7 @@ enum class RhiBackendType : s32
 	Vulkan,
 	DirectX12,
 	DirectX9,
+	DirectX8,
 	OpenGl,
 	Custom,
 };

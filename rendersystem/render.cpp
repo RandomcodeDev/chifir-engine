@@ -89,7 +89,7 @@ bool CRenderSystem::ChangeDevice(u32 index)
 		return false;
 	}
 
-	m_swapChain = m_device->CreateSwapChain(3);
+	m_swapChain = m_device->CreateSwapChain(2);
 	if (!m_swapChain)
 	{
 		Shutdown();

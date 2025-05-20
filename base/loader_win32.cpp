@@ -267,9 +267,6 @@ static bool FindLdrGetProcedureAddress()
 		}                                                                                                                        \
 	}
 
-#define GET_TEB64(teb) reinterpret_cast<PTEB32>(reinterpret_cast<uptr>(teb) - 0x2000)
-#define GET_PEB64(peb) reinterpret_cast<PPEB32>(GET_TEB32(NtCurrentTeb())->ProcessEnvironmentBlock)
-
 bool Base_InitLoader()
 {
 	if (g_loaderInitialized)

@@ -17,9 +17,9 @@ target("LauncherMain")
         add_files("main_xbox.cpp")
         add_links("xboxkrnl.lib")
         if is_mode("debug") then
-            add_links("libcmtd.lib", "xapilibd.lib", "xbdm.lib")
+            add_links("libcmtd.lib", "xapilibd.lib", "d3d8d.lib", "xbdm.lib")
         else
-            add_links("libcmt.lib", "xapilib.lib")
+            add_links("libcmt.lib", "xapilib.lib", "d3d8.lib")
         end
     elseif is_plat("linux") then
         add_files("main_unix.cpp")

@@ -30,8 +30,6 @@ class CXboxFilesystem: public CBaseRawFilesystem
 	virtual bool CreateDirectory(cstr path);
 
   private:
-	HANDLE m_rootHandle;
-
 	HANDLE OpenFile(cstr path, bool writable = false);
 	ssize GetSize(HANDLE file);
 };

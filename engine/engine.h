@@ -53,7 +53,7 @@ class CEngine: public IEngine
 	bool m_inFrame;
 
 	// IFilesystem* m_mainFilesystem;
-	IWritableFilesystem* m_saveFilesystem;
+	IWritableFilesystem* m_dataFilesystem;
 
 	IRenderSystem* m_renderSystem;
 	IVideoSystem* m_videoSystem;

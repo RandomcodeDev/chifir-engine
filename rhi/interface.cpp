@@ -23,6 +23,8 @@ RHIAPI cstr Rhi_GetBackendName(RhiBackendType backend)
 		return "DirectX12";
 	case RhiBackendType::DirectX9:
 		return "DirectX9";
+	case RhiBackendType::DirectX8:
+		return "DirectX8";
 	case RhiBackendType::OpenGl:
 		return "OpenGl";
 	case RhiBackendType::Custom:
@@ -49,6 +51,12 @@ RHIAPI RhiBackendType Rhi_GetBackendTypeByName(cstr name)
 	{
 		return RhiBackendType::DirectX9;
 	}
+	else if (
+		Base_StrCompare(name, "DirectX8", SSIZE_MAX, false) == 0 || Base_StrCompare(name, "dx8", SSIZE_MAX, false) == 0 ||
+		Base_StrCompare(name, "d3d8", SSIZE_MAX, false) == 0)
+	{
+		return RhiBackendType::DirectX8;
+	}
 	else if (Base_StrCompare(name, "OpenGL", SSIZE_MAX, false) == 0 || Base_StrCompare(name, "gl", SSIZE_MAX, false) == 0)
 	{
 		return RhiBackendType::OpenGl;
@@ -68,6 +76,9 @@ extern IRhiInstance* CreateDx12RhiInstance();
 #endif
 #ifdef CH_DIRECTX9
 extern IRhiInstance* CreateDx9RhiInstance();
+#endif
+#ifdef CH_DIRECTX8
+extern IRhiInstance* CreateDx8RhiInstance();
 #endif
 #ifdef CH_OPENGL
 // extern IRhiInstance* CreateOpenGlInstance();
@@ -96,6 +107,7 @@ static IRhiInstance* GetBackend(cstr name)
 }
 #endif
 
+// TODO: This function is kinda ugly
 extern "C" RHIAPI IRhiInstance* Rhi_CreateInstance(cstr backendName)
 {
 	ssize endOffset = 0;
@@ -131,6 +143,13 @@ extern "C" RHIAPI IRhiInstance* Rhi_CreateInstance(cstr backendName)
 		return CreateDx9RhiInstance();
 #else
 		Log_Error("DirectX 9 support not available in this build!");
+#endif
+	}
+	case RhiBackendType::DirectX8: {
+#ifdef CH_DIRECTX8
+		return CreateDx8RhiInstance();
+#else
+		Log_Error("DirectX 8 support not available in this build!");
 #endif
 	}
 	case RhiBackendType::OpenGl: {

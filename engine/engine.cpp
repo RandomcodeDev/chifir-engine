@@ -126,11 +126,11 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 
 bool CEngine::InitializeSaveFilesystem()
 {
-	Log_Debug("Opening save filesystem %s", Plat_GetSaveLocation());
-	m_saveFilesystem = Base_CreateRawFilesystem(Plat_GetSaveLocation());
-	if (!m_saveFilesystem)
+	Log_Debug("Opening persistent data filesystem %s", Plat_GetDataLocation());
+	m_dataFilesystem = Base_CreateRawFilesystem(Plat_GetDataLocation());
+	if (!m_dataFilesystem)
 	{
-		Log_Error("Failed to create raw filesystem with root \"%s\"", Plat_GetSaveLocation());
+		Log_Error("Failed to create raw filesystem with root \"%s\"", Plat_GetDataLocation());
 		return false;
 	}
 
@@ -141,7 +141,7 @@ void CEngine::AddLogWriters()
 {
 	// in general, it goes against
 #if defined CH_DEBUG || !defined CH_CONSOLE
-	Log_AddWriter(new CFileLogWriter(m_saveFilesystem, m_logName.Data()));
+	Log_AddWriter(new CFileLogWriter(m_dataFilesystem, m_logName.Data()));
 #endif
 }
 

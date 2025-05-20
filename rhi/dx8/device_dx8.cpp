@@ -1,4 +1,4 @@
-/// \file DirectX 9 device implementation
+/// \file DirectX 8 device implementation
 /// \copyright 2025 Randomcode Developers
 
 #include "base/basicstr.h"
@@ -10,18 +10,18 @@
 
 #include "videosystem/ivideosystem.h"
 
-#include "commandlist_dx9.h"
-#include "dx9.h"
-#include "device_dx9.h"
-#include "image_dx9.h"
-#include "instance_dx9.h"
-#include "swapchain_dx9.h"
+#include "commandlist_dx8.h"
+#include "dx8.h"
+#include "device_dx8.h"
+#include "image_dx8.h"
+#include "instance_dx8.h"
+#include "swapchain_dx8.h"
 
-CDx9RhiDevice::CDx9RhiDevice(CDx9RhiInstance* instance, const Dx9DeviceInfo_t& info) : CDx9RhiBaseObject(instance), m_info(info)
+CDx8RhiDevice::CDx8RhiDevice(CDx8RhiInstance* instance, const Dx8DeviceInfo_t& info) : CDx8RhiBaseObject(instance), m_info(info)
 {
 }
 
-bool CDx9RhiDevice::Initialize()
+bool CDx8RhiDevice::Initialize()
 {
 	IVideoSystem* video = m_parent->m_videoSystem;
 
@@ -48,15 +48,14 @@ bool CDx9RhiDevice::Initialize()
 		{
 			deviceType = D3DDEVTYPE_REF;
 		}
-		Log_Debug("Creating IDirect3DDevice9 with device type %u (attempt %u/%u)", deviceType, attempts + 1, MAX_CREATE_ATTEMPTS);
-		HRESULT result = m_parent->m_d3d9->CreateDevice(
+		Log_Debug("Creating IDirect3DDevice8 with device type %u (attempt %u/%u)", deviceType, attempts + 1, MAX_CREATE_ATTEMPTS);
+		HRESULT result = m_parent->m_d3d8->CreateDevice(
 			m_info.adapter, deviceType, m_presentParams.hDeviceWindow, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &m_presentParams,
 			&m_handle);
 		if (FAILED(result))
 		{
-			Log_Error("IDirect3D9::CreateDevice failed: HRESULT 0x%08X", result);
-			LastNtError() = result;
-			LastNtStatus() = 0;
+			Log_Error("IDirect3D8::CreateDevice failed: HRESULT 0x%08X", result);
+			SetLastError(result);
 			Log_Debug("Retrying in case present parameters were fixed");
 			continue;
 		}
@@ -67,19 +66,19 @@ bool CDx9RhiDevice::Initialize()
 	return m_handle != nullptr;
 }
 
-void CDx9RhiDevice::Destroy()
+void CDx8RhiDevice::Destroy()
 {
 	if (m_handle)
 	{
-		Log_Debug("Releasing IDirect3DDevice9 0x%016zX", m_handle);
+		Log_Debug("Releasing IDirect3DDevice8 0x%016zX", m_handle);
 		m_handle->Release();
 		m_handle = nullptr;
 	}
 }
 
-IRhiSwapChain* CDx9RhiDevice::CreateSwapChain(u32 bufferCount)
+IRhiSwapChain* CDx8RhiDevice::CreateSwapChain(u32 bufferCount)
 {
-	CDx9RhiSwapChain* swapChain = new CDx9RhiSwapChain(this);
+	CDx8RhiSwapChain* swapChain = new CDx8RhiSwapChain(this);
 	if (!swapChain->Initialize(bufferCount))
 	{
 		delete swapChain;
@@ -89,16 +88,16 @@ IRhiSwapChain* CDx9RhiDevice::CreateSwapChain(u32 bufferCount)
 	return swapChain;
 }
 
-IRhiCommandList* CDx9RhiDevice::CreateCommandList(RhiCommandListFlags flags, ssize bufferSize)
+IRhiCommandList* CDx8RhiDevice::CreateCommandList(RhiCommandListFlags flags, ssize bufferSize)
 {
-    return new CDx9RhiCommandList(this, bufferSize);
+    return new CDx8RhiCommandList(this, bufferSize);
 }
 
-IRhiImage* CDx9RhiDevice::CreateImage2d(
+IRhiImage* CDx8RhiDevice::CreateImage2d(
 	u32 width, u32 height, u32 mipLevels, RhiMemoryLocation location, RhiImageType type, RhiImageFormat format,
 	RhiImageUsage usage)
 {
-	CDx9RhiImage* image = new CDx9RhiImage(this, width, height, mipLevels, location, format, usage);
+	CDx8RhiImage* image = new CDx8RhiImage(this, width, height, mipLevels, location, format, usage);
 	if (!image->Initialize())
 	{
 		delete image;
@@ -108,39 +107,39 @@ IRhiImage* CDx9RhiDevice::CreateImage2d(
 	return image;
 }
 
-IRhiImageView* CDx9RhiDevice::CreateImageView(IRhiImage* image)
+IRhiImageView* CDx8RhiDevice::CreateImageView(IRhiImage* image)
 {
-	return nullptr; //new CDx9RhiImageView(this, image);
+	return nullptr; //new CDx8RhiImageView(this, image);
 }
 
-IRhiRenderTarget* CDx9RhiDevice::CreateRenderTarget(IRhiImageView* imageView)
+IRhiRenderTarget* CDx8RhiDevice::CreateRenderTarget(IRhiImageView* imageView)
 {
-	return new CDx9RhiRenderTarget(this, reinterpret_cast<CDx9RhiImageView*>(imageView));
+	return new CDx8RhiRenderTarget(this, reinterpret_cast<CDx8RhiImageView*>(imageView));
 }
 
-void CDx9RhiDevice::ExecuteCommandLists(IRhiCommandList** cmdLists, ssize count)
+void CDx8RhiDevice::ExecuteCommandLists(IRhiCommandList** cmdLists, ssize count)
 {
 	m_handle->BeginScene();
 	for (ssize i = 0; i < count; i++)
 	{
-		reinterpret_cast<CDx9RhiCommandList*>(cmdLists[i])->Execute();
+		reinterpret_cast<CDx8RhiCommandList*>(cmdLists[i])->Execute();
 	}
 	m_handle->EndScene();
 }
 
-bool CDx9RhiDevice::GetDeviceInfo(IDirect3D9* d3d9, RhiDeviceInfo_t& rhiInfo, Dx9DeviceInfo_t& info, u32 adapter)
+bool CDx8RhiDevice::GetDeviceInfo(IDirect3D8* d3d8, RhiDeviceInfo_t& rhiInfo, Dx8DeviceInfo_t& info, u32 adapter)
 {
 	Log_Debug("Getting information for adapter %u", adapter);
 
 	info.adapter = adapter;
-	HRESULT result = d3d9->GetAdapterIdentifier(info.adapter, 0, &info.identifier);
+	HRESULT result = d3d8->GetAdapterIdentifier(info.adapter, 0, &info.identifier);
 	if (FAILED(result))
 	{
 		Log_Error("Failed to get adapter identifier for adapter %u: HRESULT 0x%08X", info.adapter, result);
 		return false;
 	}
 
-	d3d9->GetAdapterDisplayMode(info.adapter, &info.mode);
+	d3d8->GetAdapterDisplayMode(info.adapter, &info.mode);
 	Log_Debug("Adapter %u's format is %u", info.adapter, info.mode.Format);
 
 	rhiInfo.handle = adapter;

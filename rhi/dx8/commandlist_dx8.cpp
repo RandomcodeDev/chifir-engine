@@ -1,23 +1,23 @@
-/// \file DirectX 9 command list implementation (yikes)
+/// \file DirectX 8 command list implementation (yikes)
 /// \copyright 2025 Randomcode Developers
 
 // Commands are stored as their type, followed by a custom struct. Execute goes through that and does the right command.
 
-#include "dx9.h"
+#include "dx8.h"
 #include "rhi/irhiimage.h"
 
-#include "commandlist_dx9.h"
-#include "device_dx9.h"
-#include "image_dx9.h"
+#include "commandlist_dx8.h"
+#include "device_dx8.h"
+#include "image_dx8.h"
 
 #define DECLARE_COMMAND(name, dataBody, params, ...)                                                                             \
-	static constexpr u32 Dx9##name##Command = __LINE__;                                                                          \
-	struct Dx9##name##CommandData_t dataBody;                                                                                    \
-	void CDx9RhiCommandList::name params                                                                                         \
+	static constexpr u32 Dx8##name##Command = __LINE__;                                                                          \
+	struct Dx8##name##CommandData_t dataBody;                                                                                    \
+	void CDx8RhiCommandList::name params                                                                                         \
 	{                                                                                                                            \
-		using CommandData_t = Dx9##name##CommandData_t;                                                                          \
+		using CommandData_t = Dx8##name##CommandData_t;                                                                          \
 		u32* type = reinterpret_cast<u32*>(m_allocator.Alloc(sizeof(u32)));                                                      \
-		*type = Dx9##name##Command;                                                                                              \
+		*type = Dx8##name##Command;                                                                                              \
 		auto data = static_cast<CommandData_t*>(m_allocator.Alloc(sizeof(CommandData_t)));                                       \
 		{                                                                                                                        \
 			__VA_ARGS__                                                                                                          \
@@ -25,8 +25,8 @@
 	}
 
 #define HANDLE_COMMAND(name, ...)                                                                                                \
-	case Dx9##name##Command: {                                                                                                   \
-		using CommandData_t = Dx9##name##CommandData_t;                                                                          \
+	case Dx8##name##Command: {                                                                                                   \
+		using CommandData_t = Dx8##name##CommandData_t;                                                                          \
 		__VA_OPT__(auto data = reinterpret_cast<const CommandData_t*>(buffer + offset);)                                         \
 		offset += sizeof(CommandData_t);                                                                                         \
 		{                                                                                                                        \
@@ -39,14 +39,14 @@ DECLARE_COMMAND(
 	SetRenderTarget,
 	{
 		u32 index;
-		CDx9RhiRenderTarget* target;
+		CDx8RhiRenderTarget* target;
 	},
 	(u32 index, IRhiRenderTarget* target),
 	{
 		data->index = index;
-		data->target = reinterpret_cast<CDx9RhiRenderTarget*>(target);
+		data->target = reinterpret_cast<CDx8RhiRenderTarget*>(target);
 	})
-DECLARE_COMMAND(SetDepthStencilTarget, { CDx9RhiRenderTarget* target; }, (IRhiDepthStencilTarget * target), { UNUSED(data); })
+DECLARE_COMMAND(SetDepthStencilTarget, { CDx8RhiRenderTarget* target; }, (IRhiDepthStencilTarget * target), { UNUSED(data); })
 DECLARE_COMMAND(
 	Clear,
 	{
@@ -61,29 +61,29 @@ DECLARE_COMMAND(
 		data->stencil = stencil;
 	})
 
-void CDx9RhiCommandList::BeginCommands()
+void CDx8RhiCommandList::BeginCommands()
 {
 	m_mutex->Lock();
 	m_allocator.Reset();
 }
 
-void CDx9RhiCommandList::EndCommands()
+void CDx8RhiCommandList::EndCommands()
 {
 	m_mutex->Unlock();
 }
 
-void CDx9RhiCommandList::HandleCommand(u32 type, const u8* buffer, ssize& offset)
+void CDx8RhiCommandList::HandleCommand(u32 type, const u8* buffer, ssize& offset)
 {
 	auto device = m_parent->m_handle;
 
 	switch (type)
 	{
-		HANDLE_COMMAND(SetRenderTarget, { device->SetRenderTarget(data->index, data->target->GetHandle()); })
+		HANDLE_COMMAND(SetRenderTarget, { device->SetRenderTarget(data->target->GetHandle(), nullptr); })
 		HANDLE_COMMAND(Clear, { device->Clear(0, nullptr, D3DCLEAR_TARGET, data->color, data->depth, data->stencil); })
 	}
 }
 
-bool CDx9RhiCommandList::Execute()
+bool CDx8RhiCommandList::Execute()
 {
 	if (!m_mutex->TryLock())
 	{

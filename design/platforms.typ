@@ -14,7 +14,8 @@ These platforms may be supported purely out of personal interest:
 #table(
   columns: 4,
   [*Platform*], [*Toolchain*], [*Graphics API(s)*], [*Notes*],
-  [Xbox 360], [Ancient MSVC], [DirectX 9], [The engine builds, but somehow the XEXs don't have export tables, meaning it doesn't run],
+  [Original Xbox], [Modern MSVC/LLVM], [DirectX 8], [Nearly works],
+  [Xbox 360], [Custom LLVM fork], [DirectX 9], [Uses a custom calling convention I haven't ported to LLVM yet],
   [PlayStation 3], [Ancient GCC, possibly modern LLVM], [GCM, OpenGL], [Haven't tried this very hard yet, it's probably possible],
   [PlayStation Portable], [GCC], [OpenGL], [Crashes in homebrew startup code, seems like current firmware doesn't support how syscalls are used in it],
   [Bare metal x86], [LLVM], [Software renderer], [This would take a lot of engineering and probably not be worth it]

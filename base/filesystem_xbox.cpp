@@ -9,18 +9,17 @@ CXboxFilesystem::CXboxFilesystem(cstr root) : CBaseRawFilesystem(root)
 {
 	ASSERT_MSG(g_platInitialized != false, "Call Base_Init first!");
 
-	m_rootHandle = CreateFileA(
-		m_root, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0, FILE_OPEN_IF,
-		FILE_ATTRIBUTE_DIRECTORY, nullptr);
-	if (!m_rootHandle)
+	if (!CreateDirectoryA(root, nullptr))
 	{
-		Base_Quit("Failed to open directory %s: Win32 error %d", m_root, LastNtStatus());
+        if (GetLastError() != ERROR_ALREADY_EXISTS)
+        {
+            Base_Quit("Failed to open directory %s: Win32 error %d", m_root, GetLastError());
+        }
 	}
 }
 
 CXboxFilesystem::~CXboxFilesystem()
 {
-	CloseHandle(m_rootHandle);
 }
 
 ssize CXboxFilesystem::GetSize(cstr path)

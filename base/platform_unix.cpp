@@ -372,7 +372,7 @@ BASEAPI void Plat_WriteConsole(cstr message)
 	write(STDOUT_FD, message, Base_StrLength(message));
 }
 
-BASEAPI cstr Plat_GetSaveLocation()
+BASEAPI cstr Plat_GetDataLocation()
 {
 	static char s_saveDir[1024];
 

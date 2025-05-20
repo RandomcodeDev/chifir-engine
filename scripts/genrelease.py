@@ -102,8 +102,8 @@ def main(argc, argv):
 
 	if path.exists(output):
 		try:
-			resp = "y" if args.force else input(f"remove directory {output} (yes or no)? ")
-			if resp.lower()[0] == "n":
+			resp = "y" if args.force else input(f"remove directory {output} (Y/n)? ")
+			if len(resp) > 0 and resp.lower()[0] == "n":
 				print("not removing")
 				exit()
 			else:

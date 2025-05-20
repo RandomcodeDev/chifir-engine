@@ -59,8 +59,8 @@ extern BASEAPI u64 Plat_GetMilliseconds();
 /// Get the date and time
 extern BASEAPI void Plat_GetDateTime(DateTime& time, bool utc = false);
 
-/// Get the location for saving stuff
-extern BASEAPI cstr Plat_GetSaveLocation();
+/// Get the location for saving engine data (logs, etc)
+extern BASEAPI cstr Plat_GetDataLocation();
 
 /// Get the location the engine is running from
 extern BASEAPI cstr Plat_GetEngineDir();
@@ -71,15 +71,13 @@ extern BASEAPI cstr Plat_GetEnvironment(cstr name);
 /// Get whether a Ctrl-C or similar quit signal was received
 extern BASEAPI bool Plat_QuitSignalled();
 
-#if defined CH_WIN32 || defined CH_XBOX
+#if defined CH_WIN32
 /// Get the last Win32 error
 #define LastNtError() NtCurrentTeb()->LastErrorValue
 
 /// Get the last NTSTATUS
 #define LastNtStatus() NtCurrentTeb()->LastStatusValue
-#endif
 
-#ifdef CH_WIN32
 /// Get whether the engine is running in Wine (if you use this for shady stuff you suck)
 extern BASEAPI bool Plat_IsWine();
 

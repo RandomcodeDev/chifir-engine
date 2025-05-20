@@ -1,6 +1,7 @@
 /// \file Windows support
 /// \copyright 2025 Randomcode Developers
 
+#include "platform_win32.h"
 #include "base.h"
 #include "base/basicstr.h"
 #include "base/compiler.h"
@@ -9,7 +10,7 @@
 #include "base/string.h"
 #include "base/types.h"
 #include "base/vector.h"
-#include "platform_win32.h"
+
 
 DECLARE_AVAILABLE(DbgPrint);
 DECLARE_AVAILABLE(NtAllocateVirtualMemory);
@@ -215,7 +216,7 @@ static LONG WINAPI ExceptionHandler(PEXCEPTION_POINTERS info)
 {
 #define X(code, ...)                                                                                                             \
 	case code:                                                                                                                   \
-		codeStr = #code;                                                                                               \
+		codeStr = #code;                                                                                                         \
 		{                                                                                                                        \
 			__VA_ARGS__                                                                                                          \
 		}                                                                                                                        \
@@ -232,13 +233,13 @@ static LONG WINAPI ExceptionHandler(PEXCEPTION_POINTERS info)
 		switch (info->ExceptionRecord->ExceptionInformation[0])
 		{
 		case 0:
-			errorType = "read";
+			errorType = "reading";
 			break;
 		case 1:
-			errorType = "write";
+			errorType = "writing";
 			break;
 		case 8:
-			errorType = "execute";
+			errorType = "executing";
 			break;
 		}
 
@@ -283,8 +284,8 @@ static LONG WINAPI ExceptionHandler(PEXCEPTION_POINTERS info)
 	ANSI_STRING str = {};
 	str.Buffer = buffer;
 	str.Length = Base_StrFormat(
-					 buffer, ArraySize(buffer), "Caught exception: %s (%s 0x%016zX): pc=0x%016zX sp=0x%016zX", codeStr,
-					 errorType ? errorType : "", address, pc, sp);
+		buffer, ArraySize(buffer), "Caught exception: %s (%s0x%016zX): pc=0x%016zX sp=0x%016zX", codeStr,
+		errorType ? errorType : "", address, pc, sp);
 	str.MaximumLength = sizeof(buffer);
 
 	UNICODE_STRING ustr = {};
@@ -632,7 +633,7 @@ BASEAPI void Plat_GetDateTime(DateTime& time, bool utc)
 	}
 }
 
-BASEAPI cstr Plat_GetSaveLocation()
+BASEAPI cstr Plat_GetDataLocation()
 {
 	static char s_directory[MAX_PATH + 1] = {0};
 

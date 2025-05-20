@@ -55,6 +55,7 @@ if is_plat("xbox") then
 	)
 else
 	add_sysincludedirs(
+		"external/d3d8",
 		"external/phnt"
 	)
 end
@@ -123,6 +124,11 @@ end
 directx = is_plat("windows", "scarlett")
 if directx then
 	add_defines("CH_DIRECTX", "CH_DIRECTX12")
+end
+
+directx8 = is_plat("windows", "xbox")
+if directx8 then
+	add_defines("CH_DIRECTX8")
 end
 
 directx9 = is_plat("windows")

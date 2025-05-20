@@ -14,7 +14,7 @@ def main(argc, argv):
         "--version", "-v", help="The new subsystem version", default="1.00"
     )
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv[1:])
 
     exe = args.file
     if not path.isfile(exe):
