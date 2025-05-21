@@ -77,7 +77,7 @@ void CDx8RhiSwapChain::ResizeBuffers()
 	} while (SUCCEEDED(result));
 
 	m_bufferCount = m_buffers.Size();
-	Log_Debug("Got %u buffers", m_bufferCount);
+	Log_Debug("Got %u buffer(s)", m_bufferCount);
 }
 
 u32 CDx8RhiSwapChain::Present()
