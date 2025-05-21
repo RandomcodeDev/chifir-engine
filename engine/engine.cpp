@@ -28,6 +28,10 @@ CEngine::CEngine() : m_state(EngineState_t::Uninitialized), m_headless(false), m
 		m_rhiBackendName = "DirectX9";
 	}
 #endif
+#elif defined CH_XENON
+	m_rhiBackendName = "DirectX9";
+#elif defined CH_XBOX
+    m_rhiBackendName = "DirectX8";
 #else
 	m_rhiBackendName = "Vulkan";
 #endif
@@ -75,13 +79,10 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	m_state = EngineState_t::Startup;
 
 	Plat_GetDateTime(m_startTime);
-	m_logName.Format(
-		GAME_NAME "_%04d-%02d-%02d_%02d-%02d-%02d.log", m_startTime.year, m_startTime.month, m_startTime.day, m_startTime.hour,
-		m_startTime.minute, m_startTime.second);
 
 	// TODO: make it so save filesystem is only open when necessary, it seems like console companies prefer that
 	// maybe on platforms that are picky about that, since writes are uncommon, mount and unmount at every write
-	if (!InitializeSaveFilesystem())
+	if (!InitializeDataFilesystem())
 	{
 		Base_Quit("Failed to initialize filesystem!");
 	}
@@ -124,9 +125,9 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	return 0;
 }
 
-bool CEngine::InitializeSaveFilesystem()
+bool CEngine::InitializeDataFilesystem()
 {
-	Log_Debug("Opening persistent data filesystem %s", Plat_GetDataLocation());
+	Log_Debug("Opening engine data filesystem %s", Plat_GetDataLocation());
 	m_dataFilesystem = Base_CreateRawFilesystem(Plat_GetDataLocation());
 	if (!m_dataFilesystem)
 	{
@@ -141,7 +142,7 @@ void CEngine::AddLogWriters()
 {
 	// in general, it goes against
 #if defined CH_DEBUG || !defined CH_CONSOLE
-	Log_AddWriter(new CFileLogWriter(m_dataFilesystem, m_logName.Data()));
+	Log_AddWriter(new CFileLogWriter(m_dataFilesystem, GAME_NAME, true));
 #endif
 }
 

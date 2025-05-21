@@ -28,7 +28,7 @@ bool CDx8RhiDevice::Initialize()
 	Base_MemSet(&m_presentParams, 0, sizeof(D3DPRESENT_PARAMETERS));
 	m_presentParams.BackBufferWidth = video->GetWidth();
 	m_presentParams.BackBufferHeight = video->GetHeight();
-	m_presentParams.BackBufferFormat = m_info.mode.Format;
+	m_presentParams.BackBufferFormat = D3DFMT_A8R8G8B8;
 	m_presentParams.BackBufferCount = 1;
 	m_presentParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
 #ifdef CH_XBOX
@@ -139,8 +139,8 @@ bool CDx8RhiDevice::GetDeviceInfo(IDirect3D8* d3d8, RhiDeviceInfo_t& rhiInfo, Dx
 		return false;
 	}
 
-	d3d8->GetAdapterDisplayMode(info.adapter, &info.mode);
-	Log_Debug("Adapter %u's format is %u", info.adapter, info.mode.Format);
+	//d3d8->GetAdapterDisplayMode(info.adapter, &info.mode);
+	//Log_Debug("Adapter %u's format is %u", info.adapter, info.mode.Format);
 
 	rhiInfo.handle = adapter;
 

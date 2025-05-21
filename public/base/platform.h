@@ -11,10 +11,6 @@
 #endif
 #include "win32_aliases.h"
 #elif defined CH_XBOX
-#ifndef CH_XENON
-#include <nt.h>
-#include <ntrtl.h>
-#endif
 #include <xtl.h>
 #include <xbdm.h>
 #include "win32_aliases.h"
@@ -70,6 +66,9 @@ extern BASEAPI cstr Plat_GetEnvironment(cstr name);
 
 /// Get whether a Ctrl-C or similar quit signal was received
 extern BASEAPI bool Plat_QuitSignalled();
+
+/// Get a backtrace string
+extern BASEAPI cstr Plat_GetBackTrace();
 
 #if defined CH_WIN32
 /// Get the last Win32 error

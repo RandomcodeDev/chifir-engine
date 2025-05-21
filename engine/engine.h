@@ -47,7 +47,6 @@ class CEngine: public IEngine
   private:
 	EngineState_t m_state;
 	DateTime m_startTime;
-	CString m_logName;
 	bool m_headless;
 	cstr m_rhiBackendName;
 	bool m_inFrame;
@@ -59,7 +58,7 @@ class CEngine: public IEngine
 	IVideoSystem* m_videoSystem;
 
 	/// Initializes the filesystem for save files/other data
-	bool InitializeSaveFilesystem();
+	bool InitializeDataFilesystem();
 
 	/// Adds log writers
 	void AddLogWriters();

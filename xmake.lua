@@ -49,9 +49,7 @@ add_sysincludedirs(
 if is_plat("xbox") then
 	add_sysincludedirs(
 		"public/xbox",
-		"external/xbox/private/inc",
-		"external/xbox/public/sdk/inc",
-		"external/xbox/public/sdk/inc/crt"
+        "$(env XDK)/xbox/include"
 	)
 else
 	add_sysincludedirs(
@@ -302,7 +300,7 @@ if is_plat("windows", "scarlett", "xbox") then
 		{force = true})
 
 		add_linkdirs(
-			"external/xbox/public/sdk/lib/i386"
+			"$(env XDK)/xbox/lib"
 		)
 	end
 elseif is_plat("linux", "nx", "orbis") then

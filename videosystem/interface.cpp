@@ -9,6 +9,8 @@
 #ifdef CH_WIN32
 #include "video_win32.h"
 #include "video_winrt.h"
+#elif defined CH_XBOX
+#include "video_xbox.h"
 #elif defined CH_NX
 #include "videosystem/video_nx.h"
 #elif defined CH_UNIX
@@ -21,7 +23,7 @@ ISystem* CreateVideoSystem()
 extern "C" DLLEXPORT ISystem* CreateInterface()
 #endif
 {
-#if defined CH_WIN32 && !defined CH_XENON && !defined CH_XBOX
+#if defined CH_WIN32
 #ifdef CH_UWP
 	if (Plat_IsUwpApp())
 	{
@@ -32,6 +34,8 @@ extern "C" DLLEXPORT ISystem* CreateInterface()
 	{
 		return new CWin32VideoSystem();
 	}
+#elif defined CH_XBOX
+    return new CXboxVideoSystem();
 #elif defined CH_NX
 	return new CNxVideoSystem();
 #elif defined CH_UNIX

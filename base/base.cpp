@@ -150,9 +150,12 @@ BASEAPI NORETURN void Base_Quit(cstr message, ...)
 		formatted = message;
 	}
 
-	Log_FatalError("%s", formatted);
-	// this is a guess, since this function has no knowledge of the engine's paths, just where it probably initialized it to
-	Log_FatalError("Check the log in (probably) %s", Plat_GetDataLocation());
+	if (g_baseInitialized)
+	{
+		Log_FatalError("%s", formatted);
+		// this is a guess, since this function has no knowledge of the engine's paths, just where it probably initialized it to
+		Log_FatalError("Check the log in (probably) %s", Plat_GetDataLocation());
+	}
 	Base_AbortSafe(ABORT_RELEVANT_ERROR, formatted);
 }
 
@@ -506,7 +509,8 @@ static s32 Compare(const void* RESTRICT a, const void* RESTRICT b, ssize offset,
 #ifdef __clang__
 __attribute__((target("sse4")))
 #endif
-static bool V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
+static bool
+V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 {
 	static const u8 mode = _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_EACH | _SIDD_NEGATIVE_POLARITY | _SIDD_LEAST_SIGNIFICANT;
 	inequalIdx = _mm_cmpestri(*reinterpret_cast<const __m128i*>(&a), 16, *reinterpret_cast<const __m128i*>(&b), 16, mode);

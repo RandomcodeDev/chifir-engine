@@ -22,9 +22,7 @@ BASEAPI void Plat_Init()
 	{
 		g_allocUsable = true;
 
-#ifdef CH_XENON
 		g_tlsIndex = TlsAlloc();
-#endif
 		Plat_GetTlsData()->isMainThread = true;
 
 		g_platInitialized = true;
@@ -79,20 +77,6 @@ BASEAPI cstr Plat_GetHardwareDescription()
 	return s_hardwareDescription;
 }
 
-#ifndef CH_XENON
-static ULONG HardError(PCUNICODE_STRING msg, HARDERROR_RESPONSE_OPTION option = OptionAbortRetryIgnore)
-{
-	UNICODE_STRING titleStr;
-	RtlInitUnicodeString(&titleStr, L"Fatal error!");
-	ULONG_PTR params[] = {reinterpret_cast<ULONG_PTR>(msg), reinterpret_cast<ULONG_PTR>(&titleStr), 0, INFINITE};
-	ULONG response = 0;
-	NtRaiseHardError(
-		HARDERROR_OVERRIDE_ERRORMODE | STATUS_SERVICE_NOTIFICATION, (ULONG)ArraySize(params), 0b0011, params, option, &response);
-
-	return response;
-}
-#endif
-
 BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)
 {
 	if (code == ABORT_RELEVANT_ERROR)
@@ -103,13 +87,13 @@ BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)
 		}
 		else
 		{
-			code = STATUS_FATAL_APP_EXIT;
+			code = E_FAIL;
 		}
 	}
 
-	OutputDebugStringA("Fatal error: ");
-	OutputDebugStringA(msg);
-	OutputDebugStringA("\n");
+	Plat_WriteConsole("Fatal error: ");
+	Plat_WriteConsole(msg);
+	Plat_WriteConsole("\n");
 
 #ifdef CH_XENON
 	XamTerminateTitle();
@@ -177,6 +161,8 @@ BASEAPI bool Plat_ConsoleHasColor()
 BASEAPI void Plat_WriteConsole(cstr message)
 {
 	OutputDebugStringA(message);
+    puts(message);
+    fflush(stdout);
 }
 
 BASEAPI cstr Plat_GetDataLocation()
@@ -192,6 +178,30 @@ BASEAPI cstr Plat_GetEngineDir()
 BASEAPI cstr Plat_GetEnvironment(cstr name)
 {
 	return getenv(name);
+}
+
+BASEAPI cstr Plat_GetBackTrace()
+{
+#if 0
+	static char s_buffer[1024];
+	//char symbol[32] = {};
+	void* frames[DM_MAX_STACK_DEPTH] = {};
+
+	DmCaptureStackBackTrace(DM_MAX_STACK_DEPTH, frames);
+
+	ssize offset = 0;
+	for (ssize i = 0; i < ArraySize(frames); i++)
+	{
+		ULONG displacement = 0;
+		DmGetSymbolFromAddress(reinterpret_cast<uptr>(frames[i]), symbol, sizeof(symbol), &displacement);
+		offset += Base_StrFormat(
+			s_buffer + offset, ArraySize(s_buffer) - offset, "%zd: 0x%X\n", i, reinterpret_cast<uptr>(frames[i]));
+	}
+
+    return s_buffer;
+#else
+    return "<unknown>";
+#endif
 }
 
 BASEAPI u64 Plat_GetMilliseconds()

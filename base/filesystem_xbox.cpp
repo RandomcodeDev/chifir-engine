@@ -11,10 +11,10 @@ CXboxFilesystem::CXboxFilesystem(cstr root) : CBaseRawFilesystem(root)
 
 	if (!CreateDirectoryA(root, nullptr))
 	{
-        if (GetLastError() != ERROR_ALREADY_EXISTS)
-        {
-            Base_Quit("Failed to open directory %s: Win32 error %d", m_root, GetLastError());
-        }
+		if (GetLastError() != ERROR_ALREADY_EXISTS)
+		{
+			Base_Quit("Failed to open directory %s: Win32 error %d", m_root, GetLastError());
+		}
 	}
 }
 
@@ -38,18 +38,20 @@ ssize CXboxFilesystem::GetSize(cstr path)
 
 ssize CXboxFilesystem::GetSize(HANDLE file)
 {
-	BY_HANDLE_FILE_INFORMATION info;
-	if (!GetFileInformationByHandle(file, &info))
-	{
-		return -1;
-	}
+	DWORD size = GetFileSize(file, nullptr);
+    if (size == UINT32_MAX)
+    {
+        Log_Error("Failed to get file size: Win32 error %d", GetLastError());
+        return -1;
+    }
 
-	return info.nFileSizeLow;
+    return size;
 }
 
 bool CXboxFilesystem::Read(cstr path, CVector<u8>& buffer, ssize count, ssize offset)
 {
-	HANDLE file = OpenFile(path);
+    dstr fullPath = Canonicalize(path);
+	HANDLE file = OpenFile(fullPath);
 	if (!file)
 	{
 		return false;
@@ -94,10 +96,6 @@ FileType CXboxFilesystem::GetFileType(cstr path)
 	{
 		type = FileType::Directory;
 	}
-	else if (attributes & FILE_ATTRIBUTE_REPARSE_POINT)
-	{
-		type = FileType::Symlink;
-	}
 	else if (attributes & FILE_ATTRIBUTE_SYSTEM)
 	{
 		type = FileType::System;
@@ -125,31 +123,31 @@ IDirIter* CXboxFilesystem::ReadDirectory(cstr path)
 
 ssize CXboxFilesystem::Write(cstr path, const void* data, ssize count, bool append, ssize offset)
 {
-	HANDLE file = OpenFile(path, true);
+    dstr fullPath = Canonicalize(path);
+	HANDLE file = OpenFile(fullPath, true);
 	if (!file)
 	{
 		return -1;
 	}
 
-	LARGE_INTEGER largeOffset = {};
-	largeOffset.QuadPart = offset;
 	if (append)
-	{
-		largeOffset.QuadPart += GetSize(file);
-	}
+    {
+        offset += GetSize(file);
+    }
 
-	// NtWriteFile better not modify the buffer
-	SetFilePointerEx(file, largeOffset, nullptr, FILE_BEGIN);
-	if (!WriteFileEx(file, data, count, nullptr, nullptr))
+	SetFilePointer(file, offset, nullptr, FILE_BEGIN);
+	if (!WriteFile(file, data, count, nullptr, nullptr))
 	{
 		m_safe = false;
 		Log_Error(
-			"Failed to write %zd bytes to %s/%s at offset 0x%X: Win32 error %d", count, m_root, path, largeOffset.QuadPart,
+			"Failed to write %zd bytes to %s/%s at offset 0x%X: Win32 error %d", count, m_root, path, offset,
 			GetLastError());
 		m_safe = true;
 		CloseHandle(file);
 		return -1;
 	}
+
+    FlushFileBuffers(file);
 
 	CloseHandle(file);
 
@@ -177,8 +175,8 @@ HANDLE CXboxFilesystem::OpenFile(cstr path, bool writable)
 		access |= GENERIC_WRITE;
 	}
 
-	file =
-		CreateFileA(path, access, FILE_SHARE_READ, nullptr, writable ? FILE_OPEN_IF : FILE_OPEN, FILE_ATTRIBUTE_NORMAL, nullptr);
+	file = CreateFileA(
+		path, access, FILE_SHARE_READ, nullptr, writable ? OPEN_ALWAYS : OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 	if (!file)
 	{
 		m_safe = false;

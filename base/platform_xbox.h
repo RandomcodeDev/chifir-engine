@@ -7,6 +7,8 @@
 #error "This header is Xbox/Xbox 360 only"
 #endif
 
+#include <stdio.h>
+
 #include "base/async.h"
 #include "base/base.h"
 #include "base/loader.h"
@@ -58,9 +60,7 @@ struct TlsData
 	bool isMainThread;
 };
 
-#ifdef CH_XENON
 extern u32 g_tlsIndex;
-#endif
 
 /// Get the TLS data for this thread
 extern TlsData* Plat_GetTlsData();
@@ -108,7 +108,7 @@ class CXboxThread: public IThread
 	ThreadStart_t m_start;
 	void* m_userData;
 
-	static NTSTATUS WINAPI ThreadMain(CXboxThread* thread);
+	static LONG WINAPI ThreadMain(CXboxThread* thread);
 };
 
 class CXboxLibrary: public ILibrary

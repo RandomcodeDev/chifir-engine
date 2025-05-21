@@ -6,7 +6,7 @@
 CXboxMutex::CXboxMutex() : m_handle(nullptr)
 {
 	m_handle = CreateMutexA(nullptr, false, nullptr);
-	if (m_handle)
+	if (!m_handle)
 	{
 		Base_Quit("Failed to create mutex: Win32 error %d", GetLastError());
 	}
@@ -28,13 +28,15 @@ void CXboxMutex::Lock()
 
 bool CXboxMutex::TryLock(u32 timeout)
 {
-	NTSTATUS status = WaitForSingleObject(m_handle, timeout);
+	DWORD status = WaitForSingleObject(m_handle, timeout);
 	switch (status)
 	{
 		// TODO: not sure if this is correct, guess I'll find out eventually
-	case STATUS_ABANDONED:
-	case STATUS_WAIT_0:
+	case WAIT_ABANDONED:
+	case WAIT_OBJECT_0:
 		return true;
+    case WAIT_TIMEOUT:
+    case WAIT_FAILED:
 	default:
 		return false;
 	}
@@ -50,7 +52,7 @@ CXboxThread::CXboxThread(ThreadStart_t start, void* userData, cstr name, ssize s
 {
 	ASSERT(stackSize <= maxStackSize);
 
-	CreateThread(nullptr, stackSize, reinterpret_cast<LPTHREAD_START_ROUTINE>(ThreadMain), this, CREATE_SUSPENDED, THREAD_PRIORITY_NORMAL);
+	CreateThread(nullptr, stackSize, reinterpret_cast<LPTHREAD_START_ROUTINE>(ThreadMain), this, CREATE_SUSPENDED, nullptr);
 
 	if (name)
 	{
@@ -80,11 +82,8 @@ void CXboxThread::Run()
 
 bool CXboxThread::Wait(u32 timeout)
 {
-	LARGE_INTEGER delay;
-	// negative means relative, and timeout is in 100ns intervals
-	delay.QuadPart = timeout * -10000ll;
-	NTSTATUS status = NtWaitForSingleObject(m_handle, false, &delay);
-	if (status == STATUS_TIMEOUT)
+	DWORD status = WaitForSingleObject(m_handle, timeout);
+	if (status == WAIT_TIMEOUT)
 	{
 		return false;
 	}
@@ -94,30 +93,24 @@ bool CXboxThread::Wait(u32 timeout)
 	return true;
 }
 
+u32 g_tlsIndex;
+
 TlsData* Plat_GetTlsData()
 {
-#ifdef CH_XENON
 	TlsData* data = static_cast<TlsData*>(TlsGetValue(g_tlsIndex));
-#else
-	TlsData* data = static_cast<TlsData*>(NtCurrentTeb()->ThreadLocalStoragePointer);
-#endif
 	if (!data)
 	{
 		data = new TlsData;
 
 		data->currentThread = nullptr;
 		data->isMainThread = false;
-#ifdef CH_XENON
 		TlsSetValue(g_tlsIndex, data);
-#else
-		NtCurrentTeb()->ThreadLocalStoragePointer = data;
-#endif
 	}
 
 	return data;
 }
 
-NTSTATUS WINAPI CXboxThread::ThreadMain(CXboxThread* thread)
+LONG WINAPI CXboxThread::ThreadMain(CXboxThread* thread)
 {
 	Plat_GetTlsData()->currentThread = thread;
 	Plat_GetTlsData()->isMainThread = false;
@@ -137,12 +130,13 @@ BASEAPI bool Async_IsMainThread()
 
 BASEAPI u64 Async_GetCurrentThreadId()
 {
-	if (Plat_GetTlsData()->currentThread)
+	IThread* current = Async_GetCurrentThread();
+	if (current)
 	{
-		return Plat_GetTlsData()->currentThread->GetId();
+		return current->GetId();
 	}
 
-	return UINT64_MAX;
+    return GetCurrentThreadId();
 }
 
 BASEAPI void Async_Yield()

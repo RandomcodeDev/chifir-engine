@@ -15,6 +15,8 @@ BASEAPI IMutex* Async_CreateMutex()
 
 #ifdef CH_WIN32
     return new CWindowsMutex();
+#elif defined CH_XBOX
+    return new CXboxMutex();
 #elif defined CH_UNIX
     return new CUnixMutex();
 #else

@@ -32,11 +32,17 @@ void Log_Shutdown()
 
 BASEAPI CFileLogWriter::CFileLogWriter(IWritableFilesystem* filesystem, cstr logName, bool addDate) : m_filesystem(filesystem)
 {
+	CString name;
 	if (addDate)
 	{
-		// TODO
+		DateTime time;
+		name.Format(
+			GAME_NAME "_%04d-%02d-%02d_%02d-%02d-%02d.log", time.year, time.month, time.day, time.hour, time.minute, time.second);
 	}
-	else {}
+	else
+	{
+		name.Add(".log");
+	}
 	m_filename = Base_StrClone(logName);
 }
 
@@ -78,7 +84,7 @@ BASEAPI void Log_Write(const LogMessage& message)
 	{
 		for (ssize i = 0; i < s_writers.Size(); i++)
 		{
-			if (message.level >= s_writers[i]->m_minLevel)
+			if (s_writers[i] && message.level >= s_writers[i]->m_minLevel)
 			{
 				s_writers[i]->Write(message);
 			}
