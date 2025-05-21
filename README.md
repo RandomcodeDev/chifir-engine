@@ -100,7 +100,7 @@ After that, just do this to configure:
 xmake f -p <windows or scarlett> -a <x64 or x86> -m <mode> -k <static or shared> --toolchain=windows-cross
 ```
 
-For Xbox, just symlink the source code (the folder with `private` and `public`) into `external/xbox` and do this:
+For Xbox, just symlink the `public/xdk` folder from the source tree as `external/xbox` and do this:
 ```
 xmake f -p xbox -a x86 -m <mode> --toolchain=xbox-cross
 ```

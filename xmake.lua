@@ -49,9 +49,7 @@ add_sysincludedirs(
 if is_plat("xbox") then
 	add_sysincludedirs(
 		"public/xbox",
-		"external/xbox/private/inc",
-		"external/xbox/public/sdk/inc",
-		"external/xbox/public/sdk/inc/crt",
+		"external/xbox/inc",
         "$(env XDK)/xbox/include"
 	)
 else
@@ -100,6 +98,7 @@ function is_toolchain(...)
 end
 
 includes("toolchains/windows-cross.lua")
+includes("toolchains/xbox-cross.lua")
 
 if os.exists("config.lua") then
 	includes("config.lua")
@@ -254,51 +253,8 @@ if is_plat("windows", "scarlett", "xbox") then
 			"/favor:AMD64",
 			{ force = true })
 	end
-
-	-- /arch:SSE2 is the default for x86, SSE2 is the baseline for AMD64, but for x86, it needs
-	-- to be turned down to IA32 (I'm insane/stupid enough to eventually try to make this run on
-	-- a Pentium, which I do have, or something dumb like that)
-	if is_arch("x64", "x86_64") then
-		add_linkdirs("public/win32/x64")
-		if is_toolchain("clang-cl") then
-			add_cxflags(
-				"-march=x86-64-v3",
-				{ force = true })
-		end
-	elseif is_arch("x86") then
-		add_cxflags(
-			"/arch:IA32"
-		)
-		add_linkdirs("public/win32/x86")
-	elseif is_arch("arm64") then
-		add_linkdirs("public/win32/arm64")
-	end
-
-	add_shflags(
-		"/nodefaultlib", -- further prevent C runtime
-		{ force = true })
-	add_ldflags(
-		"/nodefaultlib", -- further prevent C runtime
-		{ force = true })
-
-	-- windows cross compilation requires the real sdk, mingw's headers don't work with phnt and gcc is garbage
-	if not is_host("windows") then
-		add_defines("CH_WIN32_CROSSCOMPILE")
-		if is_arch("x86_64", "x64") then
-			add_linkdirs(
-				"external/winsdk/lib/um/x64"
-			)
-		elseif is_arch("x86") then
-			add_linkdirs(
-				"external/winsdk/lib/um/x86"
-			)
-		end
-		add_cxflags(
-			"/X",
-			"-clang:-ffreestanding",
-			"-clang:-Wno-ignored-pragma-intrinsic"
-		)
-	elseif is_plat("xbox") then
+	
+	if is_plat("xbox") then
 		add_cxflags(
 			"/arch:SSE",
 			"/X",
@@ -312,8 +268,57 @@ if is_plat("windows", "scarlett", "xbox") then
 		{force = true})
 
 		add_linkdirs(
-			"external/xbox/public/sdk/lib/i386",
+			"external/xbox/lib",
 			"$(env XDK)/xbox/lib"
+		)
+	else
+		-- /arch:SSE2 is the default for x86. SSE2 is the baseline for AMD64, but for x86, it needs
+		-- to be turned down to IA32 (I'm insane/stupid enough to eventually try to make this run on
+		-- a Pentium, which I do have, or something dumb like that)
+		if is_arch("x64", "x86_64") then
+			add_linkdirs("public/win32/x64")
+			if is_toolchain("clang-cl") then
+				add_cxflags(
+					"-march=x86-64-v3",
+					{ force = true })
+			end
+		elseif is_arch("x86") then
+			add_cxflags(
+				"/arch:IA32"
+			)
+			add_linkdirs("public/win32/x86")
+		elseif is_arch("arm64") then
+			add_linkdirs("public/win32/arm64")
+		end
+	end
+
+	add_shflags(
+		"/nodefaultlib", -- further prevent C runtime
+		{ force = true })
+	add_ldflags(
+		"/nodefaultlib", -- further prevent C runtime
+		{ force = true })
+
+	-- windows cross compilation requires the real sdk, mingw's headers don't work with phnt and gcc is garbage
+	if not is_host("windows") then
+		if is_plat("windows", "scarlett") then
+			add_defines("CH_WIN32_CROSS")
+			if is_arch("x86_64", "x64") then
+				add_linkdirs(
+					"external/winsdk/lib/um/x64"
+				)
+			elseif is_arch("x86") then
+				add_linkdirs(
+					"external/winsdk/lib/um/x86"
+				)
+			end
+		elseif is_plat("xbox") then
+			add_defines("CH_XBOX_CROSS")
+		end
+		add_cxflags(
+			"/X",
+			"-clang:-ffreestanding",
+			"-clang:-Wno-ignored-pragma-intrinsic"
 		)
 	end
 elseif is_plat("linux", "nx", "orbis") then
