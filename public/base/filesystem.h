@@ -8,6 +8,12 @@
 #include "base/types.h"
 #include "base/vector.h"
 
+#if defined CH_WIN32 || defined CH_XBOX
+#define PATH_SEPARATOR '\\'
+#else
+#define PATH_SEPATH_SEPARATOR '/'
+#endif
+
 /// forward decl so it can reference FileType_t
 class IDirIter;
 

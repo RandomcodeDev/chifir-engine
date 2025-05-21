@@ -113,7 +113,7 @@ bool CWin32Filesystem::Read(cstr path, CVector<u8>& buffer, ssize count, ssize o
 	if (!NT_SUCCESS(status))
 	{
 		NtCurrentTeb()->LastStatusValue = status;
-		Log_Error("Failed to read %zd bytes from offset 0x%X in %s/%s: NTSTATUS 0x%08X", size, offset, m_root, path, status);
+		Log_Error("Failed to read %zd bytes from offset 0x%X in %s%c%s: NTSTATUS 0x%08X", size, offset, m_root, PATH_SEPARATOR, path, status);
 		buffer.Empty();
 		return false;
 	}
@@ -133,7 +133,7 @@ FileType CWin32Filesystem::GetFileType(cstr path)
 	if (!NT_SUCCESS(status))
 	{
 		NtCurrentTeb()->LastStatusValue = status;
-		Log_Error("Failed to get attributes of %s/%s: NTSTATUS 0x%08X", m_root, path, status);
+		Log_Error("Failed to get attributes of %s%c%s: NTSTATUS 0x%08X", m_root, PATH_SEPARATOR, path, status);
 		return FileType::Unknown;
 	}
 
@@ -173,7 +173,7 @@ bool CWin32Filesystem::Exists(cstr path)
 	if (!NT_SUCCESS(status))
 	{
 		NtCurrentTeb()->LastStatusValue = status;
-		Log_Error("Failed to get attributes of %s/%s: NTSTATUS 0x%08X", m_root, path, status);
+		Log_Error("Failed to get attributes of %s%c%s: NTSTATUS 0x%08X", m_root, PATH_SEPARATOR, path, status);
 		return false;
 	}
 
@@ -212,7 +212,7 @@ ssize CWin32Filesystem::Write(cstr path, const void* data, ssize count, bool app
 		NtCurrentTeb()->LastStatusValue = status;
 		m_safe = false;
 		Log_Error(
-			"Failed to write %zd bytes to %s/%s at offset 0x%X: NTSTATUS 0x%08X", count, m_root, path, largeOffset.QuadPart,
+			"Failed to write %zd bytes to %s%c%s at offset 0x%X: NTSTATUS 0x%08X", count, m_root, PATH_SEPARATOR, path, largeOffset.QuadPart,
 			status);
 		m_safe = true;
 		NtClose(file);
@@ -256,7 +256,7 @@ HANDLE CWin32Filesystem::OpenFile(cstr path, bool writable)
 		NtCurrentTeb()->LastStatusValue = status;
 		m_safe = false;
 		Log_Error(
-			"Failed to %s %s/%s with access 0x%08X: NTSTATUS 0x%08X", writable ? "create" : "open", m_root, path, access, status);
+			"Failed to %s %s%c%s with access 0x%08X: NTSTATUS 0x%08X", writable ? "create" : "open", m_root, PATH_SEPARATOR, path, access, status);
 		m_safe = true;
 		return nullptr;
 	}

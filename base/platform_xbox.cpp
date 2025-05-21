@@ -148,7 +148,7 @@ void CXboxLibrary::Unload()
 {
 }
 
-void* CXboxLibrary::GetSymbol(cstr name)
+void* CXboxLibrary::GetSymbol(cstr name, bool optional)
 {
 	return nullptr;
 }

@@ -74,7 +74,7 @@ void CNullLibrary::Unload()
 {
 }
 
-void* CNullLibrary::GetSymbol(cstr name)
+void* CNullLibrary::GetSymbol(cstr name, bool optional)
 {
 }
 

@@ -34,7 +34,7 @@ char* CBaseRawFilesystem::Canonicalize(cstr path)
 	{
 		return Base_StrClone(path);
 	}
-	return Base_StrFormat("%s/%s", m_root, path);
+	return Base_StrFormat("%s%c%s", m_root, PATH_SEPARATOR, path);
 }
 
 BASEAPI IWritableFilesystem* Base_CreateRawFilesystem(cstr path)

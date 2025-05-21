@@ -28,7 +28,7 @@ bool CDx8RhiDevice::Initialize()
 	Base_MemSet(&m_presentParams, 0, sizeof(D3DPRESENT_PARAMETERS));
 	m_presentParams.BackBufferWidth = video->GetWidth();
 	m_presentParams.BackBufferHeight = video->GetHeight();
-	m_presentParams.BackBufferFormat = D3DFMT_A8R8G8B8;
+	m_presentParams.BackBufferFormat = m_info.mode.Format;
 	m_presentParams.BackBufferCount = 1;
 	m_presentParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
 #ifdef CH_XBOX
@@ -36,6 +36,7 @@ bool CDx8RhiDevice::Initialize()
     m_presentParams.FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_ONE_OR_IMMEDIATE;
 #else
     m_presentParams.Windowed = true;
+    m_presentParams.hDeviceWindow = reinterpret_cast<HWND>(video->GetHandle());
 #endif
 
 	// try multiple times, it's possible that it will fix things
@@ -48,7 +49,7 @@ bool CDx8RhiDevice::Initialize()
 		}
 		Log_Debug("Creating IDirect3DDevice8 with device type %u (attempt %u/%u)", deviceType, attempts + 1, MAX_CREATE_ATTEMPTS);
 		HRESULT result = m_parent->m_d3d8->CreateDevice(
-			m_info.adapter, deviceType, m_presentParams.hDeviceWindow, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &m_presentParams,
+			m_info.adapter, deviceType, m_presentParams.hDeviceWindow, D3DCREATE_HARDWARE_VERTEXPROCESSING, &m_presentParams,
 			&m_handle);
 		if (FAILED(result))
 		{
@@ -142,8 +143,8 @@ bool CDx8RhiDevice::GetDeviceInfo(IDirect3D8* d3d8, RhiDeviceInfo_t& rhiInfo, Dx
 		return false;
 	}
 
-	//d3d8->GetAdapterDisplayMode(info.adapter, &info.mode);
-	//Log_Debug("Adapter %u's format is %u", info.adapter, info.mode.Format);
+	d3d8->GetAdapterDisplayMode(info.adapter, &info.mode);
+	Log_Debug("Adapter %u's format is %u", info.adapter, info.mode.Format);
 
 	rhiInfo.handle = adapter;
 

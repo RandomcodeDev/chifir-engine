@@ -40,7 +40,7 @@ static constexpr const char* GetMsvcVersionString()
 #ifdef CH_XENON
 #include <VectorIntrinsics.h>
 #elif defined CH_X86
-#if defined __clang__ && !defined CH_WIN32_CROSS && !defined CH_XBOX_CROSS
+#if defined __clang__ && !defined CH_WIN32_CROSS && !defined CH_XBOX
 #include <x86intrin.h>
 #else
 #include <intrin.h>

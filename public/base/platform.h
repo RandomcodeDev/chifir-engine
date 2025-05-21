@@ -11,9 +11,19 @@
 #endif
 #include "win32_aliases.h"
 #elif defined CH_XBOX
+#define _InterlockedCompareExchange _InterlockedCompareExchange_xbox
+#define _InterlockedDecrement       _InterlockedDecrement_xbox
+#define _InterlockedExchange        _InterlockedExchange_xbox
+#define _InterlockedExchangeAdd     _InterlockedExchangeAdd_xbox
+#define _InterlockedIncrement       _InterlockedIncrement_xbox
 #include <xtl.h>
 #include <xbdm.h>
 #include "win32_aliases.h"
+#undef _InterlockedCompareExchange
+#undef _InterlockedDecrement
+#undef _InterlockedExchange
+#undef _InterlockedExchangeAdd
+#undef _InterlockedIncrement
 #elif defined CH_UNIX
 #include <unistd.h>
 #endif

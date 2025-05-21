@@ -43,7 +43,7 @@ BASEAPI CFileLogWriter::CFileLogWriter(IWritableFilesystem* filesystem, cstr log
 	{
 		name.Add(".log");
 	}
-	m_filename = Base_StrClone(logName);
+	m_filename = Base_StrClone(name.Data());
 }
 
 BASEAPI CFileLogWriter::~CFileLogWriter()

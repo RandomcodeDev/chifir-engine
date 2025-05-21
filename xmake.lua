@@ -49,6 +49,9 @@ add_sysincludedirs(
 if is_plat("xbox") then
 	add_sysincludedirs(
 		"public/xbox",
+		"external/xbox/private/inc",
+		"external/xbox/public/sdk/inc",
+		"external/xbox/public/sdk/inc/crt",
         "$(env XDK)/xbox/include"
 	)
 else
@@ -97,7 +100,6 @@ function is_toolchain(...)
 end
 
 includes("toolchains/windows-cross.lua")
-includes("toolchains/xbox-cross.lua")
 
 if os.exists("config.lua") then
 	includes("config.lua")
@@ -236,11 +238,15 @@ if is_plat("windows", "scarlett", "xbox") then
 		"/wd4273",			   -- 'x': inconsistent DLL linkage
 		{ force = true })
 
-	if is_host("windows") and not is_toolchain("clang-cl", "clang") then
-		add_cxflags(	
-	        "/Zc:preprocessor",    -- for __VA_OPT__
-		{ force = true })
-	end
+    if is_toolchain("clang", "clang-cl", "windows-cross", "xbox-cross") then
+        add_cxflags(
+            "-Wno-nonportable-include-path", -- None of this is on non-Windows code I control"
+        { force = true })
+    else
+        add_cxflags(
+            "/Zc:preprocessor",    -- for __VA_OPT__
+        { force = true })
+    end
 
 	-- Modern Xbox is all AMD
 	if is_plat("scarlett") then
@@ -276,8 +282,8 @@ if is_plat("windows", "scarlett", "xbox") then
 		{ force = true })
 
 	-- windows cross compilation requires the real sdk, mingw's headers don't work with phnt and gcc is garbage
-	if is_plat("windows") and not is_host("windows") then
-		add_defines("CH_WIN32_CROSS")
+	if not is_host("windows") then
+		add_defines("CH_WIN32_CROSSCOMPILE")
 		if is_arch("x86_64", "x64") then
 			add_linkdirs(
 				"external/winsdk/lib/um/x64"
@@ -299,15 +305,6 @@ if is_plat("windows", "scarlett", "xbox") then
 			"/wd5040", -- dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
 		{force = true})
 
-		if not is_host("windows") then
-			add_defines("CH_XBOX_CROSS")
-			add_cxflags(
-				"/X",
-				"-clang:-ffreestanding",
-				"-clang:-Wno-ignored-pragma-intrinsic"
-			)
-		end
-
 		add_ldflags(
 			"/FORCE:MULTIPLE",
 			"/MAP",
@@ -315,6 +312,7 @@ if is_plat("windows", "scarlett", "xbox") then
 		{force = true})
 
 		add_linkdirs(
+			"external/xbox/public/sdk/lib/i386",
 			"$(env XDK)/xbox/lib"
 		)
 	end

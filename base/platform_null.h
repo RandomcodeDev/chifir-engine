@@ -86,7 +86,7 @@ class CNullLibrary: public ILibrary
 
 	virtual void Unload();
 
-	virtual void* GetSymbol(cstr name);
+	virtual void* GetSymbol(cstr name, bool optional);
 
 	virtual cstr GetName()
 	{
