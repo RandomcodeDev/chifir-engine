@@ -7,6 +7,18 @@
 
 extern "C"
 {
+#if !defined _MSC_VER || (defined _MSC_VER && defined CH_DEBUG)
+	DEFINE_INTRINSIC(strcmp)
+	s32 strcmp(cstr RESTRICT a, cstr RESTRICT b)
+	{
+		return Base_StrCompare(a, b);
+	}
+
+	DEFINE_INTRINSIC(strlen)
+	usize strlen(cstr str)
+	{
+		return Base_StrLength(str);
+	}
 	/// MSVC doesn't like these defined when /GL is in use
 	DEFINE_INTRINSIC(memcmp)
 	s32 memcmp(const void* RESTRICT a, const void* RESTRICT b, usize size)
@@ -30,19 +42,6 @@ extern "C"
 	void* memset(void* dest, s32 value, usize size)
 	{
 		return Base_MemSet(dest, value, size);
-	}
-
-#if !defined _MSC_VER || (defined _MSC_VER && defined CH_DEBUG)
-	DEFINE_INTRINSIC(strcmp)
-	s32 strcmp(cstr RESTRICT a, cstr RESTRICT b)
-	{
-		return Base_StrCompare(a, b);
-	}
-
-	DEFINE_INTRINSIC(strlen)
-	usize strlen(cstr str)
-	{
-		return Base_StrLength(str);
 	}
 #endif
 }

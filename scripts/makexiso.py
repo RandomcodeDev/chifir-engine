@@ -59,6 +59,9 @@ def main(argc, argv):
     )
     output = args.output if args.output != None else path.join(build_dir, "xiso")
 
+    shutil.rmtree(output, ignore_errors=True)
+    os.mkdir(output)
+
     print(f"using binaries in {build_dir}, outputting to {output}")
 
     game_exe = path.join(build_dir, args.game)
@@ -88,9 +91,6 @@ def main(argc, argv):
 
     print(f"running {imagebld_args}")
     subprocess.run(imagebld_args)
-
-    shutil.rmtree(output)
-    os.mkdir(output)
 
     for f in os.listdir(build_dir):
         file = path.join(build_dir, f)

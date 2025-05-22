@@ -161,8 +161,6 @@ BASEAPI bool Plat_ConsoleHasColor()
 BASEAPI void Plat_WriteConsole(cstr message)
 {
 	OutputDebugStringA(message);
-    puts(message);
-    fflush(stdout);
 }
 
 BASEAPI cstr Plat_GetDataLocation()
@@ -177,7 +175,11 @@ BASEAPI cstr Plat_GetEngineDir()
 
 BASEAPI cstr Plat_GetEnvironment(cstr name)
 {
+#ifdef CH_DEBUG
 	return getenv(name);
+#else
+    return nullptr;
+#endif
 }
 
 BASEAPI cstr Plat_GetBackTrace()

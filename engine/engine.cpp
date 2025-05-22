@@ -31,7 +31,7 @@ CEngine::CEngine() : m_state(EngineState_t::Uninitialized), m_headless(false), m
 #elif defined CH_XENON
 	m_rhiBackendName = "DirectX9";
 #elif defined CH_XBOX
-    m_rhiBackendName = "DirectX8";
+	m_rhiBackendName = "DirectX8";
 #else
 	m_rhiBackendName = "Vulkan";
 #endif
@@ -91,8 +91,9 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 
 	// again, for the text log
 	Log_Info(
-		"Engine compiled by %s running on %s on %s", COMPILER_VERSION(), Plat_GetSystemDescription(),
-		Plat_GetHardwareDescription());
+		PLAT_NAME " " ARCH_NAME " " CONFIG_NAME " engine, branch " GIT_BRANCH " commit " GIT_COMMIT
+				  ", compiled by %s, running on %s on %s",
+		COMPILER_VERSION(), Plat_GetSystemDescription(), Plat_GetHardwareDescription());
 
 	if (m_headless)
 	{

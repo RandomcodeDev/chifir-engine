@@ -8,4 +8,6 @@
 #define GAME_NAME "${GAME_NAME}"
 #define GAME_DISPLAY_NAME "${GAME_DISPLAY_NAME}"
 #define REPO_NAME "${REPO_NAME}"
-
+#define PLAT_NAME "${plat}"
+#define ARCH_NAME "${arch}"
+#define CONFIG_NAME "${mode}"
