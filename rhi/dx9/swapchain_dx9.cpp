@@ -61,27 +61,30 @@ void CDx9RhiSwapChain::ResizeBuffers()
 		}
 	}
 
-	m_parent->m_handle->Reset(&presentParams);
+	HRESULT result = m_parent->m_handle->Reset(&presentParams);
+	if (!SUCCEEDED(result))
+	{
+		Base_Quit("Failed to reset device: HRESULT 0x%08X", result);
+	}
+
 	m_parent->m_handle->GetSwapChain(0, &m_handle);
 
-	m_buffers.Empty();
-	HRESULT result;
-	do
+	m_buffers.Resize(m_bufferCount);
+	for (ssize i = 0; i < m_bufferCount; i++)
 	{
 		IDirect3DSurface9* surface = nullptr;
-		result = m_handle->GetBackBuffer(m_buffers.Size(), D3DBACKBUFFER_TYPE_MONO, &surface);
+		result = m_handle->GetBackBuffer(i, D3DBACKBUFFER_TYPE_MONO, &surface);
 		if (FAILED(result))
 		{
 			if (m_buffers.Size() < 1)
 			{
-				Base_Quit("Failed to get backbuffer %zd: HRESULT 0x%08X", m_buffers.Size(), result);
+				Base_Quit("Failed to get backbuffer %zd: HRESULT 0x%08X", i, result);
 			}
 			break;
 		}
-		m_buffers.Add(new CDx9RhiRenderTarget(m_parent, surface));
-	} while (SUCCEEDED(result));
+		m_buffers[i] = new CDx9RhiRenderTarget(m_parent, surface);
+	}
 
-	m_bufferCount = m_buffers.Size();
 	Log_Debug("Got %u buffer(s)", m_bufferCount);
 }
 

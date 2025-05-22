@@ -283,6 +283,9 @@ BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize 
 		return dest;
 	}
 
+    PREFETCH(PREFETCH_HIGH, src);
+    PREFETCH(PREFETCH_HIGH, dest);
+
 	// Check if data should be copied in reverse in case of overlap
 	bool reverse = reinterpret_cast<uptr>(dest) > reinterpret_cast<uptr>(src);
 
@@ -411,6 +414,8 @@ BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size)
 	{
 		return dest;
 	}
+
+    PREFETCH(PREFETCH_HIGH, dest);
 
 #ifdef CH_X86
 	// https://msrc.microsoft.com/blog/2021/01/building-faster-amd64-memset-routines/
@@ -606,6 +611,9 @@ BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssiz
 	{
 		return 0;
 	}
+
+    PREFETCH(PREFETCH_HIGH, a);
+    PREFETCH(PREFETCH_HIGH, b);
 
 	ssize alignment = 1;
 	if (g_cpuData.haveSimd256 && size >= 32)

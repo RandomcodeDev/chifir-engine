@@ -26,11 +26,11 @@ EXTERN _Base_AbortSafeC : PROC
 
 IFDEF CH_STATIC
 IFNDEF CH_XBOX
-EXTERN _chkstk_Forwarder : PROC
-PUBLIC __chkstk
-__chkstk PROC
-	jmp _chkstk_Forwarder
-__chkstk ENDP
+;EXTERN _chkstk_Forwarder : PROC
+;PUBLIC __chkstk
+;__chkstk PROC
+;	jmp _chkstk_Forwarder
+;__chkstk ENDP
 ENDIF
 ENDIF
 

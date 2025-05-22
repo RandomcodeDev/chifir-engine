@@ -28,14 +28,15 @@ bool CDx8RhiDevice::Initialize()
 	Base_MemSet(&m_presentParams, 0, sizeof(D3DPRESENT_PARAMETERS));
 	m_presentParams.BackBufferWidth = video->GetWidth();
 	m_presentParams.BackBufferHeight = video->GetHeight();
-	m_presentParams.BackBufferFormat = m_info.mode.Format;
 	m_presentParams.BackBufferCount = 1;
 	m_presentParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
+    m_presentParams.Windowed = true;
 #ifdef CH_XBOX
+	m_presentParams.BackBufferFormat = D3DFMT_A8R8G8B8;
     m_presentParams.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_UNLIMITED;
     m_presentParams.FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_ONE_OR_IMMEDIATE;
 #else
-    m_presentParams.Windowed = true;
+	m_presentParams.BackBufferFormat = m_info.mode.Format;
     m_presentParams.hDeviceWindow = reinterpret_cast<HWND>(video->GetHandle());
 #endif
 

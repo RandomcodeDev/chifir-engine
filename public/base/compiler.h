@@ -227,6 +227,17 @@ extern void __stdcall RunThreadConstructors();
 
 #define ALIGNED(x) ATTRIBUTE(aligned(x))
 
+#ifdef CH_X86
+#define PREFETCH_HIGH _MM_HINT_T0
+#define PREFETCH_L2 _MM_HINT_T1
+#define PREFETCH_L3 _MM_HINT_T2
+#define PREFETCH(l, x) _mm_prefetch(reinterpret_cast<const char*>(x), (l))
+#elif defined CH_ARM64
+// TODO: implement ARM64 prefetch
+#elif defined CH_XENON
+// TODO: implement Xbox 360 prefetch
+#endif
+
 #ifdef CH_LITTLE_ENDIAN
 #define LITTLE_ENDIAN_TO_NATIVE_16(x) (x)
 #define LITTLE_ENDIAN_TO_NATIVE_32(x) (x)

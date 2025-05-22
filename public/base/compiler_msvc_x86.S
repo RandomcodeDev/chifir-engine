@@ -21,10 +21,10 @@ __fltused: .long 0x9875
 
 .ifdef CH_STATIC
 .ifndef CH_XBOX
-.extern _chkstk_Forwarder
-.globl __chkstk
-__chkstk:
-	jmp _chkstk_Forwarder
+//.extern _chkstk_Forwarder
+//.globl __chkstk
+//__chkstk:
+//	jmp _chkstk_Forwarder
 .endif
 .endif
 

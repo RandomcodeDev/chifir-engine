@@ -56,25 +56,28 @@ void CDx8RhiSwapChain::ResizeBuffers()
 		}
 	}
 
-    auto device = m_parent->m_handle;
-	device->Reset(&presentParams);
+	auto device = m_parent->m_handle;
+	HRESULT result = device->Reset(&presentParams);
+	if (!SUCCEEDED(result))
+	{
+		Base_Quit("Failed to reset device: HRESULT 0x%08X", result);
+	}
 
-	m_buffers.Empty();
-	HRESULT result;
-	do
+	m_buffers.Resize(m_bufferCount);
+	for (ssize i = 0; i < m_bufferCount; i++)
 	{
 		IDirect3DSurface8* surface = nullptr;
-		result = device->GetBackBuffer(m_buffers.Size(), D3DBACKBUFFER_TYPE_MONO, &surface);
+		result = device->GetBackBuffer(i, D3DBACKBUFFER_TYPE_MONO, &surface);
 		if (FAILED(result))
 		{
 			if (m_buffers.Size() < 1)
 			{
-				Base_Quit("Failed to get backbuffer %zd: HRESULT 0x%08X", m_buffers.Size(), result);
+				Base_Quit("Failed to get backbuffer %zd: HRESULT 0x%08X", i, result);
 			}
 			break;
 		}
-		m_buffers.Add(new CDx8RhiRenderTarget(m_parent, surface));
-	} while (SUCCEEDED(result));
+		m_buffers[i] = new CDx8RhiRenderTarget(m_parent, surface);
+	}
 
 	m_bufferCount = m_buffers.Size();
 	Log_Debug("Got %u buffer(s)", m_bufferCount);
@@ -82,7 +85,7 @@ void CDx8RhiSwapChain::ResizeBuffers()
 
 u32 CDx8RhiSwapChain::Present()
 {
-    auto device = m_parent->m_handle;
+	auto device = m_parent->m_handle;
 	device->Present(nullptr, nullptr, nullptr, nullptr);
 	return GetFrameIndex();
 }

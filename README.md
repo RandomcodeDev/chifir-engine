@@ -13,7 +13,7 @@ a fixed function pipeline in each graphics API like before. Another notable feat
 DLLs for each system, and the reason is so that the systems of the engine could be reused by tools that I might make,
 and also because it makes it easier to separate functionality that shouldn't get tangled up.
 
-The engine doesn't use the CRT or STL at all (where possible, meaning not at all on Windows and barely on Linux/Switch),
+The engine doesn't use the CRT or STL at all (where possible, meaning not at all on Windows and a little bit on other platforms),
 which does improve portability, especially between Windows versions. Some performance-critical functions are written to use
 SIMD if the current CPU supports it (on x86, it's all dynamically enabled based on `cpuid` instead of being done at compile
 time). I also wrote my own allocator that works pretty well, but I'm sure I'll have to optimize it eventually. I have my own
@@ -35,7 +35,7 @@ For every platform, you need [xmake](https://xmake.io) and a C++17 compiler.
 - For Windows, you need Visual Studio 2022 (or any version with C++17 support). You can also build with Clang, but you still
   need VS. You also (will, in the future) need the GDK to build the x64 version. There is support for cross compiling, using
   Clang and the Windows SDK/MSVC headers.
-- For the original Xbox, you need the SDK or the source code, either is easy to find (SDK untested).
+- For the original Xbox, you need the SDK or the source code, either is easy to find.
 - For Xbox 360, you need the SDK, it's on Internet Archive.
 - For Switch, you need version 15.3.2 of the SDK, the private repo, and my private fork of xmake.
 - For PS4, you need version 8.008 of the SDK, the private repo, and my private fork of xmake.
@@ -56,13 +56,14 @@ Next, run `xmake config` with these flags (you have to pass all of them or it wi
 
 - `-p` sets the platform (required):
   - `windows` Windows/PC GDK
+  - `xbox` Original Xbox (semi-private, code is public but requires xmake fork)
   - `linux` Linux
   - `scarlett` Xbox One/Series X|S (private)
   - `nx` Nintendo Switch (private)
   - `orbis` PlayStation 4 (private)
 - `-a` sets the architecture (required):
   - `x64` AMD64, supported on `windows`, `linux`, `scarlett`, `orbis`
-  - `x86` IA-32, supported on `windows` and `linux`
+  - `x86` IA-32, supported on `windows`, `xbox`, and `linux`
   - `arm64` ARM64, supported on `linux` and `nx`
   - `arm64-v8a` ARM64, supported on `linux`
 - `-m` sets the build mode (required):

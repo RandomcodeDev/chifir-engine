@@ -28,7 +28,7 @@ class CDx9RhiSwapChain: public IRhiSwapChain, CDx9RhiBaseObject<IDirect3DSwapCha
 	friend class CDx9RhiDevice;
 
 	CVector<IRhiRenderTarget*> m_buffers;
-    u32 m_bufferCount;
+    ssize m_bufferCount;
 
 	CDx9RhiSwapChain(CDx9RhiDevice* device);
 	bool Initialize(u32 bufferCount);
