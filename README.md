@@ -106,6 +106,12 @@ For Xbox, just symlink the `public/xdk` folder from the source tree as `external
 xmake f -p xbox -a x86 -m <mode> --toolchain=xbox-cross
 ```
 
+If you want to make an XISO for the original Xbox, you need `cxbe` from nxdk and `xdvdfs` (can be installed with
+`cargo install xdvdfs-cli`). Then you can run this after a build:
+```
+python scripts/makexiso.py -m <mode>
+```
+
 For the Rust stuff, build the engine, then do `cargo build`.
 
 ## Supported platforms
@@ -116,7 +122,8 @@ For the Rust stuff, build the engine, then do `cargo build`.
   - I'm working on getting Windows 2000 to work
   - UWP support seems to work
   - Nothing is statically imported from system libraries, it's all done at runtime
-  - Most features are implemented with native functions in `ntdll.dll` that have been around since Windows 2000/XP, rather than using `kernel32.dll`
+  - Most features are implemented with native functions in `ntdll.dll` that have been around since Windows 2000/XP, rather
+	than using `kernel32.dll`
 - Linux
   - Linux is usually mostly up to date with Windows
   - glibc is the only libc I've tested with

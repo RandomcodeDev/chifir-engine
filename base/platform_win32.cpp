@@ -284,8 +284,8 @@ static LONG WINAPI ExceptionHandler(PEXCEPTION_POINTERS info)
 	ANSI_STRING str = {};
 	str.Buffer = buffer;
 	str.Length = Base_StrFormat(
-		buffer, ArraySize(buffer), "Caught exception: %s (%s0x%016zX): pc=0x%016zX sp=0x%016zX", codeStr,
-		errorType ? errorType : "", address, pc, sp);
+		buffer, ArraySize(buffer), "Caught exception: %s (%s%s0x%016zX): pc=0x%016zX sp=0x%016zX", codeStr,
+		errorType ? errorType : "", errorType ? " " : "", address, pc, sp);
 	str.MaximumLength = sizeof(buffer);
 
 	UNICODE_STRING ustr = {};

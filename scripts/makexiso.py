@@ -65,6 +65,7 @@ def main(argc, argv):
     print(f"using binaries in {build_dir}, outputting to {output}")
 
     game_exe = path.join(build_dir, args.game)
+    game_pdb = path.join(build_dir, f"{path.splitext(args.game)[0]}.pdb")
 
     subsystool_args = [
         subsystool.__file__,
@@ -77,20 +78,31 @@ def main(argc, argv):
     ]
     subsystool.main(len(subsystool_args), subsystool_args)
 
-    imagebld = path.join(args.sdk_dir, "xbox", "bin", "imagebld.exe")
-    imagebld_args = [
-        imagebld,
-        f"/IN:{game_exe}",
-        f"/OUT:{path.join(build_dir, f'default.xbe')}",
-        f"/MAP:{path.join(build_dir, f'{game_name}.map')}",
-        # f"/TITLEINFO:{path.join(repo_dir), 'public', 'xbox', 'titleinfo.xbx'}"
-    ]
+    if platform.name == "Windows":
+        imagebld = path.join(args.sdk_dir, "xbox", "bin", "imagebld.exe")
+        imagebld_args = [
+            imagebld,
+            f"/IN:{game_exe}",
+            f"/OUT:{path.join(build_dir, f'default.xbe')}",
+            f"/MAP:{path.join(build_dir, f'{game_name}.map')}",
+            # f"/TITLEINFO:{path.join(repo_dir), 'public', 'xbox', 'titleinfo.xbx'}"
+        ]
 
-    if args.mode in ["debug", "release"]:
-        imagebld_args += ["/DEBUG", f"/TESTNAME:{game_name}"]
+        if args.mode in ["debug", "release"]:
+            imagebld_args += ["/DEBUG", f"/TESTNAME:{game_name}"]
 
-    print(f"running {imagebld_args}")
-    subprocess.run(imagebld_args)
+        print(f"running {imagebld_args}")
+        subprocess.run(imagebld_args)
+    else:
+        cxbe = "cxbe"
+        cxbe_args = [
+            f"-OUT:{path.join(build_dir, f'default.xbe')}",
+        ]
+
+        if args.mode in ["debug", "release"]:
+            cxbe_args += [f"-MODE:debug", f"-DEBUGPATH:{game_pdb}"]
+        else:
+            cxbe_args += [f"-MODE:retail"]
 
     for f in os.listdir(build_dir):
         file = path.join(build_dir, f)

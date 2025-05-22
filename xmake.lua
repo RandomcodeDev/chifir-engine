@@ -235,29 +235,36 @@ if is_plat("windows", "scarlett", "xbox") then
 		"/wd4820",             -- 'x' bytes padding added after data member 'y'
 		"/wd5045",             -- Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
 		"/wd4273",			   -- 'x': inconsistent DLL linkage
-		{ force = true })
+		{force = true})
 
     if is_toolchain("clang", "clang-cl", "windows-cross", "xbox-cross") then
         add_cxflags(
             "-Wno-nonportable-include-path", -- None of this is on non-Windows code I control"
-        { force = true })
+        {force = true})
     else
         add_cxflags(
             "/Zc:preprocessor",    -- for __VA_OPT__
-        { force = true })
+        {force = true})
     end
 
 	-- Modern Xbox is all AMD
 	if is_plat("scarlett") then
-		add_cxflags(
-			"/favor:AMD64",
-			{ force = true })
+		if is_toolchain("msvc") then
+			add_cxflags(
+				"/favor:AMD64",
+				{force = true})
+		end
 	end
 	
 	if is_plat("xbox") then
+		if is_toolchain("msvc") then
+			add_cxflags(	
+				"/favor:INTEL", -- Pentium III Coppermine
+			{force = true})
+		end
+
 		add_cxflags(
 			"/arch:SSE",
-			"/favor:INTEL", -- Pentium III Coppermine
 			"/X",
 			"/wd5040", -- dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
 		{force = true})
@@ -282,7 +289,7 @@ if is_plat("windows", "scarlett", "xbox") then
 				add_cxflags(
 					-- Tune AMD64 builds for newer CPUs
 					"-march=x86-64-v3",
-					{ force = true })
+					{force = true})
 			end
 		elseif is_arch("x86") then
 			add_cxflags(
@@ -296,10 +303,10 @@ if is_plat("windows", "scarlett", "xbox") then
 
 	add_shflags(
 		"/nodefaultlib", -- further prevent C runtime
-		{ force = true })
+		{force = true})
 	add_ldflags(
 		"/nodefaultlib", -- further prevent C runtime
-		{ force = true })
+		{force = true})
 
 	-- windows cross compilation requires the real sdk, mingw's headers don't work with phnt and gcc is garbage
 	if not is_host("windows") then
@@ -340,26 +347,26 @@ elseif is_plat("linux", "nx", "orbis") then
 		"-Wno-ignored-pragma-intrinsic",
 		"-Wno-ignored-attributes",
 		"-Wno-frame-address",
-		{ force = true })
+		{force = true})
 
 	if is_arch("arm64", "arm64-v8a") then
 		add_cxflags(
 			"-mfloat-abi=hard",
-			{ force = true })
+			{force = true})
 	end
 
 	if is_plat("linux") then
 		add_ldflags(
 			"-fuse-ld=lld",
-			{ force = true })
+			{force = true})
 		add_shflags(
 			"-fuse-ld=lld",
-			{ force = true })
+			{force = true})
 
 		if is_arch("x64", "x86_64") then
 			add_cxflags(
 				"-march=x86-64-v3",
-				{ force = true })
+				{force = true})
 		end
 	end
 end
