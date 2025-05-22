@@ -238,6 +238,18 @@ extern void __stdcall RunThreadConstructors();
 // TODO: implement Xbox 360 prefetch
 #endif
 
+#ifdef __clang__
+#define CLANG_ONLY(x) x
+#else
+#define CLANG_ONLY(x)
+#endif
+
+#if defined _MSC_VER && !defined __clang__
+#define MSVC_ONLY(x) x
+#else
+#define MSVC_ONLY(x)
+#endif
+
 #ifdef CH_LITTLE_ENDIAN
 #define LITTLE_ENDIAN_TO_NATIVE_16(x) (x)
 #define LITTLE_ENDIAN_TO_NATIVE_32(x) (x)

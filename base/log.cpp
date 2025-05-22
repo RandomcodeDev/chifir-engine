@@ -139,11 +139,11 @@ BASEAPI void Log_Write(
 
 	// preformat for every writer to save memory etc
 	dstr fullFormatted = Base_StrFormat(
-		messageData.isAddress ? "[%s]\t[%s] [%s %llu] [%s!0x%zX %s] %s\r\n" : "[%s]\t[%s] [%s %llu] [%s:%zu %s] %s\r\n",
+		messageData.isAddress ? "[%s] [%s] [%s %llu] [%s!0x%zX %s] %s\r\n" : "[%s] [%s] [%s %llu] [%s:%zu %s] %s\r\n",
 		ILogWriter::LEVEL_NAMES[s32(messageData.level)], Base_FormatDateTime(messageData.time).Data(), messageData.threadName,
 		messageData.threadId, messageData.file, messageData.location, messageData.function, messageData.message);
 	dstr fullFormattedColor = Base_StrFormat(
-		messageData.isAddress ? "[%s]\t[%s] [%s %llu] [%s!0x%zX %s] %s\r\n" : "[%s]\t[%s] [%s %llu] [%s:%zu %s] %s\r\n",
+		messageData.isAddress ? "[%s] [%s] [%s %llu] [%s!0x%zX %s] %s\r\n" : "[%s] [%s] [%s %llu] [%s:%zu %s] %s\r\n",
 		ILogWriter::LEVEL_COLORED_NAMES[s32(messageData.level)], Base_FormatDateTime(messageData.time).Data(),
 		messageData.threadName, messageData.threadId, messageData.file, messageData.location, messageData.function,
 		messageData.message);

@@ -257,6 +257,7 @@ if is_plat("windows", "scarlett", "xbox") then
 	if is_plat("xbox") then
 		add_cxflags(
 			"/arch:SSE",
+			"/favor:INTEL", -- Pentium III Coppermine
 			"/X",
 			"/wd5040", -- dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
 		{force = true})
@@ -279,6 +280,7 @@ if is_plat("windows", "scarlett", "xbox") then
 			add_linkdirs("public/win32/x64")
 			if is_toolchain("clang-cl") then
 				add_cxflags(
+					-- Tune AMD64 builds for newer CPUs
 					"-march=x86-64-v3",
 					{ force = true })
 			end
@@ -315,6 +317,7 @@ if is_plat("windows", "scarlett", "xbox") then
 		elseif is_plat("xbox") then
 			add_defines("CH_XBOX_CROSS")
 		end
+
 		add_cxflags(
 			"/X",
 			"-clang:-ffreestanding",

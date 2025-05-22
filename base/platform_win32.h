@@ -117,7 +117,7 @@ extern bool g_uwp;
 #define STUB_AVAILABLE(x)   STUB_AVAILABLE_2(x)
 #define STUB_NAME_2(x)      STUB_##x
 #define STUB_NAME(x)        STUB_NAME_2(x)
-#ifdef CH_WIN32_CROSSCOMPILE
+#ifdef CH_WIN32_CROSS
 #define FORWARDER_PREFIX "_"
 #define EXPORT_PREFIX "_"
 #else

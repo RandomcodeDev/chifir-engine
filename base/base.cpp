@@ -268,6 +268,7 @@ static void X86RepMovsb(void* RESTRICT dest, const void* RESTRICT src, ssize siz
 }
 #endif
 
+CLANG_ONLY(__attribute__((target("mmx"))))
 BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize size)
 {
 	ssize remaining = size;
@@ -369,8 +370,8 @@ BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize 
 template <typename T> void Set(void* dest, u8 value, ssize offset, ssize& remaining, ssize alignment)
 {
 	// This is to get around how Clang deals with SIMD intrinsics (shouldn't cause problems)
-	u64 partValue = 0x0101010101010101 * value;
-	u64 fullValue[4] = {partValue, partValue, partValue, partValue};
+	u64 partValue = 0x0101010101010101 * value; // fast way to fill a u64 with one byte
+	u64 fullValue[4] = {partValue, partValue, partValue, partValue}; // 32 bytes for max SIMD register size
 
 	ssize count = (remaining / alignment) * alignment;
 	void* realDest = static_cast<u8*>(dest) + offset;
@@ -406,6 +407,7 @@ static void X86RepStosb(void* dest, u8 value, ssize size)
 }
 #endif
 
+CLANG_ONLY(__attribute__((target("mmx"))))
 BASEAPI void* Base_MemSet(void* dest, u32 value, ssize size)
 {
 	ssize remaining = size;
@@ -511,9 +513,7 @@ static s32 Compare(const void* RESTRICT a, const void* RESTRICT b, ssize offset,
 
 #if defined CH_X86 && defined CH_SIMD128_COMPARE
 // https://github.com/WojciechMula/simd-string/blob/master/memcmp.cpp
-#ifdef __clang__
-__attribute__((target("sse4")))
-#endif
+CLANG_ONLY(__attribute__((target("sse4"))))
 static bool
 V128ByteEqual(v128 a, v128 b, s32& inequalIdx)
 {
@@ -597,8 +597,8 @@ template <> s32 Compare<v128>(const void* RESTRICT a, const void* RESTRICT b, ss
 }
 #endif
 
-BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssize size)
-{
+CLANG_ONLY(__attribute__((target("mmx"))))
+BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssize size){
 	ssize remaining = size;
 
 	if (!a || !b || size == 0)
