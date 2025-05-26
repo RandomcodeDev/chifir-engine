@@ -32,7 +32,7 @@ class CDx8RhiDevice: public IRhiDevice, CDx8RhiBaseObject<IDirect3DDevice8, CDx8
 		UNUSED(initialValue);
 		return nullptr;
 	}
-	virtual IRhiBuffer* CreateBuffer(ssize size, RhiMemoryLocation location, RhiMemoryUsage usage)
+	virtual IRhiBuffer* CreateBuffer(ssize size, RhiMemoryLocation location, RhiBufferUsage usage)
 	{
 		UNUSED(size);
 		UNUSED(location);

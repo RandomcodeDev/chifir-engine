@@ -50,7 +50,7 @@ class CVulkanRhiDevice: public IRhiDevice
 		UNUSED(initialValue);
 		return nullptr;
 	}
-	virtual IRhiBuffer* CreateBuffer(ssize size, RhiMemoryLocation location, RhiMemoryUsage usage)
+	virtual IRhiBuffer* CreateBuffer(ssize size, RhiMemoryLocation location, RhiBufferUsage usage)
 	{
 		UNUSED(size);
 		UNUSED(location);

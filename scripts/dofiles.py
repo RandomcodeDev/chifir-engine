@@ -52,7 +52,7 @@ def main(argc, argv):
     parser.add_argument(
         "--command",
         "-c",
-        default=f"clang-format -i --style=file:{os.path.join(root, ".clang-format")}",
+        default=f"clang-format -i --style=file:{os.path.join(root, '.clang-format')}",
     )
 
     args = parser.parse_args(argv[1:])

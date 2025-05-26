@@ -11,6 +11,7 @@
 #include "irhibuffer.h"
 #include "irhicommandlist.h"
 #include "irhiimage.h"
+#include "irhimemory.h"
 #include "irhiswapchain.h"
 #include "rhi.h"
 
@@ -59,7 +60,7 @@ class IRhiDevice
 
 	/// Create a buffer
 	virtual IRhiBuffer* CreateBuffer(
-		ssize size, RhiMemoryLocation location, RhiMemoryUsage usage) = 0;
+		ssize size, RhiMemoryLocation location, RhiBufferUsage usage) = 0;
 
 	/// Create a 2D image
 	virtual IRhiImage* CreateImage2d(
