@@ -74,12 +74,18 @@ Next, run `xmake config` with these flags (you have to pass all of them or it wi
   - `static` everything is statically linked, supported on `windows`, `linux`, `scarlett`, `nx`, `orbis`
   - `shared` everything is dynamically linked (preferred), supported on `windows`, `linux`, `scarlett`
 - `--toolchain` sets what compiler/linker to use (required)
-  - `msvc` MSVC is the most functional toolchain for `windows`/`scarlett`
-  - `clang-cl` Clang usually works for `windows`/`scarlett`, but it breaks sometimes
+  - `msvc` MSVC is the most functional toolchain for `windows`/`scarlett`/`xbox`
+  - `clang-cl` Clang usually works for `windows`/`scarlett`/`xbox`, but it breaks sometimes
   - `clang`/`llvm` Clang is the only supported compiler on `linux`
   - `nx-clang` Nintendo Switch SDK version of Clang and LLVM (use this for `nx`)
   - `orbis-clang` PS4 Clang (use this for `orbis`)
+  - `windows-cross` Clang and LLVM tools, used for building for `windows`/`scarlett` on non-Windows hosts
+  - `xbox-cross` Same as `windows-cross`, but for `xbox`. Currently non-functional because LLD crashes because of the Xbox libraries.
 - `--vs` Sets the Visual Studio version to generate wrapper projects for (optional)
+
+## Cross compiling for Windows/Xbox
+
+This isn't supported on Windows, only Linux.
 
 To cross compile for Windows, make a folder in `external` called `winsdk` with symlinks like this (these instructions could be wrong):
 ```
@@ -106,11 +112,25 @@ For Xbox, just symlink the `public/xdk` folder from the source tree as `external
 xmake f -p xbox -a x86 -m <mode> --toolchain=xbox-cross
 ```
 
+## Testing builds
+
+### Most platforms
+
+Use `scripts/genrelease.py`.
+
+### Xbox
+
 If you want to make an XISO for the original Xbox, you need `cxbe` from nxdk and `xdvdfs` (can be installed with
 `cargo install xdvdfs-cli`). Then you can run this after a build:
 ```
 python scripts/makexiso.py -m <mode>
 ```
+
+### Nintendo Switch
+
+Use `private/scripts/makensp.py`.
+
+## Rust
 
 For the Rust stuff, build the engine, then do `cargo build`.
 
