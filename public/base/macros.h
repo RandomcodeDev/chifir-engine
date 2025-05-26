@@ -3,6 +3,9 @@
 
 #pragma once
 
+/// Mark a variable as unused
+#define UNUSED(x) ((void)(x))
+
 /// Stringize something
 #define STRINGIZE(x) #x
 
@@ -16,7 +19,7 @@
 #define WIDEN_EXPAND(x) WIDEN(x)
 
 #ifdef CH_RETAIL
-#define ASSERT_IMPL(cond, action)
+#define ASSERT_IMPL(cond, action) UNUSED(cond); UNUSED(action)
 #else
 #define ASSERT_IMPL(cond, action)                                                                                                \
 	if (!(cond))                                                                                                                 \
@@ -50,9 +53,6 @@
 /// Get the offset of a field in a struct with a stable layout (this is to get around warnings on template structs that have a
 /// fixed actual layout)
 #define OFFSETOF(T, m) (reinterpret_cast<uptr>(&static_cast<T*>(nullptr)->m))
-
-/// Mark a variable as unused
-#define UNUSED(x) ((void)(x))
 
 /// Allows commas to be used in macro arguments
 #define COMMA ,
