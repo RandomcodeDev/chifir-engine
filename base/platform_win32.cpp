@@ -401,13 +401,6 @@ BASEAPI cstr Plat_GetSystemDescription()
 {
 	if (!s_systemDescription)
 	{
-#ifdef CH_XENON
-		s_systemDescription = Base_StrFormat(
-			"Xbox 360 (kernel %u.%u.%u.%u)", XboxKrnlVersion[0] << 16 | XboxKrnlVersion[1],
-			XboxKrnlVersion[2] << 16 | XboxKrnlVersion[3], XboxKrnlVersion[4] << 16 | XboxKrnlVersion[5], XboxKrnlVersion[6],
-			XboxKrnlVersion[7]);
-#elif defined CH_XBOX
-#else
 		cstr name = GetProductName();
 		cstr wineVersion = Base_GetWineVersion();
 
@@ -429,7 +422,6 @@ BASEAPI cstr Plat_GetSystemDescription()
 			Base_CheckWoW64() ? " WoW64" : "", Plat_IsUwpApp() ? " UWP" : "");
 
 		Base_Free(version);
-#endif
 	}
 
 	return s_systemDescription;
@@ -437,9 +429,6 @@ BASEAPI cstr Plat_GetSystemDescription()
 
 BASEAPI cstr Plat_GetHardwareDescription()
 {
-#ifdef CH_XENON
-	s_hardwareDescription = Base_StrFormat("XboxHardwareInfo 0x%X%X", XboxHardwareInfo[0], XboxHardwareInfo[1]);
-#else
 #ifdef CH_X86
 	s64 freeMemory = g_systemPerfInfo.AvailablePages * static_cast<s64>(g_systemInfo.PageSize);
 	s64 physicalMemory = g_systemInfo.NumberOfPhysicalPages * static_cast<s64>(g_systemInfo.PageSize);
@@ -451,7 +440,6 @@ BASEAPI cstr Plat_GetHardwareDescription()
 #else
 	// TODO: ARM?
 	s_hardwareDescription = Base_StrClone("<unknown>");
-#endif
 #endif
 
 	return s_hardwareDescription;
@@ -501,14 +489,10 @@ BASEAPI NORETURN void Base_AbortSafe(s32 code, cstr msg)
 		}
 	}
 
-#ifdef CH_XENON
-	XamTerminateTitle();
-#else
 	if (NtTerminateProcess_Available())
 	{
 		NtTerminateProcess(NtCurrentProcess(), static_cast<NTSTATUS>(code));
 	}
-#endif
 
 	UNREACHABLE();
 }
