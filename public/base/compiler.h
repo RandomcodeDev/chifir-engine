@@ -39,12 +39,8 @@ static constexpr const char* GetMsvcVersionString()
 #if defined _MSC_VER
 #ifdef CH_XENON
 #include <VectorIntrinsics.h>
-#elif defined CH_X86
-#if defined __clang__ && !defined CH_WIN32_CROSS && !defined CH_XBOX
-#include <x86intrin.h>
-#else
-#include <intrin.h>
-#endif
+#elif defined CH_XBOX
+#include <xmmintrin.h>
 #endif
 
 #define ATTRIBUTE(x) __declspec(x)

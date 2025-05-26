@@ -17,7 +17,7 @@ target("VideoSystem")
 	elseif is_plat("xbox") then
 		add_files("video_xbox.cpp")
     elseif is_plat("nx") then
-        add_files("../private/videosystem/video_switch.cpp")
+        add_files("../private/videosystem/video_nx.cpp")
     elseif is_plat("linux") then
         add_files("video_sdl.cpp")
         add_packages("libsdl3")

@@ -78,7 +78,7 @@ def main(argc, argv):
     ]
     subsystool.main(len(subsystool_args), subsystool_args)
 
-    if platform.name == "Windows":
+    if platform.system() == "Windows":
         imagebld = path.join(args.sdk_dir, "xbox", "bin", "imagebld.exe")
         imagebld_args = [
             imagebld,

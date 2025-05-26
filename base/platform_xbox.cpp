@@ -160,7 +160,9 @@ BASEAPI bool Plat_ConsoleHasColor()
 
 BASEAPI void Plat_WriteConsole(cstr message)
 {
+#ifdef CH_DEBUG
 	OutputDebugStringA(message);
+#endif
 }
 
 BASEAPI cstr Plat_GetDataLocation()

@@ -36,6 +36,19 @@ if is_plat("xbox", "nx", "orbis") then
 	set_kind("static")
 end
 
+xdk = os.getenv("XDK")
+
+if is_plat("xbox") then
+	if os.exists(xdk) then
+		print("using Xbox SDK in " .. xdk)
+	elseif os.exists("external/xbox") then
+		print("using Xbox source code in external/xbox")
+	else
+		print("ERROR: missing Xbox headers and libraries, check the instructions")
+        die()
+	end
+end
+
 -- main include directories
 
 add_sysincludedirs(
@@ -47,11 +60,18 @@ add_sysincludedirs(
 )
 
 if is_plat("xbox") then
-	add_sysincludedirs(
-		"public/xbox",
-		"external/xbox/inc",
-        "$(env XDK)/xbox/include"
-	)
+    add_sysincludedirs(
+        "public/xbox"
+    )
+	if os.exists(xdk) then
+		add_sysincludedirs(
+			"$(env XDK)/xbox/include"
+		)
+	else
+		add_sysincludedirs(
+			"external/xbox/inc"
+		)
+	end
 else
 	add_sysincludedirs(
 		"external/d3d8",
@@ -72,7 +92,7 @@ end
 
 add_includedirs(
 	"public",
-	"$(buildir)/config"
+	"$(builddir)/config"
 )
 
 if os.exists("private") then
@@ -113,7 +133,7 @@ set_configvar("GAME_DISPLAY_NAME", game_display_name)
 set_configvar("REPO_NAME", repo_name)
 set_configvar("NX_TITLE_ID", nx_title_id)
 
-set_configdir("$(buildir)/config")
+set_configdir("$(builddir)/config")
 add_configfiles("public/config.h.in")
 
 vulkan = is_plat("windows", "linux", "nx")
@@ -212,57 +232,51 @@ if is_plat("windows", "scarlett", "xbox") then
 	set_exceptions("none")
 
 	add_cxflags(
-		"/Zl",                 -- prevent C runtime from being linked
-		"/GS-",                -- prevent buffer checks
-		"/GR-",                -- no RTTI
+		"/Zl",				 -- prevent C runtime from being linked
+		"/GS-",				-- prevent buffer checks
+		"/GR-",				-- no RTTI
 		"/Zc:__cplusplus",
 		"/Zc:threadSafeInit-", -- idk how to implement this, just gonna do it the old fashioned way
 
-		"/wd4201",             -- nameless struct
-		"/wd4324",             -- structure padded due to alignment specifier
-		"/wd4505",             -- unreferenced static function removed
-		"/wd4005",             -- macro redefinition
-		"/wd4211",             -- nonstandard extension used
-		"/wd4127",             -- conditional expression is constant
-		"/wd4229",             -- modifiers on data are ignored
-		"/wd4319",             -- zero extending 'x' to 'y' of greater type
-		"/wd4163",             -- 'x': not available as an intrinsic function
-		"/wd4164",             -- 'x': intrinsic function not declared
-		"/wd4125",             -- decimal digit terminates octal escape sequence
-		"/wd4464",             -- relative include path contains '..'
-		"/wd5247",             -- section 'x' is reserved for C++ dynamic initialization. Manually creating the section will interfere with C++ dynamic initialization and may lead to undefined behavior
-		"/wd5248",             -- section 'x' is reserved for C++ dynamic initialization. Variables manually put into the section may be optimized out and their order relative to compiler generated dynamic initializers is unspecified
-		"/wd4820",             -- 'x' bytes padding added after data member 'y'
-		"/wd5045",             -- Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
+		"/wd4201",			 -- nameless struct
+		"/wd4324",			 -- structure padded due to alignment specifier
+		"/wd4505",			 -- unreferenced static function removed
+		"/wd4005",			 -- macro redefinition
+		"/wd4211",			 -- nonstandard extension used
+		"/wd4127",			 -- conditional expression is constant
+		"/wd4229",			 -- modifiers on data are ignored
+		"/wd4319",			 -- zero extending 'x' to 'y' of greater type
+		"/wd4163",			 -- 'x': not available as an intrinsic function
+		"/wd4164",			 -- 'x': intrinsic function not declared
+		"/wd4125",			 -- decimal digit terminates octal escape sequence
+		"/wd4464",			 -- relative include path contains '..'
+		"/wd5247",			 -- section 'x' is reserved for C++ dynamic initialization. Manually creating the section will interfere with C++ dynamic initialization and may lead to undefined behavior
+		"/wd5248",			 -- section 'x' is reserved for C++ dynamic initialization. Variables manually put into the section may be optimized out and their order relative to compiler generated dynamic initializers is unspecified
+		"/wd4820",			 -- 'x' bytes padding added after data member 'y'
+		"/wd5045",			 -- Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
 		"/wd4273",			   -- 'x': inconsistent DLL linkage
-		{force = true})
+	{force = true})
 
-    if is_toolchain("clang", "clang-cl", "windows-cross", "xbox-cross") then
-        add_cxflags(
-            "-Wno-nonportable-include-path", -- None of this is on non-Windows code I control"
-        {force = true})
-    else
-        add_cxflags(
-            "/Zc:preprocessor",    -- for __VA_OPT__
-        {force = true})
-    end
+	if is_toolchain("clang", "clang-cl", "windows-cross", "xbox-cross") then
+		add_cxflags(
+			"-Wno-nonportable-include-path", -- None of this is on non-Windows code I control"
+		{force = true})
+	else
+		add_cxflags(
+			"/Zc:preprocessor",	-- for __VA_OPT__
+		{force = true})
+	end
 
 	-- Modern Xbox is all AMD
 	if is_plat("scarlett") then
 		if is_toolchain("msvc") then
 			add_cxflags(
 				"/favor:AMD64",
-				{force = true})
-		end
-	end
-	
-	if is_plat("xbox") then
-		if is_toolchain("msvc") then
-			add_cxflags(	
-				"/favor:INTEL", -- Pentium III Coppermine
 			{force = true})
 		end
+	end
 
+	if is_plat("xbox") then
 		add_cxflags(
 			"/arch:SSE",
 			"/X",
@@ -275,10 +289,15 @@ if is_plat("windows", "scarlett", "xbox") then
 			"/SAFESEH:NO",
 		{force = true})
 
-		add_linkdirs(
-			"external/xbox/lib",
-			"$(env XDK)/xbox/lib"
-		)
+		if os.exists(xdk) then
+			add_linkdirs(
+				"$(env XDK)/xbox/lib"
+			)
+		else
+			add_linkdirs(
+				"external/xbox/lib"
+			)
+		end
 	else
 		-- /arch:SSE2 is the default for x86. SSE2 is the baseline for AMD64, but for x86, it needs
 		-- to be turned down to IA32 (I'm insane/stupid enough to eventually try to make this run on
@@ -289,7 +308,7 @@ if is_plat("windows", "scarlett", "xbox") then
 				add_cxflags(
 					-- Tune AMD64 builds for newer CPUs
 					"-march=x86-64-v3",
-					{force = true})
+				{force = true})
 			end
 		elseif is_arch("x86") then
 			add_cxflags(
@@ -335,14 +354,14 @@ elseif is_plat("linux", "nx", "orbis") then
 	add_cxflags(
 		"-fms-extensions",
 		"-fno-threadsafe-statics",
-		"-fno-rtti",                       -- no RTTI
+		"-fno-rtti",					   -- no RTTI
 		"-working-directory=$(scriptdir)", -- to fix __FILE__
 
 		"-Wno-unknown-warning-option",
 		"-Wno-#pragma-messages",
 		"-Wno-nonportable-include-path", -- None of this is on non-Windows code I control
-		"-Wno-macro-redefined",          -- This is avoided in any scenario where it matters
-		"-Wno-unused-function",          -- I don't care, that's the linker's problem
+		"-Wno-macro-redefined",		  -- This is avoided in any scenario where it matters
+		"-Wno-unused-function",		  -- I don't care, that's the linker's problem
 		"-Wno-unknown-attributes",
 		"-Wno-ignored-pragma-intrinsic",
 		"-Wno-ignored-attributes",

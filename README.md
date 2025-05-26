@@ -35,8 +35,9 @@ For every platform, you need [xmake](https://xmake.io) and a C++17 compiler.
 - For Windows, you need Visual Studio 2022 (or any version with C++17 support). You can also build with Clang, but you still
   need VS. You also (will, in the future) need the GDK to build the x64 version. There is support for cross compiling, using
   Clang and the Windows SDK/MSVC headers.
-- For the original Xbox, you need the SDK or the source code, either is easy to find.
-- For Xbox 360, you need the SDK, it's on Internet Archive.
+- For the original Xbox, you need the SDK or the source code, either is easy to find. To use the SDK, make sure the `XDK`
+  environment variable is set. If you're using the source code, you need `<source tree>/public/xdk` symlinked to `<Chifir repo>/external/xbox`.
+- ~~For Xbox 360, you need the SDK, it's on Internet Archive. You'll also need my LLVM fork when it's done.~~
 - For Switch, you need version 15.3.2 of the SDK, the private repo, and my private fork of xmake.
 - For PS4, you need version 8.008 of the SDK, the private repo, and my private fork of xmake.
 - For Linux, you need Clang and glibc. GCC isn't supported and isn't a priority, especially MinGW.
@@ -80,6 +81,8 @@ Next, run `xmake config` with these flags (you have to pass all of them or it wi
   - `nx-clang` Nintendo Switch SDK version of Clang and LLVM (use this for `nx`)
   - `orbis-clang` PS4 Clang (use this for `orbis`)
 - `--vs` Sets the Visual Studio version to generate wrapper projects for (optional)
+
+### Cross compiling for Windows/Xbox
 
 To cross compile for Windows, make a folder in `external` called `winsdk` with symlinks like this (these instructions could be wrong):
 ```
@@ -141,11 +144,10 @@ For the Rust stuff, build the engine, then do `cargo build`.
   - I don't have a devkit or an OS version supported by the Collateral Damage exploit, so I can't make a version for GameOS yet
 - Xbox 360
   - I did write some code for it, but eventually I decided that C++03 sucks
-  - If I find a way to make a modern compiler target it, I'll add support again
+  - I'm working on targetting it with LLVM, but I have to learn how to implement its custom calling convention
   - Will require DirectX 9, similar to Windows XP
 - Original Xbox
   - x86-based, so modern compilers work
-  - Binaries crash or something, not sure where
   - Uses DirectX 8 (so far basically copied and pasted from the D3D9 backend)
 
 ## External dependencies

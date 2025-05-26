@@ -13,5 +13,9 @@ enum class RhiMemoryLocation
     Shared
 };
 
-enum class RhiMemoryUsage;
+enum class RhiMemoryUsage
+{
+
+};
+
 class IRhiBuffer;
