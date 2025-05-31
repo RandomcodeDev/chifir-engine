@@ -1,8 +1,16 @@
 /// \file Miscellaneous math functions
 /// \copyright 2025 Randomcode Developers
 
+#pragma once
+
 #include "base/compiler.h"
 #include "base/types.h"
+
+#ifdef CH_KNOWN_SIMD128
+#ifdef CH_X86
+#include "impl/math_x86.inl"
+#endif
+#endif
 
 FORCEINLINE f32 Rsqrt(f32 x)
 {
@@ -27,7 +35,7 @@ FORCEINLINE f32 Sqrt(f32 x)
 #ifdef CH_X86
     const v128 v = _mm_load1_ps(&x);
     const v128 r = _mm_sqrt_ss(v);
-    return _mm_cvtss_f32(r);
+    return ExtractLowerF32(r);
 #endif
 #else
     return 1.0f / Rsqrt(x);

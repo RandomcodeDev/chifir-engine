@@ -37,7 +37,7 @@ FORCEINLINE f32 SumElems(v128 x)
 	v128 sums = _mm_add_ps(x, shuf);
 	shuf = _mm_movehl_ps(shuf, sums);
 	sums = _mm_add_ss(sums, shuf);
-	return _mm_cvtss_f32(sums);
+    return ExtractLowerF32(x);
 }
 
 f32 Vec3f::Length()

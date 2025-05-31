@@ -1,14 +1,21 @@
 /// \file Engine core implementation
 /// \copyright 2025 Randomcode Developers
 
-#include "engine.h"
 #include "base/filesystem.h"
 #include "base/loader.h"
 #include "base/log.h"
 #include "base/platform.h"
+
+#include "math/math.h"
+#include "math/vec3.h"
+
 #include "rendersystem/irendersystem.h"
+
 #include "rhi/rhi.h"
+
 #include "videosystem/ivideosystem.h"
+
+#include "engine.h"
 
 CEngine::CEngine() : m_state(EngineState_t::Uninitialized), m_headless(false), m_renderSystem(nullptr), m_videoSystem(nullptr)
 {
@@ -89,11 +96,23 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 
 	AddLogWriters();
 
-	// again, for the text log
 	Log_Info(
 		PLAT_NAME " " ARCH_NAME " " CONFIG_NAME " engine, branch " GIT_BRANCH " commit " GIT_COMMIT
 				  ", compiled by %s, running on %s on %s",
 		COMPILER_VERSION(), Plat_GetSystemDescription(), Plat_GetHardwareDescription());
+
+	Vec3f a(1, 2, 3);
+	Vec3f b(2, 4, 6);
+
+	Log_Info("a = [%f %f %f], |a| = %f", a[0], a[1], a[2], a.Length());
+	Log_Info("b = [%f %f %f], |b| = %f", b[0], b[1], b[2], b.Length());
+	Vec3f a2 = a * 2;
+	Log_Info("a * 2 = [%f %f %f]", a2[0], a2[1], a2[2]);
+	Vec3f b2 = b / 2;
+	Log_Info("b / 2 = [%f %f %f]", b2[0], b2[1], b2[2]);
+	Log_Info("a * b = %f", a.Dot(b));
+	Vec3f c = a.Cross(b);
+	Log_Info("a x b = [%f %f %f]", c[0], c[1], c[2]);
 
 	if (m_headless)
 	{
