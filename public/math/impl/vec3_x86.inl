@@ -18,12 +18,12 @@ Vec3f Vec3f::operator-(const Vec3f& other)
 
 Vec3f Vec3f::operator*(float other)
 {
-	return Vec3f(_mm_mul_ss(v, _mm_set1_ps(other)));
+	return Vec3f(_mm_mul_ps(v, _mm_set1_ps(other)));
 }
 
 Vec3f Vec3f::operator/(float other)
 {
-	return Vec3f(_mm_div_ss(v, _mm_set1_ps(other)));
+	return Vec3f(_mm_div_ps(v, _mm_set1_ps(other)));
 }
 
 FORCEINLINE f32 SumElems(v128 x)
