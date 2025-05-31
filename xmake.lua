@@ -179,14 +179,16 @@ elseif is_plat("orbis") then
 end
 
 if is_arch("x64", "x86_64") then
-	add_defines("CH_AMD64", "CH_X86", "CH_SIMD128", "CH_SIMD256", "CH_SIMD128_COMPARE", "_AMD64_")
+	add_defines("CH_AMD64", "CH_X86", "CH_SIMD128", "CH_SIMD256", "CH_SIMD128_COMPARE", "_AMD64_", "CH_KNOWN_SIMD128", "CH_KNOWN_SIMD256")
 elseif is_arch("x86") then
 	add_defines("CH_IA32", "CH_X86", "CH_SIMD128", "_X86_")
-	if is_plat("windows", "scarlett") then
+	if is_plat("windows") then
 		add_defines("CH_SIMD256", "CH_SIMD128_COMPARE")
-	end
+    elseif is_plat("xbox") then
+		add_defines("CH_KNOWN_SIMD128")
+    end
 elseif is_arch("arm64", "arm64-v8a") then
-	add_defines("CH_ARM64", "CH_SIMD128", "CH_SIMD256", "CH_SIMD128_COMPARE", "_ARM64_")
+	add_defines("CH_ARM64", "CH_SIMD128", "CH_SIMD256", "CH_SIMD128_COMPARE", "_ARM64_", "CH_KNOWN_SIMD128", "CH_KNOWN_SIMD256")
 end
 
 if is_mode("debug") then
@@ -299,9 +301,6 @@ if is_plat("windows", "scarlett", "xbox") then
 			)
 		end
 	else
-		-- /arch:SSE2 is the default for x86. SSE2 is the baseline for AMD64, but for x86, it needs
-		-- to be turned down to IA32 (I'm insane/stupid enough to eventually try to make this run on
-		-- a Pentium, which I do have, or something dumb like that)
 		if is_arch("x64", "x86_64") then
 			add_linkdirs("public/win32/x64")
 			if is_toolchain("clang-cl") then
@@ -311,6 +310,7 @@ if is_plat("windows", "scarlett", "xbox") then
 				{force = true})
 			end
 		elseif is_arch("x86") then
+            -- Let x86 builds run on Pentiums
 			add_cxflags(
 				"/arch:IA32"
 			)

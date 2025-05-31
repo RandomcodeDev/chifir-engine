@@ -37,7 +37,7 @@ void CDx8RhiSwapChain::GetBuffers(CVector<IRhiRenderTarget*>& buffers)
 void CDx8RhiSwapChain::ResizeBuffers()
 {
 	auto& presentParams = m_parent->m_presentParams;
-	presentParams.BackBufferCount = m_bufferCount;
+	presentParams.BackBufferCount = (UINT)m_bufferCount;
 	auto videoSystem = m_parent->m_parent->m_videoSystem;
 	presentParams.BackBufferWidth = videoSystem->GetWidth();
 	presentParams.BackBufferHeight = videoSystem->GetHeight();
@@ -67,7 +67,7 @@ void CDx8RhiSwapChain::ResizeBuffers()
 	for (ssize i = 0; i < m_bufferCount; i++)
 	{
 		IDirect3DSurface8* surface = nullptr;
-		result = device->GetBackBuffer(i, D3DBACKBUFFER_TYPE_MONO, &surface);
+		result = device->GetBackBuffer((UINT)i, D3DBACKBUFFER_TYPE_MONO, &surface);
 		if (FAILED(result))
 		{
 			if (m_buffers.Size() < 1)

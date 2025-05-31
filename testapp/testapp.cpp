@@ -1,7 +1,10 @@
-#include "testapp.h"
 #include "base/allocator.h"
 #include "base/log.h"
 #include "base/string.h"
+
+#include "math/vec3.h"
+
+#include "testapp.h"
 
 void CTestApp::Setup(const CVector<CString>& args)
 {
@@ -26,9 +29,14 @@ s32 CTestApp::Run(const CVector<ISystem*>& systems)
 
 	Log_Info("Running test app");
 
-	CArenaAllocator allocator(32);
-	int* ints = (int*)allocator.Alloc(4 * sizeof(int));
-	allocator.Free(ints, 4 * sizeof(int));
+	Vec3f a(1, 2, 3);
+    Vec3f b(2, 4, 6);
+
+    Log_Info("a = [%f %f %f], |a| = %f", a[0], a[1], a[2], a.Length());
+    Log_Info("b = [%f %f %f], |b| = %f", b[0], b[1], b[2], b.Length());
+    Log_Info("a * b = %f", a.Dot(b));
+    Vec3f c = a.Cross(b);
+    Log_Info("a x b = [%f %f %f]", c[0], c[1], c[2]);
 
 	return 0;
 }
