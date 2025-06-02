@@ -8,10 +8,10 @@
 #include "base/types.h"
 #include "base/vector.h"
 
-#if defined CH_WIN32 || defined CH_XBOX
+#if defined CH_WIN32 || defined CH_XBOX || defined CH_XENON
 #define PATH_SEPARATOR '\\'
 #else
-#define PATH_SEPATH_SEPARATOR '/'
+#define PATH_SEPARATOR '/'
 #endif
 
 /// forward decl so it can reference FileType_t

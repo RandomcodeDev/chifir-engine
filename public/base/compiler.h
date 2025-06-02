@@ -35,12 +35,15 @@ static constexpr const char* GetMsvcVersionString()
 #include <arm_neon.h>
 #endif
 
-// Clang works either way
 #if defined _MSC_VER
 #ifdef CH_XENON
 #include <VectorIntrinsics.h>
 #elif defined CH_XBOX
 #include <xmmintrin.h>
+#elif defined __clang__ && !defined CH_WIN32_CROSS
+#include <x86intrin.h>
+#else
+#include <intrin.h>
 #endif
 
 #define ATTRIBUTE(x) __declspec(x)
@@ -165,6 +168,7 @@ extern void __stdcall RunThreadConstructors();
 #else
 #ifdef CH_X86
 #include <cpuid.h>
+#include <x86intrin.h>
 
 #define NOMSVC_DEBUG_BREAK __asm__ volatile("int3");
 #elif defined CH_ARM64

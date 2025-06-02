@@ -262,6 +262,7 @@ if is_plat("windows", "scarlett", "xbox") then
 	if is_toolchain("clang", "clang-cl", "windows-cross", "xbox-cross") then
 		add_cxflags(
 			"-Wno-nonportable-include-path", -- None of this is on non-Windows code I control"
+			"-Wno-inconsistent-dllimport",
 		{force = true})
 	else
 		add_cxflags(
