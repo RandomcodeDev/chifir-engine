@@ -181,7 +181,7 @@ end
 if is_arch("x64", "x86_64") then
 	add_defines("CH_AMD64", "CH_X86", "CH_SIMD128", "CH_SIMD256", "CH_SIMD128_COMPARE", "_AMD64_", "CH_KNOWN_SIMD128", "CH_KNOWN_SIMD256")
 elseif is_arch("x86") then
-	add_defines("CH_IA32", "CH_X86", "CH_SIMD128", "_X86_")
+	add_defines("CH_IA32", "CH_X86", "CH_SIMD128", "_X86_", "CH_KNOWN_SIMD128")
 	if is_plat("windows") then
 		add_defines("CH_SIMD256", "CH_SIMD128_COMPARE")
     elseif is_plat("xbox") then
@@ -303,16 +303,20 @@ if is_plat("windows", "scarlett", "xbox") then
 	else
 		if is_arch("x64", "x86_64") then
 			add_linkdirs("public/win32/x64")
+			-- Tune AMD64 builds for newer CPUs
 			if is_toolchain("clang-cl") then
 				add_cxflags(
-					-- Tune AMD64 builds for newer CPUs
 					"-march=x86-64-v3",
 				{force = true})
+            else
+                add_cxflags(
+                    "/arch:AVX2"
+                )
 			end
 		elseif is_arch("x86") then
-            -- Let x86 builds run on Pentiums
+            -- Let x86 builds run on Pentium III or higher
 			add_cxflags(
-				"/arch:IA32"
+				"/arch:SSE"
 			)
 			add_linkdirs("public/win32/x86")
 		elseif is_arch("arm64") then
