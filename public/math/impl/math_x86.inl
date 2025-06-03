@@ -12,7 +12,7 @@ FORCEINLINE f32 ExtractLowerF32(v128 v)
     return _mm_cvtss_f32(v);
 #else
 	f32 ret;
-    _mm_store_ps(&ret, v);
+    _mm_store_ss(&ret, v);
     return ret;
 #endif
 }
