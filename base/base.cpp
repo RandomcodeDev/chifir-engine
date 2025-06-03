@@ -268,7 +268,6 @@ static void X86RepMovsb(void* RESTRICT dest, const void* RESTRICT src, ssize siz
 }
 #endif
 
-CLANG_ONLY(__attribute__((target("mmx"))))
 BASEAPI void* Base_MemCopy(void* RESTRICT dest, const void* RESTRICT src, ssize size)
 {
 	ssize remaining = size;
@@ -597,7 +596,6 @@ template <> s32 Compare<v128>(const void* RESTRICT a, const void* RESTRICT b, ss
 }
 #endif
 
-CLANG_ONLY(__attribute__((target("mmx"))))
 BASEAPI s32 Base_MemCompare(const void* RESTRICT a, const void* RESTRICT b, ssize size){
 	ssize remaining = size;
 
