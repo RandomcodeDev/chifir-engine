@@ -41,10 +41,23 @@ static void SignalHandler(s32 signal, siginfo_t* sigInfo, void* context)
 
 	// return if things can continue, otherwise break and quit with the error
 
+	auto ctx = reinterpret_cast<ucontext_t*>(context);
+	auto pc =
+#ifdef CH_AMD64
+		ctx->uc_mcontext.gregs[REG_RIP];
+#elif defined CH_IA32
+		ctx->uc_mcontext.gregs[REG_EIP];
+#elif defined CH_ARM64
+		ctx->uc_mcontext.gregs[REG_PC];
+#endif
+
+	cstr type = nullptr;
+
 	switch (signal)
 	{
 	case SIGILL:
 		baseError = "Illegal operation";
+		type = "executing";
 		switch (sigInfo->si_code)
 		{
 		case ILL_ILLOPC:
@@ -75,6 +88,7 @@ static void SignalHandler(s32 signal, siginfo_t* sigInfo, void* context)
 		break;
 	case SIGSEGV:
 		baseError = "Segmentation fault";
+		type = "access";
 		switch (sigInfo->si_code)
 		{
 		case SEGV_MAPERR:
@@ -151,16 +165,17 @@ static void SignalHandler(s32 signal, siginfo_t* sigInfo, void* context)
 		g_quitSignalled = true;
 		return;
 	case SIGTRAP:
-		Log_Info("Debug trap at 0x%llX, errno %d", reinterpret_cast<u64>(sigInfo->si_addr), sigInfo->si_errno);
+		Log_Info("Debug trap pc=0x%llX, errno %d", static_cast<u64>(pc), sigInfo->si_errno);
 		return;
 	default:
 		Log_Info("Received signal %d", signal);
 		return;
 	}
 
+	// doesn't use libc, so it's fine here
 	Base_Quit(
-		"%s at 0x%llX: error %d: %s (si_code %d)", baseError, reinterpret_cast<u64>(sigInfo->si_addr), sigInfo->si_errno, error,
-		sigInfo->si_code);
+		"%s pc=0x%llX addr=0x%llX%s%s%s: error %d: %s (si_code %d)", baseError, static_cast<u64>(pc), reinterpret_cast<u64>(sigInfo->si_addr),
+		type ? " (" : "", type ? type : "", type ? ")" : "", sigInfo->si_errno, error, sigInfo->si_code);
 }
 
 BASEAPI void Plat_Init()
