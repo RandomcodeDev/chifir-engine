@@ -1,7 +1,7 @@
 BasedOnStyle: Microsoft
 ColumnLimit: 130
 IndentWidth: 4
-UseTab: ForContinuationAndIndentation
+UseTab: Never
 PointerAlignment: Left
 ReferenceAlignment: Left
 ReflowComments: true

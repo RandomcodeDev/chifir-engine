@@ -57,9 +57,9 @@ class CDx12RhiInstance: public IRhiInstance
 	IDXGIFactory6* m_factory;
 	CVector<Dx12DeviceInfo_t> m_devices;
 
-	/// Loads dxgi.dll and d3d12.dll
+	/// Loads dxgi.dll and d3d12.dll (or the _xs versions)
 	bool LoadDlls();
 
-	/// Tries to enable the debug layer, logging if it goes wrong
+	/// Tries to enable the debug layer
 	void EnableDebugLayer();
 };

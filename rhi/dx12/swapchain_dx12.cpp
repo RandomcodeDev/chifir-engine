@@ -15,9 +15,9 @@ CDx12RhiSwapChain::CDx12RhiSwapChain(CDx12RhiDevice* device) : m_device(device)
 
 bool CDx12RhiSwapChain::Initialize(u32 bufferCount)
 {
-    m_bufferCount = bufferCount;
+	m_bufferCount = bufferCount;
 
-	IVideoSystem* video = m_device->m_instance->m_videoSystem;
+	IVideoSystem* video = m_device->GetInstance()->m_videoSystem;
 	Log_Debug("Creating IDXGISwapChain4 with %u %ux%u buffers", bufferCount, video->GetWidth(), video->GetHeight());
 
 	DXGI_SWAP_CHAIN_DESC1 desc = {};
@@ -39,14 +39,14 @@ bool CDx12RhiSwapChain::Initialize(u32 bufferCount)
 	if (Plat_IsUwpApp())
 	{
 		function = "CreateSwapChainForCoreWindow";
-		result = m_device->m_instance->m_factory->CreateSwapChainForCoreWindow(
+		result = m_device->GetInstance()->m_factory->CreateSwapChainForCoreWindow(
 			m_device->m_queue, reinterpret_cast<IUnknown*>(video->GetHandle()), &desc, nullptr, &swapChain);
 	}
 	else
 #endif
 	{
 		function = "CreateSwapChainForHwnd";
-		result = m_device->m_instance->m_factory->CreateSwapChainForHwnd(
+		result = m_device->GetInstance()->m_factory->CreateSwapChainForHwnd(
 			m_device->m_queue, reinterpret_cast<HWND>(video->GetHandle()), &desc, nullptr, nullptr, &swapChain);
 	}
 
@@ -56,7 +56,7 @@ bool CDx12RhiSwapChain::Initialize(u32 bufferCount)
 		return false;
 	}
 
-    swapChain->QueryInterface(&m_handle);
+	swapChain->QueryInterface(&m_handle);
 	swapChain->Release();
 
 	return true;
@@ -64,11 +64,11 @@ bool CDx12RhiSwapChain::Initialize(u32 bufferCount)
 
 void CDx12RhiSwapChain::Destroy()
 {
-    if (m_handle)
-    {
-        Log_Debug("Releasing IDXGISwapChain4 0x%016X", m_handle);
-        m_handle->Release();
-    }
+	if (m_handle)
+	{
+		Log_Debug("Releasing IDXGISwapChain4 0x%016X", m_handle);
+		m_handle->Release();
+	}
 }
 
 void CDx12RhiSwapChain::GetBuffers(CVector<IRhiRenderTarget*>& buffers)
@@ -77,15 +77,15 @@ void CDx12RhiSwapChain::GetBuffers(CVector<IRhiRenderTarget*>& buffers)
 
 void CDx12RhiSwapChain::ResizeBuffers()
 {
-	IVideoSystem* video = m_device->m_instance->m_videoSystem;
-    DXGI_SWAP_CHAIN_DESC1 desc = {};
-    m_handle->GetDesc1(&desc);
-    m_handle->ResizeBuffers(m_bufferCount, video->GetWidth(), video->GetHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, desc.Flags);
-    Log_Debug("Resized %u buffers to %ux%u", m_bufferCount, video->GetWidth(), video->GetHeight());
+	IVideoSystem* video = m_device->GetInstance()->m_videoSystem;
+	DXGI_SWAP_CHAIN_DESC1 desc = {};
+	m_handle->GetDesc1(&desc);
+	m_handle->ResizeBuffers(m_bufferCount, video->GetWidth(), video->GetHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, desc.Flags);
+	Log_Debug("Resized %u buffers to %ux%u", m_bufferCount, video->GetWidth(), video->GetHeight());
 }
 
 u32 CDx12RhiSwapChain::Present()
 {
-    m_handle->Present(0, 0);
-    return GetFrameIndex();
+	m_handle->Present(0, 0);
+	return GetFrameIndex();
 }

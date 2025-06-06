@@ -32,6 +32,20 @@ set_allowedmodes(
 	"retail"
 )
 
+if is_mode("debug") then
+	set_symbols("debug")
+	set_optimize("none")
+    set_strip("none")
+elseif is_mode("release") then
+	set_symbols("debug")
+	set_optimize("fastest")
+	set_strip("all")
+elseif is_mode("retail") then
+	set_symbols("none")
+	set_optimize("fastest")
+	set_strip("all")
+end
+
 if is_plat("xbox", "nx", "orbis") then
 	set_kind("static")
 end
@@ -193,18 +207,10 @@ end
 
 if is_mode("debug") then
 	add_defines("CH_DEBUG")
-	set_symbols("debug")
-	set_optimize("none")
 elseif is_mode("release") then
 	add_defines("CH_RELEASE")
-	set_symbols("debug")
-	set_optimize("fastest")
-	set_strip("all")
 elseif is_mode("retail") then
 	add_defines("CH_RETAIL", "CH_RELEASE")
-	set_symbols("none")
-	set_optimize("fastest")
-	set_strip("all")
 end
 
 if is_arch("x64", "x86", "arm64", "arm64-v8a") then
@@ -217,13 +223,12 @@ if os.exists("private/xmake.lua") then
 	includes("private")
 else
 	function add_private_settings() end
-
 	function add_private_launcher_settings() end
 end
 
 add_private_settings()
 
--- make msvcrt and glibc behave
+-- make msvcrt and glibc headers behave
 add_defines("_GNU_SOURCE", "_CRT_SECURE_NO_WARNINGS")
 
 set_languages("gnu17", "gnuxx20")
@@ -379,7 +384,7 @@ elseif is_plat("linux", "nx", "orbis") then
 			{force = true})
 	end
 
-	if is_plat("linux") then
+	if is_plat("linux", "orbis") then
 		add_ldflags(
 			"-fuse-ld=lld",
 			{force = true})

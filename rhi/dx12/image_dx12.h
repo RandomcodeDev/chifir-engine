@@ -16,5 +16,5 @@ class CDx12RhiRenderTarget: public IRhiRenderTarget
 	virtual u32 GetDepth();
 
   private:
-    D3D12_CPU_DESCRIPTOR_HANDLE m_handle;
+    ID3D12Resource* m_handle;
 };

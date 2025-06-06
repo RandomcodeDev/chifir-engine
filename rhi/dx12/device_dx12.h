@@ -16,7 +16,7 @@ struct Dx12DeviceInfo_t
 
 class CDx12RhiInstance;
 
-class CDx12RhiDevice: public IRhiDevice
+class CDx12RhiDevice: public IRhiDevice, public CDx12RhiBaseObject<ID3D12Device4, CDx12RhiInstance>
 {
   public:
 	virtual void Destroy();
@@ -83,9 +83,7 @@ class CDx12RhiDevice: public IRhiDevice
 	friend class CDx12RhiInstance;
 	friend class CDx12RhiSwapChain;
 
-	CDx12RhiInstance* m_instance;
 	Dx12DeviceInfo_t m_info;
-	ID3D12Device4* m_handle;
 	ID3D12CommandQueue* m_queue;
 	ID3D12CommandQueue* m_copyQueue;
 
@@ -97,6 +95,6 @@ class CDx12RhiDevice: public IRhiDevice
 
 	CDx12RhiInstance* GetInstance()
 	{
-		return m_instance;
+		return m_parent;
 	}
 };

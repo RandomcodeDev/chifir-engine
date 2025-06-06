@@ -28,7 +28,7 @@
             </ArrayItems>
         </Expand>
     </Type>
-    <Type Name="CLinkedList&lt;*&gt;">
+    <Type Name="CIntrusiveLinkedList&lt;*&gt;">
         <DisplayString>{{Node count = {m_nodeCount}}}</DisplayString>
         <Expand>
             <Item Name="Node count">m_nodeCount</Item>

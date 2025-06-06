@@ -12,14 +12,14 @@
 #include "instance_dx12.h"
 #include "swapchain_dx12.h"
 
-CDx12RhiDevice::CDx12RhiDevice(CDx12RhiInstance* instance, const Dx12DeviceInfo_t& info) : m_instance(instance), m_info(info)
+CDx12RhiDevice::CDx12RhiDevice(CDx12RhiInstance* instance, const Dx12DeviceInfo_t& info) : CDx12RhiBaseObject(instance), m_info(info)
 {
 }
 
 bool CDx12RhiDevice::Initialize()
 {
 	Log_Debug("Getting address of D3D12CreateDevice in %s.dll", CDx12RhiInstance::D3D12_DLL_NAME);
-	auto f_D3D12CreateDevice = GET_SYMBOL(m_instance->m_d3d12, D3D12CreateDevice);
+	auto f_D3D12CreateDevice = GET_SYMBOL(GetInstance()->m_d3d12, D3D12CreateDevice);
 	if (!f_D3D12CreateDevice)
 	{
 		Log_Error("Failed to get address of D3D12CreateDevice!");
