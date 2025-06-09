@@ -12,7 +12,7 @@
 
 class CDx12RhiDevice;
 
-class CDx12RhiSwapChain: public IRhiSwapChain
+class CDx12RhiSwapChain: public IRhiSwapChain, public CDxRhiBaseObject<IDXGISwapChain4, CDx12RhiDevice>
 {
   public:
 	virtual void Destroy();
@@ -27,8 +27,6 @@ class CDx12RhiSwapChain: public IRhiSwapChain
   private:
 	friend class CDx12RhiDevice;
 
-	CDx12RhiDevice* m_device;
-	IDXGISwapChain4* m_handle;
 	CVector<IRhiRenderTarget*> m_buffers;
 	u32 m_bufferCount;
 

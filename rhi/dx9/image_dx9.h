@@ -12,14 +12,14 @@
 
 class CDx9RhiDevice;
 
-class CDx9RhiImage: public IRhiImage, CDx9RhiBaseObject<IDirect3DTexture9>
+class CDx9RhiImage: public IRhiImage, public CDxRhiBaseObject<IDirect3DTexture9>
 {
   public:
 	~CDx9RhiImage() = default;
 
 	virtual void Destroy()
 	{
-		CDx9RhiBaseObject::Destroy();
+		CDxRhiBaseObject::Destroy();
 	}
 
 	virtual RhiImageType GetType()
@@ -72,7 +72,7 @@ class CDx9RhiImage: public IRhiImage, CDx9RhiBaseObject<IDirect3DTexture9>
 	CDx9RhiImage(
 		CDx9RhiDevice* device, u32 size, u32 mipLevels, RhiMemoryLocation location, RhiImageFormat format, RhiImageType type,
 		RhiImageUsage usage)
-		: CDx9RhiBaseObject(device), m_location(location), m_format(format), m_type(type), m_usage(usage), m_width(size),
+		: CDxRhiBaseObject(device), m_location(location), m_format(format), m_type(type), m_usage(usage), m_width(size),
 		  m_height(1), m_depth(1), m_mipLevels(mipLevels)
 	{
 		if (m_type == RhiImageType::Image3d)
@@ -87,7 +87,7 @@ class CDx9RhiImage: public IRhiImage, CDx9RhiBaseObject<IDirect3DTexture9>
 	CDx9RhiImage(
 		CDx9RhiDevice* device, u32 width, u32 height, u32 mipLevels, RhiMemoryLocation location, RhiImageFormat format,
 		RhiImageUsage usage)
-		: CDx9RhiBaseObject(device), m_location(location), m_format(format), m_type(RhiImageType::Image2d), m_usage(usage),
+		: CDxRhiBaseObject(device), m_location(location), m_format(format), m_type(RhiImageType::Image2d), m_usage(usage),
 		  m_width(width), m_height(height), m_depth(1), m_mipLevels(mipLevels)
 	{
 	}
@@ -98,19 +98,19 @@ class CDx9RhiImage: public IRhiImage, CDx9RhiBaseObject<IDirect3DTexture9>
 class CDx9RhiImageView: public IRhiImageView
 {};
 
-class CDx9RhiRenderTarget: public IRhiRenderTarget, CDx9RhiBaseObject<IDirect3DSurface9>
+class CDx9RhiRenderTarget: public IRhiRenderTarget, public CDxRhiBaseObject<IDirect3DSurface9>
 {
   public:
 	~CDx9RhiRenderTarget() = default;
 
 	virtual void Destroy()
 	{
-		CDx9RhiBaseObject::Destroy();
+		CDxRhiBaseObject::Destroy();
 	}
 
 	virtual IDirect3DSurface9* GetHandle()
 	{
-		return CDx9RhiBaseObject::GetHandle();
+		return CDxRhiBaseObject::GetHandle();
 	}
 
 	virtual IRhiImage* GetImage()

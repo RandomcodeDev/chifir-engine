@@ -34,18 +34,18 @@ class CEngine: public IEngine
 		return m_startTime;
 	}
 
-	virtual EngineState_t GetState()
+	virtual EngineState GetState()
 	{
 		return m_state;
 	}
 
 	virtual void Quit()
 	{
-		m_state = EngineState_t::Shutdown;
+		m_state = EngineState::Shutdown;
 	}
 
   private:
-	EngineState_t m_state;
+	EngineState m_state;
 	DateTime m_startTime;
 	bool m_headless;
 	cstr m_rhiBackendName;

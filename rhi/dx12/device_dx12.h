@@ -16,7 +16,7 @@ struct Dx12DeviceInfo_t
 
 class CDx12RhiInstance;
 
-class CDx12RhiDevice: public IRhiDevice, public CDx12RhiBaseObject<ID3D12Device4, CDx12RhiInstance>
+class CDx12RhiDevice: public IRhiDevice, public CDxRhiBaseObject<ID3D12Device4, CDx12RhiInstance>
 {
   public:
 	virtual void Destroy();

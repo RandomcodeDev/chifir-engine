@@ -1,10 +1,12 @@
-/// \file DirectX 8 helper stuff
+/// \file Legacy DirectX helper stuff
 /// \copyright 2025 Randomcode Developers
 
-#include "dx8.h"
 #include "rhi/irhibuffer.h"
 #include "rhi/irhiimage.h"
 
+#include "dxcommon.h"
+
+#if defined IN_RHI_DIRECTX8 || defined IN_RHI_DIRECTX9
 D3DPOOL GetPoolForMemoryLocation(RhiMemoryLocation location)
 {
     switch (location)
@@ -33,7 +35,7 @@ DWORD GetUsageForImageUsage(RhiImageUsage usage)
     }
 }
 
-D3DFORMAT GetDx8Format(RhiImageFormat format)
+D3DFORMAT GetDx9Format(RhiImageFormat format)
 {
     switch (format)
     {
@@ -59,3 +61,4 @@ RhiImageFormat GetRhiFormat(D3DFORMAT format)
         return RhiImageFormat::Unknown;
     }
 }
+#endif

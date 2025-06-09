@@ -61,6 +61,7 @@ bool CWinRtVideoSystem::OnSizeChanged(f32 width, f32 height, void* user)
 		Log_Trace("Window resized from %ux%u to %.0fx%.0f", videoSystem->m_width, videoSystem->m_height, width, height);
 		videoSystem->m_width = static_cast<u32>(width);
 		videoSystem->m_height = static_cast<u32>(height);
+        videoSystem->m_resized = true;
 	}
 
 	return true;

@@ -10,14 +10,14 @@
 
 #include "videosystem/ivideosystem.h"
 
-#include "commandlist_dx8.h"
+#include "commandlist_dx.h"
 #include "dx8.h"
 #include "device_dx8.h"
 #include "image_dx8.h"
 #include "instance_dx8.h"
 #include "swapchain_dx8.h"
 
-CDx8RhiDevice::CDx8RhiDevice(CDx8RhiInstance* instance, const Dx8DeviceInfo_t& info) : CDx8RhiBaseObject(instance), m_info(info)
+CDx8RhiDevice::CDx8RhiDevice(CDx8RhiInstance* instance, const Dx8DeviceInfo_t& info) : CDxRhiBaseObject(instance), m_info(info)
 {
 }
 
@@ -30,14 +30,26 @@ bool CDx8RhiDevice::Initialize()
 	m_presentParams.BackBufferHeight = video->GetHeight();
 	m_presentParams.BackBufferCount = 1;
 	m_presentParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
-    m_presentParams.Windowed = true;
 #ifdef CH_XBOX
 	m_presentParams.BackBufferFormat = D3DFMT_A8R8G8B8;
     m_presentParams.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_UNLIMITED;
     m_presentParams.FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_ONE_OR_IMMEDIATE;
 #else
 	m_presentParams.BackBufferFormat = m_info.mode.Format;
-    m_presentParams.hDeviceWindow = reinterpret_cast<HWND>(video->GetHandle());
+    m_presentParams.Windowed = true;
+    HWND window = nullptr;
+    if (Plat_IsUwpApp())
+    {
+        auto coreWindow = reinterpret_cast<winrt_min::ICoreWindow*>(video->GetHandle());
+        winrt_min::ICoreWindowInterop* interop;
+        reinterpret_cast<IUnknown*>(coreWindow)->QueryInterface(&interop);
+        interop->WindowHandle(&window);
+    }
+    else
+    {
+        window = reinterpret_cast<HWND>(video->GetHandle());
+    }
+    m_presentParams.hDeviceWindow = window;
 #endif
 
 	// try multiple times, it's possible that it will fix things
@@ -95,7 +107,7 @@ IRhiSwapChain* CDx8RhiDevice::CreateSwapChain(u32 bufferCount)
 
 IRhiCommandList* CDx8RhiDevice::CreateCommandList(RhiCommandListFlags flags, ssize bufferSize)
 {
-    return new CDx8RhiCommandList(this, bufferSize);
+    return new CDxRhiCommandList(this, bufferSize);
 }
 
 IRhiImage* CDx8RhiDevice::CreateImage2d(
@@ -127,7 +139,7 @@ void CDx8RhiDevice::ExecuteCommandLists(IRhiCommandList** cmdLists, ssize count)
 	m_handle->BeginScene();
 	for (ssize i = 0; i < count; i++)
 	{
-		reinterpret_cast<CDx8RhiCommandList*>(cmdLists[i])->Execute();
+		reinterpret_cast<CDxRhiCommandList*>(cmdLists[i])->Execute();
 	}
 	m_handle->EndScene();
 }

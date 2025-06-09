@@ -11,7 +11,7 @@
 #include "instance_dx8.h"
 #include "swapchain_dx8.h"
 
-CDx8RhiSwapChain::CDx8RhiSwapChain(CDx8RhiDevice* device) : CDx8RhiBaseObject(device)
+CDx8RhiSwapChain::CDx8RhiSwapChain(CDx8RhiDevice* device) : CDxRhiBaseObject(device)
 {
 }
 

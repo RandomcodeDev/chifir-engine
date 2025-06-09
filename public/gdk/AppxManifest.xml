@@ -14,8 +14,7 @@
         <DisplayName>False King</DisplayName>
         <PublisherDisplayName>MobSlicer152</PublisherDisplayName>
         <Logo>Assets\StoreLogo.png</Logo>
-        <Description>A game about a guy who kills kings with elemental powers to become the False
-            King and take over</Description>
+        <Description>Become a shadow who fights the elemental kings and become the False King!</Description>
         <desktop6:RegistryWriteVirtualization>disabled</desktop6:RegistryWriteVirtualization>
         <desktop6:FileSystemWriteVirtualization>disabled</desktop6:FileSystemWriteVirtualization>
     </Properties>

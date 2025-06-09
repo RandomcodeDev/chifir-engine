@@ -10,14 +10,14 @@
 
 #include "videosystem/ivideosystem.h"
 
-#include "commandlist_dx9.h"
+#include "commandlist_dx.h"
 #include "dx9.h"
 #include "device_dx9.h"
 #include "image_dx9.h"
 #include "instance_dx9.h"
 #include "swapchain_dx9.h"
 
-CDx9RhiDevice::CDx9RhiDevice(CDx9RhiInstance* instance, const Dx9DeviceInfo_t& info) : CDx9RhiBaseObject(instance), m_info(info)
+CDx9RhiDevice::CDx9RhiDevice(CDx9RhiInstance* instance, const Dx9DeviceInfo_t& info) : CDxRhiBaseObject(instance), m_info(info)
 {
 }
 
@@ -36,7 +36,19 @@ bool CDx9RhiDevice::Initialize()
     m_presentParams.FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_ONE_OR_IMMEDIATE;
 #else
     m_presentParams.Windowed = true;
-    m_presentParams.hDeviceWindow = reinterpret_cast<HWND>(video->GetHandle());
+    HWND window = nullptr;
+    if (Plat_IsUwpApp())
+    {
+        auto coreWindow = reinterpret_cast<winrt_min::ICoreWindow*>(video->GetHandle());
+        winrt_min::ICoreWindowInterop* interop;
+        reinterpret_cast<IUnknown*>(coreWindow)->QueryInterface(&interop);
+        interop->WindowHandle(&window);
+    }
+    else
+    {
+        window = reinterpret_cast<HWND>(video->GetHandle());
+    }
+    m_presentParams.hDeviceWindow = window;
     m_presentParams.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 #endif
 
@@ -91,7 +103,7 @@ IRhiSwapChain* CDx9RhiDevice::CreateSwapChain(u32 bufferCount)
 
 IRhiCommandList* CDx9RhiDevice::CreateCommandList(RhiCommandListFlags flags, ssize bufferSize)
 {
-    return new CDx9RhiCommandList(this, bufferSize);
+    return new CDxRhiCommandList(this, bufferSize);
 }
 
 IRhiImage* CDx9RhiDevice::CreateImage2d(
@@ -123,7 +135,7 @@ void CDx9RhiDevice::ExecuteCommandLists(IRhiCommandList** cmdLists, ssize count)
 	m_handle->BeginScene();
 	for (ssize i = 0; i < count; i++)
 	{
-		reinterpret_cast<CDx9RhiCommandList*>(cmdLists[i])->Execute();
+		reinterpret_cast<CDxRhiCommandList*>(cmdLists[i])->Execute();
 	}
 	m_handle->EndScene();
 }

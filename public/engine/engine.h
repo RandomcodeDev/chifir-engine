@@ -16,7 +16,7 @@ class IEngine: public IApplication
 	virtual void GetDependencies(CVector<SystemDependency>& systems, CVector<LibDependency_t>& libs) = 0;
 	virtual s32 Run(const CVector<ISystem*>& systems /* TODO: , CCommandLine cmdLine */) = 0;
 
-	enum class EngineState_t : s32
+	enum class EngineState : s32
 	{
 		/// The engine hasn't been started yet
 		Uninitialized = 0,
@@ -39,7 +39,7 @@ class IEngine: public IApplication
 	virtual const DateTime& GetStartTime() = 0;
 
 	/// Get the engine's current state
-	virtual EngineState_t GetState() = 0;
+	virtual EngineState GetState() = 0;
 
 	/// Tell the engine to quit
 	virtual void Quit() = 0;

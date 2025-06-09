@@ -12,7 +12,7 @@
 
 class CDx8RhiDevice;
 
-class CDx8RhiSwapChain: public IRhiSwapChain, CDx8RhiBaseObject<void>
+class CDx8RhiSwapChain: public IRhiSwapChain, public CDxRhiBaseObject<void>
 {
   public:
 	virtual void Destroy();

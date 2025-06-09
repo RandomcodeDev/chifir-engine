@@ -6,11 +6,14 @@ target("RhiDirectX8")
 
     add_defines("IN_RHI", "IN_RHI_DIRECTX8", "RHI_DIRECTX8")
 
+    add_includedirs("../dxcommon")
+
     add_headerfiles("**.h")
     add_files(
-    	"commandlist_dx8.cpp",
+    	"../dxcommon/commandlist_dx.cpp",
+    	"../dxcommon/util_dx.cpp",
+
         "device_dx8.cpp",
-        "dx8_stuff.cpp",
         "image_dx8.cpp",
         "instance_dx8.cpp",
         "swapchain_dx8.cpp"

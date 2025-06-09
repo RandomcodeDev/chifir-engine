@@ -14,6 +14,3 @@ enum class RhiMemoryLocation
 	Shared
 };
 
-/// Represents a memory allocation in the graphics API
-class IRhiMemory;
-

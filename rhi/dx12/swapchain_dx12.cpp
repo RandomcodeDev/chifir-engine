@@ -9,7 +9,7 @@
 #include "instance_dx12.h"
 #include "swapchain_dx12.h"
 
-CDx12RhiSwapChain::CDx12RhiSwapChain(CDx12RhiDevice* device) : m_device(device)
+CDx12RhiSwapChain::CDx12RhiSwapChain(CDx12RhiDevice* device) : CDxRhiBaseObject(device)
 {
 }
 
@@ -17,7 +17,7 @@ bool CDx12RhiSwapChain::Initialize(u32 bufferCount)
 {
 	m_bufferCount = bufferCount;
 
-	IVideoSystem* video = m_device->GetInstance()->m_videoSystem;
+	IVideoSystem* video = m_parent->GetInstance()->m_videoSystem;
 	Log_Debug("Creating IDXGISwapChain4 with %u %ux%u buffers", bufferCount, video->GetWidth(), video->GetHeight());
 
 	DXGI_SWAP_CHAIN_DESC1 desc = {};
@@ -39,15 +39,15 @@ bool CDx12RhiSwapChain::Initialize(u32 bufferCount)
 	if (Plat_IsUwpApp())
 	{
 		function = "CreateSwapChainForCoreWindow";
-		result = m_device->GetInstance()->m_factory->CreateSwapChainForCoreWindow(
-			m_device->m_queue, reinterpret_cast<IUnknown*>(video->GetHandle()), &desc, nullptr, &swapChain);
+		result = m_parent->GetInstance()->m_factory->CreateSwapChainForCoreWindow(
+			m_parent->m_queue, reinterpret_cast<IUnknown*>(video->GetHandle()), &desc, nullptr, &swapChain);
 	}
 	else
 #endif
 	{
 		function = "CreateSwapChainForHwnd";
-		result = m_device->GetInstance()->m_factory->CreateSwapChainForHwnd(
-			m_device->m_queue, reinterpret_cast<HWND>(video->GetHandle()), &desc, nullptr, nullptr, &swapChain);
+		result = m_parent->GetInstance()->m_factory->CreateSwapChainForHwnd(
+			m_parent->m_queue, reinterpret_cast<HWND>(video->GetHandle()), &desc, nullptr, nullptr, &swapChain);
 	}
 
 	if (FAILED(result))
@@ -77,7 +77,7 @@ void CDx12RhiSwapChain::GetBuffers(CVector<IRhiRenderTarget*>& buffers)
 
 void CDx12RhiSwapChain::ResizeBuffers()
 {
-	IVideoSystem* video = m_device->GetInstance()->m_videoSystem;
+	IVideoSystem* video = m_parent->GetInstance()->m_videoSystem;
 	DXGI_SWAP_CHAIN_DESC1 desc = {};
 	m_handle->GetDesc1(&desc);
 	m_handle->ResizeBuffers(m_bufferCount, video->GetWidth(), video->GetHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, desc.Flags);

@@ -6,11 +6,14 @@ target("RhiDirectX9")
 
     add_defines("IN_RHI", "IN_RHI_DIRECTX9", "RHI_DIRECTX9")
 
-    add_headerfiles("**.h")
+    add_includedirs("../dxcommon")
+
+    add_headerfiles("**.h", "../dxcommon/**.h")
     add_files(
-    	"commandlist_dx9.cpp",
+    	"../dxcommon/commandlist_dx.cpp",
+    	"../dxcommon/util_dx.cpp",
+
         "device_dx9.cpp",
-        "dx9_stuff.cpp",
         "image_dx9.cpp",
         "instance_dx9.cpp",
         "swapchain_dx9.cpp"

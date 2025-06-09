@@ -17,7 +17,7 @@
 
 #include "engine.h"
 
-CEngine::CEngine() : m_state(EngineState_t::Uninitialized), m_headless(false), m_renderSystem(nullptr), m_videoSystem(nullptr)
+CEngine::CEngine() : m_state(EngineState::Uninitialized), m_headless(false), m_renderSystem(nullptr), m_videoSystem(nullptr)
 {
 #ifdef CH_WIN32
 #if defined CH_IA32 && defined CH_UWP
@@ -83,7 +83,7 @@ void CEngine::GetDependencies(CVector<SystemDependency>& systems, CVector<LibDep
 s32 CEngine::Run(const CVector<ISystem*>& systems)
 {
 	Log_Info("Initializing engine");
-	m_state = EngineState_t::Startup;
+	m_state = EngineState::Startup;
 
 	Plat_GetDateTime(m_startTime);
 
@@ -101,19 +101,6 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 				  ", compiled by %s, running on %s on %s",
 		COMPILER_VERSION(), Plat_GetSystemDescription(), Plat_GetHardwareDescription());
 
-	Vec3f a(1, 2, 3);
-	Vec3f b(2, 4, 6);
-
-	Log_Info("a = [%f %f %f], |a| = %f", a[0], a[1], a[2], a.Length());
-	Log_Info("b = [%f %f %f], |b| = %f", b[0], b[1], b[2], b.Length());
-	Vec3f a2 = a * 2;
-	Log_Info("a * 2 = [%f %f %f]", a2[0], a2[1], a2[2]);
-	Vec3f b2 = b / 2;
-	Log_Info("b / 2 = [%f %f %f]", b2[0], b2[1], b2[2]);
-	Log_Info("a * b = %f", a.Dot(b));
-	Vec3f c = a.Cross(b);
-	Log_Info("a x b = [%f %f %f]", c[0], c[1], c[2]);
-
 	if (m_headless)
 	{
 		Log_Info("Running in headless mode");
@@ -125,8 +112,8 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	}
 
 	Log_Info("Initialization done, entering main loop");
-	m_state = EngineState_t::Running;
-	while (m_state >= EngineState_t::Running)
+	m_state = EngineState::Running;
+	while (m_state >= EngineState::Running)
 	{
 		CheckState();
 
@@ -136,7 +123,7 @@ s32 CEngine::Run(const CVector<ISystem*>& systems)
 	}
 
 	Log_Info("Shutting down");
-	m_state = EngineState_t::Shutdown;
+	m_state = EngineState::Shutdown;
 
 	ShutdownSystems();
 
@@ -198,7 +185,7 @@ void CEngine::PreFrame()
 	{
 		if (!m_videoSystem->Update())
 		{
-			m_state = EngineState_t::Shutdown;
+			m_state = EngineState::Shutdown;
 		}
 
 		m_renderSystem->BeginFrame();
@@ -237,19 +224,19 @@ void CEngine::CheckState()
 
 	if (!m_headless)
 	{
-		if (m_state == EngineState_t::Running)
+		if (m_state == EngineState::Running)
 		{
 			if (!m_videoSystem->Focused())
 			{
-				m_state = EngineState_t::Inactive;
+				m_state = EngineState::Inactive;
 			}
 		}
 
-		if (m_state == EngineState_t::Inactive)
+		if (m_state == EngineState::Inactive)
 		{
 			if (m_videoSystem->Focused())
 			{
-				m_state = EngineState_t::Running;
+				m_state = EngineState::Running;
 			}
 		}
 	}

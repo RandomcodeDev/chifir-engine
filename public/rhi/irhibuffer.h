@@ -11,41 +11,30 @@
 /// Represents the ways a buffer will be used. Some combinations aren't valid.
 enum class RhiBufferUsage
 {
-	TransferSrc,
-	TransferDest,
-	VertexBuffer,
-	IndexBuffer,
-	UniformBuffer,
-	IndirectBuffer,
+	TransferSrc = 1 << 0,
+	TransferDest = 1 << 1,
+	VertexBuffer = 1 << 2,
+	IndexBuffer = 1 << 3,
+	UniformBuffer = 1 << 4,
+	IndirectBuffer = 1 << 5,
 	// TODO: ray tracing stuff
 };
 
-class IRhiBuffer;
 /// Represents any memory buffer controller by the graphics API
 class IRhiBuffer
 {
   public:
 	virtual ~IRhiBuffer() = default;
 
-	/// Get the memory that backs this buffer
-	virtual IRhiMemory* GetMemory() = 0;
-
 	/// Get the size of this buffer
 	virtual ssize GetSize() = 0;
-};
 
-/// A buffer that the host can see
-class IRhiHostBuffer: public IRhiBuffer
-{
-  public:
-	virtual ~IRhiHostBuffer() = default;
-
-	virtual IRhiMemory* GetMemory() = 0;
-	virtual ssize GetSize() = 0;
+    /// Get the allowed usage of this buffer
+    virtual RhiBufferUsage GetUsage() = 0;
 
 	/// Map the buffer into host address space
 	virtual uptr Map(u64 size, u64 baseOffset = 0) = 0;
-	
+
 	/// Map the buffer as a specific type
 	template <typename T> T* Map(u64 size, u64 baseOffset = 0)
 	{

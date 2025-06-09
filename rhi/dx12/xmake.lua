@@ -6,8 +6,12 @@ target("RhiDirectX12")
 
     add_defines("IN_RHI", "IN_RHI_DIRECTX12", "RHI_DIRECTX12")
 
-    add_headerfiles("**.h")
+    add_includedirs("../dxcommon")
+
+    add_headerfiles("**.h", "../dxcommon/**.h")
     add_files(
+        "../dxcommon/util_dx.cpp",
+
         "device_dx12.cpp",
         "image_dx12.cpp",
         "instance_dx12.cpp",

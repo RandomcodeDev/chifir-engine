@@ -18,7 +18,7 @@ struct Dx8DeviceInfo_t
 
 class CDx8RhiInstance;
 
-class CDx8RhiDevice: public IRhiDevice, CDx8RhiBaseObject<IDirect3DDevice8, CDx8RhiInstance>
+class CDx8RhiDevice: public IRhiDevice, public CDxRhiBaseObject<IDirect3DDevice8, CDx8RhiInstance>
 {
   public:
 	virtual void Destroy();
@@ -64,7 +64,7 @@ class CDx8RhiDevice: public IRhiDevice, CDx8RhiBaseObject<IDirect3DDevice8, CDx8
 	friend class CDx8RhiInstance;
 	friend class CDx8RhiSwapChain;
 	friend class CDx8RhiImage;
-	friend class CDx8RhiCommandList;
+	friend class CDxRhiCommandList;
 
 	Dx8DeviceInfo_t m_info;
 	D3DPRESENT_PARAMETERS m_presentParams;

@@ -10,11 +10,11 @@ bool CDx8RhiImage::Initialize()
 	return false;
 }
 
-CDx8RhiRenderTarget::CDx8RhiRenderTarget(CDx8RhiDevice* device, CDx8RhiImageView* view) : CDx8RhiBaseObject(device), m_view(view)
+CDx8RhiRenderTarget::CDx8RhiRenderTarget(CDx8RhiDevice* device, CDx8RhiImageView* view) : CDxRhiBaseObject(device), m_view(view)
 {
 }
 
-CDx8RhiRenderTarget::CDx8RhiRenderTarget(CDx8RhiDevice* device, IDirect3DSurface8* surface) : CDx8RhiBaseObject(device, surface), m_view(nullptr)
+CDx8RhiRenderTarget::CDx8RhiRenderTarget(CDx8RhiDevice* device, IDirect3DSurface8* surface) : CDxRhiBaseObject(device, surface), m_view(nullptr)
 {
 	D3DSURFACE_DESC desc = {};
 	m_handle->GetDesc(&desc);

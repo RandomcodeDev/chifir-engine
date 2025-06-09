@@ -12,7 +12,7 @@
 
 class CDx9RhiDevice;
 
-class CDx9RhiSwapChain: public IRhiSwapChain, CDx9RhiBaseObject<IDirect3DSwapChain9>
+class CDx9RhiSwapChain: public IRhiSwapChain, public CDxRhiBaseObject<IDirect3DSwapChain9>
 {
   public:
 	virtual void Destroy();

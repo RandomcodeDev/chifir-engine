@@ -14,7 +14,7 @@ bool CDx8RhiInstance::LoadDlls()
     m_d3d8Dll = Base_LoadLibrary("d3d8");
     if (!m_d3d8Dll)
     {
-        Log_Error("Failed to load D3D8 runtime");
+        Log_Error("Failed to load DirectX 8 runtime");
         Destroy();
         return false;
     }

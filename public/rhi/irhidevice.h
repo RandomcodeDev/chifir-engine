@@ -40,7 +40,7 @@ struct RhiDeviceInfo_t
 	u64 handle;
 };
 
-/// Represents a VkDevice and a VkQueue, an ID3D12Device and an ID3D12CommandQueue, or similar
+/// A device and its queues
 class IRhiDevice
 {
   public:

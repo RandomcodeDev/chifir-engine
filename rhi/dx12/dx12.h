@@ -3,12 +3,6 @@
 
 #pragma once
 
-#include <dxgi1_6.h>
-#ifdef CH_DEBUG
-#include <dxgidebug.h>
-#endif
-#include "d3d12.h"
-
 #include "base/meta.h"
 #include "base/platform.h"
 
@@ -21,34 +15,4 @@
 #define DX12_BACKUP_FEATURE_LEVEL D3D_FEATURE_LEVEL_11_0
 #endif
 
-class CDx12RhiDevice;
-
-template <typename H, typename P = CDx12RhiDevice> class CDx12RhiBaseObject: public IRhiBaseObject
-{
-  public:
-	CDx12RhiBaseObject() = default;
-	CDx12RhiBaseObject(P* parent, H* handle = nullptr) : m_parent(parent), m_handle(handle)
-	{
-	}
-	virtual ~CDx12RhiBaseObject() = default;
-
-	virtual void Destroy()
-	{
-		if constexpr (IsBaseOf<IUnknown, H>())
-		{
-			if (m_handle)
-			{
-				m_handle->Release();
-			}
-		}
-	}
-
-	virtual H* GetHandle()
-	{
-		return m_handle;
-	}
-
-  protected:
-	P* m_parent;
-	H* m_handle;
-};
+#include "dxcommon.h"

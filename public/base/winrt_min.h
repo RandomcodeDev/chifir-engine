@@ -365,6 +365,11 @@ MAKE_INTERFACE(
 
 const PCWSTR RuntimeClass_CoreWindow = L"Windows.UI.Core.CoreWindow";
 
+MAKE_INTERFACE(ICoreWindowInterop, "45D64A29-A63E-4CB6-B498-5781D298CB4F", : public IUnknown {
+    virtual HRESULT STDMETHODCALLTYPE WindowHandle(HWND * hwnd) = 0;
+    virtual HRESULT STDMETHODCALLTYPE MessageHandled(unsigned char) = 0;
+})
+
 enum class CoreProcessEventsOption
 {
 	ProcessOneAndAllPending = 0,

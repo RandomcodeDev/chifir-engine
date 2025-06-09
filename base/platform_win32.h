@@ -39,7 +39,7 @@ struct TlsData
 
 extern u32 g_tlsIndex;
 
-/// Get the TLS data for this thread
+/// Get the TLS data for this thread, allocating it if it doesn't exist yet
 extern TlsData* Plat_GetTlsData();
 
 class CWindowsThread: public IThread
@@ -96,9 +96,6 @@ class CWindowsThread: public IThread
 
 extern SYSTEM_BASIC_INFORMATION g_systemInfo;
 extern SYSTEM_PERFORMANCE_INFORMATION g_systemPerfInfo;
-#ifndef CH_XBOX
-extern SYSTEM_BUILD_VERSION_INFORMATION g_buildVerInfo;
-#endif
 
 #ifdef CH_UWP
 extern bool Base_InitWinRt();

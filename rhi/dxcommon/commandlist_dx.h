@@ -1,4 +1,4 @@
-/// \file DirectX 8 command lists (yikes)
+/// \file Legacy DirectX command lists (yikes) using arena allocators
 /// \copyright 2025 Randomcode Developers
 
 #pragma once
@@ -9,14 +9,12 @@
 
 #include "rhi/irhicommandlist.h"
 
-#include "dx8.h"
+#include "dxcommon.h"
 
-class CDx8RhiDevice;
-
-class CDx8RhiCommandList: public IRhiCommandList, CDx8RhiBaseObject<void>
+class CDxRhiCommandList: public IRhiCommandList, public CDxRhiBaseObject<void>
 {
   public:
-	~CDx8RhiCommandList() = default;
+	~CDxRhiCommandList() = default;
 
 	virtual void Destroy()
 	{
@@ -38,13 +36,13 @@ class CDx8RhiCommandList: public IRhiCommandList, CDx8RhiBaseObject<void>
 	virtual void Clear(u32 color, f32 depth, u8 stencil);
 
   private:
-	friend class CDx8RhiDevice;
+	friend CDxRhiDevice;
 
 	IMutex* m_mutex;
 	CArenaAllocator m_allocator;
 
-	CDx8RhiCommandList(CDx8RhiDevice* device, ssize bufferSize)
-		: CDx8RhiBaseObject(device), m_mutex(Async_CreateMutex()), m_allocator(bufferSize)
+	CDxRhiCommandList(CDxRhiDevice* device, ssize bufferSize)
+		: CDxRhiBaseObject(device), m_mutex(Async_CreateMutex()), m_allocator(bufferSize)
 	{
 	}
 

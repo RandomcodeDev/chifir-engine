@@ -12,7 +12,7 @@
 #include "instance_dx12.h"
 #include "swapchain_dx12.h"
 
-CDx12RhiDevice::CDx12RhiDevice(CDx12RhiInstance* instance, const Dx12DeviceInfo_t& info) : CDx12RhiBaseObject(instance), m_info(info)
+CDx12RhiDevice::CDx12RhiDevice(CDx12RhiInstance* instance, const Dx12DeviceInfo_t& info) : CDxRhiBaseObject(instance), m_info(info)
 {
 }
 
