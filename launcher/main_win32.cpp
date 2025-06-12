@@ -6,14 +6,8 @@
 /// CRT's code).
 
 #include "base/compiler.h"
-#ifdef CH_XBOX
-#include <nt.h>
-#include <xtl.h>
 
-#define RTL_CONSTANT_STRING(s) { sizeof((s)) - sizeof((s)[0]), sizeof((s)), (s) }
-#else
 #include "phnt_wrapper.h"
-#endif
 
 #ifndef CH_DEBUG
 // hinting the nvidia driver to use the dedicated graphics card in an optimus
@@ -46,11 +40,9 @@ ATTRIBUTE(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 extern "C" ATTRIBUTE(dllimport) int _snwprintf(wchar_t* Buffer, size_t Size, const wchar_t* Format, ...);
 
+#ifndef CH_STATIC
 static NORETURN void Die(const wchar_t* msg, NTSTATUS status)
 {
-#ifdef CH_XBOX
-
-#else
 	DbgPrint("Fatal error: NTSTATUS 0x%08X %ls", status, msg);
 
 	UNICODE_STRING messageStr = {};
@@ -67,13 +59,11 @@ static NORETURN void Die(const wchar_t* msg, NTSTATUS status)
 	NtRaiseHardError(
 		HARDERROR_OVERRIDE_ERRORMODE | STATUS_SERVICE_NOTIFICATION, (ULONG)ARRAYSIZE(params), 0b0011, params,
 		OptionAbortRetryIgnore, &response);
-#endif
 
 	NtTerminateProcess(NtCurrentProcess(), status);
 	UNREACHABLE();
 }
 
-#ifndef CH_STATIC
 static PCWSTR GetEngineDir()
 {
 	static wchar_t s_directory[MAX_PATH + 1] = {0};

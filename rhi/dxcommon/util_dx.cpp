@@ -35,7 +35,7 @@ DWORD GetUsageForImageUsage(RhiImageUsage usage)
     }
 }
 
-D3DFORMAT GetDx9Format(RhiImageFormat format)
+D3DFORMAT GetDxFormat(RhiImageFormat format)
 {
     switch (format)
     {

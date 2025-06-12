@@ -332,9 +332,11 @@ if is_plat("windows", "scarlett", "xbox") then
 
 	add_shflags(
 		"/nodefaultlib", -- further prevent C runtime
+		"/safeseh:no",
 		{force = true})
 	add_ldflags(
 		"/nodefaultlib", -- further prevent C runtime
+		"/safeseh:no",
 		{force = true})
 
 	-- windows cross compilation requires the real sdk, mingw's headers don't work with phnt and gcc is garbage

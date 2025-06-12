@@ -99,7 +99,7 @@ bool CDx12RhiInstance::Initialize(IVideoSystem* videoSystem)
 	if (FAILED(result))
 	{
 		Log_Error("CreateDXGIFactory2 failed: HRESULT 0x%08X", result);
-		LastNtError() = result; // for Base_Abort to understand
+		LastNtError() = result; // for Base_Abort to get the error later
 		LastNtStatus() = 0;
 		Destroy();
 		return false;
