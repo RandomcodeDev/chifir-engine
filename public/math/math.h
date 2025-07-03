@@ -1,4 +1,4 @@
-/// \file Miscellaneous math functions
+/// \file Miscellaneous math functions. All angles are in radians unless otherwise stated.
 /// \copyright 2025 Randomcode Developers
 
 #pragma once
@@ -6,38 +6,50 @@
 #include "base/compiler.h"
 #include "base/types.h"
 
+static constexpr f32 PI = 3.141592653589793f;
+static constexpr f32 HALF_PI = PI / 2.0f;
+static constexpr f32 TAU = PI * 2.0f;
+// Can't just have a global constant named "E", but I don't really use namespaces
+static constexpr f32 EULER_NUMBER = 2.718281828459045f;
+
+FORCEINLINE f32 Deg2Rad(f32 theta)
+{
+    return theta * PI / 180.0f;
+}
+
+FORCEINLINE f32 Rad2Deg(f32 theta)
+{
+    return theta * 180.0f / PI;
+}
+
+// Inverse square root
+FORCEINLINE f32 Rsqrt(f32 x);
+
+// Square root
+FORCEINLINE f32 Sqrt(f32 x);
+
+// Sine
+FORCEINLINE f32 Sin(f32 x);
+
+// Cosine
+FORCEINLINE f32 Cos(f32 x);
+
+// Tangent
+FORCEINLINE f32 Tan(f32 x);
+
+// Inverse sine
+FORCEINLINE f32 Asin(f32 x);
+
+// Inverse cosine
+FORCEINLINE f32 Acos(f32 x);
+
+// Inverse tangent
+FORCEINLINE f32 Atan(f32 x);
+
 #ifdef CH_KNOWN_SIMD128
 #ifdef CH_X86
 #include "impl/math_x86.inl"
 #endif
-#endif
-
-FORCEINLINE f32 Rsqrt(f32 x)
-{
-    f32 Sqrt(f32 x);
-#ifdef CH_KNOWN_SIMD128
-    return 1.0f / Sqrt(x);
 #else
-	// quake 3 my beloved
-	f32 x2 = x * 0.5;
-	f32 y = x;
-	u32 i = *(u32*)&y;
-	i = 0x5f3759df - (i >> 1);
-	y = *(f32*)&i;
-	y = y * (1.5 - (x2 * y * y));
-	return y;
+#include "impl/math_generic.inl"
 #endif
-}
-
-FORCEINLINE f32 Sqrt(f32 x)
-{
-#ifdef CH_KNOWN_SIMD128
-#ifdef CH_X86
-    const v128 v = _mm_load1_ps(&x);
-    const v128 r = _mm_sqrt_ss(v);
-    return ExtractLowerF32(r);
-#endif
-#else
-    return 1.0f / Rsqrt(x);
-#endif
-}

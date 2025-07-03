@@ -302,7 +302,7 @@ BASEAPI f64 Base_ParseFloat(cstr str, ssize* endOffset)
 
 	ssize decimal = Base_StrFind(str, '.');
 	ssize len = Base_StrLength(str);
-	ssize integralLen = decimal < 0 ? decimal - start : len;
+	ssize integralLen = decimal >= 0 ? decimal - start : len;
 
 	if (integralLen > 0)
 	{
@@ -323,7 +323,7 @@ BASEAPI f64 Base_ParseFloat(cstr str, ssize* endOffset)
 		}
 	}
 
-	if (decimal)
+	if (decimal >= 0)
 	{
 		f64 scale = 0.1f;
 		for (ssize i = start + integralLen + 1; i < len; i++)

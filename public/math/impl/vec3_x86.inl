@@ -26,24 +26,10 @@ Vec3f Vec3f::operator/(float other)
 	return Vec3f(_mm_div_ps(v, _mm_set1_ps(other)));
 }
 
-FORCEINLINE f32 SumElems(v128 x)
-{
-	// https://stackoverflow.com/a/35270026
-#ifdef CH_KNOWN_SIMD256
-	v128 shuf = _mm_movehdup_ps(x);
-#else
-	v128 shuf = _mm_shuffle_ps(x, x, _MM_SHUFFLE(2, 3, 0, 1));
-#endif
-	v128 sums = _mm_add_ps(x, shuf);
-	shuf = _mm_movehl_ps(shuf, sums);
-	sums = _mm_add_ss(sums, shuf);
-    return ExtractLowerF32(sums);
-}
-
 f32 Vec3f::Length()
 {
 	v128 v2 = _mm_mul_ps(v, v);
-	return Sqrt(SumElems(v2));
+	return Sqrt(Math_SumElems(v2));
 }
 
 void Vec3f::Normalize()
@@ -54,7 +40,7 @@ void Vec3f::Normalize()
 f32 Vec3f::Dot(const Vec3f& other)
 {
 	const v128 r = _mm_mul_ps(v, other.v);
-	return SumElems(r);
+	return Math_SumElems(r);
 }
 
 Vec3f Vec3f::Cross(const Vec3f& other)

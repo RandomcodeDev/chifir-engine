@@ -59,6 +59,10 @@ struct Vec3f
 	{
 		*this = *this * other;
 	}
+    f32 operator*(const Vec3f& other)
+    {
+        return Dot(other);
+    }
 
 	Vec3f operator/(float other);
 	void operator/=(float other)

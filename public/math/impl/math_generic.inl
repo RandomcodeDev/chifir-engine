@@ -1,4 +1,4 @@
-/// \file x86 math implementation stuff
+/// \file Generic implementations of math functions
 /// \copyright 2025 Randomcode Developers
 
 #pragma once
@@ -8,52 +8,31 @@
 
 #include "math/math.h"
 
-FORCEINLINE f32 Math_ExtractLowerF32(v128 v)
-{
-#ifdef CH_KNOWN_SIMD256
-    return _mm_cvtss_f32(v);
-#else
-	f32 ret;
-    _mm_store_ss(&ret, v);
-    return ret;
-#endif
-}
-
-FORCEINLINE f32 Math_SumElems(v128 x)
-{
-	// https://stackoverflow.com/a/35270026
-#ifdef CH_KNOWN_SIMD256
-	v128 shuf = _mm_movehdup_ps(x);
-#else
-	v128 shuf = _mm_shuffle_ps(x, x, _MM_SHUFFLE(2, 3, 0, 1));
-#endif
-	v128 sums = _mm_add_ps(x, shuf);
-	shuf = _mm_movehl_ps(shuf, sums);
-	sums = _mm_add_ss(sums, shuf);
-    return Math_ExtractLowerF32(sums);
-}
-
 FORCEINLINE f32 Rsqrt(f32 x)
 {
-    const v128 v = _mm_load1_ps(&x);
-    const v128 r = _mm_rsqrt_ss(v);
-    return Math_ExtractLowerF32(r);
+    // quake 3 my beloved. this is faster than x87 fsqrt.
+    f32 x2 = x * 0.5;
+    f32 y = x;
+    u32 i = *(u32*)&y;
+    i = 0x5F375A86 - (i >> 1);
+    y = *(f32*)&i;
+    y = y * (1.5 - (x2 * y * y));
+    return y;
 }
 
 FORCEINLINE f32 Sqrt(f32 x)
 {
-    const v128 v = _mm_load1_ps(&x);
-    const v128 r = _mm_sqrt_ss(v);
-    return Math_ExtractLowerF32(r);
+    return 1.0f / Rsqrt(x);
 }
 
-// TODO: x86 doesn't really have anything better than x87 for these, so they're the generic versions
+// TODO: determine if there's a better way to implement these, even if they're fallbacks
 
 FORCEINLINE f32 Sin(f32 x)
 {
     return Cos(HALF_PI - x);
 }
 
+// https://stackoverflow.com/questions/77723846/implementing-a-cosine-function-in-c
 FORCEINLINE f32 Cos(f32 x)
 {
     // TODO: normalize once fmod is implemented
@@ -65,6 +44,9 @@ FORCEINLINE f32 Tan(f32 x)
 {
     return Sin(x) / Cos(x);
 }
+
+// TODO: rewrite these once i'm better with taylor series
+
 FORCEINLINE f32 Asin(f32 x)
 {
     return Atan(x / Sqrt(1 - x * x));
@@ -75,6 +57,7 @@ FORCEINLINE f32 Acos(f32 x)
     return HALF_PI - Asin(x);
 }
 
+// accurate up to +-~0.97
 FORCEINLINE f32 Atan(f32 x)
 {
     f32 xp = x;

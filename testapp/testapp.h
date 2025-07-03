@@ -2,6 +2,9 @@
 
 #include "iapplication.h"
 
+#include "base/string.h"
+#include "base/vector.h"
+
 class CTestApp: public IApplication
 {
   public:
@@ -13,6 +16,8 @@ class CTestApp: public IApplication
 	virtual s32 Run(const CVector<ISystem*>& systems);
 
   private:
+    CVector<CString> m_args;
+
 	static constexpr LibDependency_t LIBS[] = {
 		{"RustTest", true}
     };

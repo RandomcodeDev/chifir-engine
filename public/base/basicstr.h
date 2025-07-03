@@ -63,7 +63,7 @@ FORCEINLINE bool Base_IsDecDigit(char c)
 }
 
 /// Check if letter or number
-FORCEINLINE bool Base_IsAlphannumeric(char c)
+FORCEINLINE bool Base_IsAlphanumeric(char c)
 {
 	return Base_IsDecDigit(c) || Base_IsAlpha(c);
 }

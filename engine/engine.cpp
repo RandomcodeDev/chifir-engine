@@ -6,9 +6,6 @@
 #include "base/log.h"
 #include "base/platform.h"
 
-#include "math/math.h"
-#include "math/vec3.h"
-
 #include "rendersystem/irendersystem.h"
 
 #include "rhi/rhi.h"
